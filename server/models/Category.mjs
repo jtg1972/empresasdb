@@ -4,7 +4,11 @@ class Category extends Sequelize.Model{
     return super.init({
       name:DataTypes.STRING,
       parentCategories:DataTypes.STRING,
-      parentCategory:DataTypes.INTEGER
+      parentCategory:DataTypes.INTEGER,
+      typeOfCategory:{
+        type:DataTypes.INTEGER,
+        defaultValue:1
+      }
     },{sequelize})
   }
 }

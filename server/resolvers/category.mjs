@@ -7,24 +7,28 @@ export default{
   Category:{
     bookmark:async(parent,args,{db})=>{
       const cats=await db.Category.findAll({
-        where:{id:{[Op.in]:parent.parentCategories}
-      },
+        where:{id:{[Op.in]:parent.parentCategories}},
+        order:[
+          ['id','ASC']
+        ]
+      ,
         raw:true
       })
       let pc=[]
       const cats1=cats.map(c=>{
-        pc=c.parentCategories.split(",")
+        /*pc=c.parentCategories.split(",")
         if(pc.length>0){
           pc=pc.map(x=>parseInt(x))
           pc.push(c.id)
         }else{
           pc=[0,c.id]
-        }
+        }*/
         
         return {
           id:c.id,
           name:c.name,
-          parentCategories:pc,
+          //parentCategories:pc,
+          typeOfCategory:c.typeOfCategory,
           parentCategory:c.parentCategory
         }
       })
@@ -51,12 +55,13 @@ export default{
           pc=pc.map(x=>parseInt(x))
           pc.push(c.dataValues.id)
         }else{
-          pc=[0,c.dataValues.id]
+          pc=[0,c.id]
         }
         return {
           id:c.dataValues.id,
           name:c.dataValues.name,
           parentCategories:pc,
+          typeOfCategory:c.dataValues.typeOfCategory,
           parentCategory:c.dataValues.parentCategory
         }
       })
@@ -94,7 +99,8 @@ export default{
       const category=await db.Category.create({
         name:args.name,
         parentCategories:stringParentCategories,
-        parentCategory:args.parentCategory
+        parentCategory:args.parentCategory,
+        typeOfCategory:args.typeOfCategory
       },{raw:true})
       return {...category.dataValues,parentCategories:[...parentCategories,category.dataValues.id]}
     },

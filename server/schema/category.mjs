@@ -8,6 +8,7 @@ export default gql`
     fields:[Field!]
     parentCategory:Int
     bookmark:[Category!]
+    typeOfCategory:Int
     
   }
 
@@ -21,6 +22,7 @@ export default gql`
     createCategory(
       name:String!,
       parentCategory:Int,
+      typeOfCategory:Int
       ):Category!,
     deleteCategory(id:Int!):Boolean!
     

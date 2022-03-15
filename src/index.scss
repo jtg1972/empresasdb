@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap');
+:root{
+  --darkgray:#212329;
+  --brightred:#F9423D;
+  --white:#FFF;
+  --lightred:#f9433dcc;
+}
+
+html{
+  
+  font-size:10px;
+  font-family:'Nunito',sans-serif;
+
+}
+*{
+  box-sizing: border-box;
+  font-size:14px;
+  padding:0;
+  margin:0;
+}

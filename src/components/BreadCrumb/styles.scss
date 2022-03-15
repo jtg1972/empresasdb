@@ -1,0 +1,20 @@
+.breadcrumb{
+  display:flex;
+  flex-direction:row;
+  flex-wrap: wrap;
+  margin-bottom:15px;
+  height:auto;
+}
+.pill{
+  display:flex;
+  align-items:center;
+  background:black;
+  padding:7px;
+  border-radius:10px;
+  margin-right:10px;
+  margin-bottom:10px;
+  color:white;
+  span{
+    display:inline-block;
+  }
+}

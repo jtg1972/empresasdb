@@ -1,0 +1,29 @@
+.dialog{
+  position:relative;
+  width:300px;
+  height:auto;
+  position:absolute;
+  background-color:white;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  color:black;
+  z-index:100;
+  .header{
+    display:flex;
+    padding:10px;
+    background-color: var(--darkgray);
+    color:white;
+    .headline{
+      flex:1;
+      margin:0;
+      padding:0;
+    }
+    .close{
+      width:auto;
+    }
+  }
+  .childContent{
+    margin:10px;
+  }
+}
