@@ -27,6 +27,15 @@ export default{
       return field
       
     },
+    removeField:async(parent,args,{db})=>{
+      let x=await db.Fields.findByPk(args.id)
+      if(x){
+        await x.destroy()
+        return true
+      }else{
+        return false
+      }
+    },
     addValueToField:async(parent,args,{db})=>{
       const field=await db.Fields.findByPk(args.id)
       let values=field.values

@@ -29,3 +29,14 @@ export const addCategory=(payload)=>({
   type:types.ADD_CATEGORY,
   payload
 })
+
+export const addCategoryField=(payload)=>({
+  type:types.ADD_CATEGORY_FIELD,
+  payload
+})
+
+export const removeField=(payload)=>({
+  type:types.REMOVE_FIELD,
+  payload
+
+})

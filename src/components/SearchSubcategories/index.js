@@ -119,12 +119,19 @@ const SearchSubcategories = ({
 
   }
 
+  const categoryTitle=()=>{
+    if(currentCategory!==undefined)
+      return currentCategory.name
+    else
+      return "Root"
+  }
+
   
   return (
     open
     ?
     <Dialog
-    headline={`Category ${currentCategory?.name}`}
+    headline={`Category ${categoryTitle()}`}
     open={open}
     closeDialog={toggleDialog}>
       

@@ -76,6 +76,53 @@ export default (state=INITIAL_STATE,action)=>{
         currentSons:[...state.currentSons,action.payload],
         searchCategories:[]
       }
+    case types.ADD_CATEGORY_FIELD:
+      return {
+        ...state,
+        categories:state.categories.filter(c=>{
+          if(c.id!==action.payload.category){
+            if(c.parentCategories.includes(action.payload.category)){
+              return {...c,fields:[...c.fields,action.payload]}
+            }else{
+              return c
+            }
+          }
+          else{
+            return {...c,fields:[...c.fields,action.payload]}
+          }
+          
+        }),
+        currentCategory:{...state.currentCategory,
+          fields:[...state.currentCategory.fields,
+          action.payload]
+        }
+      }
+
+    case types.REMOVE_FIELD:
+      console.log("action.payload",action.payload)
+      return {
+        ...state,
+        categories:state.categories.map(c=>{
+          if(c.id!==action.payload.category){
+            if(c.parentCategories.includes(action.payload.category)){
+              return {...c,fields:c.fields.filter(u=>
+                u.id!==action.payload.id 
+              )}
+            }else{
+              return c
+            }
+          }else{
+            return {...c,fields:c.fields.
+              filter(y=>y.id!==action.payload.id)}
+          }
+
+        }),
+        currentCategory:{...state.currentCategory,
+          fields:state.currentCategory.fields.filter(y=>
+            y.id!==action.payload.id  
+          )
+        }
+      }
     default:
       return state
   }

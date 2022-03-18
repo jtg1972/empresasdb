@@ -5,6 +5,9 @@ import BreadCrumb from '../components/BreadCrumb'
 import { useDispatch, useSelector } from 'react-redux'
 import { setCategories, setCurrentCategory, setCurrentCategoryId } from '../redux/category/actions'
 import SearchSubcategories from '../components/SearchSubcategories'
+import StructureField from '../components/StructureField'
+import DisplayWholeCategoryFieldsTable from '../components/DisplayWholeCategoryFieldsTable'
+import './styles.scss'
 const SELECT_CATEGORY=gql`
   query selectCategory($id:Int!){
     selectCategory(id:$id){
@@ -24,10 +27,19 @@ const CATEGORIES1=gql`
       name
       parentCategory
       typeOfCategory
+      parentCategories
       bookmark{
         id
         name
         typeOfCategory
+      }
+      fields{
+        id
+        name
+        dataType
+        declaredType
+        values
+        category
       }
     }
   }
@@ -44,7 +56,8 @@ const DetailedProduct = () => {
   }=useSelector(mapToState)
   const [openDialog,setOpenDialog]=useState(false)
   const toggleDialog=()=>setOpenDialog(!openDialog)
-
+  const [openDialogField,setOpenDialogField]=useState(false)
+  const toggleDialogField=()=>setOpenDialogField(!openDialogField)
   const {loading,data,error}=useQuery(
     CATEGORIES1
   )
@@ -78,7 +91,7 @@ const DetailedProduct = () => {
  
   return (loading?"Loading":
   error?"Error: "+error:(
-    <div>
+    <div className="detailedProduct">
       <BreadCrumb 
  
         open={openDialog}
@@ -86,10 +99,17 @@ const DetailedProduct = () => {
  
       />
       <SearchSubcategories
-        open={openDialog}
-        toggleDialog={toggleDialog}
-      
-        
+      open={openDialog}
+      toggleDialog={toggleDialog}       
+      />
+
+      <StructureField
+      open={openDialogField}
+      toggleDialog={toggleDialogField}
+      />
+
+      <DisplayWholeCategoryFieldsTable
+      toggleDialogField={toggleDialogField}
       />
     </div>
   ))

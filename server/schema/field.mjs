@@ -23,5 +23,6 @@ export default gql`
       dataType:String!):Field!,
     addValueToField(id:Int!,value:String!):Field!,
     createTable(category:Int!):Boolean
+    removeField(id:Int!):Boolean!
   }
 `

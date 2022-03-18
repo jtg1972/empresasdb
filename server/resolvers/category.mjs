@@ -35,6 +35,7 @@ export default{
       return cats1
     },
     fields:async(parent,args,{db})=>{
+      console.log("pcats",parent.parentCategories)
       let fVal=await db.Fields.findAll({
         where:{
           category:{[Op.in]:parent.parentCategories}

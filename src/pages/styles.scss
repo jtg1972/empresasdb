@@ -1,0 +1,41 @@
+.detailedProduct{ 
+  color:white;
+  margin:15px;
+  //width:100%;
+  .addFirstButton{
+    width:auto;
+    background-color:orange;
+    color:black;
+    margin-bottom:10px;
+  }
+  .addSecondButton{
+    width:auto;
+    background-color:orange;
+    color:black;
+    margin-bottom:10px;
+    margin-left:10px;
+  }
+
+  .titleLabel{
+    margin-bottom:5px;
+    margin-top:5px;
+    padding:5px;
+    color:white;
+    background-color:black;
+    width:fit-content;
+  }
+  table{
+    width:100%;
+    border-spacing:0px;
+    border-collapse:collapse;
+    td,th{
+      padding:5px;
+      
+    }
+    th{
+      background-color: black;
+      color:white;
+
+    }
+  }
+}
