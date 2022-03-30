@@ -47,8 +47,34 @@ export default{
       values=valuesArr.join(",")
       field.values=values
            
-      return await field.save()
+      let x= await field.save()
+      console.log("xxx",x)
+      return {...x.dataValues,values:valuesArr}
 
+    },
+    removeMultipleValue:async(parent,args,{db})=>{
+      const field=await db.Fields.findByPk(args.id)
+      if(field){
+      let strFields=field.values
+      if(field.values.trim!==null){
+        const arrFields=field.values.split(",")
+        const oldlen=arrFields.length
+        const newArr=arrFields.filter(x=>x!==args.value)
+        const newlen=newArr.length
+        if(oldlen!==newlen){
+          if(newlen==0){
+            field.values=null
+          }else{
+            strFields=newArr.join(",")
+            field.values=strFields
+          }
+          await field.save();
+          return true
+        }
+      }
+      return false
+
+    }
     },
     createTable:async(parent,args,{db})=>{
       const category=await db.Category.findByPk(args.category)

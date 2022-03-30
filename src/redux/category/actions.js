@@ -40,3 +40,23 @@ export const removeField=(payload)=>({
   payload
 
 })
+
+export const addMultipleFieldValue=(payload)=>({
+  type:types.ADD_MULTIPLE_FIELD_VALUE,
+  payload
+})
+
+export const removeMultipleFieldValue=(payload)=>({
+  type:types.REMOVE_MULTIPLE_FIELD_VALUE,
+  payload
+})
+
+export const loadingTable=(payload)=>({
+  type:types.LOADING_TABLE,
+  payload
+})
+
+export const getCategoryProducts=(payload)=>({
+  type:types.GET_CATEGORY_PRODUCTS,
+  payload
+})

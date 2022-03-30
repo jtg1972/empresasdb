@@ -6,7 +6,7 @@ export default gql`
     name:String!
     category:Int!
     dataType:String!
-    values:String
+    values:[String!]
     declaredType:String!
   }
 
@@ -19,10 +19,10 @@ export default gql`
       name:String!,
       category:Int!,
       declaredType:String!,
-      values:String,
       dataType:String!):Field!,
     addValueToField(id:Int!,value:String!):Field!,
     createTable(category:Int!):Boolean
     removeField(id:Int!):Boolean!
+    removeMultipleValue(id:Int!,value:String!):Boolean
   }
 `

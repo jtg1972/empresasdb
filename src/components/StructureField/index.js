@@ -171,7 +171,7 @@ const StructureField = ({
       <select {...selectConfigDeclaredType}>
         <option value="">Select the data type</option>
         <option value="string">String</option>
-        <option value="numeric">Numeric</option>
+        <option value="number">Numeric</option>
         <option value="date">Date</option>
       </select>
 

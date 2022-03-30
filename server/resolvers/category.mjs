@@ -16,18 +16,18 @@ export default{
       })
       let pc=[]
       const cats1=cats.map(c=>{
-        /*pc=c.parentCategories.split(",")
+        pc=c.parentCategories.split(",")
         if(pc.length>0){
           pc=pc.map(x=>parseInt(x))
           pc.push(c.id)
         }else{
           pc=[0,c.id]
-        }*/
+        }
         
         return {
           id:c.id,
           name:c.name,
-          //parentCategories:pc,
+          parentCategories:pc,
           typeOfCategory:c.typeOfCategory,
           parentCategory:c.parentCategory
         }
@@ -43,7 +43,15 @@ export default{
         raw:true   
       }
       )
-      return fVal
+      const ret=fVal.map(g=>{
+        if(g.values!==null){
+          return {...g,values:g.values.split(",")}
+        }else{
+          return {...g,values:[]}
+        }
+      })
+      
+      return ret
     }
   },
   Query:{

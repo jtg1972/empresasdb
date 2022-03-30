@@ -22,22 +22,42 @@ mutation CreateCategory($name: String!, $parentCategory: Int,$typeOfCategory: In
       id
       typeOfCategory
     }
+    fields{
+      id
+      name
+      dataType
+      declaredType
+      values
+      category
+    }
+    
   }
 }`
 
 const CATEGORIES1=gql`
-  query Categories{
-    categories{
+query Categories{
+  categories{
+    id
+    name
+    parentCategory
+    typeOfCategory
+    parentCategories
+    bookmark{
       id
       name
-      parentCategory
-      bookmark{
-        id
-        name
-      }
+      typeOfCategory
     }
-  }`
-
+    fields{
+      id
+      name
+      dataType
+      declaredType
+      values
+      category
+    }
+  }
+}
+`
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   currentSons:categories.currentSons,
@@ -56,7 +76,6 @@ const SearchSubcategories = ({
   const {
     currentCategory,
     currentSons,
-    categories,
     currentCategoryId,
     scategories
   } =useSelector(mapToState)

@@ -6,7 +6,9 @@ const INITIAL_STATE={
   currentSons:[],
   categories:[],
   currentCategoryId:0,
-  searchCategories:[]
+  searchCategories:[],
+  loadingTable:false,
+  categoryProducts:[]
 }
 
 export default (state=INITIAL_STATE,action)=>{
@@ -72,7 +74,7 @@ export default (state=INITIAL_STATE,action)=>{
     case types.ADD_CATEGORY:
       return {
         ...state,
-        categories:[...state.categories,action.payload],
+        categories:[...state.categories,{...action.payload,fields:[]}],
         currentSons:[...state.currentSons,action.payload],
         searchCategories:[]
       }
@@ -122,6 +124,95 @@ export default (state=INITIAL_STATE,action)=>{
             y.id!==action.payload.id  
           )
         }
+    
+      }
+    case types.ADD_MULTIPLE_FIELD_VALUE:
+      const ncats=state.categories.map(c=>{
+        if(c.id!==action.payload.category){
+          return c
+        }else{
+          const nf=c.fields.map(f=>{
+            if(f.id!==action.payload.id){
+              return f
+            }else{
+              return action.payload
+            }
+          })
+          return {...c,fields:nf}
+        }
+      })
+      return {...state,
+        categories:ncats,
+        currentCategory:{...state.currentCategory,
+        fields:state.currentCategory.fields.map(r=>{
+          if(r.id!==action.payload.id){
+            return r
+          }else{
+            return action.payload
+          }
+
+        })}
+      }
+    case types.REMOVE_MULTIPLE_FIELD_VALUE:
+      const nb=state.categories.map(o=>{
+        if(o.id!==action.payload.category){
+          if(Array.isArray(o?.fields)){
+          const newF=o.fields.map(f=>{
+            if(f.id==action.payload.fieldId){
+              if(Array.isArray(o?.fields?.values)){
+                if(o.fields.values.includes(action.payload.value)){
+                  let nar1=[]
+      
+                  for(let u in o.fields.values){
+                    if(o["fields"]["values"][u]!==action.payload.value){
+                      nar1.push(o["fields"]["values"][u])
+                    }
+                  }
+                  return {...f,values:nar1}
+                }else{
+                  return f
+                }
+              }
+            }
+            else{
+              return f
+            }
+          })
+          return {...o,fields:newF}
+        }
+      }
+      })
+      
+      const nf=state?.currenCategory?.fields.filter(i=>{
+      if(i.id!==action.payload.fieldId){
+        return i
+      }else{
+        let newValues=[]
+        if(Array.isArray(i["values"])){
+          for(let u in i["values"]){
+            if(i["values"][u]!==action.payload.value){
+              newValues.push(u)
+            }
+          }
+        
+          return {...i,values:newValues}
+        }
+      }
+      
+    })
+      return {
+        ...state,
+        categories:nb,
+        currentCategory:{...state.currentCategory,fields:nf}
+      }
+    case types.LOADING_TABLE:
+      return {...state,
+        loadingTable:action.payload
+      }
+    case types.GET_CATEGORY_PRODUCTS:
+      return {
+        ...state,
+        categoryProducts:action.payload
       }
     default:
       return state
