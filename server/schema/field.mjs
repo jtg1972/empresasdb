@@ -21,8 +21,12 @@ export default gql`
       declaredType:String!,
       dataType:String!):Field!,
     addValueToField(id:Int!,value:String!):Field!,
-    createTable(category:Int!):Boolean
-    removeField(id:Int!):Boolean!
+    createTable(category:Int!,typeOfCategory:Int!):Boolean,
+    createTableGood(categoryIds:[Int]):Boolean,
+    removeField(id:Int!):Boolean!,
+  
     removeMultipleValue(id:Int!,value:String!):Boolean
-  }
+  } 
 `
+
+//createTableGood(categoryIds:[Int]):Boolean,

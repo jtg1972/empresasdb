@@ -52,7 +52,6 @@ const resolvers=mergeResolvers(res)
 //const resolvers=mergeResolvers(res)
 
 const schema=mergeSchemas({typeDefs,resolvers:resolvers})
-
 const app=express()
 app.use(cors())
 app.use(bodyParser.json())

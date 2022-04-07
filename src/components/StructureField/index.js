@@ -1,7 +1,7 @@
 import { checkFetcher, gql, useMutation } from '@apollo/client'
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { addCategoryField } from '../../redux/category/actions'
+import { addCategoryField, setTableState } from '../../redux/category/actions'
 import Dialog from '../Dialog'
 import FormButton from '../Forms/FormButton'
 import FormInput from '../Forms/FormInput'
@@ -39,6 +39,17 @@ mutation CreateField($name: String!, $category: Int!, $declaredType: String!, $d
     dataType
     values
     declaredType
+    
+  }
+}
+`
+const EDIT_CATEGORY_STATE=gql`
+mutation EditTableState($category: Int!, $state: String!) {
+  editTableState(category: $category, state: $state) {
+    id
+    category
+    name
+    state
   }
 }
 `
@@ -59,15 +70,37 @@ const StructureField = ({
   const [dataType,setDataType]=useState("")
   const [declaredType,setDeclaredType]=useState("")
   const dispatch=useDispatch()
+  
+  const [editTableState]=useMutation(EDIT_CATEGORY_STATE)
+  
   const [createField]=useMutation(CREATE_FIELD,{
     update:(cache,{data})=>{
       const cats=cache.readQuery(
         {query:CATEGORIES1}
       )
       const newField=data.createField
+
+      
+
       let newCategories=cats.categories.map(c=>{
+        console.log("tyofcat",c.typeOfCategory)
         if(c.id!==data.createField.category){
           if(c.parentCategories.includes(data.createField.category)){
+            if(c.typeOfCategory==0){
+              editTableState({
+                variables:{
+                  category:c.id,
+                  state:"NO_UPDATED"
+                }
+              })
+              dispatch(setTableState(
+                {
+                  category:c.id,
+                  state:"NO_UPDATED"
+                }
+              ))
+            } 
+                
             return {...c,fields:[...c.fields,newField]}
           }else{
         
@@ -75,6 +108,20 @@ const StructureField = ({
           }
         }else{
           console.log("cfields",c.fields)
+          if(c.typeOfCategory==0){
+            editTableState({
+              variables:{
+                category:c.id,
+                state:"NO_UPDATED"
+              }
+            })
+            dispatch(setTableState(
+              {
+                category:c.id,
+                state:"NO_UPDATED"
+              }
+            ))
+          }
           if(c.fields!==undefined){
             return {...c,fields:[...c.fields,newField]}
         
@@ -96,6 +143,7 @@ const StructureField = ({
     }})
 
   console.log("opendi",open)
+  
   const onAddFieldClick=()=>{
 
     createField({

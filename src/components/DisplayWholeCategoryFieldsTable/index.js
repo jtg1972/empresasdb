@@ -11,8 +11,8 @@ const mapToState=({categories})=>({
 })
 
 const CREATE_TABLE=gql`
-mutation CreateTable($category: Int!) {
-  createTable(category: $category)
+mutation Mutation($category: Int!, $typeOfCategory: Int!) {
+  createTable(category: $category, typeOfCategory: $typeOfCategory)
 }
 `
 
@@ -50,21 +50,7 @@ const DisplayWholeCategoryFieldsTable = ({
       />
       }
 
-      {currentCategory?.typeOfCategory==0 &&
-      <FormButton
-        onClick={()=>{
-          dispatch(loadingTable(true))
-          createTable({
-            variables:{
-              category:currentCategory.id
-            }
-          })    
-        
-        }}
-      >
-        Update Table
-      </FormButton>
-      }
+      
     </div>
   )
 }

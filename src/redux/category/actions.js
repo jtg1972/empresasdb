@@ -56,7 +56,22 @@ export const loadingTable=(payload)=>({
   payload
 })
 
-export const getCategoryProducts=(payload)=>({
-  type:types.GET_CATEGORY_PRODUCTS,
+export const setCategoryProducts=(payload)=>({
+  type:types.SET_CATEGORY_PRODUCTS,
+  payload
+})
+
+export const setTablesState=payload=>({
+  type:types.SET_TABLES_STATE,
+  payload
+})
+
+export const getTablesState=payload=>({
+  type:types.GET_TABLES_STATE,
+  payload
+})
+
+export const setTableState=payload=>({
+  type:types.SET_TABLE_STATE,
   payload
 })

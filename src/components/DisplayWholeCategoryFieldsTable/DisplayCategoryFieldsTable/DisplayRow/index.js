@@ -5,7 +5,7 @@ import {FcTreeStructure} from 'react-icons/fc'
 import {IoIosRemoveCircleOutline} from 'react-icons/io'
 import { useDispatch, useSelector } from 'react-redux'
 import { combineReducers } from 'redux'
-import { removeField, removeMultipleFieldValue } from '../../../../redux/category/actions'
+import { removeField, removeMultipleFieldValue, setTableState } from '../../../../redux/category/actions'
 
 const CATEGORIES1=gql`
   query Categories{
@@ -39,6 +39,17 @@ mutation RemoveMultipleValue($removeMultipleValueId: Int!, $value: String!) {
 }
 `
 
+const EDIT_TABLE_STATE=gql`
+mutation EditTableState($category: Int!, $state: String!) {
+  editTableState(category: $category, state: $state) {
+    id
+    category
+    name
+    state
+  }
+}
+`
+
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory
 })
@@ -51,7 +62,7 @@ const DisplayRow = ({
   const dispatch=useDispatch()
   console.log("f",f)
   
-
+  const [editTableState]=useMutation(EDIT_TABLE_STATE)
   const [removeField1]=useMutation(REMOVE_FIELD,{
     
     update:(cache,{data})=>{
@@ -62,16 +73,38 @@ const DisplayRow = ({
       let newCats=[]
       console.log("resultado,cats",resultado,cats.categories)
       if(resultado==true){
+
         newCats=cats.categories.map(c=>{
           if(c.id!==f.category){
             if(c.parentCategories.includes(f.category)){
+              editTableState({
+                variables:{
+                  category:c.id,
+                  state:"NO_UPDATED"
+                }
+              })
+              dispatch(setTableState({
+                category:c.id,
+                state:"NO_UPDATED"
+              }))
               return {...c,fields:c.fields.filter(g=>
                 g.id!==f.id
               )}
+              
             }else{
               return c
             }
           }else{
+            editTableState({
+              variables:{
+                category:c.id,
+                state:"NO_UPDATED"
+              }
+            })
+            dispatch(setTableState({
+              category:c.id,
+              state:"NO_UPDATED"
+            }))
             return {...c,fields:c.fields.
               filter(y=>y.id!==f.id)}
           }

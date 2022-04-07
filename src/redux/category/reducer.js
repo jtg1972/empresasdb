@@ -8,7 +8,9 @@ const INITIAL_STATE={
   currentCategoryId:0,
   searchCategories:[],
   loadingTable:false,
-  categoryProducts:[]
+  categoryProducts:[],
+  tablesStateRecords:[],
+  tablesStateStatus:false
 }
 
 export default (state=INITIAL_STATE,action)=>{
@@ -209,10 +211,45 @@ export default (state=INITIAL_STATE,action)=>{
       return {...state,
         loadingTable:action.payload
       }
-    case types.GET_CATEGORY_PRODUCTS:
+    case types.SET_CATEGORY_PRODUCTS:
       return {
         ...state,
         categoryProducts:action.payload
+      }
+    case types.SET_TABLES_STATE:
+      return {
+        ...state,
+        tablesStateRecords:action.payload,
+        tablesStateStatus:action.payload.filter(ts=>
+          ts.state!=="OK"  
+        ).length>0?"NO_OK":"OK"
+      }
+    case types.SET_TABLE_STATE:
+      const newRecs=state.tablesStateRecords.map(t=>{
+        if(t.category==action.payload.category)
+          return {...t,...action.payload}
+        else
+          return t
+      })
+      return {...state,
+        tablesStateRecords:newRecs,
+        tablesStateStatus:newRecs.filter(ts=>
+          ts.state!=="OK"  
+        ).length>0?"NO_OK":"OK"
+      }
+    case types.GET_TABLES_STATE:
+      let resultado=""
+      const noOkCount=state.tablesStateRecords.filter(t=>
+          t.state=="OK"?false:true)
+      if(noOkCount.length>0)
+        resultado="NO_OK"
+      else
+        resultado="OK"
+
+      return {
+        ...state,
+        tablesStateStatus:resultado
+
       }
     default:
       return state

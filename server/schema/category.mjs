@@ -25,6 +25,7 @@ export default gql`
       typeOfCategory:Int
       ):Category!,
     deleteCategory(id:Int!):Boolean!
+  
     
     
   }

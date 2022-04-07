@@ -3,7 +3,7 @@ import gql from 'graphql-tag'
 import React,{useState,useEffect} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Navigate, useNavigate } from 'react-router'
-import { addCategory, searchCategories, setCategories, setCurrentCategory, setCurrentCategoryId, setCurrentSons } from '../../redux/category/actions'
+import { addCategory, searchCategories, setCategories, setCurrentCategory, setCurrentCategoryId, setCurrentSons, setTablesState, setTableState } from '../../redux/category/actions'
 import Dialog from '../Dialog'
 import FormInput from '../Forms/FormInput'
 import FormButton from '../Forms/FormButton'
@@ -58,6 +58,17 @@ query Categories{
   }
 }
 `
+
+const CREATE_NEW_CATEGORY_STATE=gql`
+mutation CreateTableState($category: Int!, $name: String!, $state: String!) {
+  createTableState(category: $category, name: $name, state: $state) {
+    id
+    category
+    name
+    state
+  }
+}
+`
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   currentSons:categories.currentSons,
@@ -82,12 +93,34 @@ const SearchSubcategories = ({
   const [search,setSearch]=useState("")
   const [isSearching,setIsSearching]=useState(false)
   const [newCategory,setNewCategory]=useState("")
+  
+  const [createTableState]=useMutation(CREATE_NEW_CATEGORY_STATE,{
+    update:(cache,{data})=>{
+      dispatch(setTableState({
+        id:data.createTableState.id,
+        name:data.createTableState.name,
+        category:data.createTableState.category,
+        state:"NOT_CREATED"
+      }))
+    }
+  })
+  
   const [createCategory]=useMutation(CREATE_CATEGORY,{
     update:(cache,{data})=>{
       const cats=cache.readQuery(
         {query:CATEGORIES1}
       )
       const newCat=data.createCategory
+
+    if(newCat.typeOfCategory==0){
+      createTableState({
+        variables:{
+          category:newCat.id,
+          name:newCat.name,
+          state:"NOT_CREATED"
+        }
+      })
+    }
       console.log("ncid",newCat,newCat.id)
       cache.writeQuery({
         query:CATEGORIES1,
@@ -99,6 +132,7 @@ const SearchSubcategories = ({
       dispatch(addCategory(newCat))
       //dispatch(setCurrentCategoryId(newCat.id))
     }})
+
   
   const insertCategory=(type)=>{
     console.log("type",type)
