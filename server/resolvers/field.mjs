@@ -223,8 +223,8 @@ export default{
           content+=`\nexport default ${name}`
           
           let r=[]
-          let x1=""
-          let x2=""
+          let x1="id:Int\n"
+          let x2="id:Int,\n"
           for(let f in fields){
             if(fields[f]["declaredType"]=="string"){
               x1+=`${fields[f]["name"]}:String\n`
@@ -242,7 +242,7 @@ export default{
 
           export default gql\`
             type ${name}{
-                id:Int!
+              
               ${x1}
             }
 
@@ -255,12 +255,13 @@ export default{
                 ${x2}
                 ):${name}
               getData${name}:[${name}]
-              
+              delete${name}(id:Int):Boolean!
+              edit${name}(${x2}):${name}
               
             }\`
           `
 
-          const content3=`
+          let content3=`
             export default{
               Query:{
 
@@ -277,6 +278,36 @@ export default{
                 getData${name}:async(parent,args,{db})=>{
                   const products=await db.${name}.findAll()
                   return products     
+                },
+                delete${name}:async(parent,args,{db})=>{
+                  try{
+                    const product=await db.${name}.findByPk(args.id)
+                    product.destroy()
+                    return true
+                  }catch(e){
+                    console.log("error",e)
+                    return false
+                  }
+                },
+                edit${name}:async(parent,args,{db})=>{
+              `
+
+              let change=Object.keys(fields).map(k=>{
+                  return `${fields[k].name}:args["${fields[k].name}"]`
+                })
+              change.unshift(`id:args["id"]`)
+              change=change.join(",")
+              content3+=`await db.${name}.update({
+                      ${change}
+                    },
+                    {
+                    where:{id:args.id}
+                    }
+                  )
+                
+                  const nuevo=await db.${name}.findByPk(args.id)
+                  return nuevo
+
                 }
               }
             }

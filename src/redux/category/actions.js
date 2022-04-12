@@ -75,3 +75,18 @@ export const setTableState=payload=>({
   type:types.SET_TABLE_STATE,
   payload
 })
+
+export const deleteProduct=payload=>({
+  type:types.DELETE_PRODUCT,
+  payload
+})
+
+export const editProduct=payload=>({
+  type:types.EDIT_PRODUCT,
+  payload
+})
+
+export const addProduct=payload=>({
+  type:types.ADD_PRODUCT,
+  payload
+})

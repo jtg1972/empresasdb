@@ -6,8 +6,6 @@ import Sequelize from 'sequelize'
 
             		return super.init({
 		 name:DataTypes.STRING,
-		 price:DataTypes.INTEGER,
-		 tamano:DataTypes.STRING,
 		 agen1:DataTypes.STRING},{sequelize})
 }}
 export default atunconaceite

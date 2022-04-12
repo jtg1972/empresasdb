@@ -3,10 +3,9 @@
 
           export default gql`
             type atunconaceite{
-                id:Int!
-              name:String
-price:Int
-tamano:String
+              
+              id:Int
+name:String
 agen1:String
 
             }
@@ -17,14 +16,17 @@ agen1:String
             }
             type Mutation{
               createatunconaceite(
-                name:String,
-price:Int,
-tamano:String,
+                id:Int,
+name:String,
 agen1:String,
 
                 ):atunconaceite
               getDataatunconaceite:[atunconaceite]
-              
+              deleteatunconaceite(id:Int):Boolean!
+              editatunconaceite(id:Int,
+name:String,
+agen1:String,
+):atunconaceite
               
             }`
           

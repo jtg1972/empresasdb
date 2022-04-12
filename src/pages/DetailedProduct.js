@@ -11,6 +11,9 @@ import './styles.scss'
 import AddMultipleValue from '../components/DisplayWholeCategoryFieldsTable/DisplayCategoryFieldsTable/DisplayRow/AddMultipleValue'
 import DisplayWholeProductsTable from '../components/DisplayWholeProductsTable'
 import DisplayTableStatus from '../components/DisplayTableStatus'
+import EditProduct from '../components/EditProduct'
+import NewProduct from '../components/NewProduct'
+import AddFilter from '../components/AddFilter'
 const SELECT_CATEGORY=gql`
   query selectCategory($id:Int!){
     selectCategory(id:$id){
@@ -72,7 +75,8 @@ const DetailedProduct = () => {
     loadingTable,
     currentCategoryId,
     tablesStateStatus
-  }=useSelector(mapToState)    
+  }=useSelector(mapToState)  
+  const [editFields,setEditFields]=useState({})  
   const [fieldId,setFieldId]=useState(0)
   const [fieldName,setFieldName]=useState("")
   const [openDialog,setOpenDialog]=useState(false)
@@ -88,6 +92,15 @@ const DetailedProduct = () => {
     setFieldName(fn)
     setOpenMultipleValue(!openMultipleValue)
   }
+  const [openEditProduct,setOpenEditProduct]=useState(false)
+  const toggleEditProduct=(editFields1)=>{
+    setEditFields(editFields1)
+    setOpenEditProduct(!openEditProduct)
+  }
+  const [openNewProduct,setOpenNewProduct]=useState("")
+  const toggleNewProduct=()=>setOpenNewProduct(!openNewProduct)
+  const [openFilter,setOpenFilter]=useState(false)
+  const toggleFilter=()=>setOpenFilter(!openFilter)
   const {loading,data,error}=useQuery(
     CATEGORIES1
   )
@@ -169,6 +182,11 @@ const DetailedProduct = () => {
       toggleDialog={toggleDialogField}
       
       />
+      {currentCategoryId!==0 && <EditProduct
+      open={openEditProduct}
+      toggleDialog={toggleEditProduct}
+      editFields={editFields}
+      />}
 
       <AddMultipleValue
         open={openMultipleValue}
@@ -176,6 +194,17 @@ const DetailedProduct = () => {
         fieldId={fieldId}
         fieldName={fieldName}
       />
+
+      {currentCategoryId!==0 && <NewProduct
+        open={openNewProduct}
+        toggleDialog={toggleNewProduct}
+      />
+      }
+      {currentCategoryId!==0 &&
+      <AddFilter
+      open={openFilter}
+      toggleDialog={toggleFilter}
+      />}
       <DisplayWholeCategoryFieldsTable
       toggleDialogField={toggleDialogField}
       toggleDialogStructure={toggleMultipleValue}
@@ -186,7 +215,11 @@ const DetailedProduct = () => {
 
       {currentCategoryId!==0 &&
       tablesStateStatus=="OK" &&
-      <DisplayWholeProductsTable/>}
+      <DisplayWholeProductsTable
+      toggleEditProduct={toggleEditProduct}
+      toggleNewProduct={toggleNewProduct}
+      toggleFilter={toggleFilter}
+      />}
     </div>
   ))
 }

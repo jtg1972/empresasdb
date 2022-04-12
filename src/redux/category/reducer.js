@@ -251,6 +251,39 @@ export default (state=INITIAL_STATE,action)=>{
         tablesStateStatus:resultado
 
       }
+    case types.DELETE_PRODUCT:
+      const prodCat=`getData${action.payload.categoryName}`
+      return {...state,
+        categoryProducts:{
+          ...state.categoryProducts,
+          [prodCat]:state["categoryProducts"][prodCat].filter(f=>
+            f.id!==action.payload.productId)
+        }
+      }
+    case types.EDIT_PRODUCT:
+      const prodCat1=`getData${action.payload.categoryName}`
+
+      return {...state,
+        categoryProducts:{
+          ...state.categoryProducts,
+          [prodCat1]:state["categoryProducts"][prodCat1].map(f=>{
+            
+            if(f.id!==action.payload.product.id){
+              return f
+            }else
+              return action.payload.product
+
+          })
+        }
+      }
+    case types.ADD_PRODUCT:
+      const seg=`getData${action.payload.categoryName}`
+      return {
+        ...state,
+        categoryProducts:{...state.categoryProducts,
+          [seg]:[...state.categoryProducts[seg],action.payload.product]
+        }
+      }
     default:
       return state
   }

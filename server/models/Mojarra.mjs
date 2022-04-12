@@ -6,7 +6,6 @@ import Sequelize from 'sequelize'
 
             		return super.init({
 		 name:DataTypes.STRING,
-		 price:DataTypes.INTEGER,
 		 aletas:DataTypes.STRING,
 		 color:DataTypes.STRING,
 		 mojf1:DataTypes.INTEGER},{sequelize})

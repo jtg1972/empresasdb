@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
+import FormInput from '../Forms/FormInput';
 const DisplayFields = ({
   structure,
   fields,
@@ -8,15 +9,15 @@ const DisplayFields = ({
 }) => {
   
   const inputChange=(cat,e)=>{
-    const fieldName=cat.fieldName
+    const fieldName=cat.name
     setFields({
       ...fields,
-      [fieldName]:e.target.value
+      [fieldName]:cat.declaredType=="number"?parseInt(e.target.value):e.target.value
     })
   }
 
   const selectChange=(cat,e)=>{
-    const fieldName=cat.fieldName
+    const fieldName=cat.name
     setFields({
       ...fields,
       [fieldName]:e.target.value
@@ -24,7 +25,7 @@ const DisplayFields = ({
   }
 
   const dateChange=(cat,e)=>{
-    const fieldName=cat.fieldName
+    const fieldName=cat.name
     setFields({
       ...fields,
       [fieldName]:e
@@ -33,13 +34,14 @@ const DisplayFields = ({
 
   const formInputConfig=(cat,index)=>({
     key:index,
-    placeholder:cat.fieldName,
-    value:fields[cat.fieldName],
-    onChange:(e)=>inputChange(cat,e)
+    placeholder:cat.name,
+    value:cat.declaredType=="number"?parseInt(fields[cat.name]):fields[cat.name],
+    onChange:(e)=>inputChange(cat,e),
+    type:cat.declaredType=="number"?"number":"text"
   })
 
   const selectConfig=(cat,index)=>({
-    value:fields[cat.fieldName],
+    value:fields[cat.name],
     onChange:(e)=>selectChange(cat,e)
   })
 

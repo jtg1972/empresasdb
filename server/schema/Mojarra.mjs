@@ -3,9 +3,9 @@
 
           export default gql`
             type Mojarra{
-                id:Int!
-              name:String
-price:Int
+              
+              id:Int
+name:String
 aletas:String
 color:String
 mojf1:Int
@@ -18,15 +18,21 @@ mojf1:Int
             }
             type Mutation{
               createMojarra(
-                name:String,
-price:Int,
+                id:Int,
+name:String,
 aletas:String,
 color:String,
 mojf1:Int,
 
                 ):Mojarra
               getDataMojarra:[Mojarra]
-              
+              deleteMojarra(id:Int):Boolean!
+              editMojarra(id:Int,
+name:String,
+aletas:String,
+color:String,
+mojf1:Int,
+):Mojarra
               
             }`
           

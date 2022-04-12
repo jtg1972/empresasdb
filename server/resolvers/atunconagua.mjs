@@ -15,6 +15,29 @@
                 getDataatunconagua:async(parent,args,{db})=>{
                   const products=await db.atunconagua.findAll()
                   return products     
+                },
+                deleteatunconagua:async(parent,args,{db})=>{
+                  try{
+                    const product=await db.atunconagua.findByPk(args.id)
+                    product.destroy()
+                    return true
+                  }catch(e){
+                    console.log("error",e)
+                    return false
+                  }
+                },
+                editatunconagua:async(parent,args,{db})=>{
+              await db.atunconagua.update({
+                      id:args["id"],name:args["name"],calorias:args["calorias"],agen1:args["agen1"]
+                    },
+                    {
+                    where:{id:args.id}
+                    }
+                  )
+                
+                  const nuevo=await db.atunconagua.findByPk(args.id)
+                  return nuevo
+
                 }
               }
             }

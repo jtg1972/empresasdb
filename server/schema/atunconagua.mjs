@@ -3,8 +3,9 @@
 
           export default gql`
             type atunconagua{
-                id:Int!
-              name:String
+              
+              id:Int
+name:String
 calorias:Int
 agen1:String
 
@@ -16,13 +17,19 @@ agen1:String
             }
             type Mutation{
               createatunconagua(
-                name:String,
+                id:Int,
+name:String,
 calorias:Int,
 agen1:String,
 
                 ):atunconagua
               getDataatunconagua:[atunconagua]
-              
+              deleteatunconagua(id:Int):Boolean!
+              editatunconagua(id:Int,
+name:String,
+calorias:Int,
+agen1:String,
+):atunconagua
               
             }`
           

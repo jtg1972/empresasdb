@@ -2,9 +2,11 @@ import { useMutation, useQuery } from '@apollo/client'
 import gql from 'graphql-tag'
 import React,{useEffect} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { setCategoryProducts } from '../../redux/category/actions'
+import { deleteProduct, setCategoryProducts } from '../../redux/category/actions'
 import { BsPencilFill } from 'react-icons/bs';
 import { IoIosRemoveCircleOutline } from 'react-icons/io';
+import { getDataFromTree } from '@apollo/client/react/ssr'
+import FormButton from '../Forms/FormButton'
 const getQueryFromCategory=(productCategories)=>{
   let query=`mutation GetData {`
   console.log("productcats",productCategories)
@@ -22,7 +24,15 @@ const getQueryFromCategory=(productCategories)=>{
   console.log("query",query)
   return gql`${query}`
 }
+const getMutationForDelete=(categoryName)=>{
+  const mutation=`mutation DeleteProduct($id: Int) {
+    delete${categoryName}(id: $id)
 
+  }`
+  console.log("mutation",mutation)
+  return gql`${mutation}`
+
+}
 
 
 const mapToState=({categories})=>({
@@ -33,7 +43,11 @@ const mapToState=({categories})=>({
   
 })
 
-const DisplayWholeProductsTable = () => {
+const DisplayWholeProductsTable = ({
+  toggleEditProduct,
+  toggleNewProduct,
+  toggleFilter
+}) => {
   const dispatch=useDispatch()
   const {
     currentCategory,
@@ -41,7 +55,7 @@ const DisplayWholeProductsTable = () => {
     categories,
     categoryProducts
   }=useSelector(mapToState)
-
+  let deleteId=-1
 
   const productCategories=categories.filter(c=>{
     if(c.parentCategories.includes(currentCategory.id)
@@ -55,6 +69,22 @@ const DisplayWholeProductsTable = () => {
     update:(cache,{data})=>{
       console.log("data:",data)
       dispatch(setCategoryProducts(data))
+      
+    }
+  })
+  const DELETE_PRODUCT=getMutationForDelete(currentCategory.name)
+  const [deleteProduct2]=useMutation(DELETE_PRODUCT,{
+    update:(cache,{data})=>{
+      const name=`getData${currentCategory.name}`
+      const deleteName=`delete${currentCategory.name}`
+      const res=data[deleteName]
+      console.log("res",res)
+      if(res==true){
+      
+        dispatch(deleteProduct({categoryName:currentCategory.name,
+        productId:deleteId}))
+        
+      }
     }
   })
     
@@ -68,11 +98,21 @@ const DisplayWholeProductsTable = () => {
   const displayTable=(titulo,products)=>{
     let resultado=[]
     resultado.push(<p>{titulo}</p>)
+    resultado.push(<FormButton
+    onClick={()=>toggleFilter()}>
+      Add Filter
+    </FormButton>)
+    if(currentCategory.typeOfCategory==0){
+      resultado.push(<FormButton
+      onClick={()=>{toggleNewProduct()}}>
+        Add Product to {currentCategory.name}
+      </FormButton>)
+    }
     if(products.length>0){
       let headers=Object.keys(products[0]).map(p=><th>{p}</th>)
       if(currentCategory.typeOfCategory==0){
-        headers.push(<th>Edit Product</th>)
         headers.push(<th>Delete Product</th>)
+        headers.push(<th>Edit Product</th>)
       }
       let header=[]
       header.push(<thead><tr>{headers}</tr></thead>)
@@ -85,10 +125,23 @@ const DisplayWholeProductsTable = () => {
         }
         if(currentCategory.typeOfCategory==0){
           data.push(<td><IoIosRemoveCircleOutline
-        
+            onClick={()=>{
+              deleteId=producto["id"]
+              
+              deleteProduct2({
+                variables:{
+                  id:producto["id"]
+                }
+              })
+            }}
           />
           </td>
         )
+        data.push(<td><BsPencilFill
+          onClick={()=>{
+            toggleEditProduct(producto)
+          }}
+        /></td>)
         }
         
         acc.push(<tr>{data}</tr>)
@@ -99,6 +152,11 @@ const DisplayWholeProductsTable = () => {
     }else
       return <div>
           <p>{titulo}</p>
+          {currentCategory.typeOfCategory==0 && <FormButton
+          onClick={()=>{toggleNewProduct()}}>
+            Add Product to {currentCategory.name}
+          </FormButton>
+          }        
           <p>Theres no products of this category</p>
         </div>
   }
