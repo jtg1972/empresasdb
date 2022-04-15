@@ -90,3 +90,23 @@ export const addProduct=payload=>({
   type:types.ADD_PRODUCT,
   payload
 })
+
+export const addFilterCriteria=payload=>({
+  type:types.ADD_FILTER_CRITERIA,
+  payload
+})
+
+export  const removeFilterCriteria=payload=>({
+  type:types.REMOVE_FILTER_CRITERIA,
+  payload
+})
+
+export const fetchFilterResults=payload=>({
+  type:types.FETCH_FILTER_RESULTS,
+  payload
+})
+
+export const deleteAllFilters=()=>({
+  type:types.DELETE_ALL_FILTERS
+})
+

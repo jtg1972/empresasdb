@@ -1,4 +1,4 @@
-import { searchCategories } from "./actions"
+import { fetchFilterResults } from "./helpers"
 import types from "./types"
 
 const INITIAL_STATE={
@@ -10,7 +10,8 @@ const INITIAL_STATE={
   loadingTable:false,
   categoryProducts:[],
   tablesStateRecords:[],
-  tablesStateStatus:false
+  tablesStateStatus:false,
+  filterCriterias:[]
 }
 
 export default (state=INITIAL_STATE,action)=>{
@@ -283,6 +284,29 @@ export default (state=INITIAL_STATE,action)=>{
         categoryProducts:{...state.categoryProducts,
           [seg]:[...state.categoryProducts[seg],action.payload.product]
         }
+      }
+
+    case types.ADD_FILTER_CRITERIA:
+      return {
+        ...state,
+        filterCriterias:[
+          ...state.filterCriterias,
+          action.payload
+        ]
+      }
+    case types.REMOVE_FILTER_CRITERIA:
+      return {
+        ...state,
+        filterCriterias:[
+          ...state.filterCriterias.filter(fc=>
+            fc.name!==action.payload
+          )
+        ]
+      }
+    case types.FETCH_FILTER_RESULTS:
+      return {
+        ...state,
+        filterResults:fetchFilterResults(action.payload.data,action.payload.conds)
       }
     default:
       return state

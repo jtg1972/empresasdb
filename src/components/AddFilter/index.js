@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchFilterResults } from '../../redux/category/actions'
 import Dialog from '../Dialog'
-
+import DisplayAllFieldsCriteria from './DisplayAllFieldsCriteria'
+import FilterHeader from './FilterHeader'
+import FormButton from '../Forms/FormButton'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categoryProducts:categories.categoryProducts
@@ -9,9 +12,13 @@ const mapToState=({categories})=>({
 
 const AddFilter = ({
   open,
-  toggleDialog
+  toggleDialog,
+  toggleFilter,
+  setSearchProductsFilter,
+  toggleSearchProductsFilter
 }) => {
-  const [fields,setFields]=useState({})
+  const dispatch=useDispatch()
+  const [values,setValues]=useState({})
   const [operator,setOperator]=useState("equal")
   const [order,setOrder]=useState("")
   const [isGreater,setIsGreater]=useState(false)
@@ -41,11 +48,35 @@ const AddFilter = ({
     closeDialog:toggleDialog,
     headline:"Add Filter"
   }
+  const displayAllFieldsCriteriaConfig={
+    setValues,
+    values,
+    setOrder,
+    operator,
+    setOperator
+  }
+
+  const buttonConfig={
+    onClick:()=>{
+      setSearchProductsFilter(true)
+      toggleFilter(h)
+      dispatch(fetchFilterResults({data:recordsToFilter,conds:values}))
+    }
+  }
   return (
     <Dialog
     {...dialogConfig}
     >
-      
+      <FilterHeader 
+      fields={currentCategory.fields}
+      />
+      <DisplayAllFieldsCriteria
+      {...displayAllFieldsCriteriaConfig}/>
+
+      <FormButton
+      {...buttonConfig}>
+        Filter Now
+      </FormButton>
     </Dialog>
     
   )

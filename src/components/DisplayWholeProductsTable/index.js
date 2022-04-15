@@ -46,7 +46,8 @@ const mapToState=({categories})=>({
 const DisplayWholeProductsTable = ({
   toggleEditProduct,
   toggleNewProduct,
-  toggleFilter
+  toggleFilter,
+  searchProductsFilter
 }) => {
   const dispatch=useDispatch()
   const {
@@ -97,17 +98,14 @@ const DisplayWholeProductsTable = ({
 
   const displayTable=(titulo,products)=>{
     let resultado=[]
-    resultado.push(<p>{titulo}</p>)
-    resultado.push(<FormButton
-    onClick={()=>toggleFilter()}>
-      Add Filter
-    </FormButton>)
-    if(currentCategory.typeOfCategory==0){
+    resultado.push(<p style={{marginTop:"10px",marginBottom:"10px"}}>{titulo}</p>)
+    /*if(currentCategory.typeOfCategory==0){
       resultado.push(<FormButton
       onClick={()=>{toggleNewProduct()}}>
         Add Product to {currentCategory.name}
       </FormButton>)
-    }
+    }*/
+
     if(products.length>0){
       let headers=Object.keys(products[0]).map(p=><th>{p}</th>)
       if(currentCategory.typeOfCategory==0){
@@ -151,18 +149,61 @@ const DisplayWholeProductsTable = ({
       return resultado
     }else
       return <div>
-          <p>{titulo}</p>
-          {currentCategory.typeOfCategory==0 && <FormButton
-          onClick={()=>{toggleNewProduct()}}>
-            Add Product to {currentCategory.name}
-          </FormButton>
-          }        
-          <p>Theres no products of this category</p>
+          <p style={{marginTop:"10px",marginBottom:"10px"}}>{titulo}</p>
+          <p>Theres no products of this category</p >
         </div>
+      
+      /*<div>
+          <p>{titulo}</p>
+          {currentCategory.typeOfCategory==0 && 
+          <div>
+            <FormButton
+            onClick={()=>{toggleNewProduct()}}>
+              Add Product to {currentCategory.name}
+            </FormButton>
+            
+            
+          </div>
+            
+          }    
+          <p>Theres no products of this category</p>
+
+        </div>*/
   }
 
   const getCategoriesProducts=()=>{
     const allTables=[]
+    
+    allTables.push(<FormButton
+      style={{
+        textAlign:"left",
+        backgroundColor:"orange",
+        color:"black",
+        width:"auto",
+        marginTop:"10px",
+        marginBottom:"10px"
+      }}
+      onClick={()=>{
+        toggleFilter()
+      }}>
+        Add Filter
+    </FormButton>)
+    if(currentCategory.typeOfCategory==0){
+    allTables.push(<FormButton
+      onClick={()=>{toggleNewProduct()}}
+      style={{
+        textAlign:"left",
+        backgroundColor:"orange",
+        color:"black",
+        width:"auto",
+        marginLeft:"10px",
+        marginTop:"10px",
+        marginBottom:"10px"
+      }}>
+        Add Product to {currentCategory.name}
+      </FormButton>)
+    }
+    
     Object.keys(categoryProducts).forEach(cp=>
       allTables.push(displayTable(cp,categoryProducts[cp]))
     )

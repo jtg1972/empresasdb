@@ -1,20 +1,31 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { addFilterCriteria } from '../../../redux/category/actions'
+import AlertMessage from '../AlertMessage'
+import FormButton from '../../Forms/FormButton'
+import './styles.scss'
+
+const mapToState=({categories})=>({
+  filterCriterias:categories.filterCriterias
+})
 
 const FilterHeader = ({fields}) => {
   const dispatch=useDispatch()
+  const {filterCriterias}=useSelector(mapToState)
+
   const [moreFields,setMoreFields]=useState(false)
   const [addField,setAddField]=useState(false)
 
   useEffect(()=>{
     getMoreFields()
 
-  },[fields,fieldCriterias])
+  },[fields,filterCriterias])
 
   const getMoreFields=()=>{
-    Object.keys(fields).length
+    console.log("fields",fields)
+    fields.length
     ==
-    fieldCriterias.length
+    filterCriterias.length
     ?
     setMoreFields(false)
     :
@@ -23,7 +34,7 @@ const FilterHeader = ({fields}) => {
 
   const fieldsCriteriaToDisplay=()=>{
     return fields.map((f,i)=>{
-      const found=fieldCriterias.filter(fc=>{
+      const found=filterCriterias.filter(fc=>{
         return fc.name==f.name
       })
       if(found.length==1){
@@ -38,9 +49,15 @@ const FilterHeader = ({fields}) => {
 
   }
 
+  const findField=(name)=>{
+    const rec=fields.filter(e=>e.name==name)[0]
+    console.log("rec",rec)
+    return rec
+  }
+
   const selectChange=(e)=>{
     setAddField(false)
-    dispatch(addFieldCriteria(fields[e.target.value]))
+    dispatch(addFilterCriteria(findField(e.target.value)))
   }
 
   const alertMessageConfig={
@@ -48,18 +65,43 @@ const FilterHeader = ({fields}) => {
   }
 
   const buttonConfig={
-    className="buttonAddField",
-    onClick=()=>setAddField(true)
+    className:"buttonAddField",
+    onClick:()=>setAddField(true)
   }
 
   const selectConfig={
     onChange:e=>selectChange(e),
-    className="selectStyle"
+    className:"selectStyle"
   }
   return (
-    <div>
+    !moreFields
+    ?
+    <AlertMessage
+    {...alertMessageConfig}
+    />
+    :
+    !addField
+    ?
+    (
+      <FormButton
+      {...buttonConfig}>
+        Add Field
+      </FormButton>
+    )
+    :
+    (
+      <select
+      {...selectConfig}
+      >
+        <option value="">
+          Select a field
+        </option>
+        {fieldsCriteriaToDisplay()}
+
       
-    </div>
+
+      </select>
+    )
   )
 }
 

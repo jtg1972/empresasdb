@@ -14,6 +14,7 @@ import DisplayTableStatus from '../components/DisplayTableStatus'
 import EditProduct from '../components/EditProduct'
 import NewProduct from '../components/NewProduct'
 import AddFilter from '../components/AddFilter'
+import DisplayFilterProductsTable from '../components/DisplayFilterProductsTable'
 const SELECT_CATEGORY=gql`
   query selectCategory($id:Int!){
     selectCategory(id:$id){
@@ -76,9 +77,14 @@ const DetailedProduct = () => {
     currentCategoryId,
     tablesStateStatus
   }=useSelector(mapToState)  
+  const [titles,setTitles]=useState([])
   const [editFields,setEditFields]=useState({})  
   const [fieldId,setFieldId]=useState(0)
   const [fieldName,setFieldName]=useState("")
+  const [searchProductsFilter,setSearchProductsFilter]=useState(false)
+  const toggleSearchProductsFilter=(titles1)=>{
+    setSearchProductsFilter(!searchProductsFilter)
+  }
   const [openDialog,setOpenDialog]=useState(false)
   const toggleDialog=()=>setOpenDialog(!openDialog)
   const [openDialogField,setOpenDialogField]=useState(false)
@@ -100,7 +106,12 @@ const DetailedProduct = () => {
   const [openNewProduct,setOpenNewProduct]=useState("")
   const toggleNewProduct=()=>setOpenNewProduct(!openNewProduct)
   const [openFilter,setOpenFilter]=useState(false)
-  const toggleFilter=()=>setOpenFilter(!openFilter)
+  const toggleFilter=(titles1)=>{
+    if(openFilter==true){
+      setTitles(titles1)
+    }
+    setOpenFilter(!openFilter)
+  }
   const {loading,data,error}=useQuery(
     CATEGORIES1
   )
@@ -204,6 +215,9 @@ const DetailedProduct = () => {
       <AddFilter
       open={openFilter}
       toggleDialog={toggleFilter}
+      searchProductsFilter={searchProductsFilter}
+      setSearchProductsFilter={setSearchProductsFilter}
+      toggleFilter={toggleFilter}
       />}
       <DisplayWholeCategoryFieldsTable
       toggleDialogField={toggleDialogField}
@@ -215,11 +229,21 @@ const DetailedProduct = () => {
 
       {currentCategoryId!==0 &&
       tablesStateStatus=="OK" &&
+      searchProductsFilter==false &&
       <DisplayWholeProductsTable
       toggleEditProduct={toggleEditProduct}
       toggleNewProduct={toggleNewProduct}
       toggleFilter={toggleFilter}
+      searchProductsFilter={searchProductsFilter}
       />}
+
+      {currentCategoryId!=0 &&
+      tablesStateStatus=="OK" &&
+      searchProductsFilter &&
+      <DisplayFilterProductsTable
+      setSearchProductsFilter={setSearchProductsFilter}
+      titles={titles}/>
+      }
     </div>
   ))
 }
