@@ -197,6 +197,7 @@ const DetailedProduct = () => {
       open={openEditProduct}
       toggleDialog={toggleEditProduct}
       editFields={editFields}
+      setEditFields={setEditFields}
       />}
 
       <AddMultipleValue

@@ -1,13 +1,16 @@
 import React from 'react'
 import ReactDatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
+import { mockComponent } from 'react-dom/test-utils';
 import FormInput from '../Forms/FormInput';
+import moment from 'moment'
+
 const DisplayFields = ({
   structure,
   fields,
   setFields
 }) => {
-  
+  console.log("fieldsdf",fields)
   const inputChange=(cat,e)=>{
     const fieldName=cat.name
     setFields({
@@ -26,9 +29,17 @@ const DisplayFields = ({
 
   const dateChange=(cat,e)=>{
     const fieldName=cat.name
+    console.log("date",e)
+    let dateObj = new Date(e);
+    /*let month = dateObj.getUTCMonth() + 1
+    let day = dateObj.getUTCDate()
+    let year = dateObj.getUTCFullYear()
+    let  nD = month + "/" + day + "/" + year*/
+    const nD=moment(dateObj).format()
+    console.log("nD",nD)
     setFields({
       ...fields,
-      [fieldName]:e
+      [fieldName]:nD
     })
   }
 
@@ -45,6 +56,25 @@ const DisplayFields = ({
     onChange:(e)=>selectChange(cat,e)
   })
 
+  const trDate=(val)=>{
+    let dateObj = new Date(val);
+    let month = dateObj.getUTCMonth() + 1
+    let day = dateObj.getUTCDate()
+    let year = dateObj.getUTCFullYear()
+    let  nD = year + "/" + month + "/" + day
+    setFields({...fields,date1:nD})
+    
+  }
+
+  const convertToDate=d=>{
+    console.log("DATEEEE",d)
+    const newDate=new Date(d)
+    console.log("DATEEE",newDate)
+    const nD=moment(newDate).format()
+    console.log("NDCOTODATE",nD,typeof nD)
+    return new Date(nD)
+  }
+
 
   return (
     <div>
@@ -55,15 +85,31 @@ const DisplayFields = ({
           return <FormInput
           {...formInputConfig(cat,index)}
           ></FormInput>
-        }else if(cat.declaredType=="date"){
+        }
+        else if(cat.declaredType=="date"){
+          console.log("cat, fields, fcn",cat,fields,fields[cat.name])
           return (
             <div>
-              <p>{cat.displayName}:</p>
+              <p>{cat.name}:</p>
+              <p>fcn {fields[cat.name]} {typeof fields[cat.name]} {new Date().toDateString()}</p>
               <ReactDatePicker
-              placeholder={cat.fieldName}
-              selected={fields[cat.fieldName]}
-              onChange={e=>dateChange(cat,e)}
-              />
+              placeholder={cat.name}
+              selected={//trDate(fields[cat.name])
+                //new Date(`"${trDate(fields[cat.name])}"`)
+                //trDate(new Date(`"${fields[cat.name]}"`))
+                //new Date(fields[cat.name])
+                //new Date("2021/09/21")
+                fields[cat.name]!==undefined
+                ?
+                new Date(fields[cat.name])
+                :
+                new Date()
+              }
+              onChange={e=>{
+                dateChange(cat,e)
+              
+              }}
+            />
 
             </div>
           )
@@ -73,7 +119,7 @@ const DisplayFields = ({
           <div>
             <select 
             {...selectConfig(cat,index)}>
-              <option value="">Select {cat.fieldName}</option>
+              <option value="">Select {cat.name}</option>
               {cat.values.map(v=>
                 <option value={v.value}>
                   {v.value}

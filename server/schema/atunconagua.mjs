@@ -8,6 +8,9 @@
 name:String
 calorias:Int
 agen1:String
+date1:String
+fats:Int
+f1:String
 
             }
 
@@ -21,6 +24,9 @@ agen1:String
 name:String,
 calorias:Int,
 agen1:String,
+date1:String,
+fats:Int,
+f1:String,
 
                 ):atunconagua
               getDataatunconagua:[atunconagua]
@@ -29,6 +35,9 @@ agen1:String,
 name:String,
 calorias:Int,
 agen1:String,
+date1:String,
+fats:Int,
+f1:String,
 ):atunconagua
               
             }`

@@ -216,6 +216,8 @@ export default{
               return `\t\t\ ${f.name}:DataTypes.STRING`
             }else if(f.declaredType=="number"){
               return `\t\t\ ${f.name}:DataTypes.INTEGER`
+            }else if(f.declaredType=="date"){
+              return `\t\t ${f.name}:DataTypes.DATEONLY`
             }
           })  
           const ffs=fields1.join(',\n')
@@ -233,6 +235,9 @@ export default{
             }else if(fields[f]["declaredType"]=="number"){
               x1+=`${fields[f]["name"]}:Int\n`
               x2+=`${fields[f]["name"]}:Int,\n`
+            }else if(fields[f]["declaredType"]=="date"){
+              x1+=`${fields[f]["name"]}:String\n`
+              x2+=`${fields[f]["name"]}:String,\n`
             }
           }
           let c=r.join("\n")
@@ -276,8 +281,18 @@ export default{
                   return product
                 },
                 getData${name}:async(parent,args,{db})=>{
-                  const products=await db.${name}.findAll()
-                  return products     
+                  const products=await db.${name}.findAll({raw:true})
+                  const fp=products.map(p=>{
+                    for(let f in p){
+                      if(typeof p[f]==='object'){
+                        console.log("pf",p[f])
+                        p[f]=JSON.stringify(p[f])
+                        console.log("pfdesp",p[f])
+                      }
+                    }
+                    return p
+                  })
+                  return fp
                 },
                 delete${name}:async(parent,args,{db})=>{
                   try{
@@ -293,6 +308,8 @@ export default{
               `
 
               let change=Object.keys(fields).map(k=>{
+                  if(fields[k].declaredType=="date")
+                    return `${fields[k].name}:new Date(args["${fields[k].name}"])`
                   return `${fields[k].name}:args["${fields[k].name}"]`
                 })
               change.unshift(`id:args["id"]`)

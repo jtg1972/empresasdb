@@ -15,6 +15,9 @@ const mutationEditProduct=(category)=>{
       return `$${f.name}:Int`
     }else if(f.declaredType=="string"){
       return `$${f.name}:String`
+    }else if(f.declaredType=="date"){
+      return `$${f.name}:String`
+    
     }
   })
   args.unshift("$id:Int")
@@ -48,30 +51,33 @@ const mapToState=({categories})=>({
 const EditProduct = ({
   open,
   toggleDialog,
-  editFields
+  editFields,
+  setEditFields
 }) => {
+  console.log("editFieldseditprod",editFields)
   const dispatch=useDispatch()
   const {currentCategory}=useSelector(mapToState)
-  const [fields,setFields]=useState({})
   console.log("curcattt",currentCategory)
+  /*useEffect(()=>{
+    console.log("editFeilds",editFields)
+    fields=editFields
+  },[])
+  console.log("fieldsnuevo",fields)*/
+
   const MUTATION_EDIT_PRODUCT=mutationEditProduct(currentCategory)
   const[editProduct1]=useMutation(MUTATION_EDIT_PRODUCT,{
     update:(cache,{data})=>{
       dispatch(editProduct({
-        product:fields,
+        product:editFields,
         categoryName:currentCategory.name
       }))
     }
   })
-  useEffect(()=>{
-    console.log("editFeilds",editFields)
-    setFields(editFields)
-  },[editFields])
-
+ 
   const formButtonClick=()=>{
-    console.log("fields",fields)
+    console.log("fields",editFields)
     editProduct1({
-      variables:fields
+      variables:editFields
     })
   }
 
@@ -82,8 +88,9 @@ const EditProduct = ({
   }
 
   const displayFieldsConfig={
-    fields,
-    setFields,
+    
+    fields:editFields,
+    setFields:setEditFields,
     structure:currentCategory.fields
 
   }

@@ -7,6 +7,7 @@
               id:Int
 name:String
 agen1:String
+date1:String
 
             }
 
@@ -19,6 +20,7 @@ agen1:String
                 id:Int,
 name:String,
 agen1:String,
+date1:String,
 
                 ):atunconaceite
               getDataatunconaceite:[atunconaceite]
@@ -26,6 +28,7 @@ agen1:String,
               editatunconaceite(id:Int,
 name:String,
 agen1:String,
+date1:String,
 ):atunconaceite
               
             }`

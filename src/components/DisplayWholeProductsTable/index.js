@@ -92,6 +92,17 @@ const DisplayWholeProductsTable = ({
   useEffect(()=>{
     getProducts()
   },[currentCategory])
+
+  const trDate=(val)=>{
+    console.log("val",val)
+    let dateObj = new Date(val)
+    let month = dateObj.getUTCMonth() + 1
+    let day = dateObj.getUTCDate()
+    let year = dateObj.getUTCFullYear()
+    let  nD = year + "/" + month + "/" + day
+    console.log("nd",nD)
+    return nD
+  }
   
   console.log("params",currentCategoryId,currentCategory.typeOfCategory,
   (currentCategory.typeOfCategory!==undefined)?currentCategory.typeOfCategory:1)
@@ -116,10 +127,29 @@ const DisplayWholeProductsTable = ({
       header.push(<thead><tr>{headers}</tr></thead>)
       let acc=[]
       for(let p in products){
-        let producto=products[p]
+        let producto={...products[p]}
         let data=[]
         for(let c in producto){
-          data.push(<td>{producto[c]}</td>)
+          let fs=currentCategory.fields.filter(x=>{
+            
+            return x.name==c
+          })
+          console.log("ccfields",fs)
+          if(fs.length==1){
+            
+            if(fs[0].declaredType=="date"){
+            
+              let nf=trDate(producto[c])
+              console.log("nf",nf)
+              producto[c]=nf
+              data.push(<td>{nf}</td>)
+
+            }else{
+              data.push(<td>{producto[c]}</td>)
+            }
+          }else{
+            data.push(<td>{producto[c]}</td>)
+          }
         }
         if(currentCategory.typeOfCategory==0){
           data.push(<td><IoIosRemoveCircleOutline
@@ -137,6 +167,7 @@ const DisplayWholeProductsTable = ({
         )
         data.push(<td><BsPencilFill
           onClick={()=>{
+            console.log("prodwholetable",producto)
             toggleEditProduct(producto)
           }}
         /></td>)
