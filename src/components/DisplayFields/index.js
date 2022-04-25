@@ -4,6 +4,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import { mockComponent } from 'react-dom/test-utils';
 import FormInput from '../Forms/FormInput';
 import moment from 'moment'
+/*import { registerLocale, setDefaultLocale } from  "react-datepicker";
+import en from 'date-fns/locale/en-GB'
+registerLocale('en',en)
+setDefaultLocale('en')*/
 
 const DisplayFields = ({
   structure,
@@ -99,7 +103,7 @@ const DisplayFields = ({
                 //trDate(new Date(`"${fields[cat.name]}"`))
                 //new Date(fields[cat.name])
                 //new Date("2021/09/21")
-                fields[cat.name]!==undefined
+                (fields[cat.name]!==undefined && fields[cat.name]!=="")
                 ?
                 new Date(fields[cat.name])
                 :

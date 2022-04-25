@@ -13,10 +13,11 @@
                   return product
                 },
                 getDataatunconaceite:async(parent,args,{db})=>{
-                  const products=await db.atunconaceite.findAll()
-                  return products     
+                  const products=await db.atunconaceite.findAll({raw:true})
+                  
+                  return products
                 },
-                deleteatunconaceite:async(parent,args,{db})=>{
+                removeatunconaceite:async(parent,args,{db})=>{
                   try{
                     const product=await db.atunconaceite.findByPk(args.id)
                     product.destroy()
@@ -28,7 +29,7 @@
                 },
                 editatunconaceite:async(parent,args,{db})=>{
               await db.atunconaceite.update({
-                      id:args["id"],name:args["name"],agen1:args["agen1"],date1:args["date1"]
+                      id:args["id"],name:args["name"],agen1:args["agen1"]
                     },
                     {
                     where:{id:args.id}

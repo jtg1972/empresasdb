@@ -8,7 +8,6 @@
 name:String
 calorias:Int
 agen1:String
-date1:String
 fats:Int
 f1:String
 
@@ -24,18 +23,16 @@ f1:String
 name:String,
 calorias:Int,
 agen1:String,
-date1:String,
 fats:Int,
 f1:String,
 
                 ):atunconagua
               getDataatunconagua:[atunconagua]
-              deleteatunconagua(id:Int):Boolean!
+              removeatunconagua(id:Int):Boolean!
               editatunconagua(id:Int,
 name:String,
 calorias:Int,
 agen1:String,
-date1:String,
 fats:Int,
 f1:String,
 ):atunconagua

@@ -41,15 +41,19 @@ const DisplayTableStatus = () => {
       const res=data.createTableGood
 
       if(res==true){
-        const cats=cache.readQuery({query:GET_STATES})
-        const newCats=cats.tableStates.map(c=>
-          ({...c,state:"OK"})
-        )
-        cache.writeQuery({
-          query:GET_STATES,
-          data:{tableStates:newCats}
-        })
-        dispatch(setTablesState(newCats))
+        setTimeout(()=>{
+          const cats=cache.readQuery({query:GET_STATES})
+          const newCats=cats.tableStates.map(c=>
+            ({...c,state:"OK"})
+          )
+          cache.writeQuery({
+            query:GET_STATES,
+            data:{tableStates:newCats}
+          })
+        
+          dispatch(setTablesState(newCats))
+        },20000)
+        
       }
     }
   })

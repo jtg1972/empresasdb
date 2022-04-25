@@ -19,6 +19,7 @@ export default{
           
         )
       const res=await db.TablesState.findOne({where:{category:args.category},raw:true})
+      console.log("res server",res)
       return res
     }
 

@@ -19,7 +19,7 @@ const AddFilter = ({
 }) => {
   const dispatch=useDispatch()
   const [values,setValues]=useState({})
-  const [operator,setOperator]=useState("equal")
+  const [operator,setOperator]=useState("igual")
   const [order,setOrder]=useState("")
   const [isGreater,setIsGreater]=useState(false)
 

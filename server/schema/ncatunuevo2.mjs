@@ -4,12 +4,11 @@
           export default gql`
             type ncatunuevo2{
               
-            id:Int
+              id:Int
 name:String
 ncatunnuevo2:String
 ncnvo3:String
 agen1:String
-date1:String
 
             }
 
@@ -24,17 +23,15 @@ name:String,
 ncatunnuevo2:String,
 ncnvo3:String,
 agen1:String,
-date1:String,
 
                 ):ncatunuevo2
               getDatancatunuevo2:[ncatunuevo2]
-              deletencatunuevo2(id:Int):Boolean!
+              removencatunuevo2(id:Int):Boolean!
               editncatunuevo2(id:Int,
 name:String,
 ncatunnuevo2:String,
 ncnvo3:String,
 agen1:String,
-date1:String,
 ):ncatunuevo2
               
             }`

@@ -8,7 +8,6 @@ import Sequelize from 'sequelize'
 		 name:DataTypes.STRING,
 		 calorias:DataTypes.INTEGER,
 		 agen1:DataTypes.STRING,
-		 date1:DataTypes.DATEONLY,
 		 fats:DataTypes.INTEGER,
 		 f1:DataTypes.STRING},{sequelize})
 }}

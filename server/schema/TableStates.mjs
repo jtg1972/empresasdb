@@ -13,7 +13,7 @@ export default gql`
   
   }
   type Mutation{
-    createTableState(category:Int!,name:String!,state:String!):TableState!
-    editTableState(category:Int!,state:String!):TableState!
+    createTableState(category:Int!,name:String!,state:String!):TableState
+    editTableState(category:Int!,state:String!):TableState
   }
 `

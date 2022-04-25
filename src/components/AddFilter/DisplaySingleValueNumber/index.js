@@ -13,10 +13,21 @@ const DisplaySingleValueNumber = ({
 }) => {
   const dispatch=useDispatch()
   
+  const changeRange=(e,campo,place)=>{
+    const fieldName=`${campo}${place}`
+    setValues({...values,
+      [campo]:{
+        ...values[campo],
+        type:"group",
+        [fieldName]:e.target.value
+      }
+    })
+  }
+
   return (
+    <>
     <div 
     style={{
-      marginBottom:"5px",
       display:"flex",
       alignItems:"center"
     }}>
@@ -48,8 +59,9 @@ const DisplaySingleValueNumber = ({
         <option value="igual">igual</option>
         <option value="menor">menor que</option>
         <option value="mayor">mayor que</option>
-
+        <option value="rango">rango</option>
       </select>
+      {operator!=="rango" &&
       <FormInput
         value={values[campo.name]?.val!==undefined
           ?
@@ -62,6 +74,7 @@ const DisplaySingleValueNumber = ({
             ...v,
             [campo.name]:{
               ...v[campo.name],
+              type:"single",
               val:e.target.value
             }
           }))
@@ -73,11 +86,13 @@ const DisplaySingleValueNumber = ({
           borderBottom:"1px solid grey",
           flex:1
         }}
-      />
+      />}
+      
       <FormButton
       style={{
         width:"auto",
         marginLeft:"3px",
+        marginBottom:"2px",
         marginTop:"0"
       }}
       onClick={()=>{
@@ -123,6 +138,19 @@ const DisplaySingleValueNumber = ({
         D
       </FormButton>
     </div>
+    {operator=="rango" &&
+    <div style={{display:"flex",marginTop:"0px"}}>
+      <FormInput style={{flex:1}}
+      placeholder="From"
+      onChange={(e)=>changeRange(e,campo.name,1)}
+      />
+      <FormInput 
+      style={{flex:1,marginLeft:"10px"}}
+      placeholder="To"
+      onChange={(e)=>changeRange(e,campo.name,2)}
+      />
+    </div>}
+  </>
   )
 }
 

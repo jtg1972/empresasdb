@@ -7,6 +7,7 @@ import { BsPencilFill } from 'react-icons/bs';
 import { IoIosRemoveCircleOutline } from 'react-icons/io';
 import { getDataFromTree } from '@apollo/client/react/ssr'
 import FormButton from '../Forms/FormButton'
+import { isSpecifiedScalarType } from 'graphql'
 const getQueryFromCategory=(productCategories)=>{
   let query=`mutation GetData {`
   console.log("productcats",productCategories)
@@ -93,19 +94,55 @@ const DisplayWholeProductsTable = ({
     getProducts()
   },[currentCategory])
 
-  const trDate=(val)=>{
+  const trDateMex=(val)=>{
     console.log("val",val)
-    let dateObj = new Date(val)
-    let month = dateObj.getUTCMonth() + 1
-    let day = dateObj.getUTCDate()
-    let year = dateObj.getUTCFullYear()
-    let  nD = year + "/" + month + "/" + day
-    console.log("nd",nD)
-    return nD
+    if(val!==null){
+      let dateObj = new Date(val)
+      let month = dateObj.getUTCMonth() + 1
+      let day = dateObj.getUTCDate()
+      let year = dateObj.getUTCFullYear()
+      let  nD = day + "/" + month + "/" + year
+      console.log("nd",nD)
+      return nD
+      }
+    return ""
+  }
+  const trDateDB=(val)=>{
+
+    console.log("val",val)
+    if(val!==null){
+      let dateObj = new Date(val)
+      let month = dateObj.getUTCMonth() + 1
+      let day = dateObj.getUTCDate()
+      let year = dateObj.getUTCFullYear()
+      let  nD = year+ "/" + month + "/" + day
+      console.log("nd",nD)
+      return nD
+    }
+    return ""
   }
   
   console.log("params",currentCategoryId,currentCategory.typeOfCategory,
   (currentCategory.typeOfCategory!==undefined)?currentCategory.typeOfCategory:1)
+
+  const isFDate=campo=>{
+    const res=currentCategory.fields.filter(
+      n=>n.name==campo
+    )
+    if(res.length!==0){
+      if(res[0].declaredType=="date")
+        return true
+      return false
+    }
+  }
+  const transformProduct=({...p})=>{
+    for(let f in p){
+      if(isFDate(f)){
+        p[f]=trDateDB(p[f])
+      }
+    }
+    return p
+  }
 
   const displayTable=(titulo,products)=>{
     let resultado=[]
@@ -138,12 +175,14 @@ const DisplayWholeProductsTable = ({
           if(fs.length==1){
             
             if(fs[0].declaredType=="date"){
-            
-              let nf=trDate(producto[c])
+              //if(producto[c]!==""){
+                
+              console.log("prodc",producto[c])  
+              let nf=trDateMex(producto[c])
               console.log("nf",nf)
-              producto[c]=nf
+              //producto[c]=nf
               data.push(<td>{nf}</td>)
-
+              //}
             }else{
               data.push(<td>{producto[c]}</td>)
             }
@@ -168,7 +207,7 @@ const DisplayWholeProductsTable = ({
         data.push(<td><BsPencilFill
           onClick={()=>{
             console.log("prodwholetable",producto)
-            toggleEditProduct(producto)
+            toggleEditProduct(transformProduct(producto))
           }}
         /></td>)
         }

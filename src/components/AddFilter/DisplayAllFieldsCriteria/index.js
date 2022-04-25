@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import DisplayMultipleValue from '../DisplayMultipleValue'
+import DisplaySingleValueDate from '../DisplaySingleValueDate'
 import DisplaySingleValueNumber from '../DisplaySingleValueNumber'
 import DisplaySingleValueString from '../DisplaySingleValueString'
 
@@ -42,7 +43,7 @@ const DisplayAllFieldsCriteria = ({
         campo={fc}
         setOrder={setOrder}
         />
-      else
+      else if(fc.declaredType=="number"){
         return <DisplaySingleValueNumber
         setValues={setValues}
         values={values}
@@ -51,6 +52,16 @@ const DisplayAllFieldsCriteria = ({
         operator={operator}
         setOperator={setOperator}
         />
+      }else if(fc.declaredType=="date"){
+        return <DisplaySingleValueDate
+        setValues={setValues}
+        values={values}
+        campo={fc}
+        setOrder={setOrder}
+        operator={operator}
+        setOperator={setOperator}
+        />
+      }
     }
   })
 }

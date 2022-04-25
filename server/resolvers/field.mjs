@@ -260,7 +260,7 @@ export default{
                 ${x2}
                 ):${name}
               getData${name}:[${name}]
-              delete${name}(id:Int):Boolean!
+              remove${name}(id:Int):Boolean!
               edit${name}(${x2}):${name}
               
             }\`
@@ -282,19 +282,10 @@ export default{
                 },
                 getData${name}:async(parent,args,{db})=>{
                   const products=await db.${name}.findAll({raw:true})
-                  const fp=products.map(p=>{
-                    for(let f in p){
-                      if(typeof p[f]==='object'){
-                        console.log("pf",p[f])
-                        p[f]=JSON.stringify(p[f])
-                        console.log("pfdesp",p[f])
-                      }
-                    }
-                    return p
-                  })
-                  return fp
+                  
+                  return products
                 },
-                delete${name}:async(parent,args,{db})=>{
+                remove${name}:async(parent,args,{db})=>{
                   try{
                     const product=await db.${name}.findByPk(args.id)
                     product.destroy()

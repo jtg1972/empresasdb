@@ -7,7 +7,6 @@
               id:Int
 name:String
 agen1:String
-date1:String
 
             }
 
@@ -20,15 +19,13 @@ date1:String
                 id:Int,
 name:String,
 agen1:String,
-date1:String,
 
                 ):atunconaceite
               getDataatunconaceite:[atunconaceite]
-              deleteatunconaceite(id:Int):Boolean!
+              removeatunconaceite(id:Int):Boolean!
               editatunconaceite(id:Int,
 name:String,
 agen1:String,
-date1:String,
 ):atunconaceite
               
             }`
