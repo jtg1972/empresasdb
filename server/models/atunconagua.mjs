@@ -9,6 +9,12 @@ import Sequelize from 'sequelize'
 		 calorias:DataTypes.INTEGER,
 		 agen1:DataTypes.STRING,
 		 fats:DataTypes.INTEGER,
-		 f1:DataTypes.STRING},{sequelize})
-}}
+		 f1:DataTypes.STRING,
+},{sequelize})
+}static associate(models){this.hasMany(models.Mojarra)
+
+                  models.Mojarra.belongsTo(models.atunconagua,
+                    {foreignKey:"atunconaguaId"})
+                    }
+                  }
 export default atunconagua

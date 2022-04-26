@@ -7,7 +7,9 @@ export default gql`
     category:Int!
     dataType:String!
     values:[String!]
-    declaredType:String!
+    declaredType:String
+    relationship:String
+    relationCategory:Int
   }
 
   type Query{
@@ -18,8 +20,11 @@ export default gql`
     createField(
       name:String!,
       category:Int!,
-      declaredType:String!,
-      dataType:String!):Field!,
+      declaredType:String,
+      dataType:String!,
+      relationship:String,
+      relationCategory:Int
+      ):Field!,
     addValueToField(id:Int!,value:String!):Field!,
     createTable(category:Int!,typeOfCategory:Int!):Boolean,
     createTableGood(categoryIds:[Int]):Boolean,

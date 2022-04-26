@@ -31,14 +31,24 @@ query Categories{
 }
 `
 const CREATE_FIELD=gql`
-mutation CreateField($name: String!, $category: Int!, $declaredType: String!, $dataType: String!) {
-  createField(name: $name, category: $category, declaredType: $declaredType, dataType: $dataType) {
+mutation CreateField(
+  $name: String!, 
+  $category: Int!, 
+  $declaredType: String, 
+  $dataType: String!,
+  $relationship:String,
+  $relationCategory:Int) {
+  createField(name: $name, category: $category, declaredType: $declaredType, dataType: $dataType,
+    relationship:$relationship,
+    relationCategory:$relationCategory) {
     id
     name
     category
     dataType
     values
     declaredType
+    relationship
+    relationCategory
     
   }
 }
@@ -55,7 +65,8 @@ mutation EditTableState($category: Int!, $state: String!) {
 `
 
 const mapToState=({categories})=>({
-  currentCategory:categories.currentCategory
+  currentCategory:categories.currentCategory,
+  categories:categories.categories
 })
 
 
@@ -64,11 +75,18 @@ const StructureField = ({
   open,
   toggleDialog
 }) => {
-  const {currentCategory}=useSelector(mapToState)
+  const {
+    currentCategory,
+    categories
+  }
+  =
+  useSelector(mapToState)
   const [name,setName]=useState("")
   const [displayName,setDisplayName]=useState("")
   const [dataType,setDataType]=useState("")
   const [declaredType,setDeclaredType]=useState("")
+  const [relationship,setRelationship]=useState("")
+  const [relationTable,setRelationTable]=useState(-1)
   const dispatch=useDispatch()
   
   const [editTableState]=useMutation(EDIT_CATEGORY_STATE)
@@ -145,16 +163,34 @@ const StructureField = ({
   console.log("opendi",open)
   
   const onAddFieldClick=()=>{
+    if(dataType!=="relationship"){
+      createField({
+        variables:{
+          name: name,
+          category: currentCategory.id,
+          declaredType: declaredType,
+          dataType:dataType
 
-    createField({
-      variables:{
-        name: name,
-        category: currentCategory.id,
-        declaredType: declaredType,
-        dataType:dataType
-
-      }
-    })
+        }
+      })
+    }else{
+      console.log("argsesc",{
+          name:name,
+          category:currentCategory.id,
+          dataType:dataType,
+          relationship,
+          relationCategory:relationTable
+      })
+      createField({
+        variables:{
+          name:name,
+          category:currentCategory.id,
+          dataType:dataType,
+          relationship,
+          relationCategory:relationTable
+        }
+      })
+    }
     
   }
   const categoryTitle=()=>{
@@ -214,14 +250,41 @@ const StructureField = ({
         <option value="">Select type of result</option>
         <option value="singleValue">Single Value</option>
         <option value="multipleValue">Multiple Value</option>
+        <option value="relationship">Relationship</option>
       </select>
 
+      {dataType=="singleValue" 
+      && 
       <select {...selectConfigDeclaredType}>
         <option value="">Select the data type</option>
         <option value="string">String</option>
         <option value="number">Numeric</option>
         <option value="date">Date</option>
       </select>
+      }
+      {dataType=="relationship" &&
+        <select onChange={e=>setRelationship(e.target.value)}>
+          <option value="onetoone">One to one</option>
+          <option value="onetomany">One to many</option>
+          <option value="manytomany">Many to many</option>
+        </select>
+      }
+      {dataType=="relationship" 
+      && 
+      relationship=="onetomany" 
+      &&
+      <select 
+      onChange={(e)=>setRelationTable(parseInt(e.target.value))}
+      value={relationTable}>
+        {categories.map(c=>{
+          if(!c.parentCategories.includes(currentCategory.id)){
+            return <option value={c.id}>
+              {c.name}
+            </option>
+          }
+        })}
+      </select>
+      }
 
       <FormButton {...buttonAddFieldConfig}>
         Add Field

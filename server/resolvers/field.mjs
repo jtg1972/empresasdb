@@ -221,7 +221,24 @@ export default{
             }
           })  
           const ffs=fields1.join(',\n')
-          content=content+ffs+`},{sequelize})\n}}`
+          content=content+ffs+`},{sequelize})\n}`
+          const relations=fields.filter(f=>f.dataType=="relationship")
+          if(relations.length>0){
+            content+=`static associate(models){`
+            for(let r in relations){
+              if(relations[r].relationship=="onetomany"){
+                const catDest=await db.Category.findByPk(relations[r].relationCategory)
+                if(catDest){
+                  content+=`this.hasMany(models.${catDest.name})\n
+                  models.${catDest.name}.belongsTo(models.${name},
+                    {foreignKey:"${name}Id"})
+                    }
+                  }`
+                }
+              }
+            }
+          }
+            
           content+=`\nexport default ${name}`
           
           let r=[]

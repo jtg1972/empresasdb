@@ -6,7 +6,9 @@ class Fields extends Sequelize.Model{
       category:DataTypes.INTEGER,
       dataType:DataTypes.STRING,
       values:DataTypes.STRING,
-      declaredType:DataTypes.STRING
+      declaredType:DataTypes.STRING,
+      relationship:DataTypes.STRING,
+      relationCategory:DataTypes.INTEGER
     },{sequelize})
   }
 }

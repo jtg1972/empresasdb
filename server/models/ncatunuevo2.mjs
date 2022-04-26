@@ -8,6 +8,12 @@ import Sequelize from 'sequelize'
 		 name:DataTypes.STRING,
 		 ncatunnuevo2:DataTypes.STRING,
 		 ncnvo3:DataTypes.STRING,
-		 agen1:DataTypes.STRING},{sequelize})
-}}
+		 agen1:DataTypes.STRING,
+},{sequelize})
+}static associate(models){this.hasMany(models.Mojarra)
+
+                  models.Mojarra.belongsTo(models.ncatunuevo2,
+                    {foreignKey:"ncatunuevo2Id"})
+                    }
+                  }
 export default ncatunuevo2

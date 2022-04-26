@@ -28,7 +28,7 @@ for(let i in fileNames){
 }
 Object.values(models)
   .filter(model=>typeof model.associate==="function")
-  .forEach(model=>model.associates(models))
+  .forEach(model=>model.associate(models))
 
 const db={
   ...models,
