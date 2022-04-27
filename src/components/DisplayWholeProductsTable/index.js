@@ -5,14 +5,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { deleteProduct, setCategoryProducts } from '../../redux/category/actions'
 import { BsPencilFill } from 'react-icons/bs';
 import { IoIosRemoveCircleOutline } from 'react-icons/io';
-import { getDataFromTree } from '@apollo/client/react/ssr'
 import FormButton from '../Forms/FormButton'
-import { isSpecifiedScalarType } from 'graphql'
 const getQueryFromCategory=(productCategories)=>{
   let query=`mutation GetData {`
   console.log("productcats",productCategories)
   let q2=productCategories.map(p=>{
-    let fields=p.fields.map(x=>x.name)
+    let fields=p.fields.map(x=>{
+      if(x.dataType!=="relationship")
+        return x.name
+    })
     fields.unshift("id")
     const q=`getData${p.name}{
       ${fields.length>0 && fields.join(`\n\t\t`)}
@@ -26,8 +27,8 @@ const getQueryFromCategory=(productCategories)=>{
   return gql`${query}`
 }
 const getMutationForDelete=(categoryName)=>{
-  const mutation=`mutation DeleteProduct($id: Int) {
-    delete${categoryName}(id: $id)
+  const mutation=`mutation Remove${categoryName}($id: Int) {
+    remove${categoryName}(id: $id)
 
   }`
   console.log("mutation",mutation)
@@ -77,8 +78,7 @@ const DisplayWholeProductsTable = ({
   const DELETE_PRODUCT=getMutationForDelete(currentCategory.name)
   const [deleteProduct2]=useMutation(DELETE_PRODUCT,{
     update:(cache,{data})=>{
-      const name=`getData${currentCategory.name}`
-      const deleteName=`delete${currentCategory.name}`
+      const deleteName=`remove${currentCategory.name}`
       const res=data[deleteName]
       console.log("res",res)
       if(res==true){

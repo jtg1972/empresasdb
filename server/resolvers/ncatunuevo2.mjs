@@ -29,7 +29,7 @@
                 },
                 editncatunuevo2:async(parent,args,{db})=>{
               await db.ncatunuevo2.update({
-                      id:args["id"],name:args["name"],ncatunnuevo2:args["ncatunnuevo2"],ncnvo3:args["ncnvo3"],agen1:args["agen1"],mojarras:args["mojarras"]
+                      id:args["id"],name:args["name"],ncatunnuevo2:args["ncatunnuevo2"],ncnvo3:args["ncnvo3"],agen1:args["agen1"],mojarras:args["mojarras"],nemo:args["nemo"]
                     },
                     {
                     where:{id:args.id}

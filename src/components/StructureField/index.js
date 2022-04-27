@@ -26,6 +26,8 @@ query Categories{
       declaredType
       values
       category
+      relationship
+      relationCategory
     }
   }
 }
@@ -271,7 +273,9 @@ const StructureField = ({
       }
       {dataType=="relationship" 
       && 
-      relationship=="onetomany" 
+      (relationship=="onetomany"
+      ||
+      relationship=="manytomany") 
       &&
       <select 
       onChange={(e)=>setRelationTable(parseInt(e.target.value))}

@@ -202,6 +202,35 @@ export default{
           let cats=cats1[category].parentCategories.split(",")
           cats=cats.map(c=>parseInt(c))
           cats.push(cats1[category].id)
+       
+          const fieldsPiv=await db.Fields.findAll({
+            where:{category:{[Op.in]:cats}},
+            raw:true
+          })
+          const mtm=fieldsPiv.filter(d=>{
+            return d.dataType=="relationship"
+            &&
+            d.relationship=="manytomany"
+          })
+          for(let t in mtm){
+            const pc=await db.Category.findByPk(mtm[t].relationCategory)
+            if(pc){
+              let t1=`
+              import Sequelize from 'sequelize'\n
+              class ${name}_${pc.name} extends Sequelize.Model{
+                \tstatic init(sequelize,DataTypes){\n
+                  \t\treturn super.init({\n})}}
+                  \nexport default ${name}_${pc.name}`
+              try{
+                  WriteToFile(`./models/${name}_${pc.name}`,t1)
+              }catch(e){
+                console.log(e)
+              }
+                      
+                  
+          
+            }
+          }
           let content=`import Sequelize from 'sequelize'\n
           class ${name} extends Sequelize.Model{\n
           \tstatic init(sequelize,DataTypes){\n
@@ -210,16 +239,17 @@ export default{
             where:{category:{[Op.in]:cats}},
             raw:true
           })
-          let fields1=fields.map(f=>{
-            if(f.declaredType=="string"){
+          let fields1=[]
+          for(let f in fields){
+            if(fields[f].declaredType=="string"){
           
-              return `\t\t\ ${f.name}:DataTypes.STRING`
-            }else if(f.declaredType=="number"){
-              return `\t\t\ ${f.name}:DataTypes.INTEGER`
-            }else if(f.declaredType=="date"){
-              return `\t\t ${f.name}:DataTypes.DATEONLY`
+              fields1.push(`\t\t\ ${fields[f].name}:DataTypes.STRING`)
+            }else if(fields[f].declaredType=="number"){
+              fields1.push(`\t\t\ ${fields[f].name}:DataTypes.INTEGER`)
+            }else if(fields[f].declaredType=="date"){
+              fields1.push(`\t\t ${fields[f].name}:DataTypes.DATEONLY`)
             }
-          })  
+          }  
           const ffs=fields1.join(',\n')
           content=content+ffs+`},{sequelize})\n}`
           const relations=fields.filter(f=>f.dataType=="relationship")
@@ -232,12 +262,24 @@ export default{
                   content+=`this.hasMany(models.${catDest.name})\n
                   models.${catDest.name}.belongsTo(models.${name},
                     {foreignKey:"${name}Id"})
-                    }
-                  }`
+                    
+                  `
+                }
+              }else if(relations[r].relationship=="manytomany"){
+                const catDest=await db.Category.findByPk(relations[r].relationCategory)
+                
+                if(catDest){
+                  content+=`this.belongsToMany(models.${catDest.name},{through:models.${name}_${catDest.name}})\n
+                  models.${catDest.name}.belongsToMany(models.${name},{through:models.${name}_${catDest.name}})
+                `
+
                 }
               }
             }
+            content+=`}`
+            
           }
+          content+=`}`
             
           content+=`\nexport default ${name}`
           

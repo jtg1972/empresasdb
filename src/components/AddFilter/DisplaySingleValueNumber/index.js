@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import FormInput from '../../Forms/FormInput'
 import FormButton from '../../Forms/FormButton'
@@ -12,7 +12,9 @@ const DisplaySingleValueNumber = ({
   setOperator
 }) => {
   const dispatch=useDispatch()
-  
+  useEffect(()=>{
+    console.log("valuesfield",values[campo.name])
+  },[])
   const changeRange=(e,campo,place)=>{
     const fieldName=`${campo}${place}`
     setValues({...values,
@@ -75,7 +77,8 @@ const DisplaySingleValueNumber = ({
             [campo.name]:{
               ...v[campo.name],
               type:"single",
-              val:e.target.value
+              val:e.target.value,
+              operator:operator
             }
           }))
         }}

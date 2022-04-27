@@ -8,23 +8,34 @@ import DisplayFields from '../DisplayFields'
 import FormButton from '../Forms/FormButton'
 
 const addProductMutation=(category)=>{
-  
-  let args1=category.fields.map(f=>{
-    if(f.declaredType=="number"){
-      return `$${f.name}:Int`
-    }else{
-      return `$${f.name}:String`
+  let argsf=category.fields
+  let args1=[]
+  for(let f in argsf){
+    if(argsf[f].declaredType=="number"){
+      args1.push(`$${argsf[f].name}:Int`)
+    }else if(argsf[f].declaredType=="string" 
+    || argsf[f].declaredType=="date"
+    || argsf[f].dataType=="multipleValue"){
+      args1.push(`$${argsf[f].name}:String`)
     }
-  })
+  }
   args1=args1.join(", ")
 
-  let args2=category.fields.map(f=>{
-    return `${f.name}:$${f.name}`
-  })
+  let args2=[]
+  for(let f in argsf){
+    if(argsf[f].dataType!=="relationship"){
+      args2.push(`${argsf[f].name}:$${argsf[f].name}`)
+    }
+  }
 
   args2.join(", ")
 
-  let campos=category.fields.map(f=>f.name)
+  let campos=[]
+  for(let f in argsf){
+    if(argsf[f].dataType!=="relationship"){
+      campos.push(argsf[f].name)
+    }
+  }
   campos.unshift("id")  
   campos=campos.join("\n")
   

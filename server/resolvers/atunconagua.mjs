@@ -29,7 +29,7 @@
                 },
                 editatunconagua:async(parent,args,{db})=>{
               await db.atunconagua.update({
-                      id:args["id"],name:args["name"],calorias:args["calorias"],agen1:args["agen1"],fats:args["fats"],f1:args["f1"],mojarras:args["mojarras"]
+                      id:args["id"],name:args["name"],calorias:args["calorias"],agen1:args["agen1"],fats:args["fats"],f1:args["f1"],mojarras:args["mojarras"],nemo:args["nemo"]
                     },
                     {
                     where:{id:args.id}

@@ -51,14 +51,18 @@ mutation EditTableState($category: Int!, $state: String!) {
 `
 
 const mapToState=({categories})=>({
-  currentCategory:categories.currentCategory
+  currentCategory:categories.currentCategory,
+  categories:categories.categories
 })
 const DisplayRow = ({
   f,
   toggleDialogStructure
 }) => {
   let valueToDelete=""
-  const {currentCategory}=useSelector(mapToState)
+  const {
+    currentCategory,
+    categories
+  }=useSelector(mapToState)
   const dispatch=useDispatch()
   console.log("f",f)
   
@@ -175,9 +179,12 @@ const DisplayRow = ({
     if(f.dataType=="multipleValue")
       return "Multiple"
     else if(f.dataType=="singleValue")
-    return "Single"
+      return "Single"
+    else if(f.dataType=="relationship")
+      return "Relationship"
   }
 
+  
   const displayTypes=(values)=>{
     let ret=[]
     let comp=[]
@@ -213,12 +220,35 @@ const DisplayRow = ({
     return ""
   }
 
+  const displayRelationshipType=()=>{
+    console.log("relationship",f.relationship)
+    if(f.dataType=="relationship"){
+      if(f.relationship=="onetoone"){
+        return "One to One"
+      }else if(f.relationship=="onetomany"){
+        return "One to Many"
+      }else if(f.relationship=="manytomany"){
+        return "Many to Many"
+      }
+    }
+  }
+  const displayTargetCategory=()=>{
+    if(f.dataType=="relationship"){
+      const c=categories.filter(x=>x.id==f.relationCategory)
+      if(c){
+        return c[0].name
+      }
+      return ""
+    }
+  }
 
   return (
     <tr>
       <td>{f.name}</td>
       <td>{f.declaredType}</td>
       <td>{displayDataTypeTitle()}</td>
+      <td>{displayRelationshipType()}</td>
+      <td>{displayTargetCategory()}</td>
       <td>{Array.isArray(f.values) && f.values.length>0 
       &&
       displayTypes(f.values)

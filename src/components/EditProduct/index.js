@@ -9,25 +9,31 @@ import FormButton from '../Forms/FormButton'
 const mutationEditProduct=(category)=>{
   let args=[]
   let args1=[]
-  args=category.fields.map(f=>{
+  let argsf=category.fields
+  for(let f in argsf){
     console.log("ffff",f)
-    if(f.declaredType=="number"){
-      return `$${f.name}:Int`
-    }else if(f.declaredType=="string"){
-      return `$${f.name}:String`
-    }else if(f.declaredType=="date"){
-      return `$${f.name}:String`
+    if(argsf[f].declaredType=="number"){
+      args.push(`$${argsf[f].name}:Int`)
+    }else if(argsf[f].declaredType=="string"){
+      args.push(`$${argsf[f].name}:String`)
+    }else if(argsf[f].declaredType=="date"){
+      args.push(`$${argsf[f].name}:String`)
     
     }
-  })
+  }
   args.unshift("$id:Int")
   args=args.join(", ")
-  args1=category.fields.map(f=>{
-    
-      return `${f.name}:$${f.name}`
-    
-  })
-  let campos=category.fields.map(c=>c.name)
+  for(let f in argsf){
+      if(argsf[f].dataType!=="relationship"){
+        args1.push(`${argsf[f].name}:$${argsf[f].name}`)
+      }
+  }
+  let campos=[]
+  for(let f in argsf){
+    if(argsf[f].dataType!=="relationship"){
+      campos.push(args[f].name)
+    }
+  }
   campos.unshift("id")
   campos=campos.join("\n")
   args1.unshift("id:$id")

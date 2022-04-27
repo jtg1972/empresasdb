@@ -46,7 +46,7 @@ const DisplayAllFieldsCriteria = ({
       else if(fc.declaredType=="number"){
         return <DisplaySingleValueNumber
         setValues={setValues}
-        values={values}
+        values={{...values,[fc.name]:{...values[fc.name],operator}}}
         campo={fc}
         setOrder={setOrder}
         operator={operator}

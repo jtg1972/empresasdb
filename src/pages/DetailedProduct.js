@@ -47,6 +47,8 @@ const CATEGORIES1=gql`
         declaredType
         values
         category
+        relationship
+        relationCategory
       }
     }
   }
