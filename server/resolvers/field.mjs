@@ -301,6 +301,18 @@ export default{
           }
           let c=r.join("\n")
           let x=r.join(", ")
+
+          let oneToManyQueries=``
+          if(relations>0){
+            for(let r in relations){
+              if(relations[r].relationship=="oneToMany"){
+                oneToManyQueries+=relations[r].name
+              }
+
+            }
+          }
+          
+
           const content2=`
           import {gql} from 'apollo-server-express'
 
