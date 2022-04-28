@@ -192,6 +192,18 @@ const StructureField = ({
           relationCategory:relationTable
         }
       })
+      const rc=categories.filter(t=>t.id==relationTable)[0]
+      
+      createField({
+        variables:{
+          name:`oto${rc.name}${currentCategory.name}`,
+          categpry:rc.id,
+          dataType:"relationship",
+          relationship:"oto",
+          relationCategory:currentCategory.id
+
+        }
+      })
     }
     
   }

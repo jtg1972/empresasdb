@@ -1,6 +1,15 @@
 
             export default{
-              Query:{
+          atunconagua:{
+              otmatunconaguaMojarra:async(parent,args,{db})=>{
+                    const x=await db.Mojarra.findAll({
+                      where:{atunconaguaId:parent.id},
+                      raw:true
+                    })
+                    return x
+                  },
+            },
+            Query:{
 
                 atunconagua:async(parent,args,{db})=>{
                   const products=await db.atunconagua.findAll()

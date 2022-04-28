@@ -219,7 +219,7 @@ export default{
               import Sequelize from 'sequelize'\n
               class ${name}_${pc.name} extends Sequelize.Model{
                 \tstatic init(sequelize,DataTypes){\n
-                  \t\treturn super.init({\n})}}
+                  \t\treturn super.init({\n},{sequelize})}}
                   \nexport default ${name}_${pc.name}`
               try{
                   WriteToFile(`./models/${name}_${pc.name}`,t1)
@@ -286,6 +286,7 @@ export default{
           let r=[]
           let x1="id:Int\n"
           let x2="id:Int,\n"
+          const defotm=""
           for(let f in fields){
             if(fields[f]["declaredType"]=="string"){
               x1+=`${fields[f]["name"]}:String\n`
@@ -297,26 +298,46 @@ export default{
             }else if(fields[f]["declaredType"]=="date"){
               x1+=`${fields[f]["name"]}:String\n`
               x2+=`${fields[f]["name"]}:String,\n`
+            }else if(fields[f]["dataType"]=="relationship"){
+              if(fields[f]["relationship"]=="onetomany"){
+                const respCat=await db.Category.findByPk(fields[f]["relationCategory"])
+                x1+=`otm${name}${respCat["name"]}:[${respCat["name"]}]`
+                
+              }
             }
           }
           let c=r.join("\n")
           let x=r.join(", ")
 
-          let oneToManyQueries=``
-          if(relations>0){
+          let oneToManyMutation=``
+          let oneToManyResolver=``
+          if(relations.length>0){
             for(let r in relations){
-              if(relations[r].relationship=="oneToMany"){
-                oneToManyQueries+=relations[r].name
+              const respCat=await db.Category.findByPk(relations[r].relationCategory)
+              if(respCat){
+                if(relations[r].relationship=="onetomany"){
+            
+                  oneToManyResolver+=`otm${name}${respCat.name}:async(parent,args,{db})=>{
+                    const x=await db.${respCat.name}.findAll({
+                      where:{${name}Id:parent.id},
+                      raw:true
+                    })
+                    return x
+                  },`
+                }
               }
 
             }
           }
+          console.log("otomres",oneToManyResolver)
           
 
           const content2=`
           import {gql} from 'apollo-server-express'
 
           export default gql\`
+
+            
             type ${name}{
               
               ${x1}
@@ -324,6 +345,7 @@ export default{
 
             type Query{
               ${name}:[${name}]
+              
               
             }
             type Mutation{
@@ -339,7 +361,15 @@ export default{
 
           let content3=`
             export default{
-              Query:{
+          `
+          if(oneToManyResolver!==""){
+            content3+=`${name}:{
+              ${oneToManyResolver}
+            },
+            `
+          }
+              
+          content3+=`Query:{
 
                 ${name}:async(parent,args,{db})=>{
                   const products=await db.${name}.findAll()

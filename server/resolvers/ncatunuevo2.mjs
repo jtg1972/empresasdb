@@ -1,6 +1,15 @@
 
             export default{
-              Query:{
+          ncatunuevo2:{
+              otmncatunuevo2Mojarra:async(parent,args,{db})=>{
+                    const x=await db.Mojarra.findAll({
+                      where:{ncatunuevo2Id:parent.id},
+                      raw:true
+                    })
+                    return x
+                  },
+            },
+            Query:{
 
                 ncatunuevo2:async(parent,args,{db})=>{
                   const products=await db.ncatunuevo2.findAll()

@@ -2,6 +2,8 @@
           import {gql} from 'apollo-server-express'
 
           export default gql`
+
+            
             type atunconagua{
               
               id:Int
@@ -10,11 +12,12 @@ calorias:Int
 agen1:String
 fats:Int
 f1:String
-
+otmatunconaguaMojarra:[Mojarra]
             }
 
             type Query{
               atunconagua:[atunconagua]
+              
               
             }
             type Mutation{

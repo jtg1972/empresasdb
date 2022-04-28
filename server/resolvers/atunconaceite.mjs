@@ -1,6 +1,15 @@
 
             export default{
-              Query:{
+          atunconaceite:{
+              otmatunconaceiteMojarra:async(parent,args,{db})=>{
+                    const x=await db.Mojarra.findAll({
+                      where:{atunconaceiteId:parent.id},
+                      raw:true
+                    })
+                    return x
+                  },
+            },
+            Query:{
 
                 atunconaceite:async(parent,args,{db})=>{
                   const products=await db.atunconaceite.findAll()
