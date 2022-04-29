@@ -7,7 +7,8 @@ import FormButton from '../Forms/FormButton'
 import DisplayCategoryFieldsTable from './DisplayCategoryFieldsTable'
 
 const mapToState=({categories})=>({
-  currentCategory:categories.currentCategory
+  currentCategory:categories.currentCategory,
+  currentCategoryId:categories.currentCategoryId
 })
 
 const CREATE_TABLE=gql`
@@ -22,7 +23,8 @@ const DisplayWholeCategoryFieldsTable = ({
   setFieldName
 }) => {
   const dispatch=useDispatch()
-  const {currentCategory}=useSelector(mapToState)
+  const {currentCategory,
+  currentCategoryId}=useSelector(mapToState)
   const [createTable]=useMutation(CREATE_TABLE,{
     update:(cache,{data})=>{
       const resultado=data.createTable
@@ -35,13 +37,14 @@ const DisplayWholeCategoryFieldsTable = ({
       
   return (
     <div>
-      <FormButton
+      {currentCategoryId!==0 && <FormButton
       className="addFirstButton"
       onClick={()=>toggleDialogField()}
       >
         Add field to {currentCategory==undefined
         ?"Root":currentCategory.name}
       </FormButton>
+      }
       {currentCategory!==null 
       &&
       <DisplayCategoryFieldsTable

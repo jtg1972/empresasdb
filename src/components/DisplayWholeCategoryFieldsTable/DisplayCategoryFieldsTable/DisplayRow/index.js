@@ -273,9 +273,32 @@ const DisplayRow = ({
         {f.category==currentCategory.id &&
           <IoIosRemoveCircleOutline
           onClick={()=>{
+            let c
             removeField1({variables:{
               removeFieldId:f.id
             }})
+            if(f.dataType=="relationship"){
+              if(f.relationship=="onetomany"){
+                c=categories.filter(x=>
+                  x.id==f.relationCategory  
+                )
+                let o;
+                if(c){
+                  c=c[0]
+                  o=c.fields.filter(y=>
+                    y.name==`${currentCategory.name}Id`
+                  )
+                  if(o){
+                    o=o[0]
+                    removeField1({variables:{
+                      removeFieldId:o.id
+                    }})
+                  }
+                }
+               
+
+              }
+            }
           }}
           />
         }

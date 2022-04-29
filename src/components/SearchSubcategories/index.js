@@ -136,10 +136,12 @@ const SearchSubcategories = ({
   
   const insertCategory=(type)=>{
     console.log("type",type)
+    const npc=currentCategoryId
+    console.log("npc",npc)
     createCategory({
       variables:{
         name:newCategory,
-        parentCategory:parseInt(currentCategoryId),
+        parentCategory:parseInt(npc),
         typeOfCategory:type
       }
     })

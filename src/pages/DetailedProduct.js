@@ -66,6 +66,7 @@ query TableStates {
 `
 const mapToState=({categories})=>({
   categories:categories.categories,
+  currentCategory:categories.currentCategory,
   loadingTable:categories.loadingTable,
   currentCategoryId:categories.currentCategoryId,
   tablesStateStatus:categories.tablesStateStatus
@@ -75,6 +76,7 @@ const DetailedProduct = () => {
   const dispatch=useDispatch()
   const {
     categories,
+    currentCategory,
     loadingTable,
     currentCategoryId,
     tablesStateStatus
@@ -195,7 +197,11 @@ const DetailedProduct = () => {
       toggleDialog={toggleDialogField}
       
       />
-      {currentCategoryId!==0 && <EditProduct
+      {currentCategoryId!==0 &&
+      currentCategory.fields.length>0 
+      && tablesStateStatus=="OK" 
+      &&
+      <EditProduct
       open={openEditProduct}
       toggleDialog={toggleEditProduct}
       editFields={editFields}
@@ -209,12 +215,17 @@ const DetailedProduct = () => {
         fieldName={fieldName}
       />
 
-      {currentCategoryId!==0 && <NewProduct
+      {currentCategoryId!==0 &&
+      currentCategory.fields.length>0 
+      && 
+      tablesStateStatus=="OK" &&<NewProduct
         open={openNewProduct}
         toggleDialog={toggleNewProduct}
       />
       }
       {currentCategoryId!==0 &&
+      currentCategory.fields.length>0 &&
+      tablesStateStatus=="OK" &&
       <AddFilter
       open={openFilter}
       toggleDialog={toggleFilter}
@@ -231,6 +242,7 @@ const DetailedProduct = () => {
       }
 
       {currentCategoryId!==0 &&
+      currentCategory.fields.length>0 &&
       tablesStateStatus=="OK" &&
       searchProductsFilter==false &&
       <DisplayWholeProductsTable
@@ -241,6 +253,7 @@ const DetailedProduct = () => {
       />}
 
       {currentCategoryId!=0 &&
+      currentCategory.fields.length>0 &&
       tablesStateStatus=="OK" &&
       searchProductsFilter &&
       <DisplayFilterProductsTable
