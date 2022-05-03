@@ -3,7 +3,7 @@
           clientes:{
               otmclientesfacturas:async(parent,args,{db})=>{
                     const x=await db.facturas.findAll({
-                      where:{clientesId:parent.id},
+                      where:{clientesfacturasId:parent.id},
                       raw:true
                     })
                     return x
@@ -38,7 +38,7 @@
                 },
                 editclientes:async(parent,args,{db})=>{
               await db.clientes.update({
-                      id:args["id"],facturas:args["facturas"],name:args["name"],domicilio:args["domicilio"],telefono:args["telefono"]
+                      id:args["id"],otmclientesfacturas:args["otmclientesfacturas"],name:args["name"],domicilio:args["domicilio"],telefono:args["telefono"]
                     },
                     {
                     where:{id:args.id}

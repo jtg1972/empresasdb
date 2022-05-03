@@ -7,7 +7,7 @@
             type facturas{
               
               id:Int
-clientesId:Int
+otmclientesfacturasId:Int
 fecha:String
 clave:String
 
@@ -21,7 +21,7 @@ clave:String
             type Mutation{
               createfacturas(
                 id:Int,
-clientesId:Int,
+otmclientesfacturasId:Int,
 fecha:String,
 clave:String,
 
@@ -29,7 +29,7 @@ clave:String,
               getDatafacturas:[facturas]
               removefacturas(id:Int):Boolean!
               editfacturas(id:Int,
-clientesId:Int,
+otmclientesfacturasId:Int,
 fecha:String,
 clave:String,
 ):facturas

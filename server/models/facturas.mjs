@@ -5,7 +5,7 @@ import Sequelize from 'sequelize'
           	static init(sequelize,DataTypes){
 
             		return super.init({
-		 clientesId:DataTypes.INTEGER,
+		 otmclientesfacturasId:DataTypes.INTEGER,
 		 fecha:DataTypes.DATEONLY,
 		 clave:DataTypes.STRING},{sequelize})
 }}

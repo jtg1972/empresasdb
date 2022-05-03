@@ -105,6 +105,7 @@ export default (state=INITIAL_STATE,action)=>{
 
     case types.REMOVE_FIELD:
       console.log("action.payload",action.payload)
+      
       return {
         ...state,
         categories:state.categories.map(c=>{
@@ -114,9 +115,15 @@ export default (state=INITIAL_STATE,action)=>{
               u.id!==action.payload.id 
             )}
           }else if(c.parentCategories.includes(action.payload.relationCategory)){
-            return {...c,fields:c.fields.filter(u=>
-              u.name!==`${state.currentCategory.name}Id`
-            )}
+            const relCat=state.categories.find(x=>
+              x.id==action.payload.relationCategory)
+            if(relCat){
+              return {...c,fields:c.fields.filter(u=>
+                u.name!==`${state.currentCategory.name}${relCat[0].name}Id`
+            )}}else{
+              return c
+            }
+
           }else{
               return c
           }

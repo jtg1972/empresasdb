@@ -34,8 +34,9 @@ export default{
         
         if(args.relationship=="onetomany"){
           if(args.relationCategory>0){
+            let z=await db.Category.findByPk(args.relationCategory)
             let y=await db.Fields.findAll({
-              where:{name:`${args.mainCategoryName}Id`},
+              where:{name:`${args.mainCategoryName}${z.name}Id`},
               raw:true
             })
             if(y.length==1){
@@ -336,7 +337,7 @@ export default{
             
                   oneToManyResolver+=`otm${name}${respCat.name}:async(parent,args,{db})=>{
                     const x=await db.${respCat.name}.findAll({
-                      where:{${name}Id:parent.id},
+                      where:{${name}${respCat.name}Id:parent.id},
                       raw:true
                     })
                     return x

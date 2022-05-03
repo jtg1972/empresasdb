@@ -176,8 +176,9 @@ const StructureField = ({
         }
       })
     }else{
+      const rc=categories.filter(t=>t.id==relationTable)[0]
       console.log("argsesc",{
-          name:name,
+          name:`otm${currentCategory.name}${rc.name}`,
           category:currentCategory.id,
           dataType:dataType,
           relationship,
@@ -185,21 +186,22 @@ const StructureField = ({
       })
       createField({
         variables:{
-          name:name,
+          name:`otm${currentCategory.name}${rc.name}`,
           category:currentCategory.id,
           dataType:dataType,
           relationship,
           relationCategory:relationTable
         }
       })
-      const rc=categories.filter(t=>t.id==relationTable)[0]
+      
       console.log("rc",rc)
       createField({
         variables:{
-          name:`${currentCategory.name}Id`,
+          name:`otm${currentCategory.name}${rc.name}Id`,
           category:rc.id,
           dataType:"singleValue",
           declaredType:"number",
+          relationship:"otmdestiny"
 
         }
       })
@@ -251,6 +253,15 @@ const StructureField = ({
     <Dialog
     {...dialogConfig}>
       
+      <select {...selectConfig}>
+        <option value="">Select type of result</option>
+        <option value="singleValue">Single Value</option>
+        <option value="multipleValue">Multiple Value</option>
+        <option value="relationship">Relationship</option>
+      </select>
+      {dataType!=="relationship"
+      &&
+      <>
       <FormInput
       {...inputFieldNameConfig}
       />
@@ -258,13 +269,7 @@ const StructureField = ({
       <FormInput
       {...inputDisplayNameConfig}
       />
-
-      <select {...selectConfig}>
-        <option value="">Select type of result</option>
-        <option value="singleValue">Single Value</option>
-        <option value="multipleValue">Multiple Value</option>
-        <option value="relationship">Relationship</option>
-      </select>
+      </>}
 
       {dataType=="singleValue" 
       && 
@@ -277,7 +282,6 @@ const StructureField = ({
       }
       {dataType=="relationship" &&
         <select onChange={e=>setRelationship(e.target.value)}>
-          <option value="onetoone">One to one</option>
           <option value="onetomany">One to many</option>
           <option value="manytomany">Many to many</option>
         </select>

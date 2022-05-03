@@ -26,6 +26,9 @@ const CATEGORIES1=gql`
         declaredType
         values
         category
+        relationship
+        relationCategory
+
       }
     }
   }`
@@ -119,7 +122,7 @@ const DisplayRow = ({
               }))
             }
             return {...c,fields:c.fields.filter(g=>
-              g.name!==`${currentCategory.name}Id`
+              g.name!==`${currentCategory.name}${c.name}Id`
             )}
             
           }else{
@@ -244,6 +247,9 @@ const DisplayRow = ({
         return "Many to Many"
       }
     }
+    else if(f.relationship=="otmdestiny"){
+      return "One to Many Destiny"
+    }
   }
   const displayTargetCategory=()=>{
     if(f.dataType=="relationship"){
@@ -283,7 +289,11 @@ const DisplayRow = ({
       </td>
       <td>
         <span>
-        {f.category==currentCategory.id &&
+        {f.category==currentCategory.id 
+        &&
+        f.relationship!=="otmdestiny" 
+        &&
+
           <IoIosRemoveCircleOutline
           onClick={()=>{
             let c
