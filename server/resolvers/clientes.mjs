@@ -38,7 +38,7 @@
                 },
                 editclientes:async(parent,args,{db})=>{
               await db.clientes.update({
-                      id:args["id"],name:args["name"],domicilio:args["domicilio"],telefono:args["telefono"],facturas:args["facturas"]
+                      id:args["id"],facturas:args["facturas"],name:args["name"],domicilio:args["domicilio"],telefono:args["telefono"]
                     },
                     {
                     where:{id:args.id}

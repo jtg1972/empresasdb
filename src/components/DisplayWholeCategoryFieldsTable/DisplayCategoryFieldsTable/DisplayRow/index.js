@@ -5,7 +5,7 @@ import {FcTreeStructure} from 'react-icons/fc'
 import {IoIosRemoveCircleOutline} from 'react-icons/io'
 import { useDispatch, useSelector } from 'react-redux'
 import { combineReducers } from 'redux'
-import { removeField, removeMultipleFieldValue, setTableState } from '../../../../redux/category/actions'
+import { removeField, removeFieldNoCurrentCategory, removeMultipleFieldValue, setTableState } from '../../../../redux/category/actions'
 
 const CATEGORIES1=gql`
   query Categories{
@@ -14,6 +14,7 @@ const CATEGORIES1=gql`
       name
       parentCategory
       parentCategories
+      typeOfCategory
       bookmark{
         id
         name
@@ -29,8 +30,14 @@ const CATEGORIES1=gql`
     }
   }`
 
-const REMOVE_FIELD=gql`mutation RemoveField($removeFieldId: Int!) {
-  removeField(id: $removeFieldId)
+const REMOVE_FIELD=gql`mutation RemoveField($removeFieldId: Int!,
+  $relationship:String,
+  $relationCategory:Int,
+  $mainCategoryName:String) {
+  removeField(id: $removeFieldId,
+    relationship:$relationship,
+    relationCategory:$relationCategory,
+    mainCategoryName:$mainCategoryName)
 }`
 
 const REMOVE_MULTIPLE_VALUE=gql`
@@ -77,10 +84,12 @@ const DisplayRow = ({
       let newCats=[]
       console.log("resultado,cats",resultado,cats.categories)
       if(resultado==true){
+        
 
         newCats=cats.categories.map(c=>{
-          if(c.id!==f.category){
-            if(c.parentCategories.includes(f.category)){
+          
+          if(c.parentCategories.includes(f.category)){
+            if(c.typeOfCategory==0){
               editTableState({
                 variables:{
                   category:c.id,
@@ -91,28 +100,31 @@ const DisplayRow = ({
                 category:c.id,
                 state:"NO_UPDATED"
               }))
-              return {...c,fields:c.fields.filter(g=>
-                g.id!==f.id
-              )}
-              
-            }else{
-              return c
             }
-          }else{
-            editTableState({
-              variables:{
+            return {...c,fields:c.fields.filter(g=>
+              g.id!==f.id
+            )}
+            
+          }else if(c.parentCategories.includes(f.relationCategory)){
+            if(c.typeOfCategory==0){
+              editTableState({
+                variables:{
+                  category:c.id,
+                  state:"NO_UPDATED"
+                }
+              })
+              dispatch(setTableState({
                 category:c.id,
                 state:"NO_UPDATED"
-              }
-            })
-            dispatch(setTableState({
-              category:c.id,
-              state:"NO_UPDATED"
-            }))
-            return {...c,fields:c.fields.
-              filter(y=>y.id!==f.id)}
+              }))
+            }
+            return {...c,fields:c.fields.filter(g=>
+              g.name!==`${currentCategory.name}Id`
+            )}
+            
+          }else{
+              return c
           }
-
         })
         cache.writeQuery({
           query:CATEGORIES1,
@@ -121,8 +133,9 @@ const DisplayRow = ({
           }
           
         })
+        
         dispatch(removeField(f))
-      //dispatch(setCurrentCategoryId(newCat.id))
+        
       }
     }
   })
@@ -275,30 +288,11 @@ const DisplayRow = ({
           onClick={()=>{
             let c
             removeField1({variables:{
-              removeFieldId:f.id
+              removeFieldId:f.id,
+              relationship:f.relationship,
+              relationCategory:f.relationCategory,
+              mainCategoryName:currentCategory.name
             }})
-            if(f.dataType=="relationship"){
-              if(f.relationship=="onetomany"){
-                c=categories.filter(x=>
-                  x.id==f.relationCategory  
-                )
-                let o;
-                if(c){
-                  c=c[0]
-                  o=c.fields.filter(y=>
-                    y.name==`${currentCategory.name}Id`
-                  )
-                  if(o){
-                    o=o[0]
-                    removeField1({variables:{
-                      removeFieldId:o.id
-                    }})
-                  }
-                }
-               
-
-              }
-            }
           }}
           />
         }

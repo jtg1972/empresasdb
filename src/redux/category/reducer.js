@@ -108,19 +108,18 @@ export default (state=INITIAL_STATE,action)=>{
       return {
         ...state,
         categories:state.categories.map(c=>{
-          if(c.id!==action.payload.category){
-            if(c.parentCategories.includes(action.payload.category)){
-              return {...c,fields:c.fields.filter(u=>
-                u.id!==action.payload.id 
-              )}
-            }else{
-              return c
-            }
+        
+          if(c.parentCategories.includes(action.payload.category)){
+            return {...c,fields:c.fields.filter(u=>
+              u.id!==action.payload.id 
+            )}
+          }else if(c.parentCategories.includes(action.payload.relationCategory)){
+            return {...c,fields:c.fields.filter(u=>
+              u.name!==`${state.currentCategory.name}Id`
+            )}
           }else{
-            return {...c,fields:c.fields.
-              filter(y=>y.id!==action.payload.id)}
+              return c
           }
-
         }),
         currentCategory:{...state.currentCategory,
           fields:state.currentCategory.fields.filter(y=>
@@ -129,6 +128,7 @@ export default (state=INITIAL_STATE,action)=>{
         }
     
       }
+    
     case types.ADD_MULTIPLE_FIELD_VALUE:
       const ncats=state.categories.map(c=>{
         if(c.id!==action.payload.category){

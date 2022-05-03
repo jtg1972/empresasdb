@@ -28,7 +28,10 @@ export default gql`
     addValueToField(id:Int!,value:String!):Field!,
     createTable(category:Int!,typeOfCategory:Int!):Boolean,
     createTableGood(categoryIds:[Int]):Boolean,
-    removeField(id:Int!):Boolean!,
+    removeField(id:Int!,
+      relationship:String,
+      relationCategory:Int,
+      mainCategoryName:String):Boolean!,
   
     removeMultipleValue(id:Int!,value:String!):Boolean
   } 

@@ -7,10 +7,10 @@
             type facturas{
               
               id:Int
+clientesId:Int
 fecha:String
 clave:String
-clientesId:Int
-otmfacturasdetallesFacturas:[detallesFacturas]
+
             }
 
             type Query{
@@ -21,17 +21,17 @@ otmfacturasdetallesFacturas:[detallesFacturas]
             type Mutation{
               createfacturas(
                 id:Int,
+clientesId:Int,
 fecha:String,
 clave:String,
-clientesId:Int,
 
                 ):facturas
               getDatafacturas:[facturas]
               removefacturas(id:Int):Boolean!
               editfacturas(id:Int,
+clientesId:Int,
 fecha:String,
 clave:String,
-clientesId:Int,
 ):facturas
               
             }`

@@ -5,13 +5,8 @@ import Sequelize from 'sequelize'
           	static init(sequelize,DataTypes){
 
             		return super.init({
+		 clientesId:DataTypes.INTEGER,
 		 fecha:DataTypes.DATEONLY,
-		 clave:DataTypes.STRING,
-		 clientesId:DataTypes.INTEGER},{sequelize})
-}static associate(models){this.hasMany(models.detallesFacturas)
-
-                  models.detallesFacturas.belongsTo(models.facturas,
-                    {foreignKey:"facturasId"})
-                    
-                  }}
+		 clave:DataTypes.STRING},{sequelize})
+}}
 export default facturas

@@ -29,12 +29,29 @@ export default{
     },
     removeField:async(parent,args,{db})=>{
       let x=await db.Fields.findByPk(args.id)
+    
       if(x){
-        await x.destroy()
-        return true
-      }else{
-        return false
+        
+        if(args.relationship=="onetomany"){
+          if(args.relationCategory>0){
+            let y=await db.Fields.findAll({
+              where:{name:`${args.mainCategoryName}Id`},
+              raw:true
+            })
+            if(y.length==1){
+              let z=await db.Fields.findByPk(y[0].id)
+              await x.destroy()
+              await z.destroy()
+              return true
+            }
+          }
+        }else{
+          await x.destroy()
+          return true
+        }
+        
       }
+      return false
     },
     addValueToField:async(parent,args,{db})=>{
       const field=await db.Fields.findByPk(args.id)

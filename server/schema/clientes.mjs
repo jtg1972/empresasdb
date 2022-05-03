@@ -7,10 +7,10 @@
             type clientes{
               
               id:Int
-name:String
+otmclientesfacturas:[facturas]name:String
 domicilio:String
 telefono:String
-otmclientesfacturas:[facturas]
+
             }
 
             type Query{
