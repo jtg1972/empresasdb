@@ -11,7 +11,7 @@ name:String
 ncatunnuevo2:String
 ncnvo3:String
 agen1:String
-otmncatunuevo2Mojarra:[Mojarra]
+
             }
 
             type Query{

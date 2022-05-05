@@ -5,9 +5,9 @@ import Sequelize from 'sequelize'
           	static init(sequelize,DataTypes){
 
             		return super.init({
+		 otmfacturasdetallesFacturasId:DataTypes.INTEGER,
 		 producto:DataTypes.INTEGER,
 		 cantidad:DataTypes.INTEGER,
-		 precio:DataTypes.INTEGER,
-		 facturasId:DataTypes.INTEGER},{sequelize})
+		 precio:DataTypes.INTEGER},{sequelize})
 }}
 export default detallesFacturas

@@ -1,15 +1,6 @@
 
             export default{
-          atunconaceite:{
-              otmatunconaceiteMojarra:async(parent,args,{db})=>{
-                    const x=await db.Mojarra.findAll({
-                      where:{atunconaceiteId:parent.id},
-                      raw:true
-                    })
-                    return x
-                  },
-            },
-            Query:{
+          Query:{
 
                 atunconaceite:async(parent,args,{db})=>{
                   const products=await db.atunconaceite.findAll()
@@ -38,7 +29,7 @@
                 },
                 editatunconaceite:async(parent,args,{db})=>{
               await db.atunconaceite.update({
-                      id:args["id"],name:args["name"],agen1:args["agen1"],mojarras:args["mojarras"],nemo:args["nemo"]
+                      id:args["id"],name:args["name"],agen1:args["agen1"]
                     },
                     {
                     where:{id:args.id}

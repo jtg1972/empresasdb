@@ -8,7 +8,7 @@
               
               id:Int
 otmclientesfacturasId:Int
-fecha:String
+otmfacturasdetallesFacturas:[detallesFacturas]fecha:String
 clave:String
 
             }

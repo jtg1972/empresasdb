@@ -8,5 +8,10 @@ import Sequelize from 'sequelize'
 		 otmclientesfacturasId:DataTypes.INTEGER,
 		 fecha:DataTypes.DATEONLY,
 		 clave:DataTypes.STRING},{sequelize})
-}}
+}static associate(models){this.hasMany(models.detallesFacturas)
+
+                  models.detallesFacturas.belongsTo(models.facturas,
+                    {foreignKey:"facturasId"})
+                    
+                  }}
 export default facturas

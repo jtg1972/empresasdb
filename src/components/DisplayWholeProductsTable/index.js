@@ -32,12 +32,16 @@ let bd
 const getQueryFromCategory=(productCategories,categories)=>{
   let query=`mutation GetData {`
   console.log("productcats",productCategories)
+  let fields
   let q2=productCategories.map(p=>{
-    let fields=p.fields.map(x=>{
-      if(x.dataType!=="relationship")
+    fields=p.fields.map(x=>{
+      if(x.dataType!=="relationship"){
         return x.name
+      }
       else if(x.dataType=="relationship"){
         const t1=categories.filter(t=>t.id==x.relationCategory)
+      
+
         return `${x.name}{
           ${callGetFieldsCategory(x,categories)}
         }`
@@ -192,18 +196,24 @@ const DisplayWholeProductsTable = ({
       let header=[]
       header.push(<thead><tr>{headers}</tr></thead>)
       let acc=[]
+      let cname=titulo.substr(7)
       for(let p in products){
         let producto={...products[p]}
         let data=[]
         for(let c in producto){
-          let fs=currentCategory.fields.filter(x=>{
+          let cc=categories.filter(v=>
+            v.name==cname
+          )
+          let fs=cc[0].fields.filter(x=>{
             
             return x.name==c
           })
           console.log("ccfields",fs)
           if(fs.length==1){
-            
-            if(fs[0].declaredType=="date"){
+            if(fs[0].dataType=="relationship"){
+              data.push(<td>one to many</td>)
+            }
+            else if(fs[0].declaredType=="date"){
               //if(producto[c]!==""){
                 
               console.log("prodc",producto[c])  

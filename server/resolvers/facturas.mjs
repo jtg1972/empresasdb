@@ -1,6 +1,15 @@
 
             export default{
-          Query:{
+          facturas:{
+              otmfacturasdetallesFacturas:async(parent,args,{db})=>{
+                    const x=await db.detallesFacturas.findAll({
+                      where:{otmfacturasdetallesFacturasId:parent.id},
+                      raw:true
+                    })
+                    return x
+                  },
+            },
+            Query:{
 
                 facturas:async(parent,args,{db})=>{
                   const products=await db.facturas.findAll()
@@ -29,7 +38,7 @@
                 },
                 editfacturas:async(parent,args,{db})=>{
               await db.facturas.update({
-                      id:args["id"],otmclientesfacturasId:args["otmclientesfacturasId"],fecha:new Date(args["fecha"]),clave:args["clave"]
+                      id:args["id"],otmclientesfacturasId:args["otmclientesfacturasId"],otmfacturasdetallesFacturas:args["otmfacturasdetallesFacturas"],fecha:new Date(args["fecha"]),clave:args["clave"]
                     },
                     {
                     where:{id:args.id}

@@ -9,7 +9,7 @@
               id:Int
 name:String
 agen1:String
-otmatunconaceiteMojarra:[Mojarra]
+
             }
 
             type Query{

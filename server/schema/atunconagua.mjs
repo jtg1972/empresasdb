@@ -12,7 +12,7 @@ calorias:Int
 agen1:String
 fats:Int
 f1:String
-otmatunconaguaMojarra:[Mojarra]
+
             }
 
             type Query{

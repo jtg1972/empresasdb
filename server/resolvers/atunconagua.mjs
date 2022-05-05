@@ -1,15 +1,6 @@
 
             export default{
-          atunconagua:{
-              otmatunconaguaMojarra:async(parent,args,{db})=>{
-                    const x=await db.Mojarra.findAll({
-                      where:{atunconaguaId:parent.id},
-                      raw:true
-                    })
-                    return x
-                  },
-            },
-            Query:{
+          Query:{
 
                 atunconagua:async(parent,args,{db})=>{
                   const products=await db.atunconagua.findAll()
@@ -38,7 +29,7 @@
                 },
                 editatunconagua:async(parent,args,{db})=>{
               await db.atunconagua.update({
-                      id:args["id"],name:args["name"],calorias:args["calorias"],agen1:args["agen1"],fats:args["fats"],f1:args["f1"],mojarras:args["mojarras"],nemo:args["nemo"]
+                      id:args["id"],name:args["name"],calorias:args["calorias"],agen1:args["agen1"],fats:args["fats"],f1:args["f1"]
                     },
                     {
                     where:{id:args.id}

@@ -7,10 +7,10 @@
             type detallesFacturas{
               
               id:Int
+otmfacturasdetallesFacturasId:Int
 producto:Int
 cantidad:Int
 precio:Int
-facturasId:Int
 
             }
 
@@ -22,19 +22,19 @@ facturasId:Int
             type Mutation{
               createdetallesFacturas(
                 id:Int,
+otmfacturasdetallesFacturasId:Int,
 producto:Int,
 cantidad:Int,
 precio:Int,
-facturasId:Int,
 
                 ):detallesFacturas
               getDatadetallesFacturas:[detallesFacturas]
               removedetallesFacturas(id:Int):Boolean!
               editdetallesFacturas(id:Int,
+otmfacturasdetallesFacturasId:Int,
 producto:Int,
 cantidad:Int,
 precio:Int,
-facturasId:Int,
 ):detallesFacturas
               
             }`
