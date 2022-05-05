@@ -3,7 +3,7 @@
           clientes:{
               otmclientesfacturas:async(parent,args,{db})=>{
                     const x=await db.facturas.findAll({
-                      where:{clientesfacturasId:parent.id},
+                      where:{otmclientesfacturasId:parent.id},
                       raw:true
                     })
                     return x

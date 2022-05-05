@@ -27,7 +27,7 @@ const addProductMutation=(category)=>{
       args2.push(`${argsf[f].name}:$${argsf[f].name}`)
     }
   }
-
+  
   args2.join(", ")
 
   let campos=[]
@@ -36,6 +36,7 @@ const addProductMutation=(category)=>{
       campos.push(argsf[f].name)
     }
   }
+  
   campos.unshift("id")  
   campos=campos.join("\n")
   

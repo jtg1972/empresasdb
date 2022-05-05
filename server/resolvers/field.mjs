@@ -337,7 +337,7 @@ export default{
             
                   oneToManyResolver+=`otm${name}${respCat.name}:async(parent,args,{db})=>{
                     const x=await db.${respCat.name}.findAll({
-                      where:{${name}${respCat.name}Id:parent.id},
+                      where:{otm${name}${respCat.name}Id:parent.id},
                       raw:true
                     })
                     return x

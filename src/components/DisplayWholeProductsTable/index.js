@@ -6,13 +6,42 @@ import { deleteProduct, setCategoryProducts } from '../../redux/category/actions
 import { BsPencilFill } from 'react-icons/bs';
 import { IoIosRemoveCircleOutline } from 'react-icons/io';
 import FormButton from '../Forms/FormButton'
-const getQueryFromCategory=(productCategories)=>{
+
+const callGetFieldsCategory=(field,categories)=>{
+  const cat=categories.filter(c=>c.id==field.relationCategory)
+let bd
+  if(cat.length>0){
+      bd=cat[0].fields.map(x=>{
+      if(x.dataType!=="relationship"){
+        return x.name
+      }else if(x.dataType=="relationship"){
+        return `\n${x.name}{\n
+          ${callGetFieldsCategory(x,categories)}
+        }\n
+        `
+      }
+
+    })
+    bd=bd.join("\n")
+    return bd
+  }
+
+}
+
+
+const getQueryFromCategory=(productCategories,categories)=>{
   let query=`mutation GetData {`
   console.log("productcats",productCategories)
   let q2=productCategories.map(p=>{
     let fields=p.fields.map(x=>{
       if(x.dataType!=="relationship")
         return x.name
+      else if(x.dataType=="relationship"){
+        const t1=categories.filter(t=>t.id==x.relationCategory)
+        return `${x.name}{
+          ${callGetFieldsCategory(x,categories)}
+        }`
+      }
     })
     fields.unshift("id")
     const q=`getData${p.name}{
@@ -67,7 +96,7 @@ const DisplayWholeProductsTable = ({
       return true
     }else return false
   })
-  const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(productCategories)
+  const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(productCategories,categories)
   const [getProducts]=useMutation(GET_PRODUCTS_FROM_CATEGORY,{
     update:(cache,{data})=>{
       console.log("data:",data)
