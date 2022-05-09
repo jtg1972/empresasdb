@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@apollo/client'
 import gql from 'graphql-tag'
-import React,{useEffect} from 'react'
+import React,{useEffect, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { deleteProduct, setCategoryProducts } from '../../redux/category/actions'
 import { BsPencilFill } from 'react-icons/bs';
@@ -22,6 +22,7 @@ let bd
       }
 
     })
+    bd.unshift("id")
     bd=bd.join("\n")
     return bd
   }
@@ -91,6 +92,8 @@ const DisplayWholeProductsTable = ({
     categories,
     categoryProducts
   }=useSelector(mapToState)
+
+  const [tableIndexes,setTableIndexes]=useState({})
   let deleteId=-1
 
   const productCategories=categories.filter(c=>{
@@ -177,8 +180,9 @@ const DisplayWholeProductsTable = ({
     return p
   }
 
-  const displayTable=(titulo,products)=>{
+  const displayTable=(titulo,products,respCat)=>{
     let resultado=[]
+    console.log("displtable",products,respCat)
     resultado.push(<p style={{marginTop:"10px",marginBottom:"10px"}}>{titulo}</p>)
     /*if(currentCategory.typeOfCategory==0){
       resultado.push(<FormButton
@@ -186,10 +190,13 @@ const DisplayWholeProductsTable = ({
         Add Product to {currentCategory.name}
       </FormButton>)
     }*/
-
+    let yalohizo=false
+    let ifRelations=false
     if(products.length>0){
+      
       let headers=Object.keys(products[0]).map(p=><th>{p}</th>)
-      if(currentCategory.typeOfCategory==0){
+      //headers.unshift(<th>Selected</th>)
+      if(respCat.typeOfCategory==0){
         headers.push(<th>Delete Product</th>)
         headers.push(<th>Edit Product</th>)
       }
@@ -197,18 +204,47 @@ const DisplayWholeProductsTable = ({
       header.push(<thead><tr>{headers}</tr></thead>)
       let acc=[]
       let cname=titulo.substr(7)
+      let indice=0
       for(let p in products){
         let producto={...products[p]}
         let data=[]
+        
+        for(let yu in respCat.fields){
+          if(respCat.fields[yu].dataType=="relationship" && yalohizo==false){
+            ifRelations=true
+            headers.unshift(<th>Selected</th>)
+            yalohizo=true
+            break;
+          }
+        }
+        if(ifRelations){
+          data.push(<td>
+            <input type="radio" name={respCat.name}
+            onChange={(e)=>{
+            
+              console.log("indice",indice,e.target.value)
+              setTableIndexes(
+                ti=>({...ti,[respCat.name]:e.target.value})
+              )
+            }
+            }
+            value={indice}
+            
+            />
+          </td>)
+          indice++
+        }
         for(let c in producto){
-          let cc=categories.filter(v=>
+          /*let cc=categories.filter(v=>
             v.name==cname
-          )
-          let fs=cc[0].fields.filter(x=>{
+          )*/
+          let fs=respCat.fields.filter(x=>{
             
             return x.name==c
           })
           console.log("ccfields",fs)
+
+          
           if(fs.length==1){
             if(fs[0].dataType=="relationship"){
               data.push(<td>one to many</td>)
@@ -229,7 +265,7 @@ const DisplayWholeProductsTable = ({
             data.push(<td>{producto[c]}</td>)
           }
         }
-        if(currentCategory.typeOfCategory==0){
+        if(respCat.typeOfCategory==0){
           data.push(<td><IoIosRemoveCircleOutline
             onClick={()=>{
               deleteId=producto["id"]
@@ -279,10 +315,10 @@ const DisplayWholeProductsTable = ({
 
         </div>*/
   }
-
+  let allTables
   const getCategoriesProducts=()=>{
-    const allTables=[]
     
+    allTables=[]
     allTables.push(<FormButton
       style={{
         textAlign:"left",
@@ -313,15 +349,46 @@ const DisplayWholeProductsTable = ({
       </FormButton>)
     }
     
-    Object.keys(categoryProducts).forEach(cp=>
-      allTables.push(displayTable(cp,categoryProducts[cp]))
-    )
+    Object.keys(categoryProducts).forEach((cp,index)=>{
+      const nc=cp.substr(7)
+      const cat2=categories.filter(c=>c.name==nc)[0]
+      const oneToManyCategories=cat2.fields.filter(
+        x=>(x.dataType=="relationship" && x.relationship=="onetomany")
+      )
+      displayTableAndRelations(cp,categoryProducts[cp],oneToManyCategories,cat2)
+    })
     return allTables
+  }
+  const displayTableAndRelations=(name,prods,otmrelations,cc)=>{  
+      console.log("cp[cp]",name,prods,otmrelations)
+      
+      allTables.push(displayTable(name,prods,cc))
+      otmrelations.forEach(y=>{
+        const respCat=categories.filter(o=>o.id==y.relationCategory)[0]
+        console.log("y,respCat",y,respCat)
+        const otmcats=respCat.fields.filter(
+          x=>(x.dataType=="relationship" && x.relationship=="onetomany")
+        )
+        const otmClusters=prods.map(e=>e[y.name])
+        for(let i in otmClusters){
+          console.log("tableindex",tableIndexes[cc.name],cc.name)
+          if(i==tableIndexes[cc.name]){
+            displayTableAndRelations(respCat.name,
+          
+              otmClusters[i],
+              otmcats,respCat
+            )
+          }  
+        }
+      })
+      return allTables
+      
   }
 
   return (
     <div>
-      {getCategoriesProducts()}      
+      {getCategoriesProducts()}
+      
     </div>
   )
 }
