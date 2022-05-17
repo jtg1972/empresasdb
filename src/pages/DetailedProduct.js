@@ -80,7 +80,8 @@ const DetailedProduct = () => {
     loadingTable,
     currentCategoryId,
     tablesStateStatus
-  }=useSelector(mapToState)  
+  }=useSelector(mapToState) 
+  const [respCat,setRespCat]=useState({}) 
   const [titles,setTitles]=useState([])
   const [editFields,setEditFields]=useState({})  
   const [fieldId,setFieldId]=useState(0)
@@ -102,13 +103,23 @@ const DetailedProduct = () => {
     setFieldName(fn)
     setOpenMultipleValue(!openMultipleValue)
   }
+
   const [openEditProduct,setOpenEditProduct]=useState(false)
-  const toggleEditProduct=(editFields1)=>{
+  const toggleEditProduct=(editFields1,c1)=>{
     setEditFields(editFields1)
+    setRespCat(c1)
     setOpenEditProduct(!openEditProduct)
   }
+  const [tableIndexes,setTableIndexes]=useState({})
+  const [partials,setPartials]=useState([])
   const [openNewProduct,setOpenNewProduct]=useState("")
-  const toggleNewProduct=()=>setOpenNewProduct(!openNewProduct)
+  const toggleNewProduct=(rc,ti,ps)=>{
+    setRespCat(rc)
+    setTableIndexes(ti)
+    setPartials(ps)
+    setOpenNewProduct(!openNewProduct)
+    
+  }
   const [openFilter,setOpenFilter]=useState(false)
   const toggleFilter=(titles1)=>{
     if(openFilter==true){
@@ -200,12 +211,14 @@ const DetailedProduct = () => {
       {currentCategoryId!==0 &&
       currentCategory.fields.length>0 
       && tablesStateStatus=="OK" 
+      && respCat
       &&
       <EditProduct
       open={openEditProduct}
       toggleDialog={toggleEditProduct}
       editFields={editFields}
       setEditFields={setEditFields}
+      curCat={respCat}
       />}
 
       <AddMultipleValue
@@ -215,15 +228,20 @@ const DetailedProduct = () => {
         fieldName={fieldName}
       />
 
-      {currentCategoryId!==0 &&
-      currentCategory.fields.length>0 
+      {respCat 
+      &&
+      respCat?.fields?.length>0 
       && 
-      tablesStateStatus=="OK" &&<NewProduct
+      tablesStateStatus=="OK"
+      && <NewProduct
         open={openNewProduct}
         toggleDialog={toggleNewProduct}
+        respCat={respCat}
+        tableIndexes={tableIndexes}
+        partials={partials}
       />
       }
-      {currentCategoryId!==0 &&
+      {/*currentCategoryId!==0 &&
       currentCategory.fields.length>0 &&
       tablesStateStatus=="OK" &&
       <AddFilter
@@ -232,7 +250,7 @@ const DetailedProduct = () => {
       searchProductsFilter={searchProductsFilter}
       setSearchProductsFilter={setSearchProductsFilter}
       toggleFilter={toggleFilter}
-      />}
+      />*/}
       <DisplayWholeCategoryFieldsTable
       toggleDialogField={toggleDialogField}
       toggleDialogStructure={toggleMultipleValue}

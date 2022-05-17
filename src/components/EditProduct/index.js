@@ -58,25 +58,28 @@ const EditProduct = ({
   open,
   toggleDialog,
   editFields,
-  setEditFields
+  setEditFields,
+  curCat,
+  
 }) => {
   console.log("editFieldseditprod",editFields)
   const dispatch=useDispatch()
-  const {currentCategory}=useSelector(mapToState)
-  console.log("curcattt",currentCategory)
+  //const {currentCategory}=useSelector(mapToState)
+  //console.log("curcattt",currentCategory)
   /*useEffect(()=>{
     console.log("editFeilds",editFields)
     fields=editFields
   },[])
   console.log("fieldsnuevo",fields)*/
 
-  const MUTATION_EDIT_PRODUCT=mutationEditProduct(currentCategory)
+  const MUTATION_EDIT_PRODUCT=mutationEditProduct(curCat)
   const[editProduct1]=useMutation(MUTATION_EDIT_PRODUCT,{
     update:(cache,{data})=>{
       dispatch(editProduct({
         product:editFields,
-        categoryName:currentCategory.name
+        categoryName:curCat.name
       }))
+      
     }
   })
  
@@ -85,6 +88,7 @@ const EditProduct = ({
     editProduct1({
       variables:editFields
     })
+    
   }
 
   const dialogConfig={
@@ -97,7 +101,7 @@ const EditProduct = ({
     
     fields:editFields,
     setFields:setEditFields,
-    structure:currentCategory.fields
+    structure:curCat.fields
 
   }
 

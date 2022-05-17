@@ -8,7 +8,7 @@ const INITIAL_STATE={
   currentCategoryId:0,
   searchCategories:[],
   loadingTable:false,
-  categoryProducts:[],
+  categoryProducts:{},
   tablesStateRecords:[],
   tablesStateStatus:false,
   filterCriterias:[]

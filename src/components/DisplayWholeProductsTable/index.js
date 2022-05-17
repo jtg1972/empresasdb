@@ -2,10 +2,12 @@ import { useMutation, useQuery } from '@apollo/client'
 import gql from 'graphql-tag'
 import React,{useEffect, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { deleteProduct, setCategoryProducts } from '../../redux/category/actions'
+import { deleteProduct, setCategoryProducts, setCurrentCategory } from '../../redux/category/actions'
 import { BsPencilFill } from 'react-icons/bs';
 import { IoIosRemoveCircleOutline } from 'react-icons/io';
 import FormButton from '../Forms/FormButton'
+import DeleteProductRecord from '../../hooks/DeleteProductRecord'
+import DisplaySingleTable from './DisplaySingleTable'
 
 const callGetFieldsCategory=(field,categories)=>{
   const cat=categories.filter(c=>c.id==field.relationCategory)
@@ -83,8 +85,10 @@ const DisplayWholeProductsTable = ({
   toggleEditProduct,
   toggleNewProduct,
   toggleFilter,
-  searchProductsFilter
+  searchProductsFilter,
+  
 }) => {
+  let deleteFunctions={}
   const dispatch=useDispatch()
   const {
     currentCategory,
@@ -93,8 +97,11 @@ const DisplayWholeProductsTable = ({
     categoryProducts
   }=useSelector(mapToState)
 
+  const [rc,setRc]=useState({})
   const [tableIndexes,setTableIndexes]=useState({})
+  
   let deleteId=-1
+  let catName
 
   const productCategories=categories.filter(c=>{
     if(c.parentCategories.includes(currentCategory.id)
@@ -111,24 +118,15 @@ const DisplayWholeProductsTable = ({
       
     }
   })
-  const DELETE_PRODUCT=getMutationForDelete(currentCategory.name)
-  const [deleteProduct2]=useMutation(DELETE_PRODUCT,{
-    update:(cache,{data})=>{
-      const deleteName=`remove${currentCategory.name}`
-      const res=data[deleteName]
-      console.log("res",res)
-      if(res==true){
-      
-        dispatch(deleteProduct({categoryName:currentCategory.name,
-        productId:deleteId}))
-        
-      }
-    }
-  })
+  
+
+  catName=currentCategory.name
     
   useEffect(()=>{
     getProducts()
   },[currentCategory])
+
+  
 
   const trDateMex=(val)=>{
     console.log("val",val)
@@ -180,203 +178,65 @@ const DisplayWholeProductsTable = ({
     return p
   }
 
-  const displayTable=(titulo,products,respCat)=>{
-    let resultado=[]
-    console.log("displtable",products,respCat)
-    resultado.push(<p style={{marginTop:"10px",marginBottom:"10px"}}>{titulo}</p>)
-    /*if(currentCategory.typeOfCategory==0){
-      resultado.push(<FormButton
-      onClick={()=>{toggleNewProduct()}}>
-        Add Product to {currentCategory.name}
-      </FormButton>)
-    }*/
-    let yalohizo=false
-    let ifRelations=false
-    if(products.length>0){
-      
-      let headers=Object.keys(products[0]).map(p=><th>{p}</th>)
-      //headers.unshift(<th>Selected</th>)
-      if(respCat.typeOfCategory==0){
-        headers.push(<th>Delete Product</th>)
-        headers.push(<th>Edit Product</th>)
-      }
-      let header=[]
-      header.push(<thead><tr>{headers}</tr></thead>)
-      let acc=[]
-      let cname=titulo.substr(7)
-      let indice=0
-      for(let p in products){
-        let producto={...products[p]}
-        let data=[]
-        
-        for(let yu in respCat.fields){
-          if(respCat.fields[yu].dataType=="relationship" && yalohizo==false){
-            ifRelations=true
-            headers.unshift(<th>Selected</th>)
-            yalohizo=true
-            break;
-          }
-        }
-        if(ifRelations){
-          data.push(<td>
-            <input type="radio" name={respCat.name}
-            onChange={(e)=>{
-            
-              console.log("indice",indice,e.target.value)
-              setTableIndexes(
-                ti=>({...ti,[respCat.name]:e.target.value})
-              )
-            }
-            }
-            value={indice}
-            
-            />
-          </td>)
-          indice++
-        }
-        for(let c in producto){
-          /*let cc=categories.filter(v=>
-            v.name==cname
-          )*/
-          let fs=respCat.fields.filter(x=>{
-            
-            return x.name==c
-          })
-          console.log("ccfields",fs)
-
-          
-          if(fs.length==1){
-            if(fs[0].dataType=="relationship"){
-              data.push(<td>one to many</td>)
-            }
-            else if(fs[0].declaredType=="date"){
-              //if(producto[c]!==""){
-                
-              console.log("prodc",producto[c])  
-              let nf=trDateMex(producto[c])
-              console.log("nf",nf)
-              //producto[c]=nf
-              data.push(<td>{nf}</td>)
-              //}
-            }else{
-              data.push(<td>{producto[c]}</td>)
-            }
-          }else{
-            data.push(<td>{producto[c]}</td>)
-          }
-        }
-        if(respCat.typeOfCategory==0){
-          data.push(<td><IoIosRemoveCircleOutline
-            onClick={()=>{
-              deleteId=producto["id"]
-              
-              deleteProduct2({
-                variables:{
-                  id:producto["id"]
-                }
-              })
-            }}
-          />
-          </td>
-        )
-        data.push(<td><BsPencilFill
-          onClick={()=>{
-            console.log("prodwholetable",producto)
-            toggleEditProduct(transformProduct(producto))
-          }}
-        /></td>)
-        }
-        
-        acc.push(<tr>{data}</tr>)
-      }
-      
-      resultado.push(<table>{header}<tbody>{acc}</tbody></table>)
-      return resultado
-    }else
-      return <div>
-          <p style={{marginTop:"10px",marginBottom:"10px"}}>{titulo}</p>
-          <p>Theres no products of this category</p >
-        </div>
-      
-      /*<div>
-          <p>{titulo}</p>
-          {currentCategory.typeOfCategory==0 && 
-          <div>
-            <FormButton
-            onClick={()=>{toggleNewProduct()}}>
-              Add Product to {currentCategory.name}
-            </FormButton>
-            
-            
-          </div>
-            
-          }    
-          <p>Theres no products of this category</p>
-
-        </div>*/
-  }
+  
   let allTables
+  
   const getCategoriesProducts=()=>{
     
     allTables=[]
-    allTables.push(<FormButton
-      style={{
-        textAlign:"left",
-        backgroundColor:"orange",
-        color:"black",
-        width:"auto",
-        marginTop:"10px",
-        marginBottom:"10px"
-      }}
-      onClick={()=>{
-        toggleFilter()
-      }}>
-        Add Filter
-    </FormButton>)
-    if(currentCategory.typeOfCategory==0){
-    allTables.push(<FormButton
-      onClick={()=>{toggleNewProduct()}}
-      style={{
-        textAlign:"left",
-        backgroundColor:"orange",
-        color:"black",
-        width:"auto",
-        marginLeft:"10px",
-        marginTop:"10px",
-        marginBottom:"10px"
-      }}>
-        Add Product to {currentCategory.name}
-      </FormButton>)
-    }
-    
+    let partials=[]
+      
     Object.keys(categoryProducts).forEach((cp,index)=>{
       const nc=cp.substr(7)
       const cat2=categories.filter(c=>c.name==nc)[0]
       const oneToManyCategories=cat2.fields.filter(
         x=>(x.dataType=="relationship" && x.relationship=="onetomany")
       )
-      displayTableAndRelations(cp,categoryProducts[cp],oneToManyCategories,cat2)
+      partials.push(cp)
+      displayTableAndRelations(cp,categoryProducts[cp],oneToManyCategories,cat2,partials)
+      
     })
+    
     return allTables
   }
-  const displayTableAndRelations=(name,prods,otmrelations,cc)=>{  
-      console.log("cp[cp]",name,prods,otmrelations)
+  const displayTableAndRelations=(name,prods,otmrelations,cc,partials)=>{  
+      console.log("cp[cp]",name,prods,otmrelations,cc)
       
-      allTables.push(displayTable(name,prods,cc))
+      if(cc){
+      console.log("partials",partials)
+      allTables.push(<DisplaySingleTable
+        titulo={name}
+        products={prods}
+        respCat={cc}
+        toggleEditProduct={toggleEditProduct}
+        toggleNewProduct={toggleNewProduct}
+        tableIndexes={tableIndexes}
+        setTableIndexes={setTableIndexes}
+        partials={partials}
+        />
+        )
+      }
+      let relationNames=[]
       otmrelations.forEach(y=>{
         const respCat=categories.filter(o=>o.id==y.relationCategory)[0]
         console.log("y,respCat",y,respCat)
+
         const otmcats=respCat.fields.filter(
-          x=>(x.dataType=="relationship" && x.relationship=="onetomany")
+          x=>{
+            relationNames.push(`otm${cc.name}${respCat.name}`)
+            return (x.dataType=="relationship" && x.relationship=="onetomany")
+          }
         )
-        const otmClusters=prods.map(e=>e[y.name])
+        const otmClusters=prods?.map(e=>e[y.name])
         for(let i in otmClusters){
           console.log("tableindex",tableIndexes[cc.name],cc.name)
           if(i==tableIndexes[cc.name]){
-            displayTableAndRelations(respCat.name,
+            partials.push(relationNames[i])
+            displayTableAndRelations(`otm${cc.name}${respCat.name}`,
+            
           
               otmClusters[i],
-              otmcats,respCat
+              otmcats,respCat,partials
             )
           }  
         }
