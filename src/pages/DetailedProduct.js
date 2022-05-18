@@ -105,18 +105,24 @@ const DetailedProduct = () => {
   }
 
   const [openEditProduct,setOpenEditProduct]=useState(false)
-  const toggleEditProduct=(editFields1,c1)=>{
+  const toggleEditProduct=(editFields1,c1,ti,par,tit)=>{
     setEditFields(editFields1)
     setRespCat(c1)
+    setTableIndexes(ti)
+    setPartials(par)
+    setTitulo(tit)
     setOpenEditProduct(!openEditProduct)
+    
   }
   const [tableIndexes,setTableIndexes]=useState({})
   const [partials,setPartials]=useState([])
   const [openNewProduct,setOpenNewProduct]=useState("")
-  const toggleNewProduct=(rc,ti,ps)=>{
+  const [titulo,setTitulo]=useState("")
+  const toggleNewProduct=(rc,ti,ps,tit)=>{
     setRespCat(rc)
     setTableIndexes(ti)
     setPartials(ps)
+    setTitulo(tit)
     setOpenNewProduct(!openNewProduct)
     
   }
@@ -219,6 +225,9 @@ const DetailedProduct = () => {
       editFields={editFields}
       setEditFields={setEditFields}
       curCat={respCat}
+      tableIndexes={tableIndexes}
+      partials={partials}
+      titulo={titulo}
       />}
 
       <AddMultipleValue
@@ -239,6 +248,7 @@ const DetailedProduct = () => {
         respCat={respCat}
         tableIndexes={tableIndexes}
         partials={partials}
+        titulo={titulo}
       />
       }
       {/*currentCategoryId!==0 &&

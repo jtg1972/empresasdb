@@ -8,8 +8,7 @@
               
               id:Int
 otmclientesfacturasId:Int
-otmfacturasdetallesFacturas:[detallesFacturas]fecha:String
-clave:String
+otmfacturasdetallesFacturas:[detallesFacturas]clave:String
 
             }
 
@@ -22,7 +21,6 @@ clave:String
               createfacturas(
                 id:Int,
 otmclientesfacturasId:Int,
-fecha:String,
 clave:String,
 
                 ):facturas
@@ -30,7 +28,6 @@ clave:String,
               removefacturas(id:Int):Boolean!
               editfacturas(id:Int,
 otmclientesfacturasId:Int,
-fecha:String,
 clave:String,
 ):facturas
               

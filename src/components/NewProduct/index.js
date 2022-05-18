@@ -7,7 +7,7 @@ import Dialog from '../Dialog'
 import DisplayFields from '../DisplayFields'
 import FormButton from '../Forms/FormButton'
 
-const addProductMutation=(category)=>{
+const addProductMutation=(category,categories)=>{
   let argsf=category.fields
   let args1=[]
   for(let f in argsf){
@@ -32,9 +32,18 @@ const addProductMutation=(category)=>{
 
   let campos=[]
   for(let f in argsf){
-    if(argsf[f].dataType!=="relationship"){
-      campos.push(argsf[f].name)
+    if(argsf[f].dataType=="relationship"){
+      if(argsf[f].relationship=="onetomany"){
+        let oc=categories.filter(c=>c.id==argsf[f].relationCategory)
+        console.log("oc",oc)
+        let na=`otm${category.name}${oc[0].name}`
+        
+        campos.push(`${na}{id}`)
+      
+      }
     }
+    else
+      campos.push(argsf[f].name)
   }
   
   campos.unshift("id")  
@@ -51,7 +60,8 @@ const addProductMutation=(category)=>{
 
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
-  categoryProducts:categories.categoryProducts
+  categoryProducts:categories.categoryProducts,
+  categories:categories.categories
 })
 
 const NewProduct = ({
@@ -59,60 +69,85 @@ const NewProduct = ({
   toggleDialog,
   respCat,
   tableIndexes,
-  partials
+  partials,
+  titulo
   
 }) => {
   console.log("respcatnuevo",respCat)
   const [fields,setFields]=useState({})
   const {currentCategory,
-  categoryProducts}=useSelector(mapToState)
+  categoryProducts,
+  categories}=useSelector(mapToState)
   const dispatch=useDispatch()
  
-  const updateState=(cp,indexPartials=0,indexArray=0,prod)=>{
+  const updateState=(prods,indexPartials=0,indexArray=0,nuevo)=>{
+      
     indexPartials=parseInt(indexPartials)
-    indexArray=parseInt(indexArray)
-    const ti=Object.keys(tableIndexes).map(x=>parseInt(tableIndexes[x]))
-    console.log("tipartials",ti,partials)
-    if(Object.keys(cp).length==0)
-      return null
-    if(!Array.isArray(cp)){
-      console.log("no arreglo")
-      if(indexPartials<partials.length){
-      console.log("pip",partials[indexPartials],cp[partials[indexPartials]])
-      console.log("params",cp[partials[indexPartials]],indexPartials+1,indexArray)  
-      return {...cp,[partials[indexPartials]]:updateState(cp[partials[indexPartials]],indexPartials+1,indexArray)}
-      }
-      
-      
-
-    } else if(Array.isArray(cp)){
-      console.log("arraglo",indexArray,ti.length)
+      indexArray=parseInt(indexArray)
+      let ti=Object.keys(tableIndexes).map(x=>parseInt(tableIndexes[x]))
     
-      if(indexArray<ti.length){
-        if(indexArray+1==ti.length){
-          let uy=[
-            ...cp,prod]
-          return uy
-
+      console.log("tipartials",ti,partials)
+      let cp 
+      /*if(prods==undefined || prods==[]
+        ||prods=={})
+        return null*/
+     
+      
+      if(!Array.isArray(prods)){
+        cp={...prods}
+        console.log("no arreglo")
+        console.log("prods partlength partials",prods,partials.length,partials)
+        let ui
+        //console.log("pip",partials[indexPartials],cp[partials[indexPartials]])
+        //console.log("params",cp[partials[indexPartials]],indexPartials+1,indexArray)
+        console.log("se modifica campo",partials[indexPartials])
+        //if((indexPartials+1)==partials.length){
+        console.log("importante",partials[indexPartials],titulo)
+        if(partials[indexPartials]==titulo){
+          console.log("entro final")
+          /*ui=cp[partials[indexPartials]].filter(x=>{
+            console.log("xid deleteid",x.id,deleteId)
+            return x.id!==deleteId
+          })*/
+          
+          console.log("ui",partials[indexPartials],cp[partials[indexPartials]])
+          return {
+            ...cp,
+            [partials[indexPartials]]:
+            [...cp[partials[indexPartials]],nuevo]
+          }
+        }else{
+          console.log("entro no final")
+          return {...cp,[partials[indexPartials]]:updateState(cp[partials[indexPartials]],indexPartials+1,indexArray,nuevo)}
         }
       
-        console.log("partarr",cp[ti[indexArray]])
-      console.log("paramsarr",cp[ti[indexArray]],indexPartials,indexArray+1)
+      } else if(Array.isArray(prods)){
+        cp=[...prods]
+        console.log("arraglo",indexArray,ti.length)
+        //console.log("deliddd",deleteId)
+        console.log("prods",prods)
+          console.log("partarr",cp[ti[indexArray]])
+        console.log("paramsarr",cp[ti[indexArray]],indexPartials,indexArray+1,titulo)
+                  
+        
+        return cp.map((y,index)=>{
+          if(index==ti[indexArray]){
+            return updateState(cp[ti[indexArray]],indexPartials,indexArray+1,nuevo)
+          }
+          return y
+        })
       
-      return updateState(cp[ti[indexArray]],indexPartials,indexArray+1)
-      }
-    
-    } 
-    
-}
-
-  const CREATE_PRODUCT_MUT=addProductMutation(respCat)
+      } 
+  }
+      
+  
+  const CREATE_PRODUCT_MUT=addProductMutation(respCat,categories)
   const [addProduct2]=useMutation(CREATE_PRODUCT_MUT,{
     update:(cache,{data})=>{
       const nam=`create${respCat.name}`
       const us=updateState(categoryProducts,0,0,data[nam])
       console.log("ust",us)
-      setCategoryProducts(us)
+      dispatch(setCategoryProducts(us))
       /*dispatch(addProduct({
         categoryName:respCat.name,
         product:data[nam]

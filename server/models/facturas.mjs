@@ -6,7 +6,6 @@ import Sequelize from 'sequelize'
 
             		return super.init({
 		 otmclientesfacturasId:DataTypes.INTEGER,
-		 fecha:DataTypes.DATEONLY,
 		 clave:DataTypes.STRING},{sequelize})
 }static associate(models){this.hasMany(models.detallesFacturas)
 

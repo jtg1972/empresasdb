@@ -6,6 +6,7 @@ import { IoIosRemoveCircleOutline } from 'react-icons/io';
 import { useDispatch, useSelector } from 'react-redux';
 import {setCategoryProducts} from '../../../redux/category/actions'
 import { FcLeftDown2 } from 'react-icons/fc';
+import { valueToObjectRepresentation } from '@apollo/client/utilities';
 const getMutationForDelete=(categoryName)=>{
   const mutation=`mutation Remove${categoryName}($id: Int) {
     remove${categoryName}(id: $id)
@@ -169,7 +170,7 @@ const DisplaySingleTable = ({
         marginTop:"10px",
         marginBottom:"10px"
       }}
-      onClick={()=>toggleNewProduct(respCat,tableIndexes,partials)}
+      onClick={()=>toggleNewProduct(respCat,tableIndexes,partials,titulo)}
       >Add Record of {respCat.name}</FormButton>)
     
     /*if(currentCategory.typeOfCategory==0){
@@ -221,7 +222,7 @@ const DisplaySingleTable = ({
           </td>)
           indice++
         }
-        for(let c in producto){
+        for(let c in products[p]){
           /*let cc=categories.filter(v=>
             v.name==cname
           )*/
@@ -273,7 +274,7 @@ const DisplaySingleTable = ({
           onClick={()=>{
             
             console.log("prodwholetable",producto)
-            toggleEditProduct(transformProduct(producto),respCat)
+            toggleEditProduct(transformProduct(producto),respCat,tableIndexes,partials,titulo)
           }}
         /></td>)
         }
@@ -296,7 +297,7 @@ const DisplaySingleTable = ({
             marginTop:"10px",
             marginBottom:"10px"
           }}
-          onClick={()=>toggleNewProduct(respCat)}
+          onClick={()=>toggleNewProduct(respCat,tableIndexes,partials,titulo)}
           >Add Record of {respCat.name}
           </FormButton>
           <p>Theres no products of this category</p >

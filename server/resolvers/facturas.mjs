@@ -38,7 +38,7 @@
                 },
                 editfacturas:async(parent,args,{db})=>{
               await db.facturas.update({
-                      id:args["id"],otmclientesfacturasId:args["otmclientesfacturasId"],otmfacturasdetallesFacturas:args["otmfacturasdetallesFacturas"],fecha:new Date(args["fecha"]),clave:args["clave"]
+                      id:args["id"],otmclientesfacturasId:args["otmclientesfacturasId"],otmfacturasdetallesFacturas:args["otmfacturasdetallesFacturas"],clave:args["clave"]
                     },
                     {
                     where:{id:args.id}
