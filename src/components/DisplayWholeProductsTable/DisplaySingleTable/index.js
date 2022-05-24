@@ -208,14 +208,17 @@ const DisplaySingleTable = ({
         }
         if(ifRelations){
           data.push(<td>
-            <input type="radio" name={respCat.name}
+            <input type="radio" name={titulo}
             onChange={(e)=>{
             
-              console.log("indice",indice,e.target.value)
-              setTableIndexes(ti=>({...ti,[respCat.name]:e.target.value}))
+              console.log("indice",indice,e.target.value,titulo)
+              console.log("impser",{...tableIndexes,[titulo]:e.target.value})
+              setTableIndexes(ti=>({...ti,[titulo]:e.target.value}))
+              }
+
               
             }
-            }
+            
             value={indice}
             
             />

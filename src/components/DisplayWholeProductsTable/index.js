@@ -223,16 +223,22 @@ const DisplayWholeProductsTable = ({
 
         const otmcats=respCat.fields.filter(
           x=>{
-            relationNames.push(`otm${cc.name}${respCat.name}`)
+            //relationNames.push(x.name)
+            if(x.dataType=="relationship" && x.relationship=="onetomany")
+              relationNames.push(x.name)
             return (x.dataType=="relationship" && x.relationship=="onetomany")
           }
         )
         const otmClusters=prods?.map(e=>e[y.name])
         for(let i in otmClusters){
           console.log("tableindex",tableIndexes[cc.name],cc.name)
-          if(i==tableIndexes[cc.name]){
-            partials.push(relationNames[i])
-            displayTableAndRelations(`otm${cc.name}${respCat.name}`,
+          console.log("yname",y)
+          console.log("imp2",i,tableIndexes[y.name],y.name)
+          if(i==tableIndexes[name]){
+            console.log("imp3",i,tableIndexes[name],name)
+
+            partials.push(y.name)
+            displayTableAndRelations(y.name,
             
           
               otmClusters[i],

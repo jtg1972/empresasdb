@@ -7,6 +7,12 @@
                       raw:true
                     })
                     return x
+                  },otmclientestelefonos:async(parent,args,{db})=>{
+                    const x=await db.telefonos.findAll({
+                      where:{otmclientestelefonosId:parent.id},
+                      raw:true
+                    })
+                    return x
                   },
             },
             Query:{
@@ -38,7 +44,7 @@
                 },
                 editclientes:async(parent,args,{db})=>{
               await db.clientes.update({
-                      id:args["id"],otmclientesfacturas:args["otmclientesfacturas"],name:args["name"],domicilio:args["domicilio"],telefono:args["telefono"]
+                      id:args["id"],otmclientesfacturas:args["otmclientesfacturas"],otmclientestelefonos:args["otmclientestelefonos"],name:args["name"],domicilio:args["domicilio"],telefono:args["telefono"]
                     },
                     {
                     where:{id:args.id}

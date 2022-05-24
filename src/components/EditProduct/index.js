@@ -53,7 +53,8 @@ const mutationEditProduct=(category)=>{
 
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
-  categoryProducts:categories.categoryProducts
+  categoryProducts:categories.categoryProducts,
+  categories:categories.categories
 })
 
 const EditProduct = ({
@@ -67,7 +68,7 @@ const EditProduct = ({
   titulo
   
 }) => {
-  const{categoryProducts}=useSelector(mapToState)
+  const{categoryProducts,currentCategory,categories}=useSelector(mapToState)
   console.log("editFieldseditprod",editFields)
   console.log("titulo",titulo)
   const dispatch=useDispatch()
@@ -83,12 +84,16 @@ const EditProduct = ({
     indexPartials=parseInt(indexPartials)
       indexArray=parseInt(indexArray)
       let ti=Object.keys(tableIndexes).map(x=>parseInt(tableIndexes[x]))
-    
+      //let ti=path
+      //let partials=ind
       console.log("tipartials",ti,partials)
       let cp 
       /*if(prods==undefined || prods==[]
         ||prods=={})
         return null*/
+        partials=path
+        ti=ind
+
      
       console.log("editfieldsus",editFields)
       if(!Array.isArray(prods)){
@@ -146,10 +151,71 @@ const EditProduct = ({
       
       } 
   }
+  let ind
+  let path
+  const getIndexes=()=>{
+    
+    for(let p in path){
+      console.log("ti pathp",tableIndexes,path[p])
+      let curInd
+      curInd=tableIndexes[path[p]]
+      ind.push(curInd)
+      
+    }
+    return ind
+  }
+  let indexSize=1
   
+  const getPath=(fields)=>{
+    
+    if(titulo.startsWith('getData')){
+      return path
+    }
+    let keys=Object.keys(fields)
+    if(keys?.length>0){
+      indexSize++
+      let ni=indexSize
+      for(let f in keys){
+        if(path.length>=ni){
+          path.splice(ni-1)
+        }
+        path.push(fields[f].name)
+        if(fields[f].name!==titulo){
+          const relCatId=fields[f].relationCategory
+          const curCat=categories.filter(x=>x.id==relCatId)[0]
+          
+          
+          const r=getPath(curCat.fields.filter(x=>x.dataType=="relationship"))
+          if(r==true)
+              break
+        }else{
+          return true
+        }
+      }
+    }else
+      return
+
+  }
+
+
+
+
+    
+    
+    
+    
+   
   const MUTATION_EDIT_PRODUCT=mutationEditProduct(curCat)
   const[editProduct1]=useMutation(MUTATION_EDIT_PRODUCT,{
     update:(cache,{data})=>{
+      path=[`getData${currentCategory.name}`]
+      indexSize=1
+      getPath(currentCategory.fields.filter(x=>
+        x.dataType=="relationship"))
+      console.log("path",path)
+      ind=[]
+      getIndexes()
+      console.log("indices",ind)
       const ni=updateState(categoryProducts,0,0)
       console.log("ni",ni)
       dispatch(setCategoryProducts(ni))

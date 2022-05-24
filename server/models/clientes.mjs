@@ -13,5 +13,10 @@ import Sequelize from 'sequelize'
                   models.facturas.belongsTo(models.clientes,
                     {foreignKey:"clientesId"})
                     
+                  this.hasMany(models.telefonos)
+
+                  models.telefonos.belongsTo(models.clientes,
+                    {foreignKey:"clientesId"})
+                    
                   }}
 export default clientes

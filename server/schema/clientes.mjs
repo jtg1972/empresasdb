@@ -7,7 +7,7 @@
             type clientes{
               
               id:Int
-otmclientesfacturas:[facturas]name:String
+otmclientesfacturas:[facturas]otmclientestelefonos:[telefonos]name:String
 domicilio:String
 telefono:String
 
