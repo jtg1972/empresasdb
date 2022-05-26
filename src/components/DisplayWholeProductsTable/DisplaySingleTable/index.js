@@ -17,7 +17,9 @@ const getMutationForDelete=(categoryName)=>{
 
 }
 const mapToState=({categories})=>({
-  categoryProducts:categories.categoryProducts
+  categoryProducts:categories.categoryProducts,
+  categories:categories.categories,
+  currentCategory:categories.currentCategory
 })
 
 const DisplaySingleTable = ({
@@ -28,13 +30,18 @@ const DisplaySingleTable = ({
   toggleNewProduct,
   tableIndexes,
   setTableIndexes,
-  partials
+  partials,
+  parentId
   })=>{
+    console.log("productsmain",products)
   const dispatch=useDispatch()
   let resultado=[]
   let deleteId
-  const {categoryProducts}=useSelector(mapToState)
+  const {categoryProducts,
+  categories,
+  currentCategory}=useSelector(mapToState)
   console.log("respcatst",respCat)
+  console.log("parentId",parentId)
 
   const updateState=(prods,indexPartials=0,indexArray=0)=>{
       
@@ -47,7 +54,10 @@ const DisplaySingleTable = ({
       /*if(prods==undefined || prods==[]
         ||prods=={})
         return null*/
-     
+        
+        partials=path
+        ti=ind
+
       
       if(!Array.isArray(prods)){
         cp={...prods}
@@ -96,6 +106,66 @@ const DisplaySingleTable = ({
       } 
       
   }
+
+  let ind
+  let path
+  const getIndexes=()=>{
+    
+    for(let p in path){
+      console.log("ti pathp",tableIndexes,path[p])
+      let curInd
+      curInd=tableIndexes[path[p]]
+      ind.push(curInd)
+      
+    }
+    return ind
+  }
+  let indexSize=1
+  
+  const getPath=(fields)=>{
+    
+    if(titulo.startsWith('getData')){
+      return path
+    }
+    let keys=Object.keys(fields)
+    if(keys?.length>0){
+      indexSize++
+      let ni=indexSize
+      for(let f in keys){
+        if(path.length>=ni){
+          path.splice(ni-1)
+        }
+        path.push(fields[f].name)
+        if(fields[f].name!==titulo){
+          const relCatId=fields[f].relationCategory
+          const curCat=categories.filter(x=>x.id==relCatId)[0]
+          
+          
+          const r=getPath(curCat.fields.filter(x=>x.dataType=="relationship"))
+          if(r==true)
+              break
+        }else{
+          return true
+        }
+      }
+    }else
+      return
+
+  }
+
+  const hasSons=(ind)=>{
+    const fws=respCat.fields.filter(x=>
+      x.dataType=="relationship" &&
+      x.relationship=="onetomany")
+      for(let cf in fws){
+        if(products[ind][fws[cf].name].length>0)
+          return true
+      return false
+      }
+  }
+
+
+
   const DELETE_PRODUCT=getMutationForDelete(respCat.name)
   const [delete2]=useMutation(DELETE_PRODUCT,{
     update:(cache,{data})=>{
@@ -103,6 +173,15 @@ const DisplaySingleTable = ({
     
       if(data[n]==true){
         console.log("tituloenc",titulo)
+        path=[`getData${currentCategory.name}`]
+        indexSize=1
+        getPath(currentCategory.fields.filter(x=>
+          x.dataType=="relationship"))
+        console.log("path",path)
+        ind=[]
+        getIndexes()
+        console.log("indices",ind)
+      
         let us=updateState(categoryProducts,0,0,titulo)
         console.log("us",us)
         dispatch(setCategoryProducts(us))
@@ -170,7 +249,7 @@ const DisplaySingleTable = ({
         marginTop:"10px",
         marginBottom:"10px"
       }}
-      onClick={()=>toggleNewProduct(respCat,tableIndexes,partials,titulo)}
+      onClick={()=>toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId)}
       >Add Record of {respCat.name}</FormButton>)
     
     /*if(currentCategory.typeOfCategory==0){
@@ -256,24 +335,28 @@ const DisplaySingleTable = ({
             data.push(<td>{producto[c]}</td>)
           }
         }
-        if(respCat.typeOfCategory==0){
-          data.push(<td><IoIosRemoveCircleOutline
-            onClick={()=>{
-              deleteId=producto["id"]
+        if(respCat.typeOfCategory==0){ 
+          if(!hasSons(p)){
+            data.push(<td><IoIosRemoveCircleOutline
+              onClick={()=>{
+                deleteId=producto["id"]
 
-              console.log("Paramsbien ",deleteId)
-              
-              delete2({
-                variables:{
-                  id:producto["id"]
-                }
-              })
-              
-            }}
-          />
-          </td>
-        )
-        data.push(<td><BsPencilFill
+                console.log("Paramsbien ",deleteId)
+                
+                delete2({
+                  variables:{
+                    id:producto["id"]
+                  }
+                })
+                
+              }}
+            />
+            </td>
+          )}else{
+            data.push(<td></td>)
+          }
+        
+          data.push(<td><BsPencilFill
           onClick={()=>{
             
             console.log("prodwholetable",producto)
@@ -300,7 +383,7 @@ const DisplaySingleTable = ({
             marginTop:"10px",
             marginBottom:"10px"
           }}
-          onClick={()=>toggleNewProduct(respCat,tableIndexes,partials,titulo)}
+          onClick={()=>toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId)}
           >Add Record of {respCat.name}
           </FormButton>
           <p>Theres no products of this category</p >

@@ -1,4 +1,4 @@
-import { fetchFilterResults } from "./helpers"
+import { fetchFilterResults, getPath } from "./helpers"
 import types from "./types"
 
 const INITIAL_STATE={
@@ -11,7 +11,8 @@ const INITIAL_STATE={
   categoryProducts:{},
   tablesStateRecords:[],
   tablesStateStatus:false,
-  filterCriterias:[]
+  filterCriterias:[],
+  path:[]
 }
 
 export default (state=INITIAL_STATE,action)=>{
@@ -317,5 +318,6 @@ export default (state=INITIAL_STATE,action)=>{
       }
     default:
       return state
+    
   }
 }

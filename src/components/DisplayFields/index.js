@@ -12,9 +12,10 @@ setDefaultLocale('en')*/
 const DisplayFields = ({
   structure,
   fields,
-  setFields
+  setFields,
+  parentId
 }) => {
-  console.log("fieldsdf",fields)
+  console.log("fieldsdf pid",fields,parentId)
   const inputChange=(cat,e)=>{
     const fieldName=cat.name
     setFields({
@@ -84,8 +85,10 @@ const DisplayFields = ({
     <div>
     {structure.map((cat,index)=>{
       if(cat.dataType=="singleValue"){
+        console.log("CAT",cat)
         if(cat.declaredType=="string" ||
-        cat.declaredType=="number"){
+        cat.declaredType=="number"
+        && cat.relationship!=="otmdestiny"){
           return <FormInput
           {...formInputConfig(cat,index)}
           ></FormInput>

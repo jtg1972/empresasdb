@@ -118,11 +118,13 @@ const DetailedProduct = () => {
   const [partials,setPartials]=useState([])
   const [openNewProduct,setOpenNewProduct]=useState("")
   const [titulo,setTitulo]=useState("")
-  const toggleNewProduct=(rc,ti,ps,tit)=>{
+  const [parentId,setParentId]=useState(-1)
+  const toggleNewProduct=(rc,ti,ps,tit,pid)=>{
     setRespCat(rc)
     setTableIndexes(ti)
     setPartials(ps)
     setTitulo(tit)
+    setParentId(pid)
     setOpenNewProduct(!openNewProduct)
     
   }
@@ -249,6 +251,7 @@ const DetailedProduct = () => {
         tableIndexes={tableIndexes}
         partials={partials}
         titulo={titulo}
+        parentId={parentId}
       />
       }
       {/*currentCategoryId!==0 &&

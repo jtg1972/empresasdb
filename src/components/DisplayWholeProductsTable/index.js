@@ -193,17 +193,27 @@ const DisplayWholeProductsTable = ({
         x=>(x.dataType=="relationship" && x.relationship=="onetomany")
       )
       partials.push(cp)
-      displayTableAndRelations(cp,categoryProducts[cp],oneToManyCategories,cat2,partials)
+      displayTableAndRelations(cp,categoryProducts[cp],oneToManyCategories,cat2,partials,-1)
       
     })
     
     return allTables
   }
-  const displayTableAndRelations=(name,prods,otmrelations,cc,partials)=>{  
+  const displayTableAndRelations=(name,prods,otmrelations,cc,partials,pi)=>{  
       console.log("cp[cp]",name,prods,otmrelations,cc)
-      
+      let parId
+
       if(cc){
       console.log("partials",partials)
+      let indtable=tableIndexes[name]
+      console.log("ti,name",tableIndexes,name,tableIndexes[name])
+    
+      if(indtable>=0){
+        parId=prods[indtable]?.id
+      }else{
+        parId=-1
+      }
+    
       allTables.push(<DisplaySingleTable
         titulo={name}
         products={prods}
@@ -213,6 +223,7 @@ const DisplayWholeProductsTable = ({
         tableIndexes={tableIndexes}
         setTableIndexes={setTableIndexes}
         partials={partials}
+        parentId={pi}
         />
         )
       }
@@ -242,7 +253,8 @@ const DisplayWholeProductsTable = ({
             
           
               otmClusters[i],
-              otmcats,respCat,partials
+              otmcats,respCat,partials,
+              parId
             )
           }  
         }

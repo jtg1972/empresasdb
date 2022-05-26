@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client'
 import gql from 'graphql-tag'
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { addProduct, setCategoryProducts } from '../../redux/category/actions'
 import Dialog from '../Dialog'
@@ -70,7 +70,8 @@ const NewProduct = ({
   respCat,
   tableIndexes,
   partials,
-  titulo
+  titulo,
+  parentId
   
 }) => {
   console.log("respcatnuevo",respCat)
@@ -80,6 +81,18 @@ const NewProduct = ({
   categories}=useSelector(mapToState)
   const dispatch=useDispatch()
  
+  useEffect(()=>{
+    const xfields=respCat.fields.filter(x=>
+      x.relationship=="otmdestiny"
+    )
+    const nf={}
+    xfields.forEach(f=>{
+      nf[f.name]=parentId
+    })
+    console.log("nf",nf)
+    setFields({...fields,...nf})
+  },[])
+
   const updateState=(prods,indexPartials=0,indexArray=0,nuevo)=>{
       
     indexPartials=parseInt(indexPartials)
@@ -91,7 +104,9 @@ const NewProduct = ({
       /*if(prods==undefined || prods==[]
         ||prods=={})
         return null*/
-     
+        partials=path
+        ti=ind
+
       
       if(!Array.isArray(prods)){
         cp={...prods}
@@ -139,12 +154,71 @@ const NewProduct = ({
       
       } 
   }
+
+  let ind
+  let path
+  const getIndexes=()=>{
+    
+    for(let p in path){
+      console.log("ti pathp",tableIndexes,path[p])
+      let curInd
+      curInd=tableIndexes[path[p]]
+      ind.push(curInd)
+      
+    }
+    return ind
+  }
+  let indexSize=1
+  
+
+  const getPath=(fields)=>{
+    
+    if(titulo.startsWith('getData')){
+      return path
+    }
+    let keys=Object.keys(fields)
+    if(keys?.length>0){
+      indexSize++
+      let ni=indexSize
+      for(let f in keys){
+        if(path.length>=ni){
+          path.splice(ni-1)
+        }
+        path.push(fields[f].name)
+        if(fields[f].name!==titulo){
+          const relCatId=fields[f].relationCategory
+          const curCat=categories.filter(x=>x.id==relCatId)[0]
+          
+          
+          const r=getPath(curCat.fields.filter(x=>x.dataType=="relationship"))
+          if(r==true)
+              break
+        }else{
+          return true
+        }
+      }
+    }else
+      return
+
+  }
+
       
   
   const CREATE_PRODUCT_MUT=addProductMutation(respCat,categories)
   const [addProduct2]=useMutation(CREATE_PRODUCT_MUT,{
     update:(cache,{data})=>{
       const nam=`create${respCat.name}`
+
+      path=[`getData${currentCategory.name}`]
+      indexSize=1
+      getPath(currentCategory.fields.filter(x=>
+        x.dataType=="relationship"))
+      console.log("path",path)
+      ind=[]
+      getIndexes()
+
+
+
       const us=updateState(categoryProducts,0,0,data[nam])
       console.log("ust",us)
       dispatch(setCategoryProducts(us))
@@ -174,7 +248,8 @@ const NewProduct = ({
   const displayFieldsConfig=()=>({
     structure:respCat.fields,
     fields,
-    setFields
+    setFields,
+    parentId
   })
 
   const formButtonConfig={
