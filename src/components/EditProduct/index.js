@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import { argsToArgsConfig } from 'graphql/type/definition'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { editProduct, setCategoryProducts } from '../../redux/category/actions'
@@ -14,6 +15,10 @@ const mutationEditProduct=(category)=>{
     console.log("ffff",f)
     if(argsf[f].declaredType=="number"){
       args.push(`$${argsf[f].name}:Int`)
+    }else if(argsf[f].dataType=="queryCategory"){
+      args.push(`$${argsf[f].name}GlobalCatQuery:Int`)
+      args.push(`$${argsf[f].name}FinalCatQuery:Int`)
+      args.push(`$${argsf[f].name}ProductQuery:Int`)
     }else if(argsf[f].declaredType=="string"){
       args.push(`$${argsf[f].name}:String`)
     }else if(argsf[f].declaredType=="date"){
@@ -25,13 +30,25 @@ const mutationEditProduct=(category)=>{
   args=args.join(", ")
   for(let f in argsf){
       if(argsf[f].dataType!=="relationship"){
-        args1.push(`${argsf[f].name}:$${argsf[f].name}`)
+        if(argsf[f].dataType=="queryCategory"){
+          args1.push(`${argsf[f].name}GlobalCatQuery:$${argsf[f].name}GlobalCatQuery`)
+          args1.push(`${argsf[f].name}FinalCatQuery:$${argsf[f].name}FinalCatQuery`)
+          args1.push(`${argsf[f].name}ProductQuery:$${argsf[f].name}ProductQuery`)
+        }else{
+          args1.push(`${argsf[f].name}:$${argsf[f].name}`)
+        }
       }
   }
   let campos=[]
   for(let f in argsf){
     if(argsf[f].dataType!=="relationship"){
-      campos.push(argsf[f].name)
+      if(argsf[f].dataType=="queryCategory"){
+        campos.push(`${argsf[f].name}GlobalCatQuery`)
+        campos.push(`${argsf[f].name}FinalCatQuery`)
+        campos.push(`${argsf[f].name}ProductQuery`)
+      }else{
+        campos.push(argsf[f].name)
+      }
     }
   }
   console.log("camposmi",campos)

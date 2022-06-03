@@ -113,3 +113,39 @@ export const fetchFilterResults=(data,payload)=>{
   })
   return sortResults
 }
+
+export const searchRecordsFromQuery=(payload,products)=>{
+  const s=payload.split(" ")
+  let resultado={}
+  for(let i=1;i<=s.length;i++){
+    resultado[i]=[]
+  }
+  let already=[]
+  products.forEach(pr=>{
+    let matches=0
+    already=[]
+    for(let key in pr){
+      for(let skey in s){
+        if(typeof pr[key]!=="number"){
+          if(pr[key].includes(s[skey])){
+            if(!already.includes(s[skey])){
+              already.push(s[key])
+              matches++
+              break
+            }
+          }
+        }
+      }
+    }
+    if(matches>=1){
+      resultado[matches].push(pr)
+    }
+  })
+  let real=[]
+  Object.keys(resultado).forEach(r=>{
+    if(resultado[r].length>0)
+      real=resultado[r]
+  })
+  console.log("resultado",real)
+  return real
+}

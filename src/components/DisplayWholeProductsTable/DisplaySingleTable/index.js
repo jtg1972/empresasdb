@@ -262,7 +262,23 @@ const DisplaySingleTable = ({
     let ifRelations=false
     if(products?.length>0){
       
-      let headers=Object.keys(products[0]).map(p=><th>{p}</th>)
+      let headers=respCat.fields.map(h=>{
+        if(h.dataType=="queryCategory"){
+          return <>
+            <th>{h.name} Global</th>
+            <th>{h.name} Final</th>
+            <th>{h.name} Product</th>
+          </>
+
+        }
+        return <th>{h.name}</th>
+      })
+      headers.unshift(<th>Id</th>)
+      headers.push(<th>Category</th>)
+      /*let headers=Object.keys(products[0]).map(p=>{
+        
+      <th>{p}</th>}
+      )*/
       //headers.unshift(<th>Selected</th>)
       if(respCat.typeOfCategory==0){
         headers.push(<th>Delete Product</th>)
@@ -328,7 +344,11 @@ const DisplaySingleTable = ({
               //producto[c]=nf
               data.push(<td>{nf}</td>)
               //}
-            }else{
+            }else if(fs[0].dataType=="queryCategory"){
+              data.push(<td>producto[`${producto[c]}globalCatQuery`]</td>)
+              data.push(<td>producto[`${producto[c]}finalCatQuery`]</td>)
+              data.push(<td>producto[`${producto[c]}productQuery`]</td>)
+            }else { 
               data.push(<td>{producto[c]}</td>)
             }
           }else{

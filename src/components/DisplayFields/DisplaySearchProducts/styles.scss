@@ -1,0 +1,22 @@
+.containerCombo{
+  max-height:100px;
+  
+  overflow-y:auto;
+  background-color:black;
+  color:white;
+  margin-bottom:10px;
+  .scrollCombo{
+    overflow-y:auto;
+    padding:5px;
+    .combo{
+      &:hover{
+        background-color:white;
+        color:black;
+      }
+      
+    }
+    .comboDisabled{
+      color:grey;
+    }
+  }
+}

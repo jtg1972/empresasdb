@@ -28,6 +28,7 @@ const CATEGORIES1=gql`
         category
         relationship
         relationCategory
+        queryCategory
 
       }
     }
@@ -198,6 +199,8 @@ const DisplayRow = ({
       return "Single"
     else if(f.dataType=="relationship")
       return "Relationship"
+    else if(f.dataType=="queryCategory")
+      return "Category Query"
   }
 
   
@@ -251,6 +254,20 @@ const DisplayRow = ({
       return "One to Many Destiny"
     }
   }
+
+  const displayQueryCategory=()=>{
+    if(f.dataType=="queryCategory")
+      console.log("fqc",f.queryCategory)
+      if(f.queryCategory>0){
+        const cat=categories.filter(x=>
+          x.id==f.queryCategory  
+        )[0]
+        if(cat){
+          return cat.name
+        }else
+          return "unknown"
+      }
+  }
   const displayTargetCategory=()=>{
     if(f.dataType=="relationship"){
       const c=categories.filter(x=>x.id==f.relationCategory)
@@ -266,6 +283,7 @@ const DisplayRow = ({
       <td>{f.name}</td>
       <td>{f.declaredType}</td>
       <td>{displayDataTypeTitle()}</td>
+      <td>{displayQueryCategory()}</td>
       <td>{displayRelationshipType()}</td>
       <td>{displayTargetCategory()}</td>
       <td>{Array.isArray(f.values) && f.values.length>0 

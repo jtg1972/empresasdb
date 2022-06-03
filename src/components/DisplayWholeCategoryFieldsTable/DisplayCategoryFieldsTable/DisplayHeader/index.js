@@ -6,6 +6,7 @@ const DisplayHeader = () => {
       <th>Field Name</th>
       <th>Declared Type</th>
       <th>Data Type</th>
+      <th>Query Category</th>
       <th>Relationship</th>
       <th>Target Category</th>
       <th>Values to Select</th>

@@ -14,6 +14,12 @@ const callGetFieldsCategory=(field,categories)=>{
 let bd
   if(cat.length>0){
       bd=cat[0].fields.map(x=>{
+      if(x.dataType=="queryCategory"){
+        const desc=`\n${x.name}GlobalCatQuery\n 
+          ${x.name}FinalCatQuery\n 
+          ${x.name}ProductQuery`
+        return desc
+      }
       if(x.dataType!=="relationship"){
         return x.name
       }else if(x.dataType=="relationship"){
@@ -38,7 +44,12 @@ const getQueryFromCategory=(productCategories,categories)=>{
   let fields
   let q2=productCategories.map(p=>{
     fields=p.fields.map(x=>{
-      if(x.dataType!=="relationship"){
+      if(x.dataType=="queryCategory"){
+          const desc=`\n${x.name}GlobalCatQuery\n 
+          ${x.name}FinalCatQuery\n 
+          ${x.name}ProductQuery`
+          return desc
+      }else if(x.dataType!=="relationship"){
         return x.name
       }
       else if(x.dataType=="relationship"){

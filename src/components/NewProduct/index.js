@@ -13,6 +13,11 @@ const addProductMutation=(category,categories)=>{
   for(let f in argsf){
     if(argsf[f].declaredType=="number"){
       args1.push(`$${argsf[f].name}:Int`)
+
+    }else if(argsf[f].dataType=="queryCategory"){
+      args1.push(`$${argsf[f].name}GlobalCatQuery:Int`)
+      args1.push(`$${argsf[f].name}FinalCatQuery:Int`)
+      args1.push(`$${argsf[f].name}ProductQuery:Int`)
     }else if(argsf[f].declaredType=="string" 
     || argsf[f].declaredType=="date"
     || argsf[f].dataType=="multipleValue"){
@@ -23,7 +28,11 @@ const addProductMutation=(category,categories)=>{
 
   let args2=[]
   for(let f in argsf){
-    if(argsf[f].dataType!=="relationship"){
+    if(argsf[f].dataType=="queryCategory"){
+      args2.push(`${argsf[f].name}GlobalCatQuery:$${argsf[f].name}GlobalCatQuery`)
+      args2.push(`${argsf[f].name}FinalCatQuery:$${argsf[f].name}FinalCatQuery`)
+      args2.push(`${argsf[f].name}ProductQuery:$${argsf[f].name}ProductQuery`)
+    }else if(argsf[f].dataType!=="relationship"){
       args2.push(`${argsf[f].name}:$${argsf[f].name}`)
     }
   }
@@ -41,6 +50,10 @@ const addProductMutation=(category,categories)=>{
         campos.push(`${na}{id}`)
       
       }
+    }else if(argsf[f].dataType=="queryCategory"){
+      campos.push(`${argsf[f].name}GlobalCatQuery`)
+      campos.push(`${argsf[f].name}FinalCatQuery`)
+      campos.push(`${argsf[f].name}ProductQuery`)
     }
     else
       campos.push(argsf[f].name)

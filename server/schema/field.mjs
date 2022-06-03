@@ -10,6 +10,7 @@ export default gql`
     declaredType:String
     relationship:String
     relationCategory:Int
+    queryCategory:Int
   }
 
   type Query{
@@ -23,7 +24,8 @@ export default gql`
       declaredType:String,
       dataType:String!,
       relationship:String,
-      relationCategory:Int
+      relationCategory:Int,
+      queryCategory:Int
       ):Field!,
     addValueToField(id:Int!,value:String!):Field!,
     createTable(category:Int!,typeOfCategory:Int!):Boolean,

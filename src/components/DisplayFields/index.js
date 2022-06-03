@@ -4,6 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { mockComponent } from 'react-dom/test-utils';
 import FormInput from '../Forms/FormInput';
 import moment from 'moment'
+import DisplayQuerySearch from './DisplayQuerySearch';
 /*import { registerLocale, setDefaultLocale } from  "react-datepicker";
 import en from 'date-fns/locale/en-GB'
 registerLocale('en',en)
@@ -84,7 +85,15 @@ const DisplayFields = ({
   return (
     <div>
     {structure.map((cat,index)=>{
-      if(cat.dataType=="singleValue"){
+      if(cat.dataType=="queryCategory"){
+        return <DisplayQuerySearch
+        fields={fields}
+        setFields={setFields}
+        queryCategory={cat.queryCategory}
+        queryFieldName={cat.name}/>
+        //aqui tengo que obtener todos los productos de las categorias finales de esta categoria
+        //exactamente la misma mutacion de displaywholetable
+      }else if(cat.dataType=="singleValue"){
         console.log("CAT",cat)
         if(cat.declaredType=="string" ||
         cat.declaredType=="number"

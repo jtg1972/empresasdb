@@ -8,6 +8,12 @@ import Sequelize from 'sequelize'
 		 otmfacturasdetallesFacturasId:DataTypes.INTEGER,
 		 producto:DataTypes.INTEGER,
 		 cantidad:DataTypes.INTEGER,
-		 precio:DataTypes.INTEGER},{sequelize})
+		 precio:DataTypes.INTEGER,
+		 atunesGlobalCatQuery:DataTypes.INTEGER,
+		 atunesFinalCatQuery:DataTypes.INTEGER,
+		 atunesProductQuery:DataTypes.INTEGER,
+		 mojarraGlobalCatQuery:DataTypes.INTEGER,
+		 mojarraFinalCatQuery:DataTypes.INTEGER,
+		 mojarraProductQuery:DataTypes.INTEGER},{sequelize})
 }}
 export default detallesFacturas

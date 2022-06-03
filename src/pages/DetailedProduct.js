@@ -49,6 +49,7 @@ const CATEGORIES1=gql`
         category
         relationship
         relationCategory
+        queryCategory
       }
     }
   }

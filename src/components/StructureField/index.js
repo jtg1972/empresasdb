@@ -39,10 +39,12 @@ mutation CreateField(
   $declaredType: String, 
   $dataType: String!,
   $relationship:String,
-  $relationCategory:Int) {
+  $relationCategory:Int,
+  $queryCategory:Int) {
   createField(name: $name, category: $category, declaredType: $declaredType, dataType: $dataType,
     relationship:$relationship,
-    relationCategory:$relationCategory) {
+    relationCategory:$relationCategory,
+    queryCategory:$queryCategory) {
     id
     name
     category
@@ -51,6 +53,7 @@ mutation CreateField(
     declaredType
     relationship
     relationCategory
+    queryCategory
     
   }
 }
@@ -89,6 +92,7 @@ const StructureField = ({
   const [declaredType,setDeclaredType]=useState("")
   const [relationship,setRelationship]=useState("")
   const [relationTable,setRelationTable]=useState(-1)
+  const [queryCategory,setQueryCategory]=useState(-1)
   const dispatch=useDispatch()
   
   const [editTableState]=useMutation(EDIT_CATEGORY_STATE)
@@ -165,7 +169,17 @@ const StructureField = ({
   console.log("opendi",open)
   
   const onAddFieldClick=()=>{
-    if(dataType!=="relationship"){
+    if(dataType=="queryCategory"){
+      console.log("queryCategory",queryCategory)
+      createField({
+        variables:{
+          name:name,
+          category:currentCategory.id,
+          dataType,
+          queryCategory:parseInt(queryCategory)
+        }
+      })
+    }else if(dataType!=="relationship"){
       createField({
         variables:{
           name: name,
@@ -175,7 +189,7 @@ const StructureField = ({
 
         }
       })
-    }else{
+    }else if(dataType=="relationship"){
       const rc=categories.filter(t=>t.id==relationTable)[0]
       console.log("argsesc",{
           name:`otm${currentCategory.name}${rc.name}`,
@@ -239,6 +253,12 @@ const StructureField = ({
     value:dataType
   }
 
+  const selectConfigQueryCategory={
+    className:"noOutline",
+    onChange:e=>setQueryCategory(e.target.value),
+    value:queryCategory
+  }
+
   const selectConfigDeclaredType={
     className:"noOutline",
     onChange:e=>setDeclaredType(e.target.value),
@@ -258,7 +278,19 @@ const StructureField = ({
         <option value="singleValue">Single Value</option>
         <option value="multipleValue">Multiple Value</option>
         <option value="relationship">Relationship</option>
+        <option value="queryCategory">Query Category</option>
       </select>
+      {dataType=="queryCategory"
+      &&
+      <select {...selectConfigQueryCategory}>
+        {categories.map(c=>{
+          if(c.id!==currentCategory.id)
+            return <option value={c.id}>{c.name}</option>
+          })
+        }
+      </select>
+      }
+
       {dataType!=="relationship"
       &&
       <>

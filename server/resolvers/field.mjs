@@ -257,6 +257,7 @@ export default{
             where:{category:{[Op.in]:cats}},
             raw:true
           })
+          console.log("FIELDSSSSS",fields)
           let fields1=[]
           for(let f in fields){
             if(fields[f].declaredType=="string"){
@@ -266,6 +267,11 @@ export default{
               fields1.push(`\t\t\ ${fields[f].name}:DataTypes.INTEGER`)
             }else if(fields[f].declaredType=="date"){
               fields1.push(`\t\t ${fields[f].name}:DataTypes.DATEONLY`)
+
+            }else if(fields[f].dataType=="queryCategory"){
+              fields1.push(`\t\t ${fields[f].name}GlobalCatQuery:DataTypes.INTEGER`)
+              fields1.push(`\t\t ${fields[f].name}FinalCatQuery:DataTypes.INTEGER`)
+              fields1.push(`\t\t ${fields[f].name}ProductQuery:DataTypes.INTEGER`)
             }
           }  
           const ffs=fields1.join(',\n')
@@ -313,6 +319,15 @@ export default{
             }else if(fields[f]["declaredType"]=="number"){
               x1+=`${fields[f]["name"]}:Int\n`
               x2+=`${fields[f]["name"]}:Int,\n`
+            }else if(fields[f]["dataType"]=="queryCategory"){
+              x1+=`${fields[f]["name"]}GlobalCatQuery:Int\n`
+              x2+=`${fields[f]["name"]}GlobalCatQuery:Int,\n`
+              x1+=`${fields[f]["name"]}FinalCatQuery:Int\n`
+              x2+=`${fields[f]["name"]}FinalCatQuery:Int,\n`
+              x1+=`${fields[f]["name"]}ProductQuery:Int\n`
+              x2+=`${fields[f]["name"]}ProductQuery:Int\n,`
+
+
             }else if(fields[f]["declaredType"]=="date"){
               x1+=`${fields[f]["name"]}:String\n`
               x2+=`${fields[f]["name"]}:String,\n`
