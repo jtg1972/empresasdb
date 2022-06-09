@@ -237,10 +237,23 @@ const DisplaySingleTable = ({
     }
     return p
   }
+  const isSonAndHasParent=()=>{
+    const y=respCat.fields.filter(x=>
+      x.relationship=="otmdestiny").length
+      console.log("y pARENTID",y,parentId)
+    if(y==0)
+      return true
+    else if(y>0 && parentId>0)
+      return true
+    else
+      return false
+  }
+
   const res=()=>{
     console.log("displtable",products,respCat)
     resultado.push(<p style={{marginTop:"10px",marginBottom:"10px"}}>{titulo}</p>)
-    resultado.push(<FormButton
+    {isSonAndHasParent() &&
+      resultado.push(<FormButton
       style={{
         textAlign:"left",
         backgroundColor:"orange",
@@ -251,7 +264,7 @@ const DisplaySingleTable = ({
       }}
       onClick={()=>toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId)}
       >Add Record of {respCat.name}</FormButton>)
-    
+    }
     /*if(currentCategory.typeOfCategory==0){
       resultado.push(<FormButton
       onClick={()=>{toggleNewProduct()}}>
@@ -394,6 +407,7 @@ const DisplaySingleTable = ({
       return( 
         <div>
           <p style={{marginTop:"10px",marginBottom:"10px"}}>{titulo}</p>
+          {isSonAndHasParent() &&
           <FormButton
           style={{
             textAlign:"left",
@@ -406,6 +420,7 @@ const DisplaySingleTable = ({
           onClick={()=>toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId)}
           >Add Record of {respCat.name}
           </FormButton>
+          }
           <p>Theres no products of this category</p >
         </div>)
       }

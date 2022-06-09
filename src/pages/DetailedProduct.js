@@ -213,11 +213,13 @@ const DetailedProduct = () => {
       toggleDialog={toggleDialog}       
       />
 
+      {currentCategoryId!==0
+      &&
       <StructureField
       open={openDialogField}
       toggleDialog={toggleDialogField}
       
-      />
+      />}
       {currentCategoryId!==0 &&
       currentCategory.fields.length>0 
       && tablesStateStatus=="OK" 

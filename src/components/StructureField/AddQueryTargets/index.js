@@ -22,7 +22,15 @@ const AddQueryTargets = ({
   
   const [ccfState,setCcfState]=useState([])
   const qc=categories.filter(c=>c.id==queryCategory)[0]
-  let qf=qc.fields
+  let qf=qc.fields.filter(x=>((
+    x.declaredType=="string"
+    ||
+    x.declaredType=="number"
+    )
+    &&
+    x.relationship!=="otmdestiny"
+  )
+  )
   let ccf=currentCategoryFields
   let nqf,nccf=[],ccfType
   useEffect(()=>{
