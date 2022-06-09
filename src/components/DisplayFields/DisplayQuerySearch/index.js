@@ -64,14 +64,15 @@ const getQueryFromCategory=(productCategories,categories)=>{
   return gql`${query}`
 }
 const mapToState=({categories})=>({
-  categories:categories.categories
+  categories:categories.categories,
 })
 
 const DisplayQuerySearch = ({
   setFields,
   fields,
   queryCategory,
-  queryFieldName
+  queryFieldName,
+  structure
 }) => {
   const [chosenProduct,setChosenProduct]=useState({})
   const {categories}=useSelector(mapToState)
@@ -157,6 +158,7 @@ const DisplayQuerySearch = ({
           queryCategory={queryCategory}
           nameCategory={curCat.name}
           queryFieldName={queryFieldName}
+          structure={structure}
         />
 
         

@@ -6,14 +6,11 @@ import Sequelize from 'sequelize'
 
             		return super.init({
 		 otmfacturasdetallesFacturasId:DataTypes.INTEGER,
-		 producto:DataTypes.INTEGER,
 		 cantidad:DataTypes.INTEGER,
 		 precio:DataTypes.INTEGER,
+		 producto:DataTypes.STRING,
 		 atunesGlobalCatQuery:DataTypes.INTEGER,
 		 atunesFinalCatQuery:DataTypes.INTEGER,
-		 atunesProductQuery:DataTypes.INTEGER,
-		 mojarraGlobalCatQuery:DataTypes.INTEGER,
-		 mojarraFinalCatQuery:DataTypes.INTEGER,
-		 mojarraProductQuery:DataTypes.INTEGER},{sequelize})
+		 atunesProductQuery:DataTypes.INTEGER},{sequelize})
 }}
 export default detallesFacturas

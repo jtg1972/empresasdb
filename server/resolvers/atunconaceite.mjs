@@ -29,7 +29,7 @@
                 },
                 editatunconaceite:async(parent,args,{db})=>{
               await db.atunconaceite.update({
-                      id:args["id"],name:args["name"],agen1:args["agen1"]
+                      id:args["id"],name:args["name"],agen1:args["agen1"],precio:args["precio"]
                     },
                     {
                     where:{id:args.id}

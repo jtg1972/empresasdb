@@ -90,7 +90,8 @@ const DisplayFields = ({
         fields={fields}
         setFields={setFields}
         queryCategory={cat.queryCategory}
-        queryFieldName={cat.name}/>
+        queryFieldName={cat.name}
+        structure={structure}/>
         //aqui tengo que obtener todos los productos de las categorias finales de esta categoria
         //exactamente la misma mutacion de displaywholetable
       }else if(cat.dataType=="singleValue"){

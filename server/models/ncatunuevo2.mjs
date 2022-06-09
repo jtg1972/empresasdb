@@ -8,6 +8,7 @@ import Sequelize from 'sequelize'
 		 name:DataTypes.STRING,
 		 ncatunnuevo2:DataTypes.STRING,
 		 ncnvo3:DataTypes.STRING,
-		 agen1:DataTypes.STRING},{sequelize})
+		 agen1:DataTypes.STRING,
+		 precio:DataTypes.INTEGER},{sequelize})
 }}
 export default ncatunuevo2

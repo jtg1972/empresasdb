@@ -12,6 +12,7 @@ calorias:Int
 agen1:String
 fats:Int
 f1:String
+precio:Int
 
             }
 
@@ -28,6 +29,7 @@ calorias:Int,
 agen1:String,
 fats:Int,
 f1:String,
+precio:Int,
 
                 ):atunconagua
               getDataatunconagua:[atunconagua]
@@ -38,6 +40,7 @@ calorias:Int,
 agen1:String,
 fats:Int,
 f1:String,
+precio:Int,
 ):atunconagua
               
             }`

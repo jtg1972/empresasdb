@@ -9,7 +9,8 @@ const DisplaySearchProducts = ({
   fields,
   queryCategory,
   nameCategory,
-  queryFieldName
+  queryFieldName,
+  structure
 }) => {
   const displayRow=(sc)=>{
     const values=Object.keys(sc).map(k=>`${k}: ${sc[k]}`)
@@ -30,10 +31,27 @@ const DisplaySearchProducts = ({
           const gcqName=`${queryFieldName}GlobalCatQuery`
           const fcqName=`${queryFieldName}FinalCatQuery`
           const pName=`${queryFieldName}ProductQuery`
+          const qcFields=structure.filter(x=>
+            x.dataType=="queryCategory")
+          let newValues={}
+
+          qcFields.map(q=>{
+            const targets=q.targets.split(",")
+            targets.forEach((t,i)=>{
+              if(i%2==0){
+                newValues={
+                  ...newValues,
+                  [targets[i+1]]:sc[targets[i]]
+                }
+                console.log("newValues",newValues)
+              }
+            })
+          })
           setFields({...fields,
             [gcqName]:queryCategory,
             [fcqName]:sc.catId,
-            [pName]:sc.id
+            [pName]:sc.id,
+            ...newValues
           
           })
         }}>

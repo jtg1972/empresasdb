@@ -29,7 +29,7 @@
                 },
                 editdetallesFacturas:async(parent,args,{db})=>{
               await db.detallesFacturas.update({
-                      id:args["id"],otmfacturasdetallesFacturasId:args["otmfacturasdetallesFacturasId"],producto:args["producto"],cantidad:args["cantidad"],precio:args["precio"],atunes:args["atunes"],mojarra:args["mojarra"]
+                      id:args["id"],otmfacturasdetallesFacturasId:args["otmfacturasdetallesFacturasId"],cantidad:args["cantidad"],precio:args["precio"],producto:args["producto"],atunes:args["atunes"]
                     },
                     {
                     where:{id:args.id}

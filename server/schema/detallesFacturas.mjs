@@ -8,15 +8,12 @@
               
               id:Int
 otmfacturasdetallesFacturasId:Int
-producto:Int
 cantidad:Int
 precio:Int
+producto:String
 atunesGlobalCatQuery:Int
 atunesFinalCatQuery:Int
 atunesProductQuery:Int
-mojarraGlobalCatQuery:Int
-mojarraFinalCatQuery:Int
-mojarraProductQuery:Int
 
             }
 
@@ -29,30 +26,24 @@ mojarraProductQuery:Int
               createdetallesFacturas(
                 id:Int,
 otmfacturasdetallesFacturasId:Int,
-producto:Int,
 cantidad:Int,
 precio:Int,
+producto:String,
 atunesGlobalCatQuery:Int,
 atunesFinalCatQuery:Int,
 atunesProductQuery:Int
-,mojarraGlobalCatQuery:Int,
-mojarraFinalCatQuery:Int,
-mojarraProductQuery:Int
 ,
                 ):detallesFacturas
               getDatadetallesFacturas:[detallesFacturas]
               removedetallesFacturas(id:Int):Boolean!
               editdetallesFacturas(id:Int,
 otmfacturasdetallesFacturasId:Int,
-producto:Int,
 cantidad:Int,
 precio:Int,
+producto:String,
 atunesGlobalCatQuery:Int,
 atunesFinalCatQuery:Int,
 atunesProductQuery:Int
-,mojarraGlobalCatQuery:Int,
-mojarraFinalCatQuery:Int,
-mojarraProductQuery:Int
 ,):detallesFacturas
               
             }`

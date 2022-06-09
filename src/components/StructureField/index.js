@@ -1,10 +1,11 @@
 import { checkFetcher, gql, useMutation } from '@apollo/client'
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { addCategoryField, setTableState } from '../../redux/category/actions'
+import { addCategoryField, setCurrentCategory, setTableState } from '../../redux/category/actions'
 import Dialog from '../Dialog'
 import FormButton from '../Forms/FormButton'
 import FormInput from '../Forms/FormInput'
+import AddQueryTargets from './AddQueryTargets'
 import './styles.scss'
 const CATEGORIES1=gql`
 query Categories{
@@ -40,11 +41,13 @@ mutation CreateField(
   $dataType: String!,
   $relationship:String,
   $relationCategory:Int,
-  $queryCategory:Int) {
+  $queryCategory:Int,
+  $targets:String) {
   createField(name: $name, category: $category, declaredType: $declaredType, dataType: $dataType,
     relationship:$relationship,
     relationCategory:$relationCategory,
-    queryCategory:$queryCategory) {
+    queryCategory:$queryCategory,
+    targets:$targets) {
     id
     name
     category
@@ -54,6 +57,7 @@ mutation CreateField(
     relationship
     relationCategory
     queryCategory
+    targets
     
   }
 }
@@ -86,6 +90,7 @@ const StructureField = ({
   }
   =
   useSelector(mapToState)
+  const [targets,setTargets]=useState([])
   const [name,setName]=useState("")
   const [displayName,setDisplayName]=useState("")
   const [dataType,setDataType]=useState("")
@@ -93,7 +98,16 @@ const StructureField = ({
   const [relationship,setRelationship]=useState("")
   const [relationTable,setRelationTable]=useState(-1)
   const [queryCategory,setQueryCategory]=useState(-1)
+  const [currentCategoryFields,setCurrentCategoryFields]=useState([])
   const dispatch=useDispatch()
+  useEffect(()=>{
+    setCurrentCategoryFields(currentCategory?.fields?.filter(e=>
+      ((e.declaredType=="string"
+      || e.declaredType=="number"
+      )&&
+      e.relationship!=="otmdestiny")
+    ))  
+  },[currentCategory])
   
   const [editTableState]=useMutation(EDIT_CATEGORY_STATE)
   
@@ -176,7 +190,8 @@ const StructureField = ({
           name:name,
           category:currentCategory.id,
           dataType,
-          queryCategory:parseInt(queryCategory)
+          queryCategory:parseInt(queryCategory),
+          targets:targets.join(",")
         }
       })
     }else if(dataType!=="relationship"){
@@ -282,6 +297,7 @@ const StructureField = ({
       </select>
       {dataType=="queryCategory"
       &&
+    
       <select {...selectConfigQueryCategory}>
         {categories.map(c=>{
           if(c.id!==currentCategory.id)
@@ -289,6 +305,22 @@ const StructureField = ({
           })
         }
       </select>
+    
+      }
+      {queryCategory>0 
+      &&
+      <AddQueryTargets
+      currentCategoryFields={currentCategoryFields}
+      queryCategory={queryCategory}
+      setCurrentCategoryFields={setCurrentCategoryFields}
+      originalCategoryFields={currentCategory.fields.filter(e=>(
+        (e.declaredType=="string"
+        || e.declaredType=="number"
+        )&&
+        e.relationship!=="otmdestiny"))
+      }
+      targets={targets}
+      setTargets={setTargets}/>
       }
 
       {dataType!=="relationship"

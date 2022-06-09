@@ -9,7 +9,8 @@ class Fields extends Sequelize.Model{
       declaredType:DataTypes.STRING,
       relationship:DataTypes.STRING,
       relationCategory:DataTypes.INTEGER,
-      queryCategory:DataTypes.INTEGER
+      queryCategory:DataTypes.INTEGER,
+      targets:DataTypes.STRING
     },{sequelize})
   }
 }

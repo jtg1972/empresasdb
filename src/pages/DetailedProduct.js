@@ -50,6 +50,7 @@ const CATEGORIES1=gql`
         relationship
         relationCategory
         queryCategory
+        targets
       }
     }
   }

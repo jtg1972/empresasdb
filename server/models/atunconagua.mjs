@@ -9,6 +9,7 @@ import Sequelize from 'sequelize'
 		 calorias:DataTypes.INTEGER,
 		 agen1:DataTypes.STRING,
 		 fats:DataTypes.INTEGER,
-		 f1:DataTypes.STRING},{sequelize})
+		 f1:DataTypes.STRING,
+		 precio:DataTypes.INTEGER},{sequelize})
 }}
 export default atunconagua

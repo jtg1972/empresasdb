@@ -11,6 +11,7 @@ name:String
 ncatunnuevo2:String
 ncnvo3:String
 agen1:String
+precio:Int
 
             }
 
@@ -26,6 +27,7 @@ name:String,
 ncatunnuevo2:String,
 ncnvo3:String,
 agen1:String,
+precio:Int,
 
                 ):ncatunuevo2
               getDatancatunuevo2:[ncatunuevo2]
@@ -35,6 +37,7 @@ name:String,
 ncatunnuevo2:String,
 ncnvo3:String,
 agen1:String,
+precio:Int,
 ):ncatunuevo2
               
             }`
