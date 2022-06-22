@@ -201,13 +201,14 @@ export default{
     
 
     createTableGood:async(parent,args,{db})=>{
-      const cats1=await db.Category.findAll(
+      let cats2=await db.Category.findAll(
         {
           where:{
             id:{[Op.in]:[...args.categoryIds]}
           },
         raw:true
       })
+      let cats1=cats2
       console.log("holamundo",args,cats1)
       try{
          console.log("args",args)
@@ -225,22 +226,27 @@ export default{
             where:{category:{[Op.in]:cats}},
             raw:true
           })
-          const mtm=fieldsPiv.filter(d=>{
+          /*const mtm=fieldsPiv.filter(d=>{
             return d.dataType=="relationship"
             &&
             d.relationship=="manytomany"
-          })
-          for(let t in mtm){
+          })*/
+          /*for(let t in mtm){
             const pc=await db.Category.findByPk(mtm[t].relationCategory)
             if(pc){
+              let className=""
+              if(name<pc.name)
+                className=`${name}_${pc.name}`
+              else
+                className=`${pc.name}_${name}`
               let t1=`
               import Sequelize from 'sequelize'\n
-              class ${name}_${pc.name} extends Sequelize.Model{
+              class ${name} extends Sequelize.Model{
                 \tstatic init(sequelize,DataTypes){\n
                   \t\treturn super.init({\n},{sequelize})}}
-                  \nexport default ${name}_${pc.name}`
+                  \nexport default ${name}`
               try{
-                  WriteToFile(`./models/${name}_${pc.name}`,t1)
+                  WriteToFile(`./models/${name}`,t1)
               }catch(e){
                 console.log(e)
               }
@@ -248,8 +254,9 @@ export default{
                   
           
             }
-          }
+          }*/
           let content=`import Sequelize from 'sequelize'\n
+          
           class ${name} extends Sequelize.Model{\n
           \tstatic init(sequelize,DataTypes){\n
             \t\treturn super.init({\n`
@@ -265,6 +272,11 @@ export default{
               fields1.push(`\t\t\ ${fields[f].name}:DataTypes.STRING`)
             }else if(fields[f].declaredType=="number"){
               fields1.push(`\t\t\ ${fields[f].name}:DataTypes.INTEGER`)
+              if(fields[f].dataType=="queryCategory"){
+              fields1.push(`\t\t ${fields[f].name}GlobalCatQuery:DataTypes.INTEGER`)
+              fields1.push(`\t\t ${fields[f].name}FinalCatQuery:DataTypes.INTEGER`)
+              fields1.push(`\t\t ${fields[f].name}ProductQuery:DataTypes.INTEGER`)  
+              }
             }else if(fields[f].declaredType=="date"){
               fields1.push(`\t\t ${fields[f].name}:DataTypes.DATEONLY`)
 
@@ -293,8 +305,13 @@ export default{
                 const catDest=await db.Category.findByPk(relations[r].relationCategory)
                 
                 if(catDest){
-                  content+=`this.belongsToMany(models.${catDest.name},{through:models.${name}_${catDest.name}})\n
-                  models.${catDest.name}.belongsToMany(models.${name},{through:models.${name}_${catDest.name}})
+                  let cn=""
+                  if(name<catDest.name)
+                    cn=`${name}_${catDest.name}`
+                  else
+                    cn=`${catDest.name}_${name}`
+                  content+=`models.${name}.belongsToMany(models.${catDest.name},{foreignKey:"mtm${name}${catDest.name}Id",through:"${cn}"})\n
+                  models.${catDest.name}.belongsToMany(models.${name},{foreignKey:"mtm${catDest.name}${name}Id",through:"${cn}"})
                 `
 
                 }
@@ -319,6 +336,14 @@ export default{
             }else if(fields[f]["declaredType"]=="number"){
               x1+=`${fields[f]["name"]}:Int\n`
               x2+=`${fields[f]["name"]}:Int,\n`
+              if(fields[f].dataType=="queryCategory"){
+                x1+=`\t\t ${fields[f].name}GlobalCatQuery:Int\n`
+                x1+=`\t\t ${fields[f].name}FinalCatQuery:Int\n`
+                x1+=`\t\t ${fields[f].name}ProductQuery:Int\n`  
+                x2+=`\t\t ${fields[f].name}GlobalCatQuery:Int,\n`
+                x2+=`\t\t ${fields[f].name}FinalCatQuery:Int,\n`
+                x2+=`\t\t ${fields[f].name}ProductQuery:Int,\n`  
+              }
             }else if(fields[f]["dataType"]=="queryCategory"){
               x1+=`${fields[f]["name"]}GlobalCatQuery:Int\n`
               x2+=`${fields[f]["name"]}GlobalCatQuery:Int,\n`
@@ -334,15 +359,19 @@ export default{
             }else if(fields[f]["dataType"]=="relationship"){
               if(fields[f]["relationship"]=="onetomany"){
                 const respCat=await db.Category.findByPk(fields[f]["relationCategory"])
-                x1+=`otm${name}${respCat["name"]}:[${respCat["name"]}]`
+                x1+=`otm${name}${respCat["name"]}:[${respCat["name"]}]\n`
                 
+              }else if(fields[f]["relationship"]=="manytomany"){
+                const respCat=await db.Category.findByPk(fields[f]["relationCategory"])
+                x1+=`mtm${respCat.name}${name}:[${respCat.name}]\n`
               }
             }
+            
           }
           let c=r.join("\n")
           let x=r.join(", ")
 
-          let oneToManyMutation=``
+          let manyToManyResolver=``
           let oneToManyResolver=``
           if(relations.length>0){
             for(let r in relations){
@@ -357,6 +386,23 @@ export default{
                     })
                     return x
                   },`
+                }
+                if(relations[r].relationship=="manytomany"){
+                  let c=""
+                  if(name<respCat.name)
+                    c=`${name}_${respCat.name}`
+                  else
+                    c=`${respCat.name}_${name}`
+                  manyToManyResolver+=`mtm${respCat.name}${name}:async(parent,args,{db})=>{
+                    const x=await db.${c}.findAll({
+                      where:{mtm${name}${respCat.name}Id:parent.id},
+                      raw:true
+                    })
+                    const cd=x.map(c=>c["mtm${respCat.name}${name}Id"])
+                    console.log("cdddd",cd)
+                    const recs=db.${respCat.name}.findAll({where:{id:{[Op.in]:cd}}})
+                    return recs
+                  }`
                 }
               }
 
@@ -393,11 +439,13 @@ export default{
           `
 
           let content3=`
+            import {Op} from 'sequelize'
             export default{
           `
-          if(oneToManyResolver!==""){
+          if(oneToManyResolver!=="" || manyToManyResolver!==""){
             content3+=`${name}:{
               ${oneToManyResolver}
+              ${manyToManyResolver}
             },
             `
           }

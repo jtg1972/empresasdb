@@ -121,13 +121,23 @@ const DetailedProduct = () => {
   const [openNewProduct,setOpenNewProduct]=useState("")
   const [titulo,setTitulo]=useState("")
   const [parentId,setParentId]=useState(-1)
-  const toggleNewProduct=(rc,ti,ps,tit,pid)=>{
+  const [isManyToMany,setIsManyToMany]=useState(false)
+  const [relationCategory,setRelationCategory]=useState(-1)
+  const [parentRelation,setParentRelation]=useState(-1)
+  const [parentCatId,setParentCatId]=useState(-1)
+  const toggleNewProduct=(rc,ti,ps,tit,pid,iMtM,relCat,pr,pcid)=>{
+    console.log("parentcatIddetprod",pcid)
     setRespCat(rc)
     setTableIndexes(ti)
     setPartials(ps)
     setTitulo(tit)
     setParentId(pid)
+    setIsManyToMany(iMtM)
+    setRelationCategory(relCat)
+    setParentRelation(pr)
+    setParentCatId(pcid)
     setOpenNewProduct(!openNewProduct)
+    
     
   }
   const [openFilter,setOpenFilter]=useState(false)
@@ -256,6 +266,10 @@ const DetailedProduct = () => {
         partials={partials}
         titulo={titulo}
         parentId={parentId}
+        isManyToMany={isManyToMany}
+        relationCategory={relationCategory}
+        parentRelation={parentRelation}
+        parentCatId={parentCatId}
       />
       }
       {/*currentCategoryId!==0 &&

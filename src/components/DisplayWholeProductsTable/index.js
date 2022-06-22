@@ -3,13 +3,13 @@ import gql from 'graphql-tag'
 import React,{useEffect, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { deleteProduct, setCategoryProducts, setCurrentCategory } from '../../redux/category/actions'
-import { BsPencilFill } from 'react-icons/bs';
+import { BsEmojiSmileUpsideDownFill, BsPencilFill } from 'react-icons/bs';
 import { IoIosRemoveCircleOutline } from 'react-icons/io';
 import FormButton from '../Forms/FormButton'
 import DeleteProductRecord from '../../hooks/DeleteProductRecord'
 import DisplaySingleTable from './DisplaySingleTable'
 
-const callGetFieldsCategory=(field,categories)=>{
+const callGetFieldsCategory=(field,categories,rep=0)=>{
   const cat=categories.filter(c=>c.id==field.relationCategory)
 let bd
   if(cat.length>0){
@@ -19,14 +19,27 @@ let bd
           ${x.name}FinalCatQuery\n 
           ${x.name}ProductQuery`
         return desc
-      }
-      if(x.dataType!=="relationship"){
+      }else if(x.dataType!=="relationship"){
         return x.name
       }else if(x.dataType=="relationship"){
-        return `\n${x.name}{\n
-          ${callGetFieldsCategory(x,categories)}
-        }\n
-        `
+        if(x.relationship=="onetomany"){
+          return `\n${x.name}{\n
+            ${callGetFieldsCategory(x,categories)}
+          }\n
+          `
+        }else if(x.relationship=="manytomany"){
+          //console.log("entrrooooo44445")
+          if(rep+1==2){
+            return ''
+          }else{
+            const ny=categories.filter(c=>c.id==x.relationCategory)[0]
+            const ui=`mtm${ny.name}${cat[0].name}`
+            return `mtm${ny.name}${cat[0].name}{\n
+            ${callGetFieldsCategory(x,categories,rep+1)}
+            }`
+          }
+        }
+
       }
 
     })
@@ -40,7 +53,7 @@ let bd
 
 const getQueryFromCategory=(productCategories,categories)=>{
   let query=`mutation GetData {`
-  console.log("productcats",productCategories)
+  //console.log("productcats",productCategories)
   let fields
   let q2=productCategories.map(p=>{
     fields=p.fields.map(x=>{
@@ -53,12 +66,19 @@ const getQueryFromCategory=(productCategories,categories)=>{
         return x.name
       }
       else if(x.dataType=="relationship"){
-        const t1=categories.filter(t=>t.id==x.relationCategory)
+        const t1=categories.filter(t=>t.id==x.relationCategory)[0]
       
-
-        return `${x.name}{
-          ${callGetFieldsCategory(x,categories)}
-        }`
+        if(x.relationship=="onetomany"){
+          return `${x.name}{
+            ${callGetFieldsCategory(x,categories)}
+          }`
+        }else if(x.relationship=="manytomany"){
+          //console.log("entro aqQUIW3242341")
+          console.log("xnameee",`mtm${t1.name}${p.name}`)
+          return `mtm${t1.name}${p.name}{
+            ${callGetFieldsCategory(x,categories,0)}
+          }`
+        }
       }
     })
     fields.unshift("id")
@@ -124,7 +144,7 @@ const DisplayWholeProductsTable = ({
   const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(productCategories,categories)
   const [getProducts]=useMutation(GET_PRODUCTS_FROM_CATEGORY,{
     update:(cache,{data})=>{
-      console.log("data:",data)
+      //console.log("data:",data)
       dispatch(setCategoryProducts(data))
       
     }
@@ -140,28 +160,28 @@ const DisplayWholeProductsTable = ({
   
 
   const trDateMex=(val)=>{
-    console.log("val",val)
+    //console.log("val",val)
     if(val!==null){
       let dateObj = new Date(val)
       let month = dateObj.getUTCMonth() + 1
       let day = dateObj.getUTCDate()
       let year = dateObj.getUTCFullYear()
       let  nD = day + "/" + month + "/" + year
-      console.log("nd",nD)
+      //console.log("nd",nD)
       return nD
       }
     return ""
   }
   const trDateDB=(val)=>{
 
-    console.log("val",val)
+    //console.log("val",val)
     if(val!==null){
       let dateObj = new Date(val)
       let month = dateObj.getUTCMonth() + 1
       let day = dateObj.getUTCDate()
       let year = dateObj.getUTCFullYear()
       let  nD = year+ "/" + month + "/" + day
-      console.log("nd",nD)
+      //console.log("nd",nD)
       return nD
     }
     return ""
@@ -201,29 +221,31 @@ const DisplayWholeProductsTable = ({
       const nc=cp.substr(7)
       const cat2=categories.filter(c=>c.name==nc)[0]
       const oneToManyCategories=cat2.fields.filter(
-        x=>(x.dataType=="relationship" && x.relationship=="onetomany")
+        x=>(x.dataType=="relationship" && (x.relationship=="onetomany"
+        || x.relationship=="manytomany"))
       )
       partials.push(cp)
-      displayTableAndRelations(cp,categoryProducts[cp],oneToManyCategories,cat2,partials,-1)
+      displayTableAndRelations(cp,categoryProducts[cp],oneToManyCategories,cat2,partials,-1,false,-1,-1,-1)
       
     })
     
     return allTables
   }
-  const displayTableAndRelations=(name,prods,otmrelations,cc,partials,pi)=>{  
-      console.log("cp[cp]",name,prods,otmrelations,cc)
+  const displayTableAndRelations=(name,prods,otmrelations,cc,partials,pi,isManyToMany=false,relCat,parRel,relCatInd)=>{  
+      //console.log("cp[cp]",name,prods,otmrelations,cc)
       let parId
-
+      
       if(cc){
-      console.log("partials",partials)
+      //console.log("partials",partials)
       let indtable=tableIndexes[name]
-      console.log("ti,name",tableIndexes,name,tableIndexes[name])
+      //console.log("ti,name",tableIndexes,name,tableIndexes[name])
     
       if(indtable>=0){
         parId=prods[indtable]?.id
       }else{
         parId=-1
       }
+      console.log("paridentroaqui",parId)
     
       allTables.push(<DisplaySingleTable
         titulo={name}
@@ -235,6 +257,10 @@ const DisplayWholeProductsTable = ({
         setTableIndexes={setTableIndexes}
         partials={partials}
         parentId={pi}
+        isManyToMany={isManyToMany}
+        relationCategory={relCat}
+        parentRelation={parRel}
+        parentCatId={relCatInd}
         />
         )
       }
@@ -246,9 +272,11 @@ const DisplayWholeProductsTable = ({
         const otmcats=respCat.fields.filter(
           x=>{
             //relationNames.push(x.name)
-            if(x.dataType=="relationship" && x.relationship=="onetomany")
+            if(x.dataType=="relationship" && (x.relationship=="onetomany" ||
+            x.relationship=="manytomany"))
               relationNames.push(x.name)
-            return (x.dataType=="relationship" && x.relationship=="onetomany")
+            return (x.dataType=="relationship" && (x.relationship=="onetomany"
+            || x.relationship=="manytomany"))
           }
         )
         const otmClusters=prods?.map(e=>e[y.name])
@@ -260,12 +288,17 @@ const DisplayWholeProductsTable = ({
             console.log("imp3",i,tableIndexes[name],name)
 
             partials.push(y.name)
+            console.log("prodstableindex.id dwp",prods[tableIndexes[name]].id)
             displayTableAndRelations(y.name,
             
           
               otmClusters[i],
               otmcats,respCat,partials,
-              parId
+              parId,
+              y.relationship=="manytomany",
+              y.relationCategory,
+              cc.id,
+              prods[tableIndexes[name]].id
             )
           }  
         }

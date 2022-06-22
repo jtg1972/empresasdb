@@ -31,9 +31,14 @@ const DisplaySingleTable = ({
   tableIndexes,
   setTableIndexes,
   partials,
-  parentId
+  parentId,
+  isManyToMany,
+  relationCategory,
+  parentRelation,
+  parentCatId
   })=>{
     console.log("productsmain",products)
+    console.log("parentcatid Singletable",parentCatId)
   const dispatch=useDispatch()
   let resultado=[]
   let deleteId
@@ -262,7 +267,7 @@ const DisplaySingleTable = ({
         marginTop:"10px",
         marginBottom:"10px"
       }}
-      onClick={()=>toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId)}
+      onClick={()=>toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId,isManyToMany,relationCategory,parentRelation,parentCatId)}
       >Add Record of {respCat.name}</FormButton>)
     }
     /*if(currentCategory.typeOfCategory==0){
@@ -307,7 +312,9 @@ const DisplaySingleTable = ({
         let data=[]
         
         for(let yu in respCat.fields){
-          if(respCat.fields[yu].dataType=="relationship" && yalohizo==false){
+          if(respCat.fields[yu].dataType=="relationship" 
+          && products[p][respCat.fields[yu].name]!==undefined
+          && yalohizo==false){
             ifRelations=true
             headers.unshift(<th>Selected</th>)
             yalohizo=true
@@ -337,6 +344,7 @@ const DisplaySingleTable = ({
           /*let cc=categories.filter(v=>
             v.name==cname
           )*/
+          console.log("productsp",products[p],respCat.fields)
           let fs=respCat.fields.filter(x=>{
             
             return x.name==c
@@ -345,8 +353,10 @@ const DisplaySingleTable = ({
 
           
           if(fs.length==1){
-            if(fs[0].dataType=="relationship"){
+            if(fs[0].relationship=="onetomany"){
               data.push(<td>one to many</td>)
+            }else if(fs[0].relationship=="manytomany"){
+              data.push(<td>many to many</td>)
             }
             else if(fs[0].declaredType=="date"){
               //if(producto[c]!==""){
@@ -417,7 +427,10 @@ const DisplaySingleTable = ({
             marginTop:"10px",
             marginBottom:"10px"
           }}
-          onClick={()=>toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId)}
+          onClick={()=>{
+            console.log("parentcadid single table",parentCatId)
+            toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId,isManyToMany,relationCategory,parentRelation,parentCatId)}
+          }
           >Add Record of {respCat.name}
           </FormButton>
           }

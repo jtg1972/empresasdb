@@ -1,22 +1,32 @@
-import React from 'react'
+import React, { useState } from 'react'
 import ReactDatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import { mockComponent } from 'react-dom/test-utils';
 import FormInput from '../Forms/FormInput';
 import moment from 'moment'
 import DisplayQuerySearch from './DisplayQuerySearch';
+import { useSelector } from 'react-redux';
 /*import { registerLocale, setDefaultLocale } from  "react-datepicker";
 import en from 'date-fns/locale/en-GB'
 registerLocale('en',en)
 setDefaultLocale('en')*/
+const mapToState=({categories})=>({
+  categories:categories.categories
+})
 
 const DisplayFields = ({
   structure,
   fields,
   setFields,
-  parentId
+  parentId,
+  isManyToMany,
+  parentCatId,
+  category,
+  categoryNameRelDestiny
 }) => {
+  const {categories}=useSelector(mapToState)
   console.log("fieldsdf pid",fields,parentId)
+  console.log("parentcat id   displayfields",parentCatId)
   const inputChange=(cat,e)=>{
     const fieldName=cat.name
     setFields({
@@ -85,16 +95,39 @@ const DisplayFields = ({
   return (
     <div>
     {structure.map((cat,index)=>{
-      if(cat.dataType=="queryCategory"){
-        return <DisplayQuerySearch
-        fields={fields}
-        setFields={setFields}
-        queryCategory={cat.queryCategory}
-        queryFieldName={cat.name}
-        structure={structure}/>
-        //aqui tengo que obtener todos los productos de las categorias finales de esta categoria
-        //exactamente la misma mutacion de displaywholetable
-      }else if(cat.dataType=="singleValue"){
+       console.log("pcid cqc",parentCatId,cat.queryCategory,category)
+       const catNames=category.name.split("_")
+       const firstCat=categories.filter(x=>x.name==catNames[0])[0]
+       const secondCat=categories.filter(y=>y.name==catNames[1])[0]
+       let nnField
+       if(firstCat.name==categoryNameRelDestiny)        
+         nnField=`mtm${secondCat.name}${firstCat.name}Id`
+       else
+         nnField=`mtm${firstCat.name}${secondCat.name}Id`
+       console.log("keyes fc sc parentId",firstCat,secondCat,parentId,categoryNameRelDestiny)
+       console.log("resultadooooo",{[nnField]:parentCatId},cat.name,nnField)
+      
+      if(cat.dataType=="queryCategory"
+      && cat.name!==nnField){
+        
+          //setFields({...fields,[nnField]:parentCatId})
+          
+            return <DisplayQuerySearch
+            fields={fields}
+            setFields={setFields}
+            queryCategory={cat.queryCategory}
+            queryFieldName={cat.name}
+            structure={structure}
+            isManyToMany={isManyToMany}
+            parentId={parentId}
+            parentCatId={parentCatId}
+            fieldMtm={nnField}
+            />
+        }
+        
+          //aqui tengo que obtener todos los productos de las categorias finales de esta categoria
+          //exactamente la misma mutacion de displaywholetable
+      else if(cat.dataType=="singleValue"){
         console.log("CAT",cat)
         if(cat.declaredType=="string" ||
         cat.declaredType=="number"

@@ -1,12 +1,48 @@
 import { checkFetcher, gql, useMutation } from '@apollo/client'
 import React, { useState,useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { addCategoryField, setCurrentCategory, setTableState } from '../../redux/category/actions'
+import { addCategory, addCategoryField, setCurrentCategory, setCurrentCategoryId, setTableState } from '../../redux/category/actions'
 import Dialog from '../Dialog'
 import FormButton from '../Forms/FormButton'
 import FormInput from '../Forms/FormInput'
 import AddQueryTargets from './AddQueryTargets'
 import './styles.scss'
+const CREATE_CATEGORY=gql`
+mutation CreateCategory($name: String!, $parentCategory: Int,$typeOfCategory: Int) {
+  createCategory(name: $name, parentCategory: $parentCategory, typeOfCategory: $typeOfCategory) {
+    id
+    name
+    parentCategories
+    parentCategory
+    typeOfCategory
+    bookmark {
+      name
+      id
+      typeOfCategory
+    }
+    fields{
+      id
+      name
+      dataType
+      declaredType
+      values
+      category
+    }
+    
+  }
+}`
+const CREATE_NEW_CATEGORY_STATE=gql`
+mutation CreateTableState($category: Int!, $name: String!, $state: String!) {
+  createTableState(category: $category, name: $name, state: $state) {
+    id
+    category
+    name
+    state
+  }
+}
+`
+
+
 const CATEGORIES1=gql`
 query Categories{
   categories{
@@ -100,6 +136,11 @@ const StructureField = ({
   const [queryCategory,setQueryCategory]=useState(-1)
   const [currentCategoryFields,setCurrentCategoryFields]=useState([])
   const dispatch=useDispatch()
+  let categoryName=""
+  let otherCatName=""
+  let otherCatId
+  let oc=currentCategory
+  let rc={}
   useEffect(()=>{
     setCurrentCategoryFields(currentCategory?.fields?.filter(e=>
       ((e.declaredType=="string"
@@ -181,6 +222,96 @@ const StructureField = ({
     }})
 
   console.log("opendi",open)
+
+  const [createTableState]=useMutation(CREATE_NEW_CATEGORY_STATE,{
+    update:(cache,{data})=>{
+      dispatch(setTableState({
+        id:data.createTableState.id,
+        name:data.createTableState.name,
+        category:data.createTableState.category,
+        state:"NOT_CREATED"
+      }))
+    }
+  })
+
+  const [createCategory]=useMutation(CREATE_CATEGORY,{
+    update:(cache,{data})=>{
+      const cats=cache.readQuery(
+        {query:CATEGORIES1}
+      )
+      const newCat=data.createCategory
+      
+      
+    if(newCat.typeOfCategory==0){
+      createTableState({
+        variables:{
+          category:newCat.id,
+          name:newCat.name,
+          state:"NOT_CREATED"
+        }
+      })
+      let mapeo=oc.fields.map(x=>{
+        if(x.declaredType=="number" ||
+        x.declaredType=="string"){
+         return `${x.name},${x.name}`
+        }
+      })
+      mapeo.push("id,id")
+      mapeo=mapeo.join(",")
+      console.log("mapeo1",mapeo)
+      
+      createField({
+        variables:{
+          name:`mtm${currentCategory.name}${otherCatName}Id`,
+          category:newCat.id,
+          dataType:"queryCategory",
+          declaredType:"number",
+          queryCategory:parseInt(currentCategory.id),
+          targets:mapeo//relationship,
+          //relationCategory:relationTable
+        }
+      })
+      /*name:name,
+      category:currentCategory.id,
+      dataType,
+      queryCategory:parseInt(queryCategory),
+      targets:targets.join(",")*/
+      mapeo=rc.fields.map(x=>{
+        if(x.declaredType=="number" ||
+        x.declaredType=="string"){
+         return `${x.name},${x.name}`
+        }
+      })
+      mapeo.push("id,id")
+      mapeo=mapeo.join(",")
+      
+      console.log("mapeo2",mapeo)
+      
+      createField({
+        variables:{
+          name:`mtm${otherCatName}${currentCategory.name}Id`,
+          category:newCat.id,
+          dataType:"queryCategory",
+          declaredType:"number",
+          queryCategory:parseInt(otherCatId),
+          targets:mapeo
+        }
+      })
+          
+      
+    }
+      console.log("ncid",newCat,newCat.id)
+      cache.writeQuery({
+        query:CATEGORIES1,
+        data:{
+          categories:[...cats.categories,newCat]
+        }
+        
+      })
+      dispatch(addCategory(newCat))
+      dispatch(setCurrentCategoryId(newCat.id))
+    }})
+
   
   const onAddFieldClick=()=>{
     if(dataType=="queryCategory"){
@@ -205,37 +336,78 @@ const StructureField = ({
         }
       })
     }else if(dataType=="relationship"){
-      const rc=categories.filter(t=>t.id==relationTable)[0]
-      console.log("argsesc",{
-          name:`otm${currentCategory.name}${rc.name}`,
-          category:currentCategory.id,
-          dataType:dataType,
-          relationship,
-          relationCategory:relationTable
-      })
-      createField({
-        variables:{
-          name:`otm${currentCategory.name}${rc.name}`,
-          category:currentCategory.id,
-          dataType:dataType,
-          relationship,
-          relationCategory:relationTable
-        }
-      })
-      
-      console.log("rc",rc)
-      createField({
-        variables:{
-          name:`otm${currentCategory.name}${rc.name}Id`,
-          category:rc.id,
-          dataType:"singleValue",
-          declaredType:"number",
-          relationship:"otmdestiny"
+      rc=categories.filter(t=>t.id==relationTable)[0]
 
+      if(relationship=="onetomany"){
+        console.log("argsesc",{
+            name:`otm${currentCategory.name}${rc.name}`,
+            category:currentCategory.id,
+            dataType:dataType,
+            relationship,
+            relationCategory:relationTable
+        })
+        
+        createField({
+          variables:{
+            name:`otm${currentCategory.name}${rc.name}`,
+            category:currentCategory.id,
+            dataType:dataType,
+            relationship,
+            relationCategory:relationTable
+          }
+        })
+        
+        console.log("rc",rc)
+        createField({
+          variables:{
+            name:`otm${currentCategory.name}${rc.name}Id`,
+            category:rc.id,
+            dataType:"singleValue",
+            declaredType:"number",
+            relationship:"otmdestiny"
+
+          }
+        })
+      }else if(relationship=="manytomany"){
+
+      
+
+        otherCatName=rc.name
+        console.log("oc rc",oc,rc)
+        otherCatId=rc.id
+        if(currentCategory.name<rc.name){
+          categoryName=`${oc.name}_${rc.name}`
+        }else{
+          categoryName=`${rc.name}_${oc.name}`
         }
-      })
+        createCategory({
+          variables:{
+            name:categoryName,
+            parentCategory:0,
+            typeOfCategory:0
+          }
+        })
+        createField({
+          variables:{
+            name:`mtm${rc.name}${currentCategory.name}`,
+            category:currentCategory.id,
+            dataType:dataType,
+            relationship,
+            relationCategory:relationTable
+          }
+        })
+        createField({
+          variables:{
+            name:`mtm${currentCategory.name}${rc.name}`,
+            category:rc.id,
+            dataType:dataType,
+            relationship,
+            relationCategory:currentCategory.id
+          }
+        })
+        
+      }
     }
-    
   }
   const categoryTitle=()=>{
     if(currentCategory!==undefined)

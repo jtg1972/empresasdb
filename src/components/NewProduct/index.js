@@ -7,17 +7,17 @@ import Dialog from '../Dialog'
 import DisplayFields from '../DisplayFields'
 import FormButton from '../Forms/FormButton'
 
-const addProductMutation=(category,categories)=>{
+const addProductMutation=(category,categories,mtm)=>{
   let argsf=category.fields
   let args1=[]
   for(let f in argsf){
-    if(argsf[f].declaredType=="number"){
-      args1.push(`$${argsf[f].name}:Int`)
-
-    }else if(argsf[f].dataType=="queryCategory"){
+    if(argsf[f].dataType=="queryCategory"){
       args1.push(`$${argsf[f].name}GlobalCatQuery:Int`)
       args1.push(`$${argsf[f].name}FinalCatQuery:Int`)
       args1.push(`$${argsf[f].name}ProductQuery:Int`)
+    }if(argsf[f].declaredType=="number"){
+      args1.push(`$${argsf[f].name}:Int`)
+
     }else if(argsf[f].declaredType=="string" 
     || argsf[f].declaredType=="date"
     || argsf[f].dataType=="multipleValue"){
@@ -25,13 +25,15 @@ const addProductMutation=(category,categories)=>{
     }
   }
   args1=args1.join(", ")
-
+ 
   let args2=[]
   for(let f in argsf){
     if(argsf[f].dataType=="queryCategory"){
       args2.push(`${argsf[f].name}GlobalCatQuery:$${argsf[f].name}GlobalCatQuery`)
       args2.push(`${argsf[f].name}FinalCatQuery:$${argsf[f].name}FinalCatQuery`)
       args2.push(`${argsf[f].name}ProductQuery:$${argsf[f].name}ProductQuery`)
+      if(mtm)
+        args2.push(`${argsf[f].name}:$${argsf[f].name}`)
     }else if(argsf[f].dataType!=="relationship"){
       args2.push(`${argsf[f].name}:$${argsf[f].name}`)
     }
@@ -54,6 +56,8 @@ const addProductMutation=(category,categories)=>{
       campos.push(`${argsf[f].name}GlobalCatQuery`)
       campos.push(`${argsf[f].name}FinalCatQuery`)
       campos.push(`${argsf[f].name}ProductQuery`)
+      if(mtm)
+        campos.push(`${argsf[f].name}`)
     }
     else
       campos.push(argsf[f].name)
@@ -84,17 +88,43 @@ const NewProduct = ({
   tableIndexes,
   partials,
   titulo,
-  parentId
+  parentId,
+  isManyToMany,
+  relationCategory,
+  parentRelation,
+  parentCatId
   
 }) => {
   console.log("respcatnuevo",respCat)
+  console.log("parentcatid newproduct",parentCatId)
   const [fields,setFields]=useState({})
   const {currentCategory,
   categoryProducts,
   categories}=useSelector(mapToState)
   const dispatch=useDispatch()
- 
+  let nC,nRc,pR,nn,relMtMC
+  const [mtmStr,setMtmStr]=useState([])
+
   useEffect(()=>{
+    
+    
+    if(isManyToMany){
+      /*pR=categories.filter(x=>x.id==parentRelation)[0]
+      nRc=categories.filter(x=>x.id==relationCategory)[0]
+    
+      
+      if(pR.name<nRc.name)
+        nn=`${pR.name}_${nRc.name}`
+      else
+        nn=`${nRc.name}_${pR.name}`
+      relMtMC=categories.filter(x=>x.name==nn)[0]
+      console.log("nn",nn)
+      nC=categories.filter(x=>x.name==nn)[0]
+      console.log("Nccc",nC.fields)*/
+      setMtmStr(nC.fields)
+      //setFields(nC.fields)
+    }
+
     const xfields=respCat.fields.filter(x=>
       x.relationship=="otmdestiny"
     )
@@ -215,9 +245,26 @@ const NewProduct = ({
 
   }
 
+  let CREATE_PRODUCT_MUT=""
+  if(isManyToMany){
+      pR=categories.filter(x=>x.id==parentRelation)[0]
+      nRc=categories.filter(x=>x.id==relationCategory)[0]
+    
       
-  
-  const CREATE_PRODUCT_MUT=addProductMutation(respCat,categories)
+      if(pR.name<nRc.name)
+        nn=`${pR.name}_${nRc.name}`
+      else
+        nn=`${nRc.name}_${pR.name}`
+      relMtMC=categories.filter(x=>x.name==nn)[0]
+      console.log("nn",nn)
+      nC=categories.filter(x=>x.name==nn)[0]
+      console.log("Nccc",nC.fields)
+      
+
+    CREATE_PRODUCT_MUT=addProductMutation(relMtMC,categories,true)
+  }else{
+    CREATE_PRODUCT_MUT=addProductMutation(respCat,categories,false)
+  }
   const [addProduct2]=useMutation(CREATE_PRODUCT_MUT,{
     update:(cache,{data})=>{
       const nam=`create${respCat.name}`
@@ -258,12 +305,32 @@ const NewProduct = ({
     headline:"Add Product of "+respCat.name
   }
 
-  const displayFieldsConfig=()=>({
-    structure:respCat.fields,
-    fields,
-    setFields,
-    parentId
-  })
+  const displayFieldsConfig=()=>{
+    if(!isManyToMany) { 
+    return {
+      category:respCat,
+      structure:respCat.fields,
+      fields,
+      setFields,
+      parentId,
+      isManyToMany,
+      parentCatId
+      
+    }
+    }
+    else{
+      return {
+        category:nC,
+        structure:mtmStr,
+        fields,
+        setFields,
+        parentId,
+        isManyToMany,
+        parentCatId,
+        categoryNameRelDestiny:respCat.name
+      }
+    }
+  }
 
   const formButtonConfig={
     onClick:()=>buttonClick()

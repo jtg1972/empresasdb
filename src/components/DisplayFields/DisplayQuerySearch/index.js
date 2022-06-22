@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 import { searchRecordsFromQuery } from '../../../utilities/searchRecordsFromQuery'
 import FormInput from '../../Forms/FormInput'
 import DisplaySearchProducts from '../DisplaySearchProducts'
-const callGetFieldsCategory=(field,categories)=>{
+const callGetFieldsCategory=(field,categories,rep)=>{
   const cat=categories.filter(c=>c.id==field.relationCategory)
 let bd
   if(cat.length>0){
@@ -13,10 +13,13 @@ let bd
       if(x.dataType!=="relationship"){
         return x.name
       }else if(x.dataType=="relationship"){
-        return `\n${x.name}{\n
-          ${callGetFieldsCategory(x,categories)}
-        }\n
-        `
+        if(rep<2){
+          return `\n${x.name}{\n
+            ${callGetFieldsCategory(x,categories,rep+1)}
+          }\n
+          `
+        }
+        else return ""
       }
 
     })
@@ -28,7 +31,7 @@ let bd
 }
 
 
-const getQueryFromCategory=(productCategories,categories)=>{
+const getQueryFromCategory=(productCategories,categories,rep=0)=>{
   let query=`mutation GetData {`
   console.log("productcats",productCategories)
   let fields
@@ -47,7 +50,7 @@ const getQueryFromCategory=(productCategories,categories)=>{
       
 
         return `${x.name}{
-          ${callGetFieldsCategory(x,categories)}
+          ${callGetFieldsCategory(x,categories,rep+1)}
         }`
       }
     })
@@ -72,7 +75,11 @@ const DisplayQuerySearch = ({
   fields,
   queryCategory,
   queryFieldName,
-  structure
+  structure,
+  isManyToMany,
+  parentId,
+  parentCatId,
+  fieldMtm
 }) => {
   const [chosenProduct,setChosenProduct]=useState({})
   const {categories}=useSelector(mapToState)
@@ -159,6 +166,10 @@ const DisplayQuerySearch = ({
           nameCategory={curCat.name}
           queryFieldName={queryFieldName}
           structure={structure}
+          isManyToMany={isManyToMany}
+          parentId={parentId}
+          fieldMtm={fieldMtm}
+          parentCatId={parentCatId}
         />
 
         

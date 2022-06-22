@@ -10,8 +10,13 @@ const DisplaySearchProducts = ({
   queryCategory,
   nameCategory,
   queryFieldName,
-  structure
+  structure,
+  isManyToMany,
+  parentId,
+  parentCatId,
+  fieldMtm
 }) => {
+  console.log("fieldMtm",fieldMtm)
   const displayRow=(sc)=>{
     const values=Object.keys(sc).map(k=>`${k}: ${sc[k]}`)
     return values.join(", ")
@@ -31,6 +36,10 @@ const DisplaySearchProducts = ({
           const gcqName=`${queryFieldName}GlobalCatQuery`
           const fcqName=`${queryFieldName}FinalCatQuery`
           const pName=`${queryFieldName}ProductQuery`
+          let nameMtm
+          if(isManyToMany)
+            nameMtm=`${queryFieldName}`
+
           const qcFields=structure.filter(x=>
             x.dataType=="queryCategory")
           let newValues={}
@@ -47,13 +56,36 @@ const DisplaySearchProducts = ({
               }
             })
           })
-          setFields({...fields,
-            [gcqName]:queryCategory,
-            [fcqName]:sc.catId,
-            [pName]:sc.id,
-            ...newValues
-          
-          })
+          if(!isManyToMany){
+            setFields({...fields,
+              [gcqName]:queryCategory,
+              [fcqName]:sc.catId,
+              [pName]:sc.id,
+              
+              ...newValues
+            
+            })
+          }else{
+            console.log("fieldsnuevo",
+            {...fields,
+              [gcqName]:queryCategory,
+              [fcqName]:sc.catId,
+              [pName]:sc.id,
+              [nameMtm]:sc.id,
+              [fieldMtm]:parentCatId
+              //...newValues
+            })
+            setFields({...fields,
+              [gcqName]:queryCategory,
+              [fcqName]:sc.catId,
+              [pName]:sc.id,
+              [nameMtm]:sc.id,
+              [fieldMtm]:parentCatId
+
+              //...newValues
+            
+            })
+          }
         }}>
 
           {displayRow(sc)}
