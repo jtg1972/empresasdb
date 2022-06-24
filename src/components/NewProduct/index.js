@@ -7,6 +7,22 @@ import Dialog from '../Dialog'
 import DisplayFields from '../DisplayFields'
 import FormButton from '../Forms/FormButton'
 
+const getQuerySearchOne=(cat)=>{
+  const f=cat.fields.map(c=>{
+    if(c.dataType=="relationship"){
+      return `${c.name}{id}`
+    }
+    return c.name
+  })
+  f.unshift("id")
+  const query=`mutation GET_SEARCH_ONE($id:Int){
+    get${cat.name}(id:$id){
+    ${f.join("\n")}
+  }}`
+  console.log("querysearchone",query)
+  return gql`${query}`
+}
+
 const addProductMutation=(category,categories,mtm)=>{
   let argsf=category.fields
   let args1=[]
@@ -48,6 +64,13 @@ const addProductMutation=(category,categories,mtm)=>{
         let oc=categories.filter(c=>c.id==argsf[f].relationCategory)
         console.log("oc",oc)
         let na=`otm${category.name}${oc[0].name}`
+        
+        campos.push(`${na}{id}`)
+      
+      }else if(argsf[f].relationship=="manytomany"){
+        let oc=categories.filter(c=>c.id==argsf[f].relationCategory)
+        console.log("oc",oc)
+        let na=`mtm${oc[0].name}${category.name}`
         
         campos.push(`${na}{id}`)
       
@@ -245,12 +268,15 @@ const NewProduct = ({
 
   }
 
+  let GET_SEARCH_ONE=""
+
   let CREATE_PRODUCT_MUT=""
+  pR=categories.filter(x=>x.id==parentRelation)[0]
+
   if(isManyToMany){
-      pR=categories.filter(x=>x.id==parentRelation)[0]
       nRc=categories.filter(x=>x.id==relationCategory)[0]
     
-      
+      GET_SEARCH_ONE=getQuerySearchOne(nRc)
       if(pR.name<nRc.name)
         nn=`${pR.name}_${nRc.name}`
       else
@@ -260,28 +286,65 @@ const NewProduct = ({
       nC=categories.filter(x=>x.name==nn)[0]
       console.log("Nccc",nC.fields)
       
-
+    
     CREATE_PRODUCT_MUT=addProductMutation(relMtMC,categories,true)
   }else{
+    GET_SEARCH_ONE=getQuerySearchOne(respCat)
+
     CREATE_PRODUCT_MUT=addProductMutation(respCat,categories,false)
   }
+  const [getSearchOne]=useMutation(GET_SEARCH_ONE,{
+    update:(cache,{data})=>{
+      const nam=`get${nRc.name}`
+      console.log("resdata",data[nam])
+      path=[`getData${currentCategory.name}`]
+        indexSize=1
+        getPath(currentCategory.fields.filter(x=>
+          x.dataType=="relationship"))
+        console.log("path",path)
+        ind=[]
+        getIndexes()
+        
+
+
+
+        const us=updateState(categoryProducts,0,0,data[nam])
+        console.log("ust",us)
+        dispatch(setCategoryProducts(us))
+    }
+  })
   const [addProduct2]=useMutation(CREATE_PRODUCT_MUT,{
     update:(cache,{data})=>{
       const nam=`create${respCat.name}`
 
-      path=[`getData${currentCategory.name}`]
-      indexSize=1
-      getPath(currentCategory.fields.filter(x=>
-        x.dataType=="relationship"))
-      console.log("path",path)
-      ind=[]
-      getIndexes()
+      if(!isManyToMany){
+
+        path=[`getData${currentCategory.name}`]
+        indexSize=1
+        getPath(currentCategory.fields.filter(x=>
+          x.dataType=="relationship"))
+        console.log("path",path)
+        ind=[]
+        getIndexes()
+        
 
 
 
-      const us=updateState(categoryProducts,0,0,data[nam])
-      console.log("ust",us)
-      dispatch(setCategoryProducts(us))
+        const us=updateState(categoryProducts,0,0,data[nam])
+        console.log("ust",us)
+        dispatch(setCategoryProducts(us))
+      }else{
+        console.log("entrooo cabron")
+        let nv=`create${nn}`
+        const rest=data[nv]
+
+        console.log("datanam",rest)
+        const nameVar=`mtm${nRc.name}${pR.name}Id`
+        console.log("nameVar",nameVar,rest[nameVar])
+        getSearchOne({variables:{
+          id:rest[nameVar]
+        }})
+      }
       /*dispatch(addProduct({
         categoryName:respCat.name,
         product:data[nam]
@@ -292,11 +355,20 @@ const NewProduct = ({
 
   const buttonClick=()=>{
     console.log("fieldsadd",fields)
-    addProduct2({
-      variables:{
-        ...fields
-      }
-    })
+    //if(!isManyToMany){
+      addProduct2({
+        variables:{
+          ...fields
+        }
+      })
+    /*}else{
+      addProduct3({
+        variables:{
+          ...fields,
+          
+        }
+      })
+    }*/
   
   }
   const dialogConfig={

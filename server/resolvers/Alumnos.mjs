@@ -25,7 +25,9 @@
                 createAlumnos:async(parent,args,{db})=>{
                   const product=await db.Alumnos.create(args)
                   return product
+                  
                 },
+               
                 getDataAlumnos:async(parent,args,{db})=>{
                   const products=await db.Alumnos.findAll({raw:true})
                   
@@ -40,6 +42,10 @@
                     console.log("error",e)
                     return false
                   }
+                },
+                getAlumnos:async(parent,args,{db})=>{
+                  const resp=await db.Alumnos.findByPk(args.id)
+                  return resp
                 },
                 editAlumnos:async(parent,args,{db})=>{
               await db.Alumnos.update({

@@ -72,7 +72,8 @@ const DisplaySearchProducts = ({
               [fcqName]:sc.catId,
               [pName]:sc.id,
               [nameMtm]:sc.id,
-              [fieldMtm]:parentCatId
+              [fieldMtm]:parentCatId,
+              ...newValues
               //...newValues
             })
             setFields({...fields,
@@ -80,9 +81,9 @@ const DisplaySearchProducts = ({
               [fcqName]:sc.catId,
               [pName]:sc.id,
               [nameMtm]:sc.id,
-              [fieldMtm]:parentCatId
+              [fieldMtm]:parentCatId,
 
-              //...newValues
+              ...newValues
             
             })
           }

@@ -95,7 +95,7 @@ const DisplayFields = ({
   return (
     <div>
     {structure.map((cat,index)=>{
-       console.log("pcid cqc",parentCatId,cat.queryCategory,category)
+       /*console.log("pcid cqc",parentCatId,cat.queryCategory,category)
        const catNames=category.name.split("_")
        const firstCat=categories.filter(x=>x.name==catNames[0])[0]
        const secondCat=categories.filter(y=>y.name==catNames[1])[0]
@@ -105,13 +105,23 @@ const DisplayFields = ({
        else
          nnField=`mtm${firstCat.name}${secondCat.name}Id`
        console.log("keyes fc sc parentId",firstCat,secondCat,parentId,categoryNameRelDestiny)
-       console.log("resultadooooo",{[nnField]:parentCatId},cat.name,nnField)
+       console.log("resultadooooo",{[nnField]:parentCatId},cat.name,nnField)*/
       
-      if(cat.dataType=="queryCategory"
-      && cat.name!==nnField){
-        
-          //setFields({...fields,[nnField]:parentCatId})
-          
+      if(cat.dataType=="queryCategory"){
+        if(isManyToMany){
+          console.log("pcid cqc",parentCatId,cat.queryCategory,category)
+          const catNames=category.name.split("_")
+          const firstCat=categories.filter(x=>x.name==catNames[0])[0]
+          const secondCat=categories.filter(y=>y.name==catNames[1])[0]
+          let nnField
+          if(firstCat.name==categoryNameRelDestiny)        
+            nnField=`mtm${secondCat.name}${firstCat.name}Id`
+          else
+            nnField=`mtm${firstCat.name}${secondCat.name}Id`
+          console.log("keyes fc sc parentId",firstCat,secondCat,parentId,categoryNameRelDestiny)
+          console.log("resultadooooo",{[nnField]:parentCatId},cat.name,nnField)
+              //setFields({...fields,[nnField]:parentCatId})
+          if(cat.name!==nnField){         
             return <DisplayQuerySearch
             fields={fields}
             setFields={setFields}
@@ -123,11 +133,25 @@ const DisplayFields = ({
             parentCatId={parentCatId}
             fieldMtm={nnField}
             />
-        }
+          }
+        
+        }else{
+          return <DisplayQuerySearch
+            fields={fields}
+            setFields={setFields}
+            queryCategory={cat.queryCategory}
+            queryFieldName={cat.name}
+            structure={structure}
+            isManyToMany={isManyToMany}
+            parentId={parentId}
+            parentCatId={parentCatId}
+            //fieldMtm={nnField}
+            />
+          }
         
           //aqui tengo que obtener todos los productos de las categorias finales de esta categoria
           //exactamente la misma mutacion de displaywholetable
-      else if(cat.dataType=="singleValue"){
+        }else if(cat.dataType=="singleValue"){
         console.log("CAT",cat)
         if(cat.declaredType=="string" ||
         cat.declaredType=="number"

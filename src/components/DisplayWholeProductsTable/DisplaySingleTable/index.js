@@ -289,7 +289,9 @@ const DisplaySingleTable = ({
           </>
 
         }
-        return <th>{h.name}</th>
+        if(products[0][h.name]!==undefined){
+          return <th>{h.name}</th>
+        }
       })
       headers.unshift(<th>Id</th>)
       headers.push(<th>Category</th>)

@@ -23,11 +23,14 @@ grupo:String
 grupo:String,
 
                 ):Grupos
+              
+              
               getDataGrupos:[Grupos]
               removeGrupos(id:Int):Boolean!
               editGrupos(id:Int,
 grupo:String,
 ):Grupos
+              getGrupos(id:Int):Grupos
               
             }`
           

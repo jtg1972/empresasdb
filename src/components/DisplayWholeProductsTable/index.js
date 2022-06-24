@@ -8,8 +8,8 @@ import { IoIosRemoveCircleOutline } from 'react-icons/io';
 import FormButton from '../Forms/FormButton'
 import DeleteProductRecord from '../../hooks/DeleteProductRecord'
 import DisplaySingleTable from './DisplaySingleTable'
-
-const callGetFieldsCategory=(field,categories,rep=0)=>{
+let fieldsNotToDisplay=[]
+const callGetFieldsCategory=(field,categories,rep=0,ar="")=>{
   const cat=categories.filter(c=>c.id==field.relationCategory)
 let bd
   if(cat.length>0){
@@ -30,12 +30,14 @@ let bd
         }else if(x.relationship=="manytomany"){
           //console.log("entrrooooo44445")
           if(rep+1==2){
+            fieldsNotToDisplay.push({[ar]:x.name})
+            console.log("FIEELSNOTDISPLAY",fieldsNotToDisplay)
             return ''
           }else{
             const ny=categories.filter(c=>c.id==x.relationCategory)[0]
             const ui=`mtm${ny.name}${cat[0].name}`
             return `mtm${ny.name}${cat[0].name}{\n
-            ${callGetFieldsCategory(x,categories,rep+1)}
+            ${callGetFieldsCategory(x,categories,rep+1,ui)}
             }`
           }
         }
@@ -49,6 +51,8 @@ let bd
   }
 
 }
+
+//console.log("fieldsnottodispay",fieldsNotToDisplay)
 
 
 const getQueryFromCategory=(productCategories,categories)=>{
@@ -75,8 +79,9 @@ const getQueryFromCategory=(productCategories,categories)=>{
         }else if(x.relationship=="manytomany"){
           //console.log("entro aqQUIW3242341")
           console.log("xnameee",`mtm${t1.name}${p.name}`)
+          const ar=`mtm${t1.name}${p.name}`
           return `mtm${t1.name}${p.name}{
-            ${callGetFieldsCategory(x,categories,0)}
+            ${callGetFieldsCategory(x,categories,0,ar)}
           }`
         }
       }

@@ -251,10 +251,10 @@ const StructureField = ({
         }
       })
       let mapeo=oc.fields.map(x=>{
-        if(x.declaredType=="number" ||
-        x.declaredType=="string"){
+        //if(x.declaredType=="number" ||
+        //x.declaredType=="string"){
          return `${x.name},${x.name}`
-        }
+        //}
       })
       mapeo.push("id,id")
       mapeo=mapeo.join(",")
@@ -277,10 +277,10 @@ const StructureField = ({
       queryCategory:parseInt(queryCategory),
       targets:targets.join(",")*/
       mapeo=rc.fields.map(x=>{
-        if(x.declaredType=="number" ||
-        x.declaredType=="string"){
+        //if(x.declaredType=="number" ||
+        //x.declaredType=="string"){
          return `${x.name},${x.name}`
-        }
+        //}
       })
       mapeo.push("id,id")
       mapeo=mapeo.join(",")

@@ -327,6 +327,7 @@ export default{
           let r=[]
           let x1="id:Int\n"
           let x2="id:Int,\n"
+          let x3=""
           const defotm=""
           for(let f in fields){
             if(fields[f]["declaredType"]=="string"){
@@ -364,6 +365,8 @@ export default{
               }else if(fields[f]["relationship"]=="manytomany"){
                 const respCat=await db.Category.findByPk(fields[f]["relationCategory"])
                 x1+=`mtm${respCat.name}${name}:[${respCat.name}]\n`
+              
+
               }
             }
             
@@ -431,9 +434,12 @@ export default{
               create${name}(
                 ${x2}
                 ):${name}
+              
+              
               getData${name}:[${name}]
               remove${name}(id:Int):Boolean!
               edit${name}(${x2}):${name}
+              get${name}(id:Int):${name}
               
             }\`
           `
@@ -461,7 +467,9 @@ export default{
                 create${name}:async(parent,args,{db})=>{
                   const product=await db.${name}.create(args)
                   return product
+                  
                 },
+               
                 getData${name}:async(parent,args,{db})=>{
                   const products=await db.${name}.findAll({raw:true})
                   
@@ -476,6 +484,10 @@ export default{
                     console.log("error",e)
                     return false
                   }
+                },
+                get${name}:async(parent,args,{db})=>{
+                  const resp=await db.${name}.findByPk(args.id)
+                  return resp
                 },
                 edit${name}:async(parent,args,{db})=>{
               `

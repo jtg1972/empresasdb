@@ -23,11 +23,14 @@ estudiante:String
 estudiante:String,
 
                 ):Alumnos
+              
+              
               getDataAlumnos:[Alumnos]
               removeAlumnos(id:Int):Boolean!
               editAlumnos(id:Int,
 estudiante:String,
 ):Alumnos
+              getAlumnos(id:Int):Alumnos
               
             }`
           

@@ -25,7 +25,9 @@
                 createGrupos:async(parent,args,{db})=>{
                   const product=await db.Grupos.create(args)
                   return product
+                  
                 },
+               
                 getDataGrupos:async(parent,args,{db})=>{
                   const products=await db.Grupos.findAll({raw:true})
                   
@@ -40,6 +42,10 @@
                     console.log("error",e)
                     return false
                   }
+                },
+                getGrupos:async(parent,args,{db})=>{
+                  const resp=await db.Grupos.findByPk(args.id)
+                  return resp
                 },
                 editGrupos:async(parent,args,{db})=>{
               await db.Grupos.update({
