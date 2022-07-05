@@ -15,6 +15,7 @@ mutation CreateCategory($name: String!, $parentCategory: Int,$typeOfCategory: In
     parentCategories
     parentCategory
     typeOfCategory
+    manyToMany
     bookmark {
       name
       id
@@ -384,7 +385,8 @@ const StructureField = ({
           variables:{
             name:categoryName,
             parentCategory:0,
-            typeOfCategory:0
+            typeOfCategory:0,
+            manyToMany:true
           }
         })
         createField({

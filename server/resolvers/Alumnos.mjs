@@ -10,12 +10,12 @@
                     })
                     const cd=x.map(c=>c["mtmGruposAlumnosId"])
                     console.log("cdddd",cd)
-                    const recs=db.Grupos.findAll({where:{id:{[Op.in]:cd}}})
+                    const recs=db.Grupos.findAll({where:{id:{[Op.in]:cd}},
+                    raw:true})
                     return recs
                   }
             },
             Query:{
-
                 Alumnos:async(parent,args,{db})=>{
                   const products=await db.Alumnos.findAll()
                   return products     
@@ -33,17 +33,23 @@
                   
                   return products
                 },
-                removeAlumnos:async(parent,args,{db})=>{
-                  try{
-                    const product=await db.Alumnos.findByPk(args.id)
-                    product.destroy()
-                    return true
-                  }catch(e){
-                    console.log("error",e)
-                    return false
-                  }
-                },
-                getAlumnos:async(parent,args,{db})=>{
+removeAlumnos_Grupos:async(parent,args,{db})=>{
+                  
+                    try{
+                      const products=await db.Alumnos_Grupos.findOne({where:{
+                        mtmAlumnosGruposId:args.mtmAlumnosGruposId,
+                        mtmGruposAlumnosId:args.mtmGruposAlumnosId
+                      }})
+                      console.log("productsreciente",products)
+                      products.destroy()
+                    
+                      return true
+                    }catch(e){
+                      console.log("error",e)
+                      return false
+                    }
+                  },
+                  getAlumnos:async(parent,args,{db})=>{
                   const resp=await db.Alumnos.findByPk(args.id)
                   return resp
                 },

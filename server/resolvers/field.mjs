@@ -376,6 +376,29 @@ export default{
 
           let manyToManyResolver=``
           let oneToManyResolver=``
+          let manyToManyDelete=``
+          if(cats1[category].manyToMany==true){
+            const split=cats1[category].name.split("_")
+            const fc=split[0]
+            const sc=split[1]
+            manyToManyDelete+=`remove${cats1[category].name}:async(parent,args,{db})=>{
+                  
+              try{
+                const products=await db.${name}.findOne({where:{
+                  mtm${fc}${sc}Id:args.mtm${fc}${sc}Id,
+                  mtm${sc}${fc}Id:args.mtm${sc}${fc}Id
+                }})
+                console.log("productsreciente",products)
+                products.destroy()
+              
+                return true
+              }catch(e){
+                console.log("error",e)
+                return false
+              }
+            },
+            `
+          }
           if(relations.length>0){
             for(let r in relations){
               const respCat=await db.Category.findByPk(relations[r].relationCategory)
@@ -389,8 +412,7 @@ export default{
                     })
                     return x
                   },`
-                }
-                if(relations[r].relationship=="manytomany"){
+                }else if(relations[r].relationship=="manytomany"){
                   let c=""
                   if(name<respCat.name)
                     c=`${name}_${respCat.name}`
@@ -405,16 +427,19 @@ export default{
                     console.log("cdddd",cd)
                     const recs=db.${respCat.name}.findAll({where:{id:{[Op.in]:cd}}})
                     return recs
-                  }`
+                  }
+                  `
+                 
                 }
               }
-
             }
+
           }
+        
           console.log("otomres",oneToManyResolver)
           
 
-          const content2=`
+          let content2=`
           import {gql} from 'apollo-server-express'
 
           export default gql\`
@@ -436,9 +461,18 @@ export default{
                 ):${name}
               
               
-              getData${name}:[${name}]
-              remove${name}(id:Int):Boolean!
-              edit${name}(${x2}):${name}
+              getData${name}:[${name}]\n`
+              if(cats1[category].manyToMany==false){
+                content2+=`remove${name}(id:Int):Boolean!\n`
+              }else{
+                const split=cats1[category].name.split("_")
+                const fc=split[0]
+                const sc=split[1]
+                content2+=`remove${cats1[category].name}(mtm${fc}${sc}Id:Int,mtm${sc}${fc}Id:Int):Boolean\n`
+            
+              }
+
+              content2+=`edit${name}(${x2}):${name}
               get${name}(id:Int):${name}
               
             }\`
@@ -457,7 +491,6 @@ export default{
           }
               
           content3+=`Query:{
-
                 ${name}:async(parent,args,{db})=>{
                   const products=await db.${name}.findAll()
                   return products     
@@ -474,18 +507,24 @@ export default{
                   const products=await db.${name}.findAll({raw:true})
                   
                   return products
-                },
-                remove${name}:async(parent,args,{db})=>{
-                  try{
-                    const product=await db.${name}.findByPk(args.id)
-                    product.destroy()
-                    return true
-                  }catch(e){
-                    console.log("error",e)
-                    return false
+                },`
+                  if(cats1[category].manyToMany==false){
+
+                    content3+=`remove${name}:async(parent,args,{db})=>{
+                      try{
+                        const product=await db.${name}.findByPk(args.id)
+                        product.destroy()
+                        return true
+                      }catch(e){
+                        console.log("error",e)
+                        return false
+                      }
+                    },
+                    `
+                  }else{
+                    content3+=manyToManyDelete
                   }
-                },
-                get${name}:async(parent,args,{db})=>{
+                content3+=`get${name}:async(parent,args,{db})=>{
                   const resp=await db.${name}.findByPk(args.id)
                   return resp
                 },

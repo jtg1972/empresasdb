@@ -120,7 +120,8 @@ const DisplayFields = ({
             nnField=`mtm${firstCat.name}${secondCat.name}Id`
           console.log("keyes fc sc parentId",firstCat,secondCat,parentId,categoryNameRelDestiny)
           console.log("resultadooooo",{[nnField]:parentCatId},cat.name,nnField)
-              //setFields({...fields,[nnField]:parentCatId})
+          let campoOculto={[nnField]:parentCatId}
+          //setFields({...fields,[nnField]:parentCatId})
           if(cat.name!==nnField){         
             return <DisplayQuerySearch
             fields={fields}
@@ -132,6 +133,7 @@ const DisplayFields = ({
             parentId={parentId}
             parentCatId={parentCatId}
             fieldMtm={nnField}
+            campoOculto={campoOculto}
             />
           }
         

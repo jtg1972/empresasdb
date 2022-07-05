@@ -29,7 +29,8 @@ export default{
           name:c.name,
           parentCategories:pc,
           typeOfCategory:c.typeOfCategory,
-          parentCategory:c.parentCategory
+          parentCategory:c.parentCategory,
+          manyToMany:c.manyToMany
         }
       })
       return cats1
@@ -71,7 +72,8 @@ export default{
           name:c.dataValues.name,
           parentCategories:pc,
           typeOfCategory:c.dataValues.typeOfCategory,
-          parentCategory:c.dataValues.parentCategory
+          parentCategory:c.dataValues.parentCategory,
+          manyToMany:c.dataValues.manyToMany
         }
       })
       return cats
@@ -109,7 +111,8 @@ export default{
         name:args.name,
         parentCategories:stringParentCategories,
         parentCategory:args.parentCategory,
-        typeOfCategory:args.typeOfCategory
+        typeOfCategory:args.typeOfCategory,
+        manyToMany:args.manyToMany
       },{raw:true})
       return {...category.dataValues,parentCategories:[...parentCategories,category.dataValues.id]}
     },

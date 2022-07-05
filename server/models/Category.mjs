@@ -8,6 +8,10 @@ class Category extends Sequelize.Model{
       typeOfCategory:{
         type:DataTypes.INTEGER,
         defaultValue:1
+      },
+      manyToMany:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:false
       }
     },{sequelize})
   }

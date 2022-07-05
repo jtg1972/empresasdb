@@ -9,6 +9,7 @@ export default gql`
     parentCategory:Int
     bookmark:[Category!]
     typeOfCategory:Int
+    manyToMany:Boolean
     
   }
 
@@ -22,7 +23,8 @@ export default gql`
     createCategory(
       name:String!,
       parentCategory:Int,
-      typeOfCategory:Int
+      typeOfCategory:Int,
+      manyToMany:Boolean
       ):Category!,
     deleteCategory(id:Int!):Boolean!
   

@@ -1,18 +1,43 @@
 import { gql, useMutation } from '@apollo/client'
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import { BsPencilFill } from 'react-icons/bs'
 import FormButton from '../../Forms/FormButton'
 import { IoIosRemoveCircleOutline } from 'react-icons/io';
 import { useDispatch, useSelector } from 'react-redux';
 import {setCategoryProducts} from '../../../redux/category/actions'
 import { FcLeftDown2 } from 'react-icons/fc';
-import { valueToObjectRepresentation } from '@apollo/client/utilities';
+import { asyncMap, valueToObjectRepresentation } from '@apollo/client/utilities';
+import { isConstValueNode } from 'graphql';
+
+
 const getMutationForDelete=(categoryName)=>{
   const mutation=`mutation Remove${categoryName}($id: Int) {
     remove${categoryName}(id: $id)
 
   }`
   console.log("mutation",mutation)
+  return gql`${mutation}`
+
+}
+
+const getMutationForDeleteManyToMany=(parentRelationId,category,categories)=>{
+  const parentCategory=categories.filter(x=>
+    x.id==parentRelationId)[0]
+  let name=""
+  if(parentCategory.name>category.name)
+  name=`${category.name}_${parentCategory.name}`
+  else
+  name=`${parentCategory.name}_${category.name}`
+
+  console.log("Namedelmut",name)
+  const mutation=`mutation Remove${name}($mtm${parentCategory.name}${category.name}Id: Int,
+    $mtm${category.name}${parentCategory.name}Id: Int
+    ) {
+    remove${name}(mtm${parentCategory.name}${category.name}Id: $mtm${parentCategory.name}${category.name}Id,
+      mtm${category.name}${parentCategory.name}Id: $mtm${category.name}${parentCategory.name}Id)
+
+  }`
+  console.log("mutationdel",mutation)
   return gql`${mutation}`
 
 }
@@ -35,7 +60,12 @@ const DisplaySingleTable = ({
   isManyToMany,
   relationCategory,
   parentRelation,
-  parentCatId
+  parentCatId,
+  fieldsNotToDisplay,
+  mutMtmData,
+  nameFieldKey,
+  nameFieldKeyToDisplay,
+  nameMutationManyToManyData
   })=>{
     console.log("productsmain",products)
     console.log("parentcatid Singletable",parentCatId)
@@ -111,6 +141,62 @@ const DisplaySingleTable = ({
       } 
       
   }
+  const updateManyToManyState=(prods,indexPartials=0,indexArray=0,reemp,titulo)=>{
+    let cp 
+    let ti=Object.keys(tableIndexes).map(x=>parseInt(tableIndexes[x]))
+
+      /*if(prods==undefined || prods==[]
+        ||prods=={})
+        return null*/
+        
+        partials=path
+        ti=ind
+
+      
+      if(!Array.isArray(prods)){
+        cp={...prods}
+        console.log("no arreglo")
+        console.log("prods partlength partials",prods,partials.length,partials)
+        let ui
+        //console.log("pip",partials[indexPartials],cp[partials[indexPartials]])
+        //console.log("params",cp[partials[indexPartials]],indexPartials+1,indexArray)
+        console.log("se modifica campo",partials[indexPartials])
+        //if((indexPartials+1)==partials.length){
+        console.log("importante",partials[indexPartials],titulo)
+        if(partials[indexPartials]==titulo){
+          console.log("entro final")
+          /*ui=cp[partials[indexPartials]].filter(x=>{
+            console.log("xid deleteid",x.id,deleteId)
+            return x.id!==deleteId
+          })*/
+          
+          console.log("ui",partials[indexPartials],cp[partials[indexPartials]])
+          return {...cp,
+            [partials[indexPartials]]:reemp}
+        }else{
+          console.log("entro no final")
+          return {...cp,[partials[indexPartials]]:updateManyToManyState(cp[partials[indexPartials]],indexPartials+1,indexArray,reemp,titulo)}
+        }
+      
+      } else if(Array.isArray(prods)){
+        cp=[...prods]
+        console.log("arraglo",indexArray,ti.length)
+        console.log("deliddd",deleteId)
+        console.log("prods",prods)
+          console.log("partarr",cp[ti[indexArray]])
+        console.log("paramsarr",cp[ti[indexArray]],indexPartials,indexArray+1,titulo)
+                  
+        
+        return cp.map((y,index)=>{
+          if(index==ti[indexArray]){
+            return updateManyToManyState(cp[ti[indexArray]],indexPartials,indexArray+1,reemp,titulo)
+          }
+          return y
+        })
+      
+      } 
+      
+  }
 
   let ind
   let path
@@ -169,12 +255,27 @@ const DisplaySingleTable = ({
       }
   }
 
-
-
-  const DELETE_PRODUCT=getMutationForDelete(respCat.name)
+  let DELETE_PRODUCT=``
+  if(!isManyToMany){
+    DELETE_PRODUCT=getMutationForDelete(respCat.name)
+  }else{
+    DELETE_PRODUCT=getMutationForDeleteManyToMany(parentRelation,respCat,categories)
+  }
   const [delete2]=useMutation(DELETE_PRODUCT,{
     update:(cache,{data})=>{
-      const n=`remove${respCat.name}`
+      let n
+      if(!isManyToMany)
+        n=`remove${respCat.name}`
+      else{
+        const parentCategory=categories.filter(x=>
+          x.id==parentRelation)[0]
+        
+        if(parentCategory.name>respCat.name)
+          n=`remove${respCat.name}_${parentCategory.name}`
+        else
+          n=`remove${parentCategory.name}_${respCat.name}`
+      
+      }
     
       if(data[n]==true){
         console.log("tituloenc",titulo)
@@ -194,6 +295,79 @@ const DisplaySingleTable = ({
       }
     }
   })
+
+  let repMut
+  if(mutMtmData!==""){
+     repMut=mutMtmData
+  }else{
+    
+    repMut=gql`mutation getMutationMtm{
+     getData${respCat.name}{
+       id
+     }
+    }`
+  }
+  console.log("repmut",repMut)
+  const [getMtmData]=useMutation(repMut,
+    {update:(cache,{data})=>{
+      const dMTM=data[nameMutationManyToManyData]
+      console.log("dmtm",dMTM)
+      path=[`getData${currentCategory.name}`]
+        indexSize=1
+        getPath(currentCategory.fields.filter(x=>
+          x.dataType=="relationship"))
+        console.log("pathmtm",path)
+        ind=[]
+        getIndexes()
+        
+      console.log("datamtm",data)
+      console.log("cp",categoryProducts)
+      let ncp={...categoryProducts}
+      let currPiv={...ncp}
+      for(let i in path){
+        currPiv=currPiv[path[i]]
+        if(tableIndexes[path[i]]>=0){
+          currPiv=currPiv[tableIndexes[path[i]]]
+          console.log("currPiv",currPiv)
+        }
+      }
+
+      console.log("pam",currPiv)
+      currPiv=currPiv.map(c=>{
+        const comp=dMTM.filter(d=>{
+          console.log("argsmtm",
+          d[nameFieldKeyToDisplay],
+          c.id)
+          return d[nameFieldKeyToDisplay]==c.id
+        })[0]
+        return {...c,...comp}
+
+      })
+      console.log("curpivfinal",currPiv)
+     const us=updateManyToManyState(categoryProducts,0,0,currPiv,titulo)
+     dispatch(setCategoryProducts(us))
+
+    }
+
+  })
+  
+
+  useEffect(()=>{
+    console.log("pcidbien",parentCatId)
+    if(parentCatId!==-1){
+
+      console.log("varmut",{
+        variables:{
+          [nameFieldKey]:parentCatId
+        }
+      })
+      getMtmData({
+        variables:{
+          [nameFieldKey]:parentCatId
+        }
+      })
+    }
+  },[parentCatId])
 
   const trDateMex=(val)=>{
     console.log("val",val)
@@ -256,6 +430,20 @@ const DisplaySingleTable = ({
 
   const res=()=>{
     console.log("displtable",products,respCat)
+    let parentCategory1
+    let headers2={}
+    if(isManyToMany){
+      const parentCategory=categories.filter(x=>
+        x.id==parentRelation)[0]
+      let name=""
+      if(parentCategory.name>respCat.name)
+       name=`${respCat.name}_${parentCategory.name}`
+      else
+        name=`${parentCategory.name}_${respCat.name}`
+    
+      parentCategory1=categories.filter(x=>
+        x.name==name)[0]
+    }
     resultado.push(<p style={{marginTop:"10px",marginBottom:"10px"}}>{titulo}</p>)
     {isSonAndHasParent() &&
       resultado.push(<FormButton
@@ -278,10 +466,13 @@ const DisplaySingleTable = ({
     }*/
     let yalohizo=false
     let ifRelations=false
+    let totalFields=[...respCat.fields]
+    const camp=[]
     if(products?.length>0){
       
       let headers=respCat.fields.map(h=>{
         if(h.dataType=="queryCategory"){
+
           return <>
             <th>{h.name} Global</th>
             <th>{h.name} Final</th>
@@ -289,17 +480,38 @@ const DisplaySingleTable = ({
           </>
 
         }
-        if(products[0][h.name]!==undefined){
+
+        if(//products[0][h.name]!==undefined
+          fieldsNotToDisplay[titulo]!==h.name){
+          camp.push(h.name)
           return <th>{h.name}</th>
         }
+      
       })
-      headers.unshift(<th>Id</th>)
-      headers.push(<th>Category</th>)
-      /*let headers=Object.keys(products[0]).map(p=>{
+      if(isManyToMany){
+        let fields2=parentCategory1.fields.filter(x=>{
+          
+          return !x.name.startsWith("mtm")
+        }
+          
+        )
+        fields2.map(d=>camp.push(d.name))
+        totalFields=[...totalFields,...fields2]
         
+        headers2=fields2.map(f=><th>{f.name}</th>)
+        headers=[...headers,...headers2]
+      }
+      
+      headers.unshift(<th>Id</th>)
+      camp.unshift("id")
+      headers.push(<th>Category</th>)
+      camp.push("__typename")
+      /*let headers=Object.keys(products[0]).map(p=>{
+      
       <th>{p}</th>}
       )*/
       //headers.unshift(<th>Selected</th>)
+      console.log("totalFields",totalFields,headers,camp,products)  
       if(respCat.typeOfCategory==0){
         headers.push(<th>Delete Product</th>)
         headers.push(<th>Edit Product</th>)
@@ -313,10 +525,11 @@ const DisplaySingleTable = ({
         let producto={...products[p]}
         let data=[]
         
-        for(let yu in respCat.fields){
-          if(respCat.fields[yu].dataType=="relationship" 
-          && products[p][respCat.fields[yu].name]!==undefined
-          && yalohizo==false){
+        for(let yu in totalFields){//respCat.fields){
+          if(totalFields[yu].dataType=="relationship" 
+          && products[p][totalFields[yu].name]!==undefined
+          && yalohizo==false
+          && fieldsNotToDisplay[titulo]!==totalFields[yu].name){
             ifRelations=true
             headers.unshift(<th>Selected</th>)
             yalohizo=true
@@ -342,71 +555,123 @@ const DisplaySingleTable = ({
           </td>)
           indice++
         }
-        for(let c in products[p]){
+        console.log("praw",products,camp)
+        //for(let p in products){
+          for(let c in camp){//products[p]){
           /*let cc=categories.filter(v=>
             v.name==cname
           )*/
-          console.log("productsp",products[p],respCat.fields)
-          let fs=respCat.fields.filter(x=>{
+          //console.log("productsp",products[p],totalFields)
+            let fs=totalFields.filter(x=>{
             
-            return x.name==c
-          })
-          console.log("ccfields",fs)
+              return x.name==camp[c]
+            })
+            console.log("ccfields",fs)
 
           
-          if(fs.length==1){
-            if(fs[0].relationship=="onetomany"){
-              data.push(<td>one to many</td>)
-            }else if(fs[0].relationship=="manytomany"){
-              data.push(<td>many to many</td>)
+            if(fs.length==1){
+              if(fs[0].relationship=="onetomany"){
+                data.push(<td>one to many</td>)
+              }else if(fs[0].relationship=="manytomany"){
+                if(fs[0].name!==fieldsNotToDisplay[titulo])
+                  data.push(<td>many to many</td>)
+              }else if(fs[0].declaredType=="date"){
+                //if(producto[c]!==""){
+              
+                console.log("prodc",products[p][camp[c]])  
+                let nf=trDateMex(products[p][camp[c]])
+                console.log("nf",nf)
+                //producto[c]=nf
+                data.push(<td>{nf}</td>)
+                //}
+              }else if(fs[0].dataType=="queryCategory"){
+                data.push(<td>products[p][`${products[p][camp[c]]}globalCatQuery`]</td>)
+                data.push(<td>products[p][`${products[p][camp[c]]}finalCatQuery`]</td>)
+                data.push(<td>products[p][`${products[p][camp[c]]}productQuery`]</td>)
+              }else { 
+                data.push(<td>{products[p][camp[c]]}</td>)
+              }
+            }else{
+              data.push(<td>{products[p][camp[c]]}</td>)
             }
-            else if(fs[0].declaredType=="date"){
-              //if(producto[c]!==""){
-                
-              console.log("prodc",producto[c])  
-              let nf=trDateMex(producto[c])
-              console.log("nf",nf)
-              //producto[c]=nf
-              data.push(<td>{nf}</td>)
-              //}
-            }else if(fs[0].dataType=="queryCategory"){
-              data.push(<td>producto[`${producto[c]}globalCatQuery`]</td>)
-              data.push(<td>producto[`${producto[c]}finalCatQuery`]</td>)
-              data.push(<td>producto[`${producto[c]}productQuery`]</td>)
-            }else { 
-              data.push(<td>{producto[c]}</td>)
-            }
-          }else{
-            data.push(<td>{producto[c]}</td>)
           }
-        }
+        //}
         if(respCat.typeOfCategory==0){ 
+          
+
+          
           if(!hasSons(p)){
-            data.push(<td><IoIosRemoveCircleOutline
-              onClick={()=>{
-                deleteId=producto["id"]
+          data.push(<td><IoIosRemoveCircleOutline
+            onClick={()=>{
+              if(isManyToMany){
+                const pr=categories.filter(x=>
+                  x.id==parentRelation)[0]
+                const f1=`mtm${pr.name}${respCat.name}Id`
+                const f2=`mtm${respCat.name}${pr.name}Id`
+                console.log("paramsdelmtm",{
+                  [f1]: parentCatId,
+                  [f2]: products[p]["id"]
+                })
+                deleteId=products[p]["id"]
+                delete2({
+                  variables:{
+                    [f1]: parentCatId,
+                    [f2]: products[p]["id"]
+                  }
+                })
+              }else{
+                deleteId=products[p]["id"]
 
                 console.log("Paramsbien ",deleteId)
                 
                 delete2({
                   variables:{
-                    id:producto["id"]
+                    id:products[p]["id"]
                   }
                 })
-                
-              }}
-            />
-            </td>
-          )}else{
-            data.push(<td></td>)
-          }
+              }
+            }}
+          />
+          </td>)
+        }else{
+          data.push(<td></td>)
+        }
+          
         
-          data.push(<td><BsPencilFill
-          onClick={()=>{
-            
-            console.log("prodwholetable",producto)
-            toggleEditProduct(transformProduct(producto),respCat,tableIndexes,partials,titulo)
-          }}
+        data.push(<td><BsPencilFill
+        onClick={()=>{
+          if(!isManyToMany){
+            console.log("prodwholetable",products[p])
+            toggleEditProduct(transformProduct(products[p]),respCat,tableIndexes,partials,titulo)
+          }else{
+            const parentCategory=categories.filter(x=>
+              x.id==parentRelation)[0]
+            let name=""
+            if(parentCategory.name>respCat.name)
+            name=`${respCat.name}_${parentCategory.name}`
+            else
+            name=`${parentCategory.name}_${respCat.name}`
+            const curCat=categories.filter(x=>
+              x.name==name && x.manyToMany==true
+            )[0]
+            const f1=`mtm${parentCategory.name}${respCat.name}Id`
+            const f2=`mtm${respCat.name}${parentCategory.name}Id`
+            console.log("paramsdelmtmedit",{
+              [f1]: parentCatId,
+              [f2]: products[p]["id"]
+            })
+            const keysEditRecord={
+              [f1]: parentCatId,
+              [f2]: products[p]["id"]
+            }
+            let curCatModified={...curCat}
+            curCatModified.fields=curCatModified.fields.filter(x=>
+              x.name!==f1 && x.name!==f2)
+            if(curCatModified.fields.length>0)
+              toggleEditProduct(transformProduct(products[p]),curCatModified,tableIndexes,partials,titulo,keysEditRecord)
+
+          }
+        }}
         /></td>)
         }
         

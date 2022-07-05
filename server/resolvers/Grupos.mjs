@@ -15,7 +15,6 @@
                   }
             },
             Query:{
-
                 Grupos:async(parent,args,{db})=>{
                   const products=await db.Grupos.findAll()
                   return products     
@@ -33,17 +32,23 @@
                   
                   return products
                 },
-                removeGrupos:async(parent,args,{db})=>{
-                  try{
-                    const product=await db.Grupos.findByPk(args.id)
-                    product.destroy()
-                    return true
-                  }catch(e){
-                    console.log("error",e)
-                    return false
-                  }
-                },
-                getGrupos:async(parent,args,{db})=>{
+removeAlumnos_Grupos:async(parent,args,{db})=>{
+                  
+                    try{
+                      const products=await db.Alumnos_Grupos.findOne({where:{
+                        mtmGruposAlumnosId:args.mtmGruposAlumnosId,
+                        mtmAlumnosGruposId:args.mtmAlumnosGruposId
+                      }})
+                      console.log("productsreciente",products)
+                      products.destroy()
+                    
+                      return true
+                    }catch(e){
+                      console.log("error",e)
+                      return false
+                    }
+                  },
+                  getGrupos:async(parent,args,{db})=>{
                   const resp=await db.Grupos.findByPk(args.id)
                   return resp
                 },

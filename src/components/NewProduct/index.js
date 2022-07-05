@@ -26,15 +26,25 @@ const getQuerySearchOne=(cat)=>{
 const addProductMutation=(category,categories,mtm)=>{
   let argsf=category.fields
   let args1=[]
+  let ya=false
   for(let f in argsf){
     if(argsf[f].dataType=="queryCategory"){
       args1.push(`$${argsf[f].name}GlobalCatQuery:Int`)
       args1.push(`$${argsf[f].name}FinalCatQuery:Int`)
       args1.push(`$${argsf[f].name}ProductQuery:Int`)
-    }if(argsf[f].declaredType=="number"){
-      args1.push(`$${argsf[f].name}:Int`)
+      if(argsf[f].declaredType=="number")
+        args1.push(`$${argsf[f].name}:Int`)
 
-    }else if(argsf[f].declaredType=="string" 
+
+    }else if(argsf[f].declaredType=="number"){
+      if(ya[argsf[f].name]!==true){
+        args1.push(`$${argsf[f].name}:Int`)
+      }
+      
+      
+    }
+    
+    else if(argsf[f].declaredType=="string" 
     || argsf[f].declaredType=="date"
     || argsf[f].dataType=="multipleValue"){
       args1.push(`$${argsf[f].name}:String`)
@@ -48,9 +58,17 @@ const addProductMutation=(category,categories,mtm)=>{
       args2.push(`${argsf[f].name}GlobalCatQuery:$${argsf[f].name}GlobalCatQuery`)
       args2.push(`${argsf[f].name}FinalCatQuery:$${argsf[f].name}FinalCatQuery`)
       args2.push(`${argsf[f].name}ProductQuery:$${argsf[f].name}ProductQuery`)
-      if(mtm)
+      //if(mtm)
+      if(argsf[f].declaredType=="number")
         args2.push(`${argsf[f].name}:$${argsf[f].name}`)
-    }else if(argsf[f].dataType!=="relationship"){
+
+    }else if(argsf[f].declaredType=="number"){
+      if(ya[argsf[f].name]!==true){
+        args2.push(`${argsf[f].name}:$${argsf[f].name}`)
+      }
+      
+    }
+    else if(argsf[f].dataType!=="relationship"){
       args2.push(`${argsf[f].name}:$${argsf[f].name}`)
     }
   }
@@ -79,14 +97,22 @@ const addProductMutation=(category,categories,mtm)=>{
       campos.push(`${argsf[f].name}GlobalCatQuery`)
       campos.push(`${argsf[f].name}FinalCatQuery`)
       campos.push(`${argsf[f].name}ProductQuery`)
-      if(mtm)
+      //if(mtm)
+      if(argsf[f].declaredType=="number"){
         campos.push(`${argsf[f].name}`)
+        ya={[argsf[f].name]:true}
+      }
+    }else if(argsf[f].declaredType=="number"){
+      if(ya[argsf[f].name]!==true){
+        campos.push(`${argsf[f].name}`)
+      }
     }
     else
       campos.push(argsf[f].name)
   }
-  
-  campos.unshift("id")  
+  if(!mtm){
+    campos.unshift("id")  
+  }
   campos=campos.join("\n")
   
   const query=`mutation CreateProduct(${args1}){
@@ -127,7 +153,7 @@ const NewProduct = ({
   const dispatch=useDispatch()
   let nC,nRc,pR,nn,relMtMC
   const [mtmStr,setMtmStr]=useState([])
-
+  const [resto,setResto]=useState({})
   useEffect(()=>{
     
     
@@ -146,17 +172,18 @@ const NewProduct = ({
       console.log("Nccc",nC.fields)*/
       setMtmStr(nC.fields)
       //setFields(nC.fields)
-    }
+    }else{
 
-    const xfields=respCat.fields.filter(x=>
-      x.relationship=="otmdestiny"
-    )
-    const nf={}
-    xfields.forEach(f=>{
-      nf[f.name]=parentId
-    })
-    console.log("nf",nf)
-    setFields({...fields,...nf})
+      const xfields=respCat.fields.filter(x=>
+        x.relationship=="otmdestiny"
+      )
+      const nf={}
+      xfields.forEach(f=>{
+        nf[f.name]=parentId
+      })
+      console.log("nf",nf)
+      setFields({...fields,...nf})
+    }
   },[])
 
   const updateState=(prods,indexPartials=0,indexArray=0,nuevo)=>{
@@ -191,11 +218,11 @@ const NewProduct = ({
             return x.id!==deleteId
           })*/
           
-          console.log("ui",partials[indexPartials],cp[partials[indexPartials]])
+          console.log("ui",partials[indexPartials],cp[partials[indexPartials]],resto)
           return {
             ...cp,
             [partials[indexPartials]]:
-            [...cp[partials[indexPartials]],nuevo]
+            [...cp[partials[indexPartials]],{...nuevo,...resto}]
           }
         }else{
           console.log("entro no final")
@@ -296,7 +323,7 @@ const NewProduct = ({
   const [getSearchOne]=useMutation(GET_SEARCH_ONE,{
     update:(cache,{data})=>{
       const nam=`get${nRc.name}`
-      console.log("resdata",data[nam])
+      console.log("resdata",data,nRc.name,data[nam])
       path=[`getData${currentCategory.name}`]
         indexSize=1
         getPath(currentCategory.fields.filter(x=>
@@ -306,13 +333,15 @@ const NewProduct = ({
         getIndexes()
         
 
-
-
-        const us=updateState(categoryProducts,0,0,data[nam])
+        console.log("resto",resto)
+        console.log("datanamecomp",data[nam],resto,{...data[nam],...resto})
+        const us=updateState(categoryProducts,0,0,{...data[nam],...resto})
         console.log("ust",us)
         dispatch(setCategoryProducts(us))
     }
   })
+  
+  
   const [addProduct2]=useMutation(CREATE_PRODUCT_MUT,{
     update:(cache,{data})=>{
       const nam=`create${respCat.name}`
@@ -336,13 +365,13 @@ const NewProduct = ({
       }else{
         console.log("entrooo cabron")
         let nv=`create${nn}`
-        const rest=data[nv]
-
-        console.log("datanam",rest)
+        setResto({...data[nv]})
+        
+        console.log("datanam",resto)
         const nameVar=`mtm${nRc.name}${pR.name}Id`
-        console.log("nameVar",nameVar,rest[nameVar])
+        console.log("nameVar",nameVar,resto[nameVar])
         getSearchOne({variables:{
-          id:rest[nameVar]
+          id:data[nv][nameVar]
         }})
       }
       /*dispatch(addProduct({
@@ -379,6 +408,7 @@ const NewProduct = ({
 
   const displayFieldsConfig=()=>{
     if(!isManyToMany) { 
+    
     return {
       category:respCat,
       structure:respCat.fields,

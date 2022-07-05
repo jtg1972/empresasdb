@@ -8,7 +8,9 @@ import { IoIosRemoveCircleOutline } from 'react-icons/io';
 import FormButton from '../Forms/FormButton'
 import DeleteProductRecord from '../../hooks/DeleteProductRecord'
 import DisplaySingleTable from './DisplaySingleTable'
-let fieldsNotToDisplay=[]
+import GetQueryManyToManyData, { getMutationManyToManyData } from './DisplaySingleTable/GetQueryManyToManyData'
+import { fieldNameFromStoreName } from '@apollo/client/cache'
+let fieldsNotToDisplay={}
 const callGetFieldsCategory=(field,categories,rep=0,ar="")=>{
   const cat=categories.filter(c=>c.id==field.relationCategory)
 let bd
@@ -29,9 +31,11 @@ let bd
           `
         }else if(x.relationship=="manytomany"){
           //console.log("entrrooooo44445")
-          if(rep+1==2){
-            fieldsNotToDisplay.push({[ar]:x.name})
-            console.log("FIEELSNOTDISPLAY",fieldsNotToDisplay)
+          if(rep+1==2 ){
+            if(fieldsNotToDisplay[ar]!==x.name){
+              fieldsNotToDisplay[ar]=x.name
+              console.log("FIEELSNOTDISPLAY",fieldsNotToDisplay)
+            }
             return ''
           }else{
             const ny=categories.filter(c=>c.id==x.relationCategory)[0]
@@ -56,6 +60,7 @@ let bd
 
 
 const getQueryFromCategory=(productCategories,categories)=>{
+  fieldsNotToDisplay={}
   let query=`mutation GetData {`
   //console.log("productcats",productCategories)
   let fields
@@ -109,6 +114,8 @@ const getMutationForDelete=(categoryName)=>{
 }
 
 
+
+
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   currentCategoryId:categories.currentCategoryId,
@@ -149,7 +156,7 @@ const DisplayWholeProductsTable = ({
   const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(productCategories,categories)
   const [getProducts]=useMutation(GET_PRODUCTS_FROM_CATEGORY,{
     update:(cache,{data})=>{
-      //console.log("data:",data)
+      console.log("data:",data)
       dispatch(setCategoryProducts(data))
       
     }
@@ -159,6 +166,7 @@ const DisplayWholeProductsTable = ({
   catName=currentCategory.name
     
   useEffect(()=>{
+    setTableIndexes({})
     getProducts()
   },[currentCategory])
 
@@ -239,7 +247,7 @@ const DisplayWholeProductsTable = ({
   const displayTableAndRelations=(name,prods,otmrelations,cc,partials,pi,isManyToMany=false,relCat,parRel,relCatInd)=>{  
       //console.log("cp[cp]",name,prods,otmrelations,cc)
       let parId
-      
+      console.log("relcatind",relCatInd)
       if(cc){
       //console.log("partials",partials)
       let indtable=tableIndexes[name]
@@ -250,8 +258,31 @@ const DisplayWholeProductsTable = ({
       }else{
         parId=-1
       }
+      let mutMtmData=''
+      let nameFieldKey
+      let nameMutationManyToManyData
+      let nameFieldKeyToDisplay
       console.log("paridentroaqui",parId)
-    
+      if(isManyToMany){
+        const relCatObj=categories.filter(x=>{
+          return x.id==parRel
+        })[0]
+        let nameTableManyToMany
+        
+        if(cc.name>relCatObj.name){
+          nameTableManyToMany=`${relCatObj.name}_${cc.name}`
+          
+        }else{
+          nameTableManyToMany=`${cc.name}_${relCatObj.name}`
+        }
+        nameFieldKey=`mtm${relCatObj.name}${cc.name}Id`
+        nameFieldKeyToDisplay=`mtm${cc.name}${relCatObj.name}Id`
+        const catQMtM=categories.filter(x=>x.name==nameTableManyToMany)[0]
+        console.log("Ojo",nameTableManyToMany,nameFieldKey,catQMtM)
+
+        mutMtmData=getMutationManyToManyData(catQMtM,nameFieldKey,relCatObj.name,nameFieldKeyToDisplay)
+        nameMutationManyToManyData=`${catQMtM.name}By${relCatObj.name}Id`
+      }
       allTables.push(<DisplaySingleTable
         titulo={name}
         products={prods}
@@ -266,6 +297,11 @@ const DisplayWholeProductsTable = ({
         relationCategory={relCat}
         parentRelation={parRel}
         parentCatId={relCatInd}
+        fieldsNotToDisplay={fieldsNotToDisplay}
+        mutMtmData={mutMtmData}
+        nameFieldKey={nameFieldKey}
+        nameFieldKeyToDisplay={nameFieldKeyToDisplay}
+        nameMutationManyToManyData={nameMutationManyToManyData}
         />
         )
       }

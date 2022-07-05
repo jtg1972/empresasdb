@@ -79,7 +79,8 @@ const DisplayQuerySearch = ({
   isManyToMany,
   parentId,
   parentCatId,
-  fieldMtm
+  fieldMtm,
+  campoOculto
 }) => {
   const [chosenProduct,setChosenProduct]=useState({})
   const {categories}=useSelector(mapToState)
@@ -170,6 +171,7 @@ const DisplayQuerySearch = ({
           parentId={parentId}
           fieldMtm={fieldMtm}
           parentCatId={parentCatId}
+          campoOculto={campoOculto}
         />
 
         

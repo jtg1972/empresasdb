@@ -35,6 +35,7 @@ const CATEGORIES1=gql`
       parentCategory
       typeOfCategory
       parentCategories
+      manyToMany
       bookmark{
         id
         name
@@ -107,12 +108,14 @@ const DetailedProduct = () => {
   }
 
   const [openEditProduct,setOpenEditProduct]=useState(false)
-  const toggleEditProduct=(editFields1,c1,ti,par,tit)=>{
+  const [keyFields,setKeyFields]=useState({})
+  const toggleEditProduct=(editFields1,c1,ti,par,tit,kf)=>{
     setEditFields(editFields1)
     setRespCat(c1)
     setTableIndexes(ti)
     setPartials(par)
     setTitulo(tit)
+    setKeyFields(kf)
     setOpenEditProduct(!openEditProduct)
     
   }
@@ -244,6 +247,8 @@ const DetailedProduct = () => {
       tableIndexes={tableIndexes}
       partials={partials}
       titulo={titulo}
+      keyFields={keyFields}
+      isManyToMany={Object.keys(keyFields).length>0}
       />}
 
       <AddMultipleValue

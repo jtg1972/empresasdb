@@ -68,6 +68,75 @@ const mutationEditProduct=(category)=>{
   return query
 }
 
+const mutationEditProductManyToMany=(category,keyFields)=>{
+  let args=[]
+  let args1=[]
+  let argsf=category.fields
+  for(let f in argsf){
+    console.log("ffff",f)
+    if(argsf[f].declaredType=="number"){
+      args.push(`$${argsf[f].name}:Int`)
+    }else if(argsf[f].dataType=="queryCategory"){
+      args.push(`$${argsf[f].name}GlobalCatQuery:Int`)
+      args.push(`$${argsf[f].name}FinalCatQuery:Int`)
+      args.push(`$${argsf[f].name}ProductQuery:Int`)
+    }else if(argsf[f].declaredType=="string"){
+      args.push(`$${argsf[f].name}:String`)
+    }else if(argsf[f].declaredType=="date"){
+      args.push(`$${argsf[f].name}:String`)
+    
+    }
+  }
+  //args.unshift("$id:Int")
+  for(let k in keyFields){
+    args.push(`$${k}:Int`)
+  }
+  
+  args=args.join(", ")
+  for(let f in argsf){
+      if(argsf[f].dataType!=="relationship"){
+        if(argsf[f].dataType=="queryCategory"){
+          args1.push(`${argsf[f].name}GlobalCatQuery:$${argsf[f].name}GlobalCatQuery`)
+          args1.push(`${argsf[f].name}FinalCatQuery:$${argsf[f].name}FinalCatQuery`)
+          args1.push(`${argsf[f].name}ProductQuery:$${argsf[f].name}ProductQuery`)
+        }else{
+          args1.push(`${argsf[f].name}:$${argsf[f].name}`)
+        }
+      }
+  }
+  for(let k in keyFields){
+    args1.push(`${k}:$${k}`)
+  }
+  let campos=[]
+  for(let f in argsf){
+    if(argsf[f].dataType!=="relationship"){
+      if(argsf[f].dataType=="queryCategory"){
+        campos.push(`${argsf[f].name}GlobalCatQuery`)
+        campos.push(`${argsf[f].name}FinalCatQuery`)
+        campos.push(`${argsf[f].name}ProductQuery`)
+      }else{
+        campos.push(argsf[f].name)
+      }
+    }
+  }
+  console.log("camposmi",campos)
+  //campos.unshift("id")
+  campos=campos.join("\n")
+  //args1.unshift("id:$id")
+  args1=args1.join(", ")
+  let query=`
+    mutation EditProducto(${args}){
+      edit${category.name}(${args1}){
+        ${campos}
+      }
+    }
+  `
+  console.log("editmtmquery",query)
+  query=gql`${query}`
+  return query
+}
+
+
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categoryProducts:categories.categoryProducts,
@@ -82,7 +151,9 @@ const EditProduct = ({
   curCat,
   tableIndexes,
   partials,
-  titulo
+  titulo,
+  keyFields,
+  isManyToMany
   
 }) => {
   const{categoryProducts,currentCategory,categories}=useSelector(mapToState)
@@ -222,7 +293,12 @@ const EditProduct = ({
     
     
    
-  const MUTATION_EDIT_PRODUCT=mutationEditProduct(curCat)
+  let MUTATION_EDIT_PRODUCT=""
+  if(!isManyToMany){
+    MUTATION_EDIT_PRODUCT=mutationEditProduct(curCat)
+  }else{
+    MUTATION_EDIT_PRODUCT=mutationEditProductManyToMany(curCat,keyFields)
+  } 
   const[editProduct1]=useMutation(MUTATION_EDIT_PRODUCT,{
     update:(cache,{data})=>{
       path=[`getData${currentCategory.name}`]
@@ -246,9 +322,15 @@ const EditProduct = ({
  
   const formButtonClick=()=>{
     console.log("fields",editFields)
-    editProduct1({
-      variables:editFields
-    })
+    if(!isManyToMany){
+      editProduct1({
+        variables:editFields
+      })
+    }else{
+      editProduct1({
+        variables:{...editFields,...keyFields}
+      })
+    }
     
   }
 
