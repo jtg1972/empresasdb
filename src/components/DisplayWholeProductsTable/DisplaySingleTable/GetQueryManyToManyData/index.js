@@ -4,7 +4,7 @@ import React from 'react'
 export const getMutationManyToManyData=(cat,id,titlepart,nfktd)=>{
   const args=`$${id}:Int`
   const args1=`${id}:$${id}`
-  const fields=cat.fields.filter(x=>!x.name.startsWith("mtm"))
+  const fields=cat.fields//.filter(x=>!x.name.startsWith("mtm"))
   let ftod=fields.map(f=>{
     return f.name
   })
@@ -16,7 +16,7 @@ export const getMutationManyToManyData=(cat,id,titlepart,nfktd)=>{
       ${ftod}
     }
   }`
-  console.log("fieldsmtmmut",fields,args,args1,mutation)
+ //console.log("fieldsmtmmut",fields,args,args1,mutation)
   return gql`${mutation}`
 
 }

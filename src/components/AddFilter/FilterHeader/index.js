@@ -22,7 +22,7 @@ const FilterHeader = ({fields}) => {
   },[fields,filterCriterias])
 
   const getMoreFields=()=>{
-    console.log("fields",fields)
+    //console.log("fields",fields)
     fields.length
     ==
     filterCriterias.length
@@ -51,7 +51,7 @@ const FilterHeader = ({fields}) => {
 
   const findField=(name)=>{
     const rec=fields.filter(e=>e.name==name)[0]
-    console.log("rec",rec)
+    //console.log("rec",rec)
     return rec
   }
 

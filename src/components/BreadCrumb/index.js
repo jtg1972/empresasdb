@@ -18,7 +18,7 @@ const BreadCrumb = ({
   const dispatch=useDispatch()
   const {currentCategoryId,category}=useSelector(mapToState)
   const history=useNavigate()
-  console.log("bookmar",category)
+  //console.log("bookmar",category)
   return (
     <div className="breadcrumb">
       <div className="pill"

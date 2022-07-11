@@ -13,7 +13,7 @@ const DisplaySingleValueNumber = ({
 }) => {
   const dispatch=useDispatch()
   useEffect(()=>{
-    console.log("valuesfield",values[campo.name])
+    //console.log("valuesfield",values[campo.name])
   },[])
   const changeRange=(e,campo,place)=>{
     const fieldName=`${campo}${place}`

@@ -65,7 +65,7 @@ const AddMultipleValue = ({
       if(c.id!==currentCategory.id){
         return c
       }else{
-        console.log("cfields",c.fields)
+        //console.log("cfields",c.fields)
         
         if(c.fields!==undefined){
           const newR=c.fields.map(h=>{
@@ -107,8 +107,8 @@ const AddMultipleValue = ({
   }
 
   const addMultipleValueClick=()=>{
-    console.log("fid",fieldId)
-    console.log("val",mvInstance)
+    //console.log("fid",fieldId)
+    //console.log("val",mvInstance)
     addMultipleValue({
       variables:{
         addValueToFieldId:fieldId,

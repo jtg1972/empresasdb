@@ -19,7 +19,7 @@ const getQuerySearchOne=(cat)=>{
     get${cat.name}(id:$id){
     ${f.join("\n")}
   }}`
-  console.log("querysearchone",query)
+  //console.log("querysearchone",query)
   return gql`${query}`
 }
 
@@ -80,14 +80,14 @@ const addProductMutation=(category,categories,mtm)=>{
     if(argsf[f].dataType=="relationship"){
       if(argsf[f].relationship=="onetomany"){
         let oc=categories.filter(c=>c.id==argsf[f].relationCategory)
-        console.log("oc",oc)
+        //console.log("oc",oc)
         let na=`otm${category.name}${oc[0].name}`
         
         campos.push(`${na}{id}`)
       
       }else if(argsf[f].relationship=="manytomany"){
         let oc=categories.filter(c=>c.id==argsf[f].relationCategory)
-        console.log("oc",oc)
+        //console.log("oc",oc)
         let na=`mtm${oc[0].name}${category.name}`
         
         campos.push(`${na}{id}`)
@@ -120,7 +120,7 @@ const addProductMutation=(category,categories,mtm)=>{
       ${campos}
     }
   }`
-  console.log("queryadd",query)
+  //console.log("queryadd",query)
   return gql`${query}`
 }
 
@@ -144,8 +144,8 @@ const NewProduct = ({
   parentCatId
   
 }) => {
-  console.log("respcatnuevo",respCat)
-  console.log("parentcatid newproduct",parentCatId)
+  //console.log("respcatnuevo",respCat)
+  //console.log("parentcatid newproduct",parentCatId)
   const [fields,setFields]=useState({})
   const {currentCategory,
   categoryProducts,
@@ -181,7 +181,7 @@ const NewProduct = ({
       xfields.forEach(f=>{
         nf[f.name]=parentId
       })
-      console.log("nf",nf)
+      //console.log("nf",nf)
       setFields({...fields,...nf})
     }
   },[])
@@ -192,7 +192,7 @@ const NewProduct = ({
       indexArray=parseInt(indexArray)
       let ti=Object.keys(tableIndexes).map(x=>parseInt(tableIndexes[x]))
     
-      console.log("tipartials",ti,partials)
+      //console.log("tipartials",ti,partials)
       let cp 
       /*if(prods==undefined || prods==[]
         ||prods=={})
@@ -203,39 +203,39 @@ const NewProduct = ({
       
       if(!Array.isArray(prods)){
         cp={...prods}
-        console.log("no arreglo")
-        console.log("prods partlength partials",prods,partials.length,partials)
+        //console.log("no arreglo")
+        //console.log("prods partlength partials",prods,partials.length,partials)
         let ui
         //console.log("pip",partials[indexPartials],cp[partials[indexPartials]])
         //console.log("params",cp[partials[indexPartials]],indexPartials+1,indexArray)
-        console.log("se modifica campo",partials[indexPartials])
+        //console.log("se modifica campo",partials[indexPartials])
         //if((indexPartials+1)==partials.length){
-        console.log("importante",partials[indexPartials],titulo)
+        //console.log("importante",partials[indexPartials],titulo)
         if(partials[indexPartials]==titulo){
-          console.log("entro final")
+          //console.log("entro final")
           /*ui=cp[partials[indexPartials]].filter(x=>{
             console.log("xid deleteid",x.id,deleteId)
             return x.id!==deleteId
           })*/
           
-          console.log("ui",partials[indexPartials],cp[partials[indexPartials]],resto)
+          //console.log("ui",partials[indexPartials],cp[partials[indexPartials]],resto)
           return {
             ...cp,
             [partials[indexPartials]]:
             [...cp[partials[indexPartials]],{...nuevo,...resto}]
           }
         }else{
-          console.log("entro no final")
+          //console.log("entro no final")
           return {...cp,[partials[indexPartials]]:updateState(cp[partials[indexPartials]],indexPartials+1,indexArray,nuevo)}
         }
       
       } else if(Array.isArray(prods)){
         cp=[...prods]
-        console.log("arraglo",indexArray,ti.length)
+        //console.log("arraglo",indexArray,ti.length)
         //console.log("deliddd",deleteId)
-        console.log("prods",prods)
-          console.log("partarr",cp[ti[indexArray]])
-        console.log("paramsarr",cp[ti[indexArray]],indexPartials,indexArray+1,titulo)
+        //console.log("prods",prods)
+          //console.log("partarr",cp[ti[indexArray]])
+        //console.log("paramsarr",cp[ti[indexArray]],indexPartials,indexArray+1,titulo)
                   
         
         return cp.map((y,index)=>{
@@ -253,7 +253,7 @@ const NewProduct = ({
   const getIndexes=()=>{
     
     for(let p in path){
-      console.log("ti pathp",tableIndexes,path[p])
+      //console.log("ti pathp",tableIndexes,path[p])
       let curInd
       curInd=tableIndexes[path[p]]
       ind.push(curInd)
@@ -309,9 +309,9 @@ const NewProduct = ({
       else
         nn=`${nRc.name}_${pR.name}`
       relMtMC=categories.filter(x=>x.name==nn)[0]
-      console.log("nn",nn)
+      //console.log("nn",nn)
       nC=categories.filter(x=>x.name==nn)[0]
-      console.log("Nccc",nC.fields)
+      //console.log("Nccc",nC.fields)
       
     
     CREATE_PRODUCT_MUT=addProductMutation(relMtMC,categories,true)
@@ -323,7 +323,7 @@ const NewProduct = ({
   const [getSearchOne]=useMutation(GET_SEARCH_ONE,{
     update:(cache,{data})=>{
       const nam=`get${nRc.name}`
-      console.log("resdata",data,nRc.name,data[nam])
+      //console.log("resdata",data,nRc.name,data[nam])
       path=[`getData${currentCategory.name}`]
         indexSize=1
         getPath(currentCategory.fields.filter(x=>
@@ -333,10 +333,10 @@ const NewProduct = ({
         getIndexes()
         
 
-        console.log("resto",resto)
-        console.log("datanamecomp",data[nam],resto,{...data[nam],...resto})
+        //console.log("resto",resto)
+        //console.log("datanamecomp",data[nam],resto,{...data[nam],...resto})
         const us=updateState(categoryProducts,0,0,{...data[nam],...resto})
-        console.log("ust",us)
+        //console.log("ust",us)
         dispatch(setCategoryProducts(us))
     }
   })
@@ -352,7 +352,7 @@ const NewProduct = ({
         indexSize=1
         getPath(currentCategory.fields.filter(x=>
           x.dataType=="relationship"))
-        console.log("path",path)
+        //console.log("path",path)
         ind=[]
         getIndexes()
         
@@ -360,16 +360,16 @@ const NewProduct = ({
 
 
         const us=updateState(categoryProducts,0,0,data[nam])
-        console.log("ust",us)
+        //console.log("ust",us)
         dispatch(setCategoryProducts(us))
       }else{
-        console.log("entrooo cabron")
+        //console.log("entrooo cabron")
         let nv=`create${nn}`
         setResto({...data[nv]})
         
-        console.log("datanam",resto)
+        //console.log("datanam",resto)
         const nameVar=`mtm${nRc.name}${pR.name}Id`
-        console.log("nameVar",nameVar,resto[nameVar])
+        //console.log("nameVar",nameVar,resto[nameVar])
         getSearchOne({variables:{
           id:data[nv][nameVar]
         }})

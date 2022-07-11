@@ -163,7 +163,7 @@ const StructureField = ({
       
 
       let newCategories=cats.categories.map(c=>{
-        console.log("tyofcat",c.typeOfCategory)
+        //console.log("tyofcat",c.typeOfCategory)
         if(c.id!==data.createField.category){
           if(c.parentCategories.includes(data.createField.category)){
             if(c.typeOfCategory==0){
@@ -187,7 +187,7 @@ const StructureField = ({
             return c
           }
         }else{
-          console.log("cfields",c.fields)
+          //console.log("cfields",c.fields)
           if(c.typeOfCategory==0){
             editTableState({
               variables:{
@@ -222,7 +222,7 @@ const StructureField = ({
       dispatch(addCategoryField(newField))
     }})
 
-  console.log("opendi",open)
+  //console.log("opendi",open)
 
   const [createTableState]=useMutation(CREATE_NEW_CATEGORY_STATE,{
     update:(cache,{data})=>{
@@ -259,7 +259,7 @@ const StructureField = ({
       })
       mapeo.push("id,id")
       mapeo=mapeo.join(",")
-      console.log("mapeo1",mapeo)
+      //console.log("mapeo1",mapeo)
       
       createField({
         variables:{
@@ -286,7 +286,7 @@ const StructureField = ({
       mapeo.push("id,id")
       mapeo=mapeo.join(",")
       
-      console.log("mapeo2",mapeo)
+     // console.log("mapeo2",mapeo)
       
       createField({
         variables:{
@@ -301,7 +301,7 @@ const StructureField = ({
           
       
     }
-      console.log("ncid",newCat,newCat.id)
+      //console.log("ncid",newCat,newCat.id)
       cache.writeQuery({
         query:CATEGORIES1,
         data:{
@@ -316,7 +316,7 @@ const StructureField = ({
   
   const onAddFieldClick=()=>{
     if(dataType=="queryCategory"){
-      console.log("queryCategory",queryCategory)
+      //console.log("queryCategory",queryCategory)
       createField({
         variables:{
           name:name,
@@ -340,13 +340,13 @@ const StructureField = ({
       rc=categories.filter(t=>t.id==relationTable)[0]
 
       if(relationship=="onetomany"){
-        console.log("argsesc",{
+        /*console.log("argsesc",{
             name:`otm${currentCategory.name}${rc.name}`,
             category:currentCategory.id,
             dataType:dataType,
             relationship,
             relationCategory:relationTable
-        })
+        })*/
         
         createField({
           variables:{
@@ -358,7 +358,7 @@ const StructureField = ({
           }
         })
         
-        console.log("rc",rc)
+        //console.log("rc",rc)
         createField({
           variables:{
             name:`otm${currentCategory.name}${rc.name}Id`,
@@ -374,7 +374,7 @@ const StructureField = ({
       
 
         otherCatName=rc.name
-        console.log("oc rc",oc,rc)
+        //console.log("oc rc",oc,rc)
         otherCatId=rc.id
         if(currentCategory.name<rc.name){
           categoryName=`${oc.name}_${rc.name}`

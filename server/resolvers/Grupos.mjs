@@ -1,7 +1,25 @@
 
             import {Op} from 'sequelize'
             export default{
-          Grupos:{
+          datamtmAlumnosGrupos:{
+                  mtmGruposAlumnos:async(parent,args,{db})=>{
+                    const x=await db.Alumnos_Grupos.findAll({
+                      where:{mtmAlumnosGruposId:parent.id},
+                      raw:true
+                    })
+                    const cd=x.map(c=>c["mtmGruposAlumnosId"])
+                    console.log("cdddd",cd)
+                    let recs=await db.Grupos.findAll({where:{id:{[Op.in]:cd}},raw:true})
+                    recs=recs.map(r=>{
+                      let nf="mtmGruposAlumnosId"
+                      const di=x.filter(u=>u[nf]==r.id)[0]
+                      return {...r,...di}
+                    })
+                    return recs
+                  }
+                  
+                  
+                },Grupos:{
               
               mtmAlumnosGrupos:async(parent,args,{db})=>{
                     const x=await db.Alumnos_Grupos.findAll({
@@ -10,9 +28,15 @@
                     })
                     const cd=x.map(c=>c["mtmAlumnosGruposId"])
                     console.log("cdddd",cd)
-                    const recs=db.Alumnos.findAll({where:{id:{[Op.in]:cd}}})
+                    let recs=await db.Alumnos.findAll({where:{id:{[Op.in]:cd}},raw:true})
+                    recs=recs.map(r=>{
+                      let nf="mtmAlumnosGruposId"
+                      const di=x.filter(u=>u[nf]==r.id)[0]
+                      return {...r,...di}
+                    })
                     return recs
                   }
+                  
             },
             Query:{
                 Grupos:async(parent,args,{db})=>{
@@ -31,24 +55,17 @@
                   const products=await db.Grupos.findAll({raw:true})
                   
                   return products
-                },
-removeAlumnos_Grupos:async(parent,args,{db})=>{
-                  
-                    try{
-                      const products=await db.Alumnos_Grupos.findOne({where:{
-                        mtmGruposAlumnosId:args.mtmGruposAlumnosId,
-                        mtmAlumnosGruposId:args.mtmAlumnosGruposId
-                      }})
-                      console.log("productsreciente",products)
-                      products.destroy()
-                    
-                      return true
-                    }catch(e){
-                      console.log("error",e)
-                      return false
-                    }
-                  },
-                  getGrupos:async(parent,args,{db})=>{
+                },removeGrupos:async(parent,args,{db})=>{
+                      try{
+                        const product=await db.Grupos.findByPk(args.id)
+                        product.destroy()
+                        return true
+                      }catch(e){
+                        console.log("error",e)
+                        return false
+                      }
+                    },
+                    getGrupos:async(parent,args,{db})=>{
                   const resp=await db.Grupos.findByPk(args.id)
                   return resp
                 },

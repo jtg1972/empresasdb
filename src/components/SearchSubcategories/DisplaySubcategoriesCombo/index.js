@@ -22,7 +22,7 @@ const DisplaySubcategoriesCombo = ({
         className="combo"
         key={i}
         onClick={()=>{
-          console.log("sctype",sc.typeOfCategory)
+          //console.log("sctype",sc.typeOfCategory)
           if(sc.typeOfCategory==1){
             setIsSearching(false)
             dispatch(setCurrentCategoryId(sc.id))

@@ -16,7 +16,7 @@ const DisplaySearchProducts = ({
   parentCatId,
   fieldMtm
 }) => {
-  console.log("fieldMtm",fieldMtm)
+  //console.log("fieldMtm",fieldMtm)
   const displayRow=(sc)=>{
     const values=Object.keys(sc).map(k=>`${k}: ${sc[k]}`)
     return values.join(", ")
@@ -32,7 +32,7 @@ const DisplaySearchProducts = ({
         className="combo"
         key={i}
         onClick={()=>{
-          console.log("sc",sc)
+          //console.log("sc",sc)
           const gcqName=`${queryFieldName}GlobalCatQuery`
           const fcqName=`${queryFieldName}FinalCatQuery`
           const pName=`${queryFieldName}ProductQuery`
@@ -52,7 +52,7 @@ const DisplaySearchProducts = ({
                   ...newValues,
                   [targets[i+1]]:sc[targets[i]]
                 }
-                console.log("newValues",newValues)
+                //console.log("newValues",newValues)
               }
             })
           })
@@ -66,7 +66,7 @@ const DisplaySearchProducts = ({
             
             })
           }else{
-            console.log("fieldsnuevo",
+            /*console.log("fieldsnuevo",
             {...fields,
               [gcqName]:queryCategory,
               [fcqName]:sc.catId,
@@ -75,7 +75,7 @@ const DisplaySearchProducts = ({
               [fieldMtm]:parentCatId,
               ...newValues
               //...newValues
-            })
+            })*/
             setFields({...fields,
               [gcqName]:queryCategory,
               [fcqName]:sc.catId,

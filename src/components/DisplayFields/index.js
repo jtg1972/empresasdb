@@ -25,8 +25,8 @@ const DisplayFields = ({
   categoryNameRelDestiny
 }) => {
   const {categories}=useSelector(mapToState)
-  console.log("fieldsdf pid",fields,parentId)
-  console.log("parentcat id   displayfields",parentCatId)
+  //console.log("fieldsdf pid",fields,parentId)
+  //console.log("parentcat id   displayfields",parentCatId)
   const inputChange=(cat,e)=>{
     const fieldName=cat.name
     setFields({
@@ -45,14 +45,14 @@ const DisplayFields = ({
 
   const dateChange=(cat,e)=>{
     const fieldName=cat.name
-    console.log("date",e)
+    //console.log("date",e)
     let dateObj = new Date(e);
     /*let month = dateObj.getUTCMonth() + 1
     let day = dateObj.getUTCDate()
     let year = dateObj.getUTCFullYear()
     let  nD = month + "/" + day + "/" + year*/
     const nD=moment(dateObj).format()
-    console.log("nD",nD)
+    //console.log("nD",nD)
     setFields({
       ...fields,
       [fieldName]:nD
@@ -83,11 +83,11 @@ const DisplayFields = ({
   }
 
   const convertToDate=d=>{
-    console.log("DATEEEE",d)
+    //console.log("DATEEEE",d)
     const newDate=new Date(d)
-    console.log("DATEEE",newDate)
+    //console.log("DATEEE",newDate)
     const nD=moment(newDate).format()
-    console.log("NDCOTODATE",nD,typeof nD)
+    //console.log("NDCOTODATE",nD,typeof nD)
     return new Date(nD)
   }
 
@@ -118,8 +118,8 @@ const DisplayFields = ({
             nnField=`mtm${secondCat.name}${firstCat.name}Id`
           else
             nnField=`mtm${firstCat.name}${secondCat.name}Id`
-          console.log("keyes fc sc parentId",firstCat,secondCat,parentId,categoryNameRelDestiny)
-          console.log("resultadooooo",{[nnField]:parentCatId},cat.name,nnField)
+          //console.log("keyes fc sc parentId",firstCat,secondCat,parentId,categoryNameRelDestiny)
+          //console.log("resultadooooo",{[nnField]:parentCatId},cat.name,nnField)
           let campoOculto={[nnField]:parentCatId}
           //setFields({...fields,[nnField]:parentCatId})
           if(cat.name!==nnField){         
@@ -154,7 +154,7 @@ const DisplayFields = ({
           //aqui tengo que obtener todos los productos de las categorias finales de esta categoria
           //exactamente la misma mutacion de displaywholetable
         }else if(cat.dataType=="singleValue"){
-        console.log("CAT",cat)
+        //console.log("CAT",cat)
         if(cat.declaredType=="string" ||
         cat.declaredType=="number"
         && cat.relationship!=="otmdestiny"){
@@ -163,7 +163,7 @@ const DisplayFields = ({
           ></FormInput>
         }
         else if(cat.declaredType=="date"){
-          console.log("cat, fields, fcn",cat,fields,fields[cat.name])
+          //console.log("cat, fields, fcn",cat,fields,fields[cat.name])
           return (
             <div>
               <p>{cat.name}:</p>

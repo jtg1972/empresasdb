@@ -42,7 +42,7 @@ const AddQueryTargets = ({
       ccfType=ccf.filter((x)=>
         x.declaredType==type
       )
-      console.log("nccf",nccf,type)
+      //console.log("nccf",nccf,type)
       setCcfState(ccfType)
       }
   },[queryCategoryField])
@@ -133,14 +133,14 @@ const AddQueryTargets = ({
       onClick={()=>{
         const x=targets
         const pos=x.findIndex(e=>e==targets[i+1])
-        console.log("targets index",targets,pos)
+        //console.log("targets index",targets,pos)
         const nx=x.filter((i,index)=>{
           if(index==pos){
             const ocf=originalCategoryFields.filter(y=>{
-              console.log("yname xpos",y.name,x[pos],y.name==x[pos])
+              //console.log("yname xpos",y.name,x[pos],y.name==x[pos])
               return y.name==x[pos]
             })[0]
-            console.log("ocf",ocf)
+            //console.log("ocf",ocf)
             setCurrentCategoryFields(e=>(
               [...e,ocf]
             ))

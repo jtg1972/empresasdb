@@ -14,7 +14,7 @@ const DisplayFilterProductsTable = ({
   const {filterResults}=useSelector(mapToState)
   const [order,setOrder]=useState([])
   
-  console.log("titles",titles)
+  //console.log("titles",titles)
 
   const displayTitles=()=>{
     let res=[]
@@ -73,7 +73,7 @@ const DisplayFilterProductsTable = ({
     }
     const head=[]
     head.push(<thead>{headers}</thead>)
-    console.log("headers",headers)
+    //console.log("headers",headers)
     let recs=[]
     let rec=[]
     for(let r in filterResults){

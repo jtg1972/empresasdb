@@ -75,7 +75,7 @@ const DisplayRow = ({
     categories
   }=useSelector(mapToState)
   const dispatch=useDispatch()
-  console.log("f",f)
+  //console.log("f",f)
   
   const [editTableState]=useMutation(EDIT_TABLE_STATE)
   const [removeField1]=useMutation(REMOVE_FIELD,{
@@ -86,7 +86,7 @@ const DisplayRow = ({
       )
       const resultado=data.removeField
       let newCats=[]
-      console.log("resultado,cats",resultado,cats.categories)
+      //console.log("resultado,cats",resultado,cats.categories)
       if(resultado==true){
         
 
@@ -153,7 +153,7 @@ const DisplayRow = ({
       const resultado=data.removeMultipleValue
       if(resultado==true){
         let newCats=[]
-        console.log("resultado,",resultado)
+        //console.log("resultado,",resultado)
       
         newCats=cats.categories.map(c=>{
       
@@ -207,8 +207,8 @@ const DisplayRow = ({
   const displayTypes=(values)=>{
     let ret=[]
     let comp=[]
-    console.log("valuesss",values,Array.isArray(values),values.length,
-    Array.isArray(values) && values.length>0)
+    //console.log("valuesss",values,Array.isArray(values),values.length,
+    //Array.isArray(values) && values.length>0)
     if(Array.isArray(values) && values.length>0){
       for(let v in values){ 
 
@@ -240,7 +240,7 @@ const DisplayRow = ({
   }
 
   const displayRelationshipType=()=>{
-    console.log("relationship",f.relationship)
+    //console.log("relationship",f.relationship)
     if(f.dataType=="relationship"){
       if(f.relationship=="onetoone"){
         return "One to One"
@@ -257,7 +257,7 @@ const DisplayRow = ({
 
   const displayQueryCategory=()=>{
     if(f.dataType=="queryCategory")
-      console.log("fqc",f.queryCategory)
+      //console.log("fqc",f.queryCategory)
       if(f.queryCategory>0){
         const cat=categories.filter(x=>
           x.id==f.queryCategory  

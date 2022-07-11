@@ -328,6 +328,9 @@ export default{
           let x1="id:Int\n"
           let x2="id:Int,\n"
           let x3=""
+          let arrMtmFields=[]
+          let indMtmFields=0
+          let arrMtmDataRes=[]
           const defotm=""
           for(let f in fields){
             if(fields[f]["declaredType"]=="string"){
@@ -364,9 +367,72 @@ export default{
                 
               }else if(fields[f]["relationship"]=="manytomany"){
                 const respCat=await db.Category.findByPk(fields[f]["relationCategory"])
-                x1+=`mtm${respCat.name}${name}:[${respCat.name}]\n`
-              
+                const fieldsRespCat=await db.Fields.findAll({where:{category:respCat.id},raw:true})
+                let catFields=fieldsRespCat.map(r=>{
+                  if(r.declaredType=="string"){
+                    return `${r.name}:String`
+                  }else if(r.declaredType=="number"){
+                    return `${r.name}:Int`
+                  }else if(r.declaredType=="queryCategory"){
+                    return `${r["name"]}FinalCatQuery:Int\n
+                     ${r["name"]}ProductQuery:Int`
 
+                  }else
+                    return ""
+                })
+                catFields.push("id:Int")
+                let cn=""
+                if(name<respCat.name)
+                  cn=`${name}_${respCat.name}`
+                else
+                  cn=`${respCat.name}_${name}`
+                const mtmCat=await db.Category.findOne({where:{name:cn},raw:true})  
+                let mtmFields=await db.Fields.findAll({where:{category:mtmCat.id},raw:true})
+                mtmFields=mtmFields.map(m=>{
+                  if(m.declaredType=="string"){
+                    return `${m.name}:String`
+                  }else if(m.declaredType=="number"){
+                    return `${m.name}:Int`
+                  }else if(m.declaredType=="queryCategory"){
+                    return `${m["name"]}FinalCatQuery:Int\n
+                     ${r["name"]}ProductQuery:Int`
+
+                  }else
+                    return ""
+                })
+
+                catFields.push(`mtm${name}${respCat.name}:[datamtm${name}${respCat.name}]`)
+                catFields=[...catFields,...mtmFields]
+                catFields=catFields.join("\n")
+                
+                console.log("verrrr",`type datamtm${respCat.name}${name}{
+                  ${catFields}
+                }`,indMtmFields)
+                arrMtmFields.push(`type datamtm${respCat.name}${name}{
+                  ${catFields}
+                }`)
+                indMtmFields++
+                x1+=`mtm${respCat.name}${name}:[datamtm${respCat.name}${name}]\n`
+
+                arrMtmDataRes.push(`datamtm${respCat.name}${name}:{
+                  mtm${name}${respCat.name}:async(parent,args,{db})=>{
+                    const x=await db.Alumnos_Grupos.findAll({
+                      where:{mtm${respCat.name}${name}Id:parent.id},
+                      raw:true
+                    })
+                    const cd=x.map(c=>c["mtm${name}${respCat.name}Id"])
+                    console.log("cdddd",cd)
+                    let recs=await db.${name}.findAll({where:{id:{[Op.in]:cd}},raw:true})
+                    recs=recs.map(r=>{
+                      let nf="mtm${name}${respCat.name}Id"
+                      const di=x.filter(u=>u[nf]==r.id)[0]
+                      return {...r,...di}
+                    })
+                    return recs
+                  }
+                  
+                  
+                },`)
               }
             }
             
@@ -425,7 +491,12 @@ export default{
                     })
                     const cd=x.map(c=>c["mtm${respCat.name}${name}Id"])
                     console.log("cdddd",cd)
-                    const recs=db.${respCat.name}.findAll({where:{id:{[Op.in]:cd}}})
+                    let recs=await db.${respCat.name}.findAll({where:{id:{[Op.in]:cd}},raw:true})
+                    recs=recs.map(r=>{
+                      let nf="mtm${respCat.name}${name}Id"
+                      const di=x.filter(u=>u[nf]==r.id)[0]
+                      return {...r,...di}
+                    })
                     return recs
                   }
                   `
@@ -442,10 +513,16 @@ export default{
           let content2=`
           import {gql} from 'apollo-server-express'
 
-          export default gql\`
+          export default gql\``
+          console.log("vveerr2",indMtmFields,arrMtmFields)
+          if(indMtmFields>0){
+            arrMtmFields.forEach(i=>{
+              content2+=i
+            })
+          }
 
             
-            type ${name}{
+          content2+=`type ${name}{
               
               ${x1}
             }
@@ -482,6 +559,9 @@ export default{
             import {Op} from 'sequelize'
             export default{
           `
+          arrMtmDataRes.forEach(i=>{
+            content3+=i
+          })
           if(oneToManyResolver!=="" || manyToManyResolver!==""){
             content3+=`${name}:{
               ${oneToManyResolver}

@@ -80,7 +80,7 @@ const DisplayTableStatus = () => {
           const recs=tablesStateRecords.filter(t=>
             t.state!=="OK")
           const ids=recs.map(r=>r.category)
-          console.log("ids",ids)
+          //console.log("ids",ids)
           createTable({
             variables:{
               categoryIds:ids

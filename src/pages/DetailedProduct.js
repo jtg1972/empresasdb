@@ -109,13 +109,19 @@ const DetailedProduct = () => {
 
   const [openEditProduct,setOpenEditProduct]=useState(false)
   const [keyFields,setKeyFields]=useState({})
-  const toggleEditProduct=(editFields1,c1,ti,par,tit,kf)=>{
+  const [otrotitulo,setOtroTitulo]=useState("")
+  const [indexInTable,setIndexInTable]=useState(-1)
+  const toggleEditProduct=(editFields1,c1,ti,par,tit,kf,ot,iit)=>{
     setEditFields(editFields1)
+    console.log("c1,",c1)
     setRespCat(c1)
     setTableIndexes(ti)
     setPartials(par)
     setTitulo(tit)
-    setKeyFields(kf)
+    if(kf!==undefined)
+      setKeyFields(kf)
+    setOtroTitulo(ot)
+    setIndexInTable(iit)
     setOpenEditProduct(!openEditProduct)
     
   }
@@ -129,7 +135,7 @@ const DetailedProduct = () => {
   const [parentRelation,setParentRelation]=useState(-1)
   const [parentCatId,setParentCatId]=useState(-1)
   const toggleNewProduct=(rc,ti,ps,tit,pid,iMtM,relCat,pr,pcid)=>{
-    console.log("parentcatIddetprod",pcid)
+    //console.log("parentcatIddetprod",pcid)
     setRespCat(rc)
     setTableIndexes(ti)
     setPartials(ps)
@@ -164,7 +170,7 @@ const DetailedProduct = () => {
   useEffect(
     () => {
       const onCompleted = data=>{
-        console.log("dataaa",data)
+        //console.log("dataaa",data)
         dispatch(setCategories(data.categories))
         //dispatch(setCurrentCategoryId(0))
         
@@ -187,7 +193,7 @@ const DetailedProduct = () => {
   useEffect(
     () => {
       const onCompleted = data1=>{
-        console.log("dataaats",data1)
+        //console.log("dataaats",data1)
         dispatch(setTablesState(data1.tableStates))
         //dispatch(setCurrentCategoryId(0))
         
@@ -249,6 +255,9 @@ const DetailedProduct = () => {
       titulo={titulo}
       keyFields={keyFields}
       isManyToMany={Object.keys(keyFields).length>0}
+      otrotitulo={otrotitulo}
+      setTableIndexes={setTableIndexes}
+      indexInTable={indexInTable}
       />}
 
       <AddMultipleValue

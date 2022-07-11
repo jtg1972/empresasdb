@@ -48,7 +48,7 @@ export default (state=INITIAL_STATE,action)=>{
       }
     case types.SET_CURRENT_CATEGORY_ID:
       let x=[]
-      console.log("sc",state.categories)
+      //console.log("sc",state.categories)
       if(action.payload==0){
         
         x=[...state.categories]
@@ -56,7 +56,7 @@ export default (state=INITIAL_STATE,action)=>{
         x=state.categories.filter(c=>
           c.parentCategory==action.payload)
       }
-      console.log("x",x)
+      //console.log("x",x)
 
       return {
         ...state,
@@ -105,7 +105,7 @@ export default (state=INITIAL_STATE,action)=>{
       }
 
     case types.REMOVE_FIELD:
-      console.log("action.payload",action.payload)
+      //console.log("action.payload",action.payload)
       
       return {
         ...state,

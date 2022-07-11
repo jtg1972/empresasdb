@@ -42,7 +42,7 @@ const AddFilter = ({
   }
   const h=new Set(headers)
 
-  console.log("rawproducts,x",recordsToFilter,h)
+  //console.log("rawproducts,x",recordsToFilter,h)
   const dialogConfig={
     open,
     closeDialog:toggleDialog,

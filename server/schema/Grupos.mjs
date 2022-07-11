@@ -1,13 +1,18 @@
 
           import {gql} from 'apollo-server-express'
 
-          export default gql`
-
-            
-            type Grupos{
+          export default gql`type datamtmAlumnosGrupos{
+                  
+estudiante:String
+id:Int
+mtmGruposAlumnos:[datamtmGruposAlumnos]
+mtmAlumnosGruposId:Int
+mtmGruposAlumnosId:Int
+campo_mutuo1:String
+                }type Grupos{
               
               id:Int
-mtmAlumnosGrupos:[Alumnos]
+mtmAlumnosGrupos:[datamtmAlumnosGrupos]
 grupo:String
 
             }
@@ -26,8 +31,8 @@ grupo:String,
               
               
               getDataGrupos:[Grupos]
-              removeGrupos(id:Int):Boolean!
-              editGrupos(id:Int,
+removeGrupos(id:Int):Boolean!
+editGrupos(id:Int,
 grupo:String,
 ):Grupos
               getGrupos(id:Int):Grupos

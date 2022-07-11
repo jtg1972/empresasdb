@@ -121,7 +121,7 @@ const SearchSubcategories = ({
         }
       })
     }
-      console.log("ncid",newCat,newCat.id)
+      //console.log("ncid",newCat,newCat.id)
       cache.writeQuery({
         query:CATEGORIES1,
         data:{
@@ -135,9 +135,9 @@ const SearchSubcategories = ({
 
   
   const insertCategory=(type)=>{
-    console.log("type",type)
+    //console.log("type",type)
     const npc=currentCategoryId
-    console.log("npc",npc)
+    //console.log("npc",npc)
     createCategory({
       variables:{
         name:newCategory,

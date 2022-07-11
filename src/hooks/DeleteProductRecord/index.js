@@ -8,7 +8,7 @@ const getMutationForDelete=(categoryName)=>{
     remove${categoryName}(id: $id)
 
   }`
-  console.log("mutation",mutation)
+  //console.log("mutation",mutation)
   return gql`${mutation}`
 
 }
@@ -17,8 +17,8 @@ const DeleteProductRecord=(
   catName
 )=>{
   const DELETE_PRODUCT=getMutationForDelete(catName)
-  console.log("DELEPRODMUT",DELETE_PRODUCT)
-  console.log("catnamedisp",catName)
+  //console.log("DELEPRODMUT",DELETE_PRODUCT)
+  //console.log("catnamedisp",catName)
   
   return [DELETE_PRODUCT]
 }

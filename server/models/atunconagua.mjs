@@ -1,3 +1,4 @@
+
 import Sequelize from 'sequelize'
 
           class atunconagua extends Sequelize.Model{

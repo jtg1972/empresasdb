@@ -33,7 +33,7 @@ let bd
 
 const getQueryFromCategory=(productCategories,categories,rep=0)=>{
   let query=`mutation GetData {`
-  console.log("productcats",productCategories)
+  //console.log("productcats",productCategories)
   let fields
   let q2=productCategories.map(p=>{
     fields=p.fields.map(x=>{
@@ -63,7 +63,7 @@ const getQueryFromCategory=(productCategories,categories,rep=0)=>{
   q2=q2.join(`\n`)
   query+=q2
   query+=`}`
-  console.log("query",query)
+  //console.log("query",query)
   return gql`${query}`
 }
 const mapToState=({categories})=>({
@@ -99,7 +99,7 @@ const DisplayQuerySearch = ({
   const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(productCategories,categories)
   const [getProducts]=useMutation(GET_PRODUCTS_FROM_CATEGORY,{
     update:(cache,{data})=>{
-      console.log("data:",data)
+      //console.log("data:",data)
       setDataTable(data)
       //dispatch(setCategoryProducts(data))
       
@@ -114,7 +114,7 @@ const DisplayQuerySearch = ({
     cat=categories.filter(c=>{
 
       let busca=rawProductsKeys[rp].substr(7)
-      console.log("busca",busca)
+      //console.log("busca",busca)
       return c.name==busca
     }
     )[0]
@@ -133,7 +133,7 @@ const DisplayQuerySearch = ({
     }
     
   }
-  console.log("recordsToFilter",recordsToFilter)
+  //console.log("recordsToFilter",recordsToFilter)
   
 
   useEffect(()=>{
@@ -151,7 +151,7 @@ const DisplayQuerySearch = ({
           onKeyUp={(e)=>{
             if(e.key=="Enter"){
               const x=searchRecordsFromQuery(search,recordsToFilter)
-              console.log("x",x)
+              //console.log("x",x)
               setSearchResult(x)
             }
           }}
