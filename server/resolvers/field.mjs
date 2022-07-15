@@ -331,7 +331,9 @@ export default{
           let arrMtmFields=[]
           let indMtmFields=0
           let arrMtmDataRes=[]
+          let arrHelperFunctions=[]
           const defotm=""
+          
           for(let f in fields){
             if(fields[f]["declaredType"]=="string"){
               x1+=`${fields[f]["name"]}:String\n`
@@ -355,6 +357,7 @@ export default{
               x2+=`${fields[f]["name"]}FinalCatQuery:Int,\n`
               x1+=`${fields[f]["name"]}ProductQuery:Int\n`
               x2+=`${fields[f]["name"]}ProductQuery:Int\n,`
+              
 
 
             }else if(fields[f]["declaredType"]=="date"){
@@ -413,6 +416,7 @@ export default{
                 }`)
                 indMtmFields++
                 x1+=`mtm${respCat.name}${name}:[datamtm${respCat.name}${name}]\n`
+                
 
                 arrMtmDataRes.push(`datamtm${respCat.name}${name}:{
                   mtm${name}${respCat.name}:async(parent,args,{db})=>{
@@ -532,7 +536,19 @@ export default{
               
               
             }
-            type Mutation{
+            type Mutation{`
+            let parts=name.split("_")
+            let helpersFunctions=""
+            helpersFunctions=`
+            getonedatamtm${parts[0]}${parts[1]}(${x2}):datamtm${parts[0]}${parts[1]}
+            getonedatamtm${parts[1]}${parts[0]}(${x2}):datamtm${parts[1]}${parts[0]}
+            getdatamtm${parts[0]}${parts[1]}(${x2}):[datamtm${parts[0]}${parts[1]}]
+            getdatamtm${parts[1]}${parts[0]}(${x2}):[datamtm${parts[1]}${parts[0]}]
+            createdatamtm${parts[0]}${parts[1]}(${x2}):datamtm${parts[0]}${parts[1]}
+            createdatamtm${parts[1]}${parts[0]}(${x2}):datamtm${parts[1]}${parts[0]}
+            `
+            content2+=`${helpersFunctions}
+            
               create${name}(
                 ${x2}
                 ):${name}
@@ -575,8 +591,137 @@ export default{
                   const products=await db.${name}.findAll()
                   return products     
                 }
-              },
-              Mutation:{
+              },`
+
+          let helperFunctionsResolvers=""
+          parts=name.split("_")
+            helperFunctionsResolvers=`
+            getonedatamtm${parts[0]}${parts[1]}:async(parent,args,{db})=>{
+              try{
+                let product=await db.${name}.findAll({
+                  where:{
+                    mtm${parts[1]}${parts[0]}Id:args.mtm${parts[1]}${parts[0]}Id,
+                    mtm${parts[0]}${parts[1]}Id:args.mtm${parts[0]}${parts[1]}Id
+                  },
+                  raw:true
+                })
+                product=product[0]
+                let resProd=await db.${parts[0]}.findAll({
+                  where:{
+                    id:args.mtm${parts[0]}${parts[1]}Id
+                  },
+                  raw:true
+                })
+                return {...resProd[0],...product}
+              }catch(e){
+                console.log("error",e)
+              }
+            },
+            getonedatamtm${parts[1]}${parts[0]}:async(parent,args,{db})=>{
+              try{
+                let product=await db.${name}.findAll({
+                  where:{
+                    mtm${parts[1]}${parts[0]}Id:args.mtm${parts[1]}${parts[0]}Id,
+                    mtm${parts[0]}${parts[1]}Id:args.mtm${parts[0]}${parts[1]}Id
+                  },
+                  raw:true
+                })
+                product=product[0]
+                let resProd=await db.${parts[1]}.findAll({
+                  where:{
+                    id:args.mtm${parts[1]}${parts[0]}Id
+                  },
+                  raw:true
+                })
+                return {...resProd[0],...product}
+              }catch(e){
+                console.log("error",e)
+              }
+            },
+            getdatamtm${parts[0]}${parts[1]}:async(parent,args,{db})=>{
+              try{
+                let products=await db.${name}.findAll({
+                  where:{
+                    mtm${parts[1]}${parts[0]}Id:args.mtm${parts[1]}${parts[0]}Id
+                  },raw:true
+
+                })
+                let cids=products.map(c=>c.mtm${parts[0]}${parts[1]}Id)
+                let respProds=await db.${parts[0]}.findAll({
+                  where:{id:{[Op.in]:cids}},
+                  raw:true
+                })
+                let final=products.map(r=>{
+                  let p=respProds.filter(t=>t.id==r.mtm${parts[0]}${parts[1]}Id)[0]
+                  return {...r,...p}
+                })
+                return final
+              }catch(e){
+                console.log("error",e)
+              }
+                
+
+            },
+            getdatamtm${parts[1]}${parts[0]}:async(parent,args,{db})=>{
+              try{
+                let products=await db.${name}.findAll({
+                  where:{
+                    mtm${parts[0]}${parts[1]}Id:args.mtm${parts[0]}${parts[1]}Id
+                  },raw:true
+
+                })
+                let cids=products.map(c=>c.mtm${parts[1]}${parts[0]}Id)
+                let respProds=await db.${parts[1]}.findAll({
+                  where:{id:{[Op.in]:cids}},
+                  raw:true
+                })
+                let final=products.map(r=>{
+                  let p=respProds.filter(t=>t.id==r.mtm${parts[1]}${parts[0]}Id)[0]
+                  return {...r,...p}
+                })
+                return final
+              }catch(e){
+                console.log("error",e)
+              }
+                
+
+            },
+            createdatamtm${parts[0]}${parts[1]}:async(parent,args,{db})=>{
+              try{
+                let product=await db.${name}.create(args)
+                product=product.dataValues
+                let alumno=await db.${parts[0]}.findAll({
+                  where:{
+                    id:args.mtm${parts[0]}${parts[1]}Id
+                  },
+                  raw:true
+                })
+                return {...alumno[0],...product}
+              }catch(e){
+                console.log("error",e)
+              }
+            },
+            createdatamtm${parts[1]}${parts[0]}:async(parent,args,{db})=>{
+              try{
+                let product=await db.${name}.create(args)
+                product=product.dataValues
+                let grupo=await db.${parts[1]}.findAll({
+                  where:{
+                    id:args.mtm${parts[1]}${parts[0]}Id
+                  },
+                  raw:true
+                })
+                return {...grupo[0],...product}
+              }catch(e){
+                console.log("error",e)
+              }
+            },
+            `
+
+            
+
+              content3+=`Mutation:{
+                ${helperFunctionsResolvers}
                 create${name}:async(parent,args,{db})=>{
                   const product=await db.${name}.create(args)
                   return product
