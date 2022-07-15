@@ -15,6 +15,131 @@
                   return product
                   
                 },
+                getdatamtmGruposAlumnos:async(parent,args,{db})=>{
+                  try{
+                    console.log("argsbusca21",args)
+
+                  let products=await db.Alumnos_Grupos.findAll({
+                    where:{mtmAlumnosGruposId:args.mtmAlumnosGruposId},
+                    raw:true
+                  })
+                  let cids=products.map(c=>c.mtmGruposAlumnosId)
+                  let respProds=await db.Grupos.findAll({
+                    where:{id:{[Op.in]:cids}},
+                    raw:true
+                  })
+                  let final=products.map(r=>{
+                    let p=respProds.filter(t=>t.id==r.mtmGruposAlumnosId)[0]
+                    return {...r,...p}
+
+                  })
+                  console.log("final",final)
+                  return final
+                }catch(e){
+                  console.log("getdatamtmgruposalu")
+                }
+                },
+                getdatamtmAlumnosGrupos:async(parent,args,{db})=>{
+                  try{
+                    console.log("argsbusca",args)
+
+                  let products=await db.Alumnos_Grupos.findAll({
+                    where:{mtmGruposAlumnosId:args.mtmGruposAlumnosId},
+                    raw:true
+                  })
+                  let cids=products.map(c=>c.mtmAlumnosGruposId)
+                  let respProds=await db.Alumnos.findAll({
+                    where:{id:{[Op.in]:cids}},
+                    raw:true
+                  })
+                  let final=products.map(r=>{
+                    let p=respProds.filter(t=>t.id==r.mtmAlumnosGruposId)[0]
+                    return {...r,...p}
+
+                  })
+                  console.log("final",final)
+                  return final
+                }catch(e){
+                  console.log("getdatamtmalugru")
+                }
+                },
+
+
+                createdatamtmGruposAlumnos:async(parent,args,{db})=>{
+                  try{
+                  console.log("args",args)
+                  let product=await db.Alumnos_Grupos.create(args)
+                  product=product.dataValues
+                  console.log("producto",product)
+                  let grupo=await db.Grupos.findAll({where:{id:args.mtmGruposAlumnosId},raw:true})
+                  
+                  return {...grupo[0],...product}
+                  }catch(e){
+                    console.log("createdatamtmgruposal")
+                  }
+
+                },
+                createdatamtmAlumnosGrupos:async(parent,args,{db})=>{
+                  try{
+                    console.log("argsbusca",args)
+
+                  let product=await db.Alumnos_Grupos.create(args)
+                  product=product.dataValues
+                  console.log("producto",product)
+                  let alumno=await db.Alumnos.findAll({where:{id:args.mtmAlumnosGruposId},raw:true})
+                  console.log("res",{...alumno[0],...product})
+                  return {...alumno[0],...product}
+                  }catch(e){
+                    console.log("createdatamtmalgr")
+                  }
+                },
+                getonedatamtmGruposAlumnos:async(parent,args,{db})=>{
+                  console.log("argsbusca",args)
+
+                  try{
+                  let product=await db.Alumnos_Grupos.findAll({
+                    where:{
+                      mtmGruposAlumnosId:args.mtmGruposAlumnosId,
+                      mtmAlumnosGruposId:args.mtmAlumnosGruposId
+                    },
+                    raw:true
+                  })
+                  product=product[0]
+                  let respProd=await db.Grupos.findAll({
+                    where:{
+                      id:args.mtmGruposAlumnosId
+                    },
+                    raw:true
+                  })
+                  console.log("res22",{...respProd[0],...product})
+                  return {...respProd[0],...product}
+                }catch(e){
+                  console.log("geonedatamtmgrual")
+                }
+                },
+                getonedatamtmAlumnosGrupos:async(parent,args,{db})=>{
+                  try{
+                  console.log("argsbusca",args)
+                  let product=await db.Alumnos_Grupos.findAll({
+                    where:{
+                      mtmGruposAlumnosId:args.mtmGruposAlumnosId,
+                      mtmAlumnosGruposId:args.mtmAlumnosGruposId
+                    },
+                    raw:true
+                  })
+                  product=product[0]
+                  let respProd=await db.Alumnos.findAll({
+                    where:{
+                      id:args.mtmAlumnosGruposId
+                    },
+                    raw:true
+                  })
+                  console.log("res22",{...respProd[0],...product})
+                  return {...respProd[0],...product}
+                }catch(e){
+                  console.log("getonedataalgru")
+                }
+                },
                
                 getDataAlumnos_Grupos:async(parent,args,{db})=>{
                   const products=await db.Alumnos_Grupos.findAll({raw:true})

@@ -260,8 +260,9 @@ const EditProduct = ({
               ti[indexArray]=ind
             }
         })
+        }
         //console.log("new ti",ti,nv)
-      }
+      
           //console.log("partarr",cp[ti[indexArray]])
         //console.log("paramsarr",cp[ti[indexArray]],indexPartials,indexArray+1,tit)
                   
@@ -273,7 +274,8 @@ const EditProduct = ({
           return y
         })
       
-      } 
+      }
+    
   }
   let ind
   let path
