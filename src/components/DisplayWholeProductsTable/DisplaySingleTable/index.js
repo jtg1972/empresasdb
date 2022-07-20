@@ -70,6 +70,7 @@ const DisplaySingleTable = ({
   })=>{
     //console.log("productsmain",products)
     //console.log("parentcatid Singletable",parentCatId)
+  console.log("parentRelationdisplaySingletable",parentRelation)
   const dispatch=useDispatch()
   let otrotitulo
   let resultado=[]
@@ -231,9 +232,57 @@ const DisplaySingleTable = ({
       
   }
 
-  let ind
+  let ind=[]
   let path
-  const getIndexesInverse=(titleCat)=>{
+  const getIndexesInverse=()=>{
+    //console.log("fiartificial",fi)
+    for(let p in path){
+      //console.log("ti pathp",tableIndexes,path[p])
+      if(path[p]!==otrotitulo){
+        let curInd
+        curInd=tableIndexes[path[p]]
+        ind.push(curInd)
+      }else{
+        if(path[p].startsWith("mtm")){
+          ind=ind.splice(0,ind.length-1)
+          console.log("pathp PATHP-1",path[p],path[p-1])
+          if(path[p-1].startsWith("mtm")){
+            ind=ind.splice(0,ind.length-1)
+            const uy=`${otrotitulo}Id`
+           ind.push(`-${deleteRecord[uy]}`)
+            let n=`${titulo}Id`
+            ind.push(`-${deleteRecord[n]}`)
+          
+          const nn=`${otrotitulo}Id`
+          ind.push(`-${deleteRecord[nn]}`)
+          
+            /*const pr=`${otrotitulo}Id`
+            ind.push(`-${fi[pr]}`)
+            const n=`${titulo}Id`
+
+            ind.push(`-${fi[n]}`)
+          
+              const nn=`${otrotitulo}Id`
+              ind.push(`-${fi[nn]}`)*/
+          
+        
+          }else{
+            //ind=ind.splice(0,ind.length-1)
+            const pr=`${titulo}Id`
+            ind.push(`-${deleteRecord[pr]}`)
+            const n=`${otrotitulo}Id`
+
+            ind.push(`-${deleteRecord[n]}`)
+      
+            //const nn=`${otrotitulo}Id`
+            //ind.push(`-${fi[nn]}`)
+            
+          }
+        }
+      }
+    }
+  }
+  /*const getIndexesInverse=(titleCat)=>{
     //console.log("curcatname",titulo.substr(3),titleCat.substr(7))
     let r=false
     console.log("deleteRecord",deleteRecord)
@@ -269,7 +318,7 @@ const DisplaySingleTable = ({
       } 
     }
   
-  }
+  }*/
   const getIndexes=()=>{
     
     for(let p in path){
@@ -313,15 +362,132 @@ const DisplaySingleTable = ({
       return
 
   }
+  const checkHasSons=(prods,indexPartials=0,indexArray=0,indX,tit,camp)=>{
+    console.log("entro  aqui",tit)  
+  indexPartials=parseInt(indexPartials)
+    indexArray=parseInt(indexArray)
+    let ti=Object.keys(tableIndexes).map(x=>parseInt(tableIndexes[x]))
+  
+  //  console.log("tipartials",ti,partials)
+    let cp 
+    /*if(prods==undefined || prods==[]
+      ||prods=={})
+      return null*/
+      
+      partials=path
+      ti=ind
 
-  const hasSons=(ind)=>{
+    
+    if(!Array.isArray(prods)){
+      cp={...prods}
+      //console.log("no arreglo")
+      //console.log("prods partlength partials",prods,partials.length,partials)
+      let ui
+      //console.log("pip",partials[indexPartials],cp[partials[indexPartials]])
+      //console.log("params",cp[partials[indexPartials]],indexPartials+1,indexArray)
+      //console.log("se modifica campo",partials[indexPartials])
+      //if((indexPartials+1)==partials.length){
+      //console.log("importante",partials[indexPartials],titulo)
+      if(partials[indexPartials]==tit){
+        const res=cp[partials[indexPartials]].filter(x=>x.id==indX)[0]
+        if(res){
+          if(res[camp].length>0){
+          
+            console.log("info",partials[indexPartials],res,indX,res[camp].length)
+           return true
+          }else{
+            return false
+          }
+        }
+        //console.log("entro final")
+        /*ui=cp[partials[indexPartials]].filter(x=>{
+          console.log("xid deleteid",x.id,deleteId)
+          return x.id!==deleteId
+        })*/
+        /*let ni
+        let nv
+        console.log("tit titulo",tit,titulo)
+        if(tit==titulo){
+          nv=deleteRecord["id"]
+          console.log("nifield1","id",deleteRecord["id"])
+
+          
+          //console.log("ni",ni,nv)
+        } else{
+          ni=`${otrotitulo}Id`
+          console.log("nifield",ni,deleteRecord[ni])
+          nv=deleteRecord[ni]
+
+        }
+        //console.log("ui",partials[indexPartials],cp[partials[indexPartials]])
+        return {...cp,
+          [partials[indexPartials]]:cp[partials[indexPartials]].filter(x=>{
+            //console.log("xid deleteid",x.id,deleteId,x.id!==deleteId)
+            return x.id!==nv//deleteId?true:false
+          })}*/
+      }else{
+        //console.log("entro no final")
+        return {...cp,[partials[indexPartials]]:updateState(cp[partials[indexPartials]],indexPartials+1,indexArray,indX,tit,camp)}
+      }
+    
+    } else if(Array.isArray(prods)){
+      cp=[...prods]
+      //console.log("arraglo",indexArray,ti.length)
+      //console.log("deliddd",deleteId)
+      //console.log("prods",prods)
+        //console.log("partarr",cp[ti[indexArray]])
+      //console.log("paramsarr",cp[ti[indexArray]],indexPartials,indexArray+1,titulo)
+      let nv
+      let nia
+      //console.log("jorgevio",ti[indexArray])
+      if(ti[indexArray].toString().startsWith("-")){
+        nv=parseInt(ti[indexArray].substr(1))
+        cp.forEach((x,indx)=>{
+          if(x.id==nv){
+            ti[indexArray]=indx
+          }
+      })    
+    }      
+      
+      return cp.map((y,index)=>{
+        if(index==ti[indexArray]){
+          return updateState(cp[ti[indexArray]],indexPartials,indexArray+1,indX,tit,camp)
+        }
+        return y
+      })
+    
+    
+  } 
+    
+}
+
+  const hasSons=(indTable)=>{
+    console.log("respcatresp",respCat)
     const fws=respCat.fields.filter(x=>
       x.dataType=="relationship" &&
-      x.relationship=="onetomany")
+      (x.relationship=="onetomany" ||
+      x.relationship=="manytomany"))
       for(let cf in fws){
-        if(products[ind][fws[cf].name].length>0)
-          return true
-      return false
+        
+        if(products[indTable][fws[cf].name]!==undefined){
+          if(products[indTable][fws[cf].name].length>0){
+            return true
+          }
+        }else{
+          path=[`getData${currentCategory.name}`]
+          ind=[]
+          getPath(currentCategory.fields.filter(x=>
+            x.dataType=="relationship"),fws[cf].name)
+          
+          const recsName=path[path.length-2]
+          getIndexes()
+          console.log("path ind",path,ind)
+          const ui=checkHasSons(categoryProducts,0,0,products[indTable]["id"],recsName,fws[cf].name)
+          console.log("uiop",ui)
+          if(ui==true)
+            return true
+        }
+        return false
       }
   }
   let deleteRecord={}
@@ -385,7 +551,7 @@ const DisplaySingleTable = ({
           getPath(currentCategory.fields.filter(x=>
             x.dataType=="relationship"),otrotitulo)
           ind=[]
-          getIndexesInverse(`getData${currentCategory.name}`)
+          getIndexesInverse()
           console.log("indices2",ind)
           console.log("otot",otrotitulo)
           console.log("us",us)
@@ -560,9 +726,10 @@ const DisplaySingleTable = ({
   }
   const isSonAndHasParent=()=>{
     const y=respCat.fields.filter(x=>
-      x.relationship=="otmdestiny").length
+      x.relationship=="otmdestiny" ||
+      x.relationship=="manytomany").length
       //console.log("y pARENTID",y,parentId)
-    if(y==0)
+    if(y==0 || titulo.startsWith("getData"))
       return true
     else if(y>0 && parentId>0)
       return true
@@ -597,7 +764,11 @@ const DisplaySingleTable = ({
         marginTop:"10px",
         marginBottom:"10px"
       }}
-      onClick={()=>toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId,isManyToMany,relationCategory,parentRelation,parentCatId)}
+      onClick={()=>{
+        console.log("parentRelatiion1",parentRelation)
+        toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId,isManyToMany,relationCategory,parentRelation,parentCatId)
+      }
+      }
       >Add Record of {respCat.name}</FormButton>)
     }
     /*if(currentCategory.typeOfCategory==0){
@@ -794,7 +965,7 @@ const DisplaySingleTable = ({
         onClick={()=>{
           if(!isManyToMany){
             //console.log("prodwholetable",products[p])
-            toggleEditProduct(transformProduct(products[p]),respCat,tableIndexes,partials,titulo)
+            toggleEditProduct(transformProduct(products[p]),respCat,tableIndexes,partials,titulo,{})
           }else{
             const parentCategory=categories.filter(x=>
               x.id==parentRelation)[0]
@@ -831,7 +1002,7 @@ const DisplaySingleTable = ({
               //keysEditRecord[f2]=products[m]["id"]
               //setTableIndexes(x=>({...x,[titulo]:p}))
               
-              toggleEditProduct(transformProduct(products[p]),curCatModified,tableIndexes,partials,titulo,keysEditRecord,otrotitulo,p)
+              toggleEditProduct(transformProduct(products[p]),curCatModified,tableIndexes,partials,titulo,keysEditRecord,otrotitulo,p,parentRelation)
             }
 
           }

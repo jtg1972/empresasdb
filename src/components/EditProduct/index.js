@@ -63,7 +63,7 @@ const mutationEditProduct=(category)=>{
       }
     }
   `
-  //console.log("query",query)
+  console.log("querynormal",query)
   query=gql`${query}`
   return query
 }
@@ -131,7 +131,7 @@ const mutationEditProductManyToMany=(category,keyFields)=>{
       }
     }
   `
-  //console.log("editmtmquery",query)
+  console.log("querymtm",query)
   query=gql`${query}`
   return query
 }
@@ -312,7 +312,47 @@ const EditProduct = ({
   
   }
 
-  const getIndexesInverse=(titleCat)=>{
+  const getIndexesInverse=(titleCat,fi)=>{
+    console.log("fiartificial",fi)
+    for(let p in path){
+      //console.log("ti pathp",tableIndexes,path[p])
+      if(path[p]!==otrotitulo){
+        let curInd
+        curInd=tableIndexes[path[p]]
+        ind.push(curInd)
+      }else{
+        if(path[p].startsWith("mtm")){
+          ind=ind.splice(0,ind.length-1)
+          console.log("pathp PATHP-1",path[p],path[p-1])
+          if(path[p-1].startsWith("mtm")){
+            ind=ind.splice(0,ind.length-1)
+            const uy=`${otrotitulo}Id`
+            ind.push(`-${editFields[uy]}`)
+            let n=`${titulo}Id`
+            ind.push(`-${editFields[n]}`)
+        
+            const nn=`${otrotitulo}Id`
+            ind.push(`-${editFields[nn]}`)
+      
+        
+          }else{
+            //ind=ind.splice(0,ind.length-1)
+            const pr=`${titulo}Id`
+            ind.push(`-${editFields[pr]}`)
+            const n=`${otrotitulo}Id`
+
+            ind.push(`-${editFields[n]}`)
+            
+            //const nn=`${otrotitulo}Id`
+            //ind.push(`-${fi[nn]}`)
+            
+          }
+        }
+      }
+    }
+  }
+
+  /*const getIndexesInverse=(titleCat)=>{
     //console.log("curcatname",titulo.substr(3),titleCat.substr(7))
     let r=false
     ind=[]
@@ -347,7 +387,7 @@ const EditProduct = ({
       } 
     }
   
-  }
+  }*/
   
   let indexSize=1
   
@@ -400,6 +440,7 @@ const EditProduct = ({
      },[curCat])
    
   let MUTATION_EDIT_PRODUCT=""
+  console.log("ismanytomany",isManyToMany)
   if(!isManyToMany){
     MUTATION_EDIT_PRODUCT=mutationEditProduct(curCat)
   }else{

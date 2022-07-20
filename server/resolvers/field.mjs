@@ -755,29 +755,62 @@ export default{
                 },
                 edit${name}:async(parent,args,{db})=>{
               `
-
-              let change=Object.keys(fields).map(k=>{
+              if(cats1[category].manyToMany==false){    
+                let change=Object.keys(fields).map(k=>{
                   if(fields[k].declaredType=="date")
-                    return `${fields[k].name}:new Date(args["${fields[k].name}"])`
-                  return `${fields[k].name}:args["${fields[k].name}"]`
+                    return `${fields[k].name}:new Date(args.${fields[k].name})`
+                  return `${fields[k].name}:args.${fields[k].name}`
                 })
-              change.unshift(`id:args["id"]`)
-              change=change.join(",")
-              content3+=`await db.${name}.update({
-                      ${change}
-                    },
-                    {
-                    where:{id:args.id}
-                    }
-                  )
-                
-                  const nuevo=await db.${name}.findByPk(args.id)
-                  return nuevo
+                change.unshift(`id:args["id"]`)
+                change=change.join(",")
+                content3+=`await db.${name}.update({
+                        ${change}
+                      },
+                      {
+                      where:{id:args.id}
+                      }
+                    )
+                  
+                    const nuevo=await db.${name}.findByPk(args.id)
+                    return nuevo
 
+                  }
                 }
+              }`
+              }else{
+                let change=Object.keys(fields).map(k=>{
+                  if(fields[k].declaredType=="date")
+                    return `${fields[k].name}:new Date(args.${fields[k].name})`
+                  return `${fields[k].name}:args.${fields[k].name}`
+                })
+                let keys=change.filter(n=>
+                  n.startsWith("mtm")
+                )
+                //change.unshift(`id:args["id"]`)
+                change=change.join(",\n")
+                keys=keys.join(",\n")
+                content3+=`await db.${name}.update({
+                        ${change}
+                      },
+                      {
+                        where:{
+                          ${keys}
+                        }
+                      }
+                    )
+                  
+                    let nuevo=await db.${name}.findAll({
+                      where:{
+                        ${keys}
+                      },raw:true
+                    })
+                    nuevo=nuevo[0]
+                    return nuevo
+
+                  }
+                }
+              }`
               }
-            }
-          `
 
       
           try{

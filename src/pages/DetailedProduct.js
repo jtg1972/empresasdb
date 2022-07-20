@@ -85,6 +85,7 @@ const DetailedProduct = () => {
     tablesStateStatus
   }=useSelector(mapToState) 
   const [respCat,setRespCat]=useState({}) 
+  const [respCat1,setRespCat1]=useState({}) 
   const [titles,setTitles]=useState([])
   const [editFields,setEditFields]=useState({})  
   const [fieldId,setFieldId]=useState(0)
@@ -122,6 +123,7 @@ const DetailedProduct = () => {
       setKeyFields(kf)
     setOtroTitulo(ot)
     setIndexInTable(iit)
+  //setParentRelation(pr)
     setOpenEditProduct(!openEditProduct)
     
   }
@@ -136,7 +138,7 @@ const DetailedProduct = () => {
   const [parentCatId,setParentCatId]=useState(-1)
   const toggleNewProduct=(rc,ti,ps,tit,pid,iMtM,relCat,pr,pcid)=>{
     //console.log("parentcatIddetprod",pcid)
-    setRespCat(rc)
+    setRespCat1(rc)
     setTableIndexes(ti)
     setPartials(ps)
     setTitulo(tit)
@@ -239,7 +241,8 @@ const DetailedProduct = () => {
       toggleDialog={toggleDialogField}
       
       />}
-      {currentCategoryId!==0 &&
+      {openEditProduct &&
+      currentCategoryId!==0 &&
       currentCategory.fields.length>0 
       && tablesStateStatus=="OK" 
       && respCat
@@ -258,6 +261,7 @@ const DetailedProduct = () => {
       otrotitulo={otrotitulo}
       setTableIndexes={setTableIndexes}
       indexInTable={indexInTable}
+      parentRelation={parentRelation}
       />}
 
       <AddMultipleValue
@@ -267,15 +271,16 @@ const DetailedProduct = () => {
         fieldName={fieldName}
       />
 
-      {respCat 
+      {openNewProduct &&
+      respCat1 
       &&
-      respCat?.fields?.length>0 
+      respCat1?.fields?.length>0 
       && 
       tablesStateStatus=="OK"
       && <NewProduct
         open={openNewProduct}
         toggleDialog={toggleNewProduct}
-        respCat={respCat}
+        respCat={respCat1}
         tableIndexes={tableIndexes}
         partials={partials}
         titulo={titulo}

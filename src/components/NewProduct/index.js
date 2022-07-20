@@ -520,7 +520,7 @@ const addProductMutation=(category,categories,mtm)=>{
       ${campos}
     }
   }`
-  //console.log("queryadd",query)
+  console.log("queryadd",query)
   return gql`${query}`
 }
 
@@ -707,6 +707,7 @@ const NewProduct = ({
   parentCatId
   
 }) => {
+  console.log("pr1",parentRelation)
   const [editFields,setEditFields]=useState({})
   console.log("title12",titulo)
   //console.log("respcatnuevo",respCat)
@@ -725,6 +726,7 @@ const NewProduct = ({
     
     if(titulo.startsWith("mtm")){
       pR=categories.filter(x=>x.id==parentRelation)[0]
+      console.log("PR",pR)
       nRc=categories.filter(x=>x.id==relationCategory)[0]
     
       //nameAlias=`createdatamtm${nRc.name}${pR.name}`
@@ -839,7 +841,45 @@ const NewProduct = ({
   let ind
   let path
   const getIndexesInverse=(titleCat,fi)=>{
-    console.log("curcatname",titulo.substr(3),titleCat.substr(7))
+    console.log("fiartificial",fi)
+    for(let p in path){
+      //console.log("ti pathp",tableIndexes,path[p])
+      if(path[p]!==otrotitulo){
+        let curInd
+        curInd=tableIndexes[path[p]]
+        ind.push(curInd)
+      }else{
+        if(path[p].startsWith("mtm")){
+          ind=ind.splice(0,ind.length-1)
+          console.log("pathp PATHP-1",path[p],path[p-1])
+          if(path[p-1].startsWith("mtm")){
+            ind=ind.splice(0,ind.length-1)
+            const pr=`${otrotitulo}Id`
+            ind.push(`-${fi[pr]}`)
+            const n=`${titulo}Id`
+
+            ind.push(`-${fi[n]}`)
+          
+              const nn=`${otrotitulo}Id`
+              ind.push(`-${fi[nn]}`)
+          
+        
+          }else{
+            //ind=ind.splice(0,ind.length-1)
+            const uy=`${titulo}Id`
+            ind.push(`-${fi[uy]}`)
+            let n=`${otrotitulo}Id`
+            ind.push(`-${fi[n]}`)
+            
+            //const nn=`${otrotitulo}Id`
+            //ind.push(`-${fi[nn]}`)
+            
+          }
+        }
+      }
+    }
+  }
+    /*console.log("curcatname",titulo.substr(3),titleCat.substr(7))
     let r=false
     ind=[]
     if(titulo.substr(3).startsWith(titleCat.substr(7))){
@@ -873,7 +913,7 @@ const NewProduct = ({
       } 
     }
   
-  }
+  }*/
 
   const getIndexes=()=>{
     
@@ -923,31 +963,34 @@ const NewProduct = ({
 
   let CREATE_PRODUCT_MUT=""
   let CREATE_PRODUCT_MUTATION_MTM=""
-  pR=categories.filter(x=>x.id==parentRelation)[0]
   let nameGroupAlias
-  if(titulo.startsWith("mtm")){
-      nRc=categories.filter(x=>x.id==relationCategory)[0]
-    
-      //GET_SEARCH_ONE=getQuerySearchOne(nRc)
-      if(pR.name<nRc.name)
-        nn=`${pR.name}_${nRc.name}`
-      else
-        nn=`${nRc.name}_${pR.name}`
-      relMtMC=categories.filter(x=>x.name==nn)[0]
-      //console.log("nn",nn)
-      nC=categories.filter(x=>x.name==nn)[0]
-      //console.log("Nccc",nC.fields)
-      nameAlias=`createdatamtm${nRc.name}${pR.name}`
-      nameAliasOneMtm=`getonedatamtm${pR.name}${nRc.name}`
-      nameGroupAlias=`getdatamtm${pR.name}${nRc.name}`
-    CREATE_PRODUCT_MUTATION_MTM=addMtmProductMutation(relMtMC,categories,nameAlias,nRc)
+  console.log("titulo",titulo,parentRelation)
+  
+    pR=categories.filter(x=>x.id==parentRelation)[0]
+    if(titulo.startsWith("mtm")){
+        nRc=categories.filter(x=>x.id==relationCategory)[0]
+        console.log("pr nRc",pR,nRc,parentRelation,relationCategory)
+        //GET_SEARCH_ONE=getQuerySearchOne(nRc)
+        if(pR?.name<nRc?.name)
+          nn=`${pR.name}_${nRc.name}`
+        else
+          nn=`${nRc.name}_${pR.name}`
+        relMtMC=categories.filter(x=>x.name==nn)[0]
+        //console.log("nn",nn)
+        nC=categories.filter(x=>x.name==nn)[0]
+        //console.log("Nccc",nC.fields)
+        nameAlias=`createdatamtm${nRc.name}${pR.name}`
+        nameAliasOneMtm=`getonedatamtm${pR.name}${nRc.name}`
+        nameGroupAlias=`getdatamtm${pR.name}${nRc.name}`
+      CREATE_PRODUCT_MUTATION_MTM=addMtmProductMutation(relMtMC,categories,nameAlias,nRc)
 
-  }else{
-    //GET_SEARCH_ONE=getQuerySearchOne(respCat)
-
-    CREATE_PRODUCT_MUT=addProductMutation(respCat,categories,false)
-    
-  }
+    }else{
+      //GET_SEARCH_ONE=getQuerySearchOne(respCat)
+      console.log("entroaqui",respCat)
+      CREATE_PRODUCT_MUT=addProductMutation(respCat,categories,false)
+      
+    }
+  
   /*const [getSearchOne]=useMutation(GET_SEARCH_ONE,{
     update:(cache,{data})=>{
       const nam=`get${nRc.name}`
@@ -973,6 +1016,7 @@ const NewProduct = ({
   let GET_ONE_DATA_MTM
   let GET_DATA_MTM_GROUP
   if(titulo.startsWith("mtm")){
+   console.log("rmtm",relMtMC)
    GET_ONE_DATA_MTM=getonedatamtm(relMtMC,categories,nameAliasOneMtm,pR)
    GET_DATA_MTM_GROUP=getdatamtmgroup(relMtMC,categories,nameGroupAlias,pR)
    CREATE_PRODUCT_MUT=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])

@@ -161,17 +161,27 @@
                 },
                 editAlumnos_Grupos:async(parent,args,{db})=>{
               await db.Alumnos_Grupos.update({
-                      id:args["id"],mtmAlumnosGruposId:args["mtmAlumnosGruposId"],mtmGruposAlumnosId:args["mtmGruposAlumnosId"],campo_mutuo1:args["campo_mutuo1"]
-                    },
-                    {
-                    where:{id:args.id}
-                    }
-                  )
-                
-                  const nuevo=await db.Alumnos_Grupos.findByPk(args.id)
-                  return nuevo
+                        mtmAlumnosGruposId:args.mtmAlumnosGruposId,
+mtmGruposAlumnosId:args.mtmGruposAlumnosId,
+campo_mutuo1:args.campo_mutuo1
+                      },
+                      {
+                        where:{
+                          mtmAlumnosGruposId:args.mtmAlumnosGruposId,
+mtmGruposAlumnosId:args.mtmGruposAlumnosId
+                        }
+                      }
+                    )
+                  
+                    let nuevo=await db.Alumnos_Grupos.findAll({
+                      where:{
+                        mtmAlumnosGruposId:args.mtmAlumnosGruposId,
+mtmGruposAlumnosId:args.mtmGruposAlumnosId
+                      },raw:true
+                    })
+                    nuevo=nuevo[0]
+                    return nuevo
 
+                  }
                 }
               }
-            }
-          
