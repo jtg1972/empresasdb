@@ -362,7 +362,7 @@ const DisplaySingleTable = ({
       return
 
   }
-  const checkHasSons=(prods,indexPartials=0,indexArray=0,indX,tit,camp)=>{
+  const checkHasSons=(prods,indexPartials=0,indexArray=0,indX,indY,tit,camp)=>{
     console.log("entro  aqui",tit)  
   indexPartials=parseInt(indexPartials)
     indexArray=parseInt(indexArray)
@@ -389,11 +389,20 @@ const DisplaySingleTable = ({
       //if((indexPartials+1)==partials.length){
       //console.log("importante",partials[indexPartials],titulo)
       if(partials[indexPartials]==tit){
+
         const res=cp[partials[indexPartials]].filter(x=>x.id==indX)[0]
+        const otro=res[camp].filter(x=>{
+          const n=`${otrotitulo}Id`
+          return x[n]==indY
+        })[0][titulo].length
+        console.log("res22",res[camp],res[camp].length,otrotitulo,titulo,otro,indY)
+
+        
+
         if(res){
-          if(res[camp].length>0){
+          if(res[camp].length>1 || otro>1){// && otro>1){
           
-            console.log("info",partials[indexPartials],res,indX,res[camp].length)
+            console.log("info",partials[indexPartials],res,indX,indY,res[camp].length)
            return true
           }else{
             return false
@@ -427,7 +436,7 @@ const DisplaySingleTable = ({
           })}*/
       }else{
         //console.log("entro no final")
-        return {...cp,[partials[indexPartials]]:updateState(cp[partials[indexPartials]],indexPartials+1,indexArray,indX,tit,camp)}
+        return {...cp,[partials[indexPartials]]:updateState(cp[partials[indexPartials]],indexPartials+1,indexArray,indX,indY,tit,camp)}
       }
     
     } else if(Array.isArray(prods)){
@@ -464,13 +473,13 @@ const DisplaySingleTable = ({
   const hasSons=(indTable)=>{
     console.log("respcatresp",respCat)
     const fws=respCat.fields.filter(x=>
-      x.dataType=="relationship" &&
-      (x.relationship=="onetomany" ||
-      x.relationship=="manytomany"))
-      for(let cf in fws){
-        
+    x.dataType=="relationship" &&
+    x.relationship=="onetomany")
+    for(let cf in fws){
+      /*if(fws[cf].relationship=="manytomany"){
         if(products[indTable][fws[cf].name]!==undefined){
-          if(products[indTable][fws[cf].name].length>0){
+
+          if(products[indTable][fws[cf].name].length>1){
             return true
           }
         }else{
@@ -482,13 +491,21 @@ const DisplaySingleTable = ({
           const recsName=path[path.length-2]
           getIndexes()
           console.log("path ind",path,ind)
-          const ui=checkHasSons(categoryProducts,0,0,products[indTable]["id"],recsName,fws[cf].name)
+          const ot=`${otrotitulo}Id`
+          const ui=checkHasSons(categoryProducts,0,0,products[indTable]["id"],products[indTable][ot],recsName,fws[cf].name)
           console.log("uiop",ui)
           if(ui==true)
             return true
+        }/*/
+
+      if(fws[cf].relationship=="onetomany"){
+        if(products[indTable][fws[cf].name].length>0){
+          return true
         }
-        return false
       }
+    }        
+    return false
+  
   }
   let deleteRecord={}
   let DELETE_PRODUCT=``
@@ -497,13 +514,22 @@ const DisplaySingleTable = ({
   }else{
     DELETE_PRODUCT=getMutationForDeleteManyToMany(parentRelation,respCat,categories)
   }
+
+  let parentCategory
+  if(isManyToMany){
+    parentCategory=categories.filter(x=>
+    x.id==parentRelation)[0]
+    otrotitulo=`mtm${parentCategory.name}${respCat.name}`
+  }
+
+
   const [delete2]=useMutation(DELETE_PRODUCT,{
     update:(cache,{data})=>{
       let n
       if(!isManyToMany)
         n=`remove${respCat.name}`
       else{
-        const parentCategory=categories.filter(x=>
+        parentCategory=categories.filter(x=>
           x.id==parentRelation)[0]
         
         if(parentCategory.name>respCat.name)
