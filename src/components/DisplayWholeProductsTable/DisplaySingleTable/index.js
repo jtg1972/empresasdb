@@ -80,7 +80,113 @@ const DisplaySingleTable = ({
   currentCategory}=useSelector(mapToState)
  // console.log("respcatst",respCat)
   //console.log("parentId",parentId)
+  const updateState=(prods,indexPartials=0,indexArray=0,to,pt,st,rec)=>{
+    console.log("entro  aqui",to,pt,st)  
+    indexPartials=parseInt(indexPartials)
+      indexArray=parseInt(indexArray)
+      let ti=Object.keys(tableIndexes).map(x=>parseInt(tableIndexes[x]))
+    
+    //  console.log("tipartials",ti,partials)
+      let cp 
+        
+        partials=path
+        ti=ind
 
+      
+      if(!Array.isArray(prods)){
+        cp={...prods}
+        //console.log("no arreglo")
+        //console.log("prods partlength partials",prods,partials.length,partials)
+        let ui
+        //console.log("pip",partials[indexPartials],cp[partials[indexPartials]])
+        //console.log("params",cp[partials[indexPartials]],indexPartials+1,indexArray)
+        //console.log("se modifica campo",partials[indexPartials])
+        //if((indexPartials+1)==partials.length){
+        //console.log("importante",partials[indexPartials],titulo)
+        if(partials[indexPartials]==to){
+          let ni
+          let nv
+          console.log("to",to)
+            
+            nv=rec["id"]
+            
+
+          //console.log("ui",partials[indexPartials],cp[partials[indexPartials]])
+          return {...cp,
+            [partials[indexPartials]]:cp[partials[indexPartials]].map(x=>{
+              //console.log("xid deleteid",x.id,deleteId,x.id!==deleteId)
+              let n=`${pt}Id`// en el ejemplo mtmgruposalumnosid
+              let m=`${st}Id`//en el ejemplo metmalumnosgruposid
+              console.log("nm",n,m)
+              let newR,newSr
+              if(x.id==rec[m]){
+              //estoy en tabla original y el id es igual al registro en
+              //el campo de la primera tabla de muchos a muchos  
+                newR=x[pt].filter(y=>{
+                  if(y.id==rec[n]){
+                    
+                    if(y[n]==deleteRecord[n] && y[m]==deleteRecord[m]){
+                      return false
+                    }
+                  }
+                  return true
+                })
+                newSr=newR.map(j=>{
+                  if(j[n]==rec[n]){
+                    let nst
+                    nst=j[st].filter(h=>{
+                      if(h[m]==deleteRecord[m] && h[n]==deleteRecord[n])
+                        return false
+                      else
+                        return true
+                    
+                    })
+                    return {...j,[st]:nst}
+                  }else
+                    return j
+                })
+                return {...x,[pt]:newSr}
+              }else
+                return x
+              }
+            )
+          }
+        }else{
+          //console.log("entro no final")
+          return {...cp,[partials[indexPartials]]:updateState(cp[partials[indexPartials]],indexPartials+1,indexArray,to,pt,st,rec)}
+        }
+      
+      } else if(Array.isArray(prods)){
+        cp=[...prods]
+        //console.log("arraglo",indexArray,ti.length)
+        //console.log("deliddd",deleteId)
+        //console.log("prods",prods)
+          //console.log("partarr",cp[ti[indexArray]])
+        //console.log("paramsarr",cp[ti[indexArray]],indexPartials,indexArray+1,titulo)
+        let nv
+        let nia
+        //console.log("jorgevio",ti[indexArray])
+        if(ti[indexArray].toString().startsWith("-")){
+          nv=parseInt(ti[indexArray].substr(1))
+          cp.forEach((x,indx)=>{
+            if(x.id==nv){
+              ti[indexArray]=indx
+            }
+        })    
+      }      
+        
+        return cp.map((y,index)=>{
+          if(index==ti[indexArray]){
+            return updateState(cp[ti[indexArray]],indexPartials,indexArray+1,to,pt,st,rec)
+          }
+          return y
+        })
+      
+      
+    } 
+      
+  }
+  /*original updatestate
   const updateState=(prods,indexPartials=0,indexArray=0,tit)=>{
     console.log("entro  aqui",tit)  
     indexPartials=parseInt(indexPartials)
@@ -89,9 +195,6 @@ const DisplaySingleTable = ({
     
     //  console.log("tipartials",ti,partials)
       let cp 
-      /*if(prods==undefined || prods==[]
-        ||prods=={})
-        return null*/
         
         partials=path
         ti=ind
@@ -108,11 +211,6 @@ const DisplaySingleTable = ({
         //if((indexPartials+1)==partials.length){
         //console.log("importante",partials[indexPartials],titulo)
         if(partials[indexPartials]==tit){
-          //console.log("entro final")
-          /*ui=cp[partials[indexPartials]].filter(x=>{
-            console.log("xid deleteid",x.id,deleteId)
-            return x.id!==deleteId
-          })*/
           let ni
           let nv
           console.log("tit titulo",tit,titulo)
@@ -169,6 +267,8 @@ const DisplaySingleTable = ({
     } 
       
   }
+  termina original updatestate*/
+
   const updateManyToManyState=(prods,indexPartials=0,indexArray=0,reemp,titulo)=>{
     let cp 
     let ti=Object.keys(tableIndexes).map(x=>parseInt(tableIndexes[x]))
@@ -234,6 +334,35 @@ const DisplaySingleTable = ({
 
   let ind=[]
   let path
+  
+  const getIndexesInverse=(editableRecord,pivoteTable,otherPivoteTable)=>{
+    for(let p in path){
+      //console.log("ti pathp",tableIndexes,path[p])
+      if(path[p]!==pivoteTable){
+        let curInd
+        curInd=tableIndexes[path[p]]
+        ind.push(curInd)
+      }else{
+        if(path[p].startsWith("mtm")){
+          ind=ind.splice(0,ind.length-1)
+          console.log("pathp PATHP-1",path[p],path[p-1])
+          ind=ind.splice(0,ind.length-2)
+          const uy=`${pivoteTable}Id`
+           ind.push(`-${editableRecord[uy]}`)
+            let n=`${otherPivoteTable}Id`
+            ind.push(`-${editableRecord[n]}`)
+          
+          const nn=`${pivoteTable}Id`
+          ind.push(`-${editableRecord[nn]}`)
+          
+            
+        
+         
+        }
+      }
+    }
+  }
+  /*original getIndexesinverse
   const getIndexesInverse=()=>{
     //console.log("fiartificial",fi)
     for(let p in path){
@@ -256,15 +385,7 @@ const DisplaySingleTable = ({
           const nn=`${otrotitulo}Id`
           ind.push(`-${deleteRecord[nn]}`)
           
-            /*const pr=`${otrotitulo}Id`
-            ind.push(`-${fi[pr]}`)
-            const n=`${titulo}Id`
-
-            ind.push(`-${fi[n]}`)
-          
-              const nn=`${otrotitulo}Id`
-              ind.push(`-${fi[nn]}`)*/
-          
+            
         
           }else{
             //ind=ind.splice(0,ind.length-1)
@@ -281,44 +402,7 @@ const DisplaySingleTable = ({
         }
       }
     }
-  }
-  /*const getIndexesInverse=(titleCat)=>{
-    //console.log("curcatname",titulo.substr(3),titleCat.substr(7))
-    let r=false
-    console.log("deleteRecord",deleteRecord)
-    ind=[]
-    if(titulo.substr(3).startsWith(titleCat.substr(7))){
-      r=true
-    }
-    else{
-      r=false
-    }
-    //console.log("paramms",curCat.name,titleCat.substr(7))
-    //console.log("titulo,otrotitulo",titulo,otrotitulo)
-    if(r){
-      console.log(true)
-      const pr=`${titulo}Id`
-      ind.push(`-${deleteRecord[pr]}`)
-      const n=`${otrotitulo}Id`
-
-      ind.push(`-${deleteRecord[n]}`)
-      if(path.length>2){
-          const nn=`${titulo}Id`
-          ind.push(`-${deleteRecord[nn]}`)
-        }
-    }else{
-      //console.log(false)
-      const uy=`${otrotitulo}Id`
-      ind.push(`-${deleteRecord[uy]}`)
-      let n=`${titulo}Id`
-      ind.push(`-${deleteRecord[n]}`)
-      if(path.length>2){
-        const nn=`${otrotitulo}Id`
-        ind.push(`-${deleteRecord[nn]}`)
-      } 
-    }
-  
-  }*/
+  }termina original getIndexesinverse*/
   const getIndexes=()=>{
     
     for(let p in path){
@@ -362,7 +446,7 @@ const DisplaySingleTable = ({
       return
 
   }
-  const checkHasSons=(prods,indexPartials=0,indexArray=0,indX,indY,tit,camp)=>{
+  const checkHasSons=(prods,indexPartials=0,indexArray=0,tit)=>{
     console.log("entro  aqui",tit)  
   indexPartials=parseInt(indexPartials)
     indexArray=parseInt(indexArray)
@@ -388,55 +472,14 @@ const DisplaySingleTable = ({
       //console.log("se modifica campo",partials[indexPartials])
       //if((indexPartials+1)==partials.length){
       //console.log("importante",partials[indexPartials],titulo)
+      console.log("pip",partials[indexPartials],tit)
       if(partials[indexPartials]==tit){
+        console.log("match")
+        return cp[partials[indexPartials]]
 
-        const res=cp[partials[indexPartials]].filter(x=>x.id==indX)[0]
-        const otro=res[camp].filter(x=>{
-          const n=`${otrotitulo}Id`
-          return x[n]==indY
-        })[0][titulo].length
-        console.log("res22",res[camp],res[camp].length,otrotitulo,titulo,otro,indY)
-
-        
-
-        if(res){
-          if(res[camp].length>1 || otro>1){// && otro>1){
-          
-            console.log("info",partials[indexPartials],res,indX,indY,res[camp].length)
-           return true
-          }else{
-            return false
-          }
-        }
-        //console.log("entro final")
-        /*ui=cp[partials[indexPartials]].filter(x=>{
-          console.log("xid deleteid",x.id,deleteId)
-          return x.id!==deleteId
-        })*/
-        /*let ni
-        let nv
-        console.log("tit titulo",tit,titulo)
-        if(tit==titulo){
-          nv=deleteRecord["id"]
-          console.log("nifield1","id",deleteRecord["id"])
-
-          
-          //console.log("ni",ni,nv)
-        } else{
-          ni=`${otrotitulo}Id`
-          console.log("nifield",ni,deleteRecord[ni])
-          nv=deleteRecord[ni]
-
-        }
-        //console.log("ui",partials[indexPartials],cp[partials[indexPartials]])
-        return {...cp,
-          [partials[indexPartials]]:cp[partials[indexPartials]].filter(x=>{
-            //console.log("xid deleteid",x.id,deleteId,x.id!==deleteId)
-            return x.id!==nv//deleteId?true:false
-          })}*/
       }else{
         //console.log("entro no final")
-        return {...cp,[partials[indexPartials]]:updateState(cp[partials[indexPartials]],indexPartials+1,indexArray,indX,indY,tit,camp)}
+        return checkHasSons(cp[partials[indexPartials]],indexPartials+1,indexArray,tit)
       }
     
     } else if(Array.isArray(prods)){
@@ -458,12 +501,8 @@ const DisplaySingleTable = ({
       })    
     }      
       
-      return cp.map((y,index)=>{
-        if(index==ti[indexArray]){
-          return updateState(cp[ti[indexArray]],indexPartials,indexArray+1,indX,tit,camp)
-        }
-        return y
-      })
+      return checkHasSons(cp[ti[indexArray]],indexPartials,indexArray+1,tit)
+        
     
     
   } 
@@ -522,7 +561,79 @@ const DisplaySingleTable = ({
     otrotitulo=`mtm${parentCategory.name}${respCat.name}`
   }
 
+  const updateClusters=(tablaoriginal,pivoteTable,otherPivoteTable)=>{
+    console.log("entro clusters",pivoteTable)
+    const recs=checkHasSons(categoryProducts,0,0,pivoteTable)
+    console.log("recs",recs,pivoteTable,otherPivoteTable)
+    let currentData=categoryProducts
+    for(let x in recs){
+      ind=[]
+      getIndexesInverse(recs[x],pivoteTable,otherPivoteTable)
+      currentData=updateState(currentData,0,0,tablaoriginal,otherPivoteTable,pivoteTable,recs[x])
+      console.log("trans",ind,currentData)
+    }
+    dispatch(setCategoryProducts(currentData))
+  }
 
+  const [delete2]=useMutation(DELETE_PRODUCT,{
+    update:(cache,{data})=>{
+      let n
+      if(!isManyToMany)
+        n=`remove${respCat.name}`
+      else{
+        parentCategory=categories.filter(x=>
+          x.id==parentRelation)[0]
+        if(parentCategory.name>respCat.name)
+          n=`remove${respCat.name}_${parentCategory.name}`
+        else
+          n=`remove${parentCategory.name}_${respCat.name}`
+        if(data[n]==true){
+          if(!isManyToMany){
+            path=[`getData${currentCategory.name}`]
+            indexSize=1
+            getPath(currentCategory.fields.filter(x=>
+            x.dataType=="relationship"),titulo)
+            //console.log("path",path)
+            ind=[]
+            getIndexes()
+            //console.log("indices",ind)
+      
+             let us=updateState(categoryProducts,0,0,titulo)
+            //console.log("us",us)
+              //dispatch(setCategoryProducts(us))
+          }else{
+            let pivoteTable,otherPivoteTable,tablaoriginal
+            path=[`getData${currentCategory.name}`]
+            indexSize=1
+            getPath(currentCategory.fields.filter(x=>
+              x.dataType=="relationship"),titulo)
+            console.log("path1",path)
+            if(path[path.length-2].startsWith("mtm")){
+              pivoteTable=titulo
+              otherPivoteTable=otrotitulo
+              tablaoriginal=path[path.length-3]
+            }else{
+              pivoteTable=otrotitulo
+              otherPivoteTable=titulo
+              tablaoriginal=path[path.length-2]
+            }
+            path=[`getData${currentCategory.name}`]
+            indexSize=1
+            getPath(currentCategory.fields.filter(x=>
+              x.dataType=="relationship"),pivoteTable)
+            ind=[]
+            getIndexesInverse(deleteRecord,pivoteTable,otherPivoteTable)
+            updateClusters(tablaoriginal,pivoteTable,otherPivoteTable)
+          }
+          
+        }
+          
+      }
+    }
+  })
+
+
+  /*delete2 original
   const [delete2]=useMutation(DELETE_PRODUCT,{
     update:(cache,{data})=>{
       let n
@@ -576,14 +687,20 @@ const DisplaySingleTable = ({
           console.log("otrotitulo",otrotitulo)
           getPath(currentCategory.fields.filter(x=>
             x.dataType=="relationship"),otrotitulo)
-          ind=[]
-          getIndexesInverse()
-          console.log("indices2",ind)
-          console.log("otot",otrotitulo)
-          console.log("us",us)
-          nj=updateState(us,0,0,otrotitulo)
-     
+          if(!path[path.length-2].startsWith("mtm")){
 
+            ind=[]
+            getIndexesInverse()
+            console.log("indices2",ind)
+            console.log("otot",otrotitulo)
+            console.log("us",us)
+            nj=updateState(us,0,0,otrotitulo)
+      
+
+          }else{
+            const chs=checkHasSons(categoryProducts,0,0,otrotitulo)
+            console.log("checkhassons",chs)
+          }
         }
         if(entromtm)
           dispatch(setCategoryProducts(nj))
@@ -593,7 +710,7 @@ const DisplaySingleTable = ({
         //console.log("tableIndexes",tableIndexes)
       }
     }
-  })
+  })end delete2 original/*
 
   let repMut
   if(mutMtmData!==""){
@@ -660,7 +777,7 @@ const DisplaySingleTable = ({
           nameFieldKeyToDisplay,
           d[nameFieldKeyToDisplay],
           c.id)*/
-          return d[nameFieldKeyToDisplay]==c.id 
+          /*return d[nameFieldKeyToDisplay]==c.id 
         })
         //console.log("comp",comp)
         if(comp){
@@ -680,7 +797,7 @@ const DisplaySingleTable = ({
 
     }
 
-  })
+  })*/
   
   const [loadedIds,setLoadedIds]=useState([])
  /*useEffect(()=>{
