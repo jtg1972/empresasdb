@@ -498,8 +498,8 @@ const DisplaySingleTable = ({
           if(x.id==nv){
             ti[indexArray]=indx
           }
-      })    
-    }      
+        })    
+     }      
       
       return checkHasSons(cp[ti[indexArray]],indexPartials,indexArray+1,tit)
         

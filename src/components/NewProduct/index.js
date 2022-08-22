@@ -718,9 +718,13 @@ const NewProduct = ({
   categories}=useSelector(mapToState)
   const dispatch=useDispatch()
   let nC,nRc,pR,nn,relMtMC,nameAlias,nameAliasOneMtm
+  let existe=false
   const [mtmStr,setMtmStr]=useState([])
   const [resto,setResto]=useState({})
   const [otrotitulo,setOtroTitulo]=useState("")
+  const [addRecGlobal,setAddRecGlobal]=useState({})
+  const [groupRecsGlobal,setGroupRecsGlobal]=useState([])
+
   useEffect(()=>{
     
     
@@ -757,6 +761,117 @@ const NewProduct = ({
     }
   },[])
 
+  const updateState=(prods,indexPartials=0,indexArray=0,to,pt,st,rec,addRecord,dg,firstTableRecord)=>{
+    console.log("entro  aqui",to,pt,st,firstTableRecord,dg,addRecord)  
+    indexPartials=parseInt(indexPartials)
+    indexArray=parseInt(indexArray)
+    let ti=Object.keys(tableIndexes).map(x=>parseInt(tableIndexes[x]))
+    
+    //  console.log("tipartials",ti,partials)
+    let cp 
+        
+    partials=path
+    ti=ind
+
+      
+    if(!Array.isArray(prods)){
+      cp={...prods}
+      //console.log("no arreglo")
+      //console.log("prods partlength partials",prods,partials.length,partials)
+      let ui
+      //console.log("pip",partials[indexPartials],cp[partials[indexPartials]])
+      //console.log("params",cp[partials[indexPartials]],indexPartials+1,indexArray)
+      //console.log("se modifica campo",partials[indexPartials])
+      //if((indexPartials+1)==partials.length){
+      //console.log("importante",partials[indexPartials],titulo)
+      if(partials[indexPartials]==to){
+        let ni
+        let nv
+        console.log("to",to)
+            
+        nv=rec["id"]
+            
+
+          //console.log("ui",partials[indexPartials],cp[partials[indexPartials]])
+        return {...cp,
+          [partials[indexPartials]]:cp[partials[indexPartials]].map(x=>{
+              //console.log("xid deleteid",x.id,deleteId,x.id!==deleteId)
+            let n=`${pt}Id`// en el ejemplo mtmgruposalumnosid
+            let m=`${st}Id`//en el ejemplo metmalumnosgruposid
+            console.log("nm",n,m)
+            let newR={},newSr
+
+            if(x["id"]==rec[m]){
+              console.log("idar",x["id"],rec[m])
+              if(rec[m]==addRecord[m] && rec[n]==addRecord[n]){
+                if(titulo!==st){
+                  if(existe==false){
+                    console.log("entro1",addRecord[m],addRecord[n],addRecord,x[pt])
+                    newR={...x,[pt]:[...x[pt],{...addRecord}]}
+                    console.log("newr1",newR)
+                    existe=true
+                  }else
+                    newR=x
+                }else if(titulo==st){
+                  console.log("entro2",addRecord[m],addRecord[n])
+                  newR={...x,[pt]:[...x[pt],{...firstTableRecord,[st]:dg}]}
+                }
+              
+              }else{
+                
+                console.log("dg44")
+                newR={...x,[pt]:x[pt].map(y=>{
+                  if(y[n]==rec[n])
+                    return {...y,[st]:dg}
+                  else
+                    return y
+                })}
+                
+              }
+              return newR
+            }else
+              return x
+          })
+        }
+        
+
+      }else{
+          //console.log("entro no final")
+        return {...cp,[partials[indexPartials]]:updateState(cp[partials[indexPartials]],indexPartials+1,indexArray,to,pt,st,rec,addRecord,dg,firstTableRecord)}
+      }
+      
+    } else if(Array.isArray(prods)){
+      cp=[...prods]
+      //console.log("arraglo",indexArray,ti.length)
+      //console.log("deliddd",deleteId)
+      //console.log("prods",prods)
+        //console.log("partarr",cp[ti[indexArray]])
+      //console.log("paramsarr",cp[ti[indexArray]],indexPartials,indexArray+1,titulo)
+      let nv
+      let nia
+      //console.log("jorgevio",ti[indexArray])
+      if(ti[indexArray].toString().startsWith("-")){
+        nv=parseInt(ti[indexArray].substr(1))
+        cp.forEach((x,indx)=>{
+          if(x.id==nv){
+            ti[indexArray]=indx
+          }
+        })    
+      }      
+      
+      return cp.map((y,index)=>{
+        if(index==ti[indexArray]){
+          return updateState(cp[ti[indexArray]],indexPartials,indexArray+1,to,pt,st,rec,addRecord,dg,firstTableRecord)
+        }
+        return y
+      })
+    
+      
+    } 
+      
+  }
+
+  /*updatestate original
   const updateState=(prods,indexPartials=0,indexArray=0,nuevo,tit,dg)=>{
     console.log("dgup",dg) 
     indexPartials=parseInt(indexPartials)
@@ -765,9 +880,6 @@ const NewProduct = ({
     console.log("prodsus",prods)
       //console.log("tipartials",ti,partials)
       let cp 
-      /*if(prods==undefined || prods==[]
-        ||prods=={})
-        return null*/
         partials=path
         ti=ind
 
@@ -784,10 +896,7 @@ const NewProduct = ({
         //console.log("importante",partials[indexPartials],titulo)
         if(partials[indexPartials]==tit){
           //console.log("entro final")
-          /*ui=cp[partials[indexPartials]].filter(x=>{
-            console.log("xid deleteid",x.id,deleteId)
-            return x.id!==deleteId
-          })*/
+          
           console.log("partials[indexPartials]",cp[partials[indexPartials]])
           
           //console.log("ui",partials[indexPartials],cp[partials[indexPartials]],resto)
@@ -836,11 +945,33 @@ const NewProduct = ({
         })
       
       } 
-  }
+  } termina updatestate orignal*/
 
   let ind
   let path
-  const getIndexesInverse=(titleCat,fi)=>{
+  const getIndexesInverse=(addRecord,pivoteTable,otherPivoteTable)=>{
+    console.log("add3",addRecord)
+    for(let p in path){
+      if(path[p]!==pivoteTable){
+        let curInd
+        curInd=tableIndexes[path[p]]
+        ind.push(curInd)
+      }else{
+        if(path[p].startsWith("mtm")){
+          ind=ind.splice(0,ind.length-1)
+          ind=ind.splice(0,ind.length-2)
+          const uy=`${pivoteTable}Id`
+          ind.push(`-${addRecord[uy]}`)
+          let n=`${otherPivoteTable}Id`
+          ind.push(`-${addRecord[n]}`)
+          ind.push(`-${addRecord[uy]}`)
+
+        }
+      }
+    }
+  }
+
+  /*const getIndexesInverse=(titleCat,fi)=>{
     console.log("fiartificial",fi)
     for(let p in path){
       //console.log("ti pathp",tableIndexes,path[p])
@@ -878,7 +1009,8 @@ const NewProduct = ({
         }
       }
     }
-  }
+  }termina getindexesinverse original */
+
     /*console.log("curcatname",titulo.substr(3),titleCat.substr(7))
     let r=false
     ind=[]
@@ -915,7 +1047,7 @@ const NewProduct = ({
   
   }*/
 
-  const getIndexes=()=>{
+ const getIndexes=()=>{
     
     for(let p in path){
       //console.log("ti pathp",tableIndexes,path[p])
@@ -960,6 +1092,57 @@ const NewProduct = ({
 
   }
 
+  const checkHasSons=(prods,indexPartials=0,indexArray=0,tit)=>{
+    console.log("in2",prods)
+    indexPartials=parseInt(indexPartials)
+    indexArray=parseInt(indexArray)
+    let ti=Object.keys(tableIndexes).map(x=>parseInt(tableIndexes[x]))
+    let cp
+    partials=path
+    ti=ind
+    if(!Array.isArray(prods)){
+      cp={...prods}
+      console.log("in312",partials[indexPartials],cp[partials[indexPartials]],tit)
+
+      if(partials[indexPartials]==tit){
+        console.log("mat1")
+        return cp[partials[indexPartials]]
+      }else{
+        return checkHasSons(cp[partials[indexPartials]],indexPartials+1,indexArray,tit)
+
+      }
+
+    }else if(Array.isArray(prods)){
+      console.log("in4")
+       cp=[...prods]
+       let nv
+       if(ti[indexArray].toString().startsWith("-")){
+         nv=parseInt(ti[indexArray].substr(1))
+         cp.forEach((x,indx)=>{
+           if(x.id==nv)
+            ti[indexArray]=indx
+         })
+       }
+    
+      return checkHasSons(cp[ti[indexArray]],indexPartials,indexArray+1,tit)
+    }
+
+  }
+  const updateClusters=(tablaoriginal,pivoteTable,otherPivoteTable,dg,arg,ftadd)=>{
+    //const recs=checkHasSons(categoryProducts,0,0,pivoteTable)
+    console.log("chs",dg)
+    let currentData={...categoryProducts}
+    for(let x in dg){
+      ind=[]
+      getIndexesInverse(dg[x],pivoteTable,otherPivoteTable)
+      console.log("adm",dg[x],ind,arg)
+      currentData=updateState(currentData,0,0,tablaoriginal,otherPivoteTable,pivoteTable,dg[x],arg,dg,ftadd)
+    }
+    existe=false
+    dispatch(setCategoryProducts(currentData))
+
+  }
+
 
   let CREATE_PRODUCT_MUT=""
   let CREATE_PRODUCT_MUTATION_MTM=""
@@ -967,7 +1150,7 @@ const NewProduct = ({
   console.log("titulo",titulo,parentRelation)
   
     pR=categories.filter(x=>x.id==parentRelation)[0]
-    if(titulo.startsWith("mtm")){
+    /*if(titulo.startsWith("mtm")){
         nRc=categories.filter(x=>x.id==relationCategory)[0]
         console.log("pr nRc",pR,nRc,parentRelation,relationCategory)
         //GET_SEARCH_ONE=getQuerySearchOne(nRc)
@@ -978,10 +1161,11 @@ const NewProduct = ({
         relMtMC=categories.filter(x=>x.name==nn)[0]
         //console.log("nn",nn)
         nC=categories.filter(x=>x.name==nn)[0]
-        //console.log("Nccc",nC.fields)
+        console.log("Nccc",nC.fields)
         nameAlias=`createdatamtm${nRc.name}${pR.name}`
-        nameAliasOneMtm=`getonedatamtm${pR.name}${nRc.name}`
-        nameGroupAlias=`getdatamtm${pR.name}${nRc.name}`
+        nameAliasOneMtm=`getonedatamtm${otherPivoteTable.substr(3)}`
+        nameGroupAlias=`getdatamtm${pivoteTable.substr(3)}`
+        console.log("na naomtm nga",nameAlias,nameAliasOneMtm,nameGroupAlias)
       CREATE_PRODUCT_MUTATION_MTM=addMtmProductMutation(relMtMC,categories,nameAlias,nRc)
 
     }else{
@@ -989,7 +1173,7 @@ const NewProduct = ({
       console.log("entroaqui",respCat)
       CREATE_PRODUCT_MUT=addProductMutation(respCat,categories,false)
       
-    }
+    }*/
   
   /*const [getSearchOne]=useMutation(GET_SEARCH_ONE,{
     update:(cache,{data})=>{
@@ -1015,48 +1199,136 @@ const NewProduct = ({
   console.log("namegroupalias",nameGroupAlias)
   let GET_ONE_DATA_MTM
   let GET_DATA_MTM_GROUP
+  let pivoteTable,otherPivoteTable,tablaoriginal
   if(titulo.startsWith("mtm")){
-   console.log("rmtm",relMtMC)
-   GET_ONE_DATA_MTM=getonedatamtm(relMtMC,categories,nameAliasOneMtm,pR)
-   GET_DATA_MTM_GROUP=getdatamtmgroup(relMtMC,categories,nameGroupAlias,pR)
-   CREATE_PRODUCT_MUT=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
+    
+    path=[`getData${currentCategory.name}`]
+    indexSize=1
+    getPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
+    titulo)
+    if(path[path.length-2].startsWith("mtm")){
+      pivoteTable=titulo
+      otherPivoteTable=otrotitulo
+      tablaoriginal=path[path.length-3]
+    }else{
+      pivoteTable=otrotitulo
+      otherPivoteTable=titulo
+      tablaoriginal=path[path.length-2]
+      
+    }
+    //nameGroupAlias=`getdatamtm${pivoteTable}${otherPivoteTable}`
+    console.log("rmtm",relMtMC)
+   /*nameAlias=`createdatamtm${nRc.name}${pR.name}`
+    nameAliasOneMtm=`getonedatamtm${pR.name}${nRc.name}`
+    nameGroupAlias=`getdatamtm${nRc.name}${pR.name}`*/
+    nRc=categories.filter(x=>x.id==relationCategory)[0]
+        console.log("pr nRc",pR,nRc,parentRelation,relationCategory)
+        //GET_SEARCH_ONE=getQuerySearchOne(nRc)
+        if(pR?.name<nRc?.name)
+          nn=`${pR.name}_${nRc.name}`
+        else
+          nn=`${nRc.name}_${pR.name}`
+        relMtMC=categories.filter(x=>x.name==nn)[0]
+        //console.log("nn",nn)
+        nC=categories.filter(x=>x.name==nn)[0]
+        console.log("Nccc",nC.fields)
+      const uno=`mtm${nRc.name}${pR.name}`
+      const dos=`mtm${pR.name}${nRc.name}`
+      if(pivoteTable==titulo){//estoy insertando en la segunda tabla muchos a muchos
+        nameAlias=`createdatamtm${nRc.name}${pR.name}`
+        nameAliasOneMtm=`getonedatamtm${otherPivoteTable.substr(3)}`
+        nameGroupAlias=`getdatamtm${pivoteTable.substr(3)}`
+        console.log("na naomtm nga",nameAlias,nameAliasOneMtm,nameGroupAlias)
+        CREATE_PRODUCT_MUTATION_MTM=addMtmProductMutation(relMtMC,categories,nameAlias,nRc)
+
+        GET_ONE_DATA_MTM=getonedatamtm(relMtMC,categories,nameAliasOneMtm,pR)
+        GET_DATA_MTM_GROUP=getdatamtmgroup(relMtMC,categories,nameGroupAlias,nRc)
+        
+      }else if(pivoteTable==otrotitulo){//estoy insertando en la primera table mam
+        nameAlias=`createdatamtm${nRc.name}${pR.name}`
+        nameAliasOneMtm=`getonedatamtm${otherPivoteTable.substr(3)}`
+        nameGroupAlias=`getdatamtm${pivoteTable.substr(3)}`
+        console.log("na naomtm nga",nameAlias,nameAliasOneMtm,nameGroupAlias,pR,nRc)
+        CREATE_PRODUCT_MUTATION_MTM=addMtmProductMutation(relMtMC,categories,nameAlias,nRc)
+
+        GET_ONE_DATA_MTM=getonedatamtm(relMtMC,categories,nameAliasOneMtm,nRc)
+        GET_DATA_MTM_GROUP=getdatamtmgroup(relMtMC,categories,nameGroupAlias,pR)
+        
+      }
+    CREATE_PRODUCT_MUT=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
   }else{
+    CREATE_PRODUCT_MUT=addProductMutation(respCat,categories,false)
     GET_ONE_DATA_MTM=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
     GET_DATA_MTM_GROUP=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
     CREATE_PRODUCT_MUTATION_MTM=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
   }
 
-  const [dataGroup,setDataGroup]=useState([])
+  //const [dataGroup,setDataGroup]=useState([])
   const [getGroupMtm]=useMutation(GET_DATA_MTM_GROUP,{
     update:(cache,{data})=>{
-      console.log("dtnesp",nameGroupAlias,data[nameGroupAlias])
-      setDataGroup(data[nameGroupAlias])    
-      getOneMtm({variables:{
+      console.log("dtnesp",nameGroupAlias,data[nameGroupAlias],addRecGlobal)
+      setGroupRecsGlobal(()=>data[nameGroupAlias])
+      getOneMtm({variables:fields})
+      
+      /*const dnga=data[nameGroupAlias]
+      let pivoteTable,otherPivoteTable,tablaoriginal
+      path=[`getData${currentCategory.name}`]
+      indexSize=1
+      getPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
+      titulo)
+      if(path[path.length-2].startsWith("mtm")){
+        pivoteTable=titulo
+        otherPivoteTable=otrotitulo
+        tablaoriginal=path[path.length-3]
+      }else{
+        pivoteTable=otrotitulo
+        otherPivoteTable=titulo
+        tablaoriginal=path[path.length-2]
+        
+      }
+      path=[`getData${currentCategory.name}`]
+      indexSize=1
+      getPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
+      pivoteTable)
+      //nameGroupAlias=`getdatamtm${pivoteTable}${otherPivoteTable}`
+      
+      updateClusters(tablaoriginal,pivoteTable,otherPivoteTable,dnga,addRecGlobal)
+
+      /*getOneMtm({variables:{
         ...fields
-      }})
+      }})*/
+      
+      
 
     }
   })
   const [getOneMtm]=useMutation(GET_ONE_DATA_MTM,{
     update:(cache,{data})=>{
+      let pivoteTable,otherPivoteTable,tablaoriginal
       path=[`getData${currentCategory.name}`]
-        indexSize=1
-        console.log("tituloeasdf",otrotitulo)
-        getPath(currentCategory.fields.filter(x=>
-          x.dataType=="relationship"),otrotitulo)
-        console.log("path",path)
-        //setEditFields(data[nameAliasOneMtm])
-        ind=[]
-        console.log("fieldsclave",fields)
-        getIndexesInverse(`getData${currentCategory.name}`,fields)
-        console.log("otrotitulotr",otrotitulo,ind)
-
-        console.log("gii",ind,data[nameAliasOneMtm],resto)
-        const ui=updateState(resto,0,0,data[nameAliasOneMtm],otrotitulo,dataGroup)
+      indexSize=1
+      getPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
+      titulo)
+      if(path[path.length-2].startsWith("mtm")){
+        pivoteTable=titulo
+        otherPivoteTable=otrotitulo
+        tablaoriginal=path[path.length-3]
+      }else{
+        pivoteTable=otrotitulo
+        otherPivoteTable=titulo
+        tablaoriginal=path[path.length-2]
         
+      }
+      path=[`getData${currentCategory.name}`]
+      indexSize=1
+      getPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
+      pivoteTable)
+      //nameGroupAlias=`getdatamtm${pivoteTable}${otherPivoteTable}`
+      console.log("namealiasone",nameAliasOneMtm,data[nameAliasOneMtm])
+      updateClusters(tablaoriginal,pivoteTable,otherPivoteTable,groupRecsGlobal,addRecGlobal,data[nameAliasOneMtm])
+  
         
-        
-        dispatch(setCategoryProducts(ui))
+      
         
       
     }
@@ -1084,6 +1356,46 @@ const NewProduct = ({
       }
   })
 
+  const [addProduct3]=useMutation(CREATE_PRODUCT_MUTATION_MTM,{
+    update:(cache,{data})=>{
+      console.log("ENTRO44",data,nameAlias,data[nameAlias])
+      //setDataGroup([])
+      
+      let nombre=nameAlias
+      /*let pivoteTable,otherPivoteTable,tablaoriginal
+      path=[`getData${currentCategory.name}`]
+      indexSize=1
+      getPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
+      titulo)
+      if(path[path.length-2].startsWith("mtm")){
+        pivoteTable=titulo
+        otherPivoteTable=otrotitulo
+        tablaoriginal=path[path.length-3]
+      }else{
+        pivoteTable=otrotitulo
+        otherPivoteTable=titulo
+        tablaoriginal=path[path.length-2]
+        
+      }
+      nameGroupAlias=`getdatamtm${pivoteTable}${otherPivoteTable}`*/
+      setAddRecGlobal(()=>({...data[nameAlias]}))
+      //console.log("addRecGlobal",addRecGlobal)
+      getGroupMtm({variables:{...fields}})
+
+      /*path=[`getData${currentCategory.name}`]
+      indexSize=1
+      getPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
+      pivoteTable)
+      console.log("path2",data[nameAlias],pivoteTable,otherPivoteTable,tablaoriginal)
+      ind=[]
+      getIndexesInverse(data[nameAlias],pivoteTable,otherPivoteTable)
+      console.log("ind2",ind)
+      updateClusters(tablaoriginal,pivoteTable,otherPivoteTable,data[nameAlias])*/
+
+    }
+  })
+  /*
+  empieza original addproduct3
   const [addProduct3]=useMutation(CREATE_PRODUCT_MUTATION_MTM,{
     update:(cache,{data})=>{
       //const nam=`create${relMtMC.name}`
@@ -1120,7 +1432,7 @@ const NewProduct = ({
       
     }
     
-  })
+  })termina orignal addproduct3*/
 
   
 
@@ -1162,19 +1474,19 @@ const NewProduct = ({
     if(!titulo.startsWith("mtm")) { 
       console.log("no es mtm")
     
-    return {
-      category:respCat,
-      structure:respCat.fields,
-      fields,
-      setFields,
-      parentId,
-      isManyToMany,
-      parentCatId
-      
-    }
+      return {
+        category:respCat,
+        structure:respCat.fields,
+        fields,
+        setFields,
+        parentId,
+        isManyToMany,
+        parentCatId
+        
+      }
     }
     else{
-        console.log("es mtm")
+      console.log("es mtm")
       return {
         category:nC,
         structure:mtmStr,
@@ -1205,7 +1517,7 @@ const NewProduct = ({
         Create Product
       </FormButton>
     </Dialog>
-  )
-}
+    )
+  }
 
 export default NewProduct
