@@ -9,9 +9,18 @@ import { FcLeftDown2 } from 'react-icons/fc';
 import { asyncMap, valueToObjectRepresentation } from '@apollo/client/utilities';
 import { isConstValueNode } from 'graphql';
 import e from 'cors';
+import getIndexesInverse from '../../../gql/updatestatemtm/utils/getIndexesInverse';
+import getIndexes from '../../../gql/updatestatemtm/utils/getIndexes';
+
+import simpleUpdateState from '../../../gql/updatestatemtm/DeleteProduct/simpleUpdateState';
+import checkHasSons from '../../../gql/updatestatemtm/utils/checkHasSons';
+import updateState from '../../../gql/updatestatemtm/DeleteProduct/updateState';
+import { resultPath } from '../../../gql/updatestatemtm/utils/getPath';
+import getMutationForDelete from '../../../gql/getMutationForDelete';
+import getMutationForDeleteManyToMany from '../../../gql/getMutationForDeleteManyToMany';
 
 
-const getMutationForDelete=(categoryName)=>{
+/*const getMutationForDelete=(categoryName)=>{
   const mutation=`mutation Remove${categoryName}($id: Int) {
     remove${categoryName}(id: $id)
 
@@ -41,7 +50,7 @@ const getMutationForDeleteManyToMany=(parentRelationId,category,categories)=>{
   //console.log("mutationdel",mutation)
   return gql`${mutation}`
 
-}
+}*/
 const mapToState=({categories})=>({
   categoryProducts:categories.categoryProducts,
   categories:categories.categories,
@@ -81,7 +90,7 @@ const DisplaySingleTable = ({
  // console.log("respcatst",respCat)
   //console.log("parentId",parentId)
 
-  const simpleUpdateState=(prods,indexPartials=0,indexArray=0,tit)=>{
+  /*const simpleUpdateState=(prods,indexPartials=0,indexArray=0,tit)=>{
     //console.log("entro  aqui",to,pt,st)  
     indexPartials=parseInt(indexPartials)
       indexArray=parseInt(indexArray)
@@ -252,10 +261,10 @@ const DisplaySingleTable = ({
       
     } 
       
-  }
+  }*/
   
 
-  let ind=[]
+  /*let ind=[]
   let path
   
   const getIndexesInverse=(editableRecord,pivoteTable,otherPivoteTable)=>{
@@ -336,9 +345,6 @@ const DisplaySingleTable = ({
   
   //  console.log("tipartials",ti,partials)
     let cp 
-    /*if(prods==undefined || prods==[]
-      ||prods=={})
-      return null*/
       
       partials=path
       ti=ind
@@ -390,7 +396,7 @@ const DisplaySingleTable = ({
   } 
     
 }
-
+*/
   const hasSons=(indTable)=>{
     console.log("respcatresp",respCat)
     const fws=respCat.fields.filter(x=>
@@ -424,15 +430,15 @@ const DisplaySingleTable = ({
     otrotitulo=`mtm${parentCategory.name}${respCat.name}`
   }
 
-  const updateClusters=(tablaoriginal,pivoteTable,otherPivoteTable)=>{
+  const updateClusters=(tablaoriginal,pivoteTable,otherPivoteTable,path,ind)=>{
     console.log("entro clusters",pivoteTable)
-    const recs=checkHasSons(categoryProducts,0,0,pivoteTable)
+    const recs=checkHasSons(categoryProducts,0,0,pivoteTable,path,ind)
     console.log("recs",recs,pivoteTable,otherPivoteTable)
     let currentData=categoryProducts
     for(let x in recs){
       ind=[]
-      getIndexesInverse(recs[x],pivoteTable,otherPivoteTable)
-      currentData=updateState(currentData,0,0,tablaoriginal,otherPivoteTable,pivoteTable,recs[x])
+      const i=getIndexesInverse(recs[x],pivoteTable,otherPivoteTable,path,tableIndexes)
+      currentData=updateState(currentData,0,0,tablaoriginal,otherPivoteTable,pivoteTable,recs[x],path,i,deleteRecord)
       console.log("trans",ind,currentData)
     }
     dispatch(setCategoryProducts(currentData))
@@ -454,42 +460,50 @@ const DisplaySingleTable = ({
       }
       if(data[n]==true){
         if(!isManyToMany){
-          path=[`getData${currentCategory.name}`]
-          indexSize=1
+          const path=[`getData${currentCategory.name}`]
+          //indexSize=1
           console.log("titulo45",titulo)
-          getPath(currentCategory.fields.filter(x=>
-          x.dataType=="relationship"),titulo)
+          
+          const p=resultPath(currentCategory.fields.filter(x=>
+          x.dataType=="relationship"),titulo,
+          categories,path,true)
           //console.log("path",path)
-          ind=[]
-          getIndexes()
+          
+          const i=getIndexes(tableIndexes,p)
           //console.log("indices",ind)
     
-            let us=simpleUpdateState(categoryProducts,0,0,titulo)
+            let us=simpleUpdateState(categoryProducts,0,0,titulo,
+              p,i,deleteId)
           //console.log("us",us)
             dispatch(setCategoryProducts(us))
         }else{
+          console.log("entromanytomany")
           let pivoteTable,otherPivoteTable,tablaoriginal
-          path=[`getData${currentCategory.name}`]
-          indexSize=1
-          getPath(currentCategory.fields.filter(x=>
-            x.dataType=="relationship"),titulo)
-          console.log("path1",path)
-          if(path[path.length-2].startsWith("mtm")){
+          const path=[`getData${currentCategory.name}`]
+          //indexSize=1
+          const c=resultPath(currentCategory.fields.filter(x=>
+            x.dataType=="relationship"),titulo,categories,
+            path,true)
+          console.log("path1",c)
+          if(c[c.length-2].startsWith("mtm")){
             pivoteTable=titulo
             otherPivoteTable=otrotitulo
-            tablaoriginal=path[path.length-3]
+            tablaoriginal=c[c.length-3]
           }else{
             pivoteTable=otrotitulo
             otherPivoteTable=titulo
-            tablaoriginal=path[path.length-2]
+            tablaoriginal=c[c.length-2]
           }
-          path=[`getData${currentCategory.name}`]
-          indexSize=1
-          getPath(currentCategory.fields.filter(x=>
-            x.dataType=="relationship"),pivoteTable)
-          ind=[]
-          getIndexesInverse(deleteRecord,pivoteTable,otherPivoteTable)
-          updateClusters(tablaoriginal,pivoteTable,otherPivoteTable)
+          //path=[`getData${currentCategory.name}`]
+          //indexSize=1
+          const y=resultPath(currentCategory.fields.filter(x=>
+            x.dataType=="relationship"),pivoteTable,
+            categories,path,true)
+          const i=getIndexesInverse(deleteRecord,pivoteTable,otherPivoteTable,y,tableIndexes)
+          console.log("xxx",deleteRecord,y,i)
+
+          updateClusters(tablaoriginal,pivoteTable,otherPivoteTable,y,i)
+
         }
           
         

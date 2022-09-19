@@ -201,6 +201,7 @@ export default{
     
 
     createTableGood:async(parent,args,{db})=>{
+      let nnmtm=""
       let cats2=await db.Category.findAll(
         {
           where:{
@@ -417,10 +418,15 @@ export default{
                 indMtmFields++
                 x1+=`mtm${respCat.name}${name}:[datamtm${respCat.name}${name}]\n`
                 
-
+                if(respCat.name>name){
+                  nnmtm=`${name}_${respCat.name}`
+                
+                }else{
+                  nnmtm=`${respCat.name}_${name}`
+                }
                 arrMtmDataRes.push(`datamtm${respCat.name}${name}:{
                   mtm${name}${respCat.name}:async(parent,args,{db})=>{
-                    const x=await db.Alumnos_Grupos.findAll({
+                    const x=await db.${nnmtm}.findAll({
                       where:{mtm${respCat.name}${name}Id:parent.id},
                       raw:true
                     })
@@ -546,6 +552,9 @@ export default{
             getdatamtm${parts[1]}${parts[0]}(${x2}):[datamtm${parts[1]}${parts[0]}]
             createdatamtm${parts[0]}${parts[1]}(${x2}):datamtm${parts[0]}${parts[1]}
             createdatamtm${parts[1]}${parts[0]}(${x2}):datamtm${parts[1]}${parts[0]}
+            editdatamtm${parts[0]}${parts[1]}(${x2}):datamtm${parts[0]}${parts[1]}
+            editdatamtm${parts[1]}${parts[0]}(${x2}):datamtm${parts[1]}${parts[0]}
+
             `
             content2+=`${helpersFunctions}
             
@@ -715,6 +724,75 @@ export default{
               }catch(e){
                 console.log("error",e)
               }
+            },`
+
+            let rc=await db.Fields.findAll({
+              where:{
+                category:cats1[category].id
+              },
+              raw:true
+            })
+            let ctd=rc.map(fu=>{
+              if(fu.name!==`mtm${parts[0]}${parts[1]}Id` &&
+              fu.name!==`mtm${parts[1]}${parts[0]}Id`){
+                return `${fu.name}:args.${fu.name}`
+              }
+              return ""
+            })
+              
+
+            
+            helperFunctionsResolvers+=`editdatamtm${parts[0]}${parts[1]}:async(parent,args,{db})=>{
+              let rec=await db.${name}.update({
+                ${ctd.join("\n")}
+              },
+              {
+                where:{
+                  mtm${parts[0]}${parts[1]}Id:args.mtm${parts[0]}${parts[1]}Id,
+                  mtm${parts[1]}${parts[0]}Id:args.mtm${parts[1]}${parts[0]}Id
+                }
+              })
+              let r2=await db.${name}.findAll({
+                where:{
+                  mtm${parts[0]}${parts[1]}Id:args.mtm${parts[0]}${parts[1]}Id,
+                  mtm${parts[1]}${parts[0]}Id:args.mtm${parts[1]}${parts[0]}Id
+                },
+                raw:true
+              })
+              r2=r2[0]
+              
+              let r1=await db.${parts[0]}.findAll({
+                where:{id:args.mtm${parts[0]}${parts[1]}Id},
+                raw:true
+              })
+              r1=r1[0]
+              return {...r1,...r2}
+            },
+            editdatamtm${parts[1]}${parts[0]}:async(parent,args,{db})=>{
+              let rec=await db.${name}.update({
+                ${ctd.join("")}
+              },
+              {
+                where:{
+                  mtm${parts[0]}${parts[1]}Id:args.mtm${parts[0]}${parts[1]}Id,
+                  mtm${parts[1]}${parts[0]}Id:args.mtm${parts[1]}${parts[0]}Id
+                }
+              })
+              let r2=await db.${name}.findAll({
+                where:{
+                  mtm${parts[0]}${parts[1]}Id:args.mtm${parts[0]}${parts[1]}Id,
+                  mtm${parts[1]}${parts[0]}Id:args.mtm${parts[1]}${parts[0]}Id
+                },
+                raw:true
+              })
+              r2=r2[0]
+              
+              let r1=await db.${parts[1]}.findAll({
+                where:{id:args.mtm${parts[1]}${parts[0]}Id},
+                raw:true
+              })
+              r1=r1[0]
+              return {...r1,...r2}
             },
             `
 

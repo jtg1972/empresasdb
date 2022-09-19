@@ -127,6 +127,59 @@
               }catch(e){
                 console.log("error",e)
               }
+            },editdatamtmAlumnosGrupos:async(parent,args,{db})=>{
+              let rec=await db.Alumnos_Grupos.update({
+                
+
+campo_mutuo1:args.campo_mutuo1
+              },
+              {
+                where:{
+                  mtmAlumnosGruposId:args.mtmAlumnosGruposId,
+                  mtmGruposAlumnosId:args.mtmGruposAlumnosId
+                }
+              })
+              let r2=await db.Alumnos_Grupos.findAll({
+                where:{
+                  mtmAlumnosGruposId:args.mtmAlumnosGruposId,
+                  mtmGruposAlumnosId:args.mtmGruposAlumnosId
+                },
+                raw:true
+              })
+              r2=r2[0]
+              
+              let r1=await db.Alumnos.findAll({
+                where:{id:args.mtmAlumnosGruposId},
+                raw:true
+              })
+              r1=r1[0]
+              return {...r1,...r2}
+            },
+            editdatamtmGruposAlumnos:async(parent,args,{db})=>{
+              let rec=await db.Alumnos_Grupos.update({
+                campo_mutuo1:args.campo_mutuo1
+              },
+              {
+                where:{
+                  mtmAlumnosGruposId:args.mtmAlumnosGruposId,
+                  mtmGruposAlumnosId:args.mtmGruposAlumnosId
+                }
+              })
+              let r2=await db.Alumnos_Grupos.findAll({
+                where:{
+                  mtmAlumnosGruposId:args.mtmAlumnosGruposId,
+                  mtmGruposAlumnosId:args.mtmGruposAlumnosId
+                },
+                raw:true
+              })
+              r2=r2[0]
+              
+              let r1=await db.Grupos.findAll({
+                where:{id:args.mtmGruposAlumnosId},
+                raw:true
+              })
+              r1=r1[0]
+              return {...r1,...r2}
             },
             
                 createAlumnos_Grupos:async(parent,args,{db})=>{

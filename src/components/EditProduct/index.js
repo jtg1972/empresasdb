@@ -2,12 +2,24 @@ import { gql, useMutation } from '@apollo/client'
 import { argsToArgsConfig } from 'graphql/type/definition'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import getdatamtmgroup from '../../gql/getdatamtmgroup'
+import getDummyMut from '../../gql/getDummyMut'
+import getonedatamtm from '../../gql/getonedatamtm'
+import mutationEditProduct from '../../gql/mutationEditProduct'
+import mutationEditProductManyToMany from '../../gql/mutationEditProductManyToMany'
+import simpleUpdateState from '../../gql/updatestatemtm/EditProduct/simpleUpdateState'
+import updateState from '../../gql/updatestatemtm/EditProduct/updateState'
+
+import { resultPath } from '../../gql/updatestatemtm/utils/getPath'
+import getIndexes from '../../gql/updatestatemtm/utils/getIndexes'
+
 import { editProduct, setCategoryProducts } from '../../redux/category/actions'
 import Dialog from '../Dialog'
 import DisplayFields from '../DisplayFields'
 import FormButton from '../Forms/FormButton'
+import getIndexesInverse from '../../gql/updatestatemtm/utils/getIndexesInverse'
 
-const mutationEditProduct=(category)=>{
+/*const mutationEditProduct=(category)=>{
   let args=[]
   let args1=[]
   let argsf=category.fields
@@ -134,7 +146,7 @@ const mutationEditProductManyToMany=(category,keyFields)=>{
   console.log("querymtm",query)
   query=gql`${query}`
   return query
-}
+}*/
 
 
 const mapToState=({categories})=>({
@@ -163,6 +175,10 @@ const EditProduct = ({
 }) => {
   //console.log("CURCAT",curCat)
   const{categoryProducts,currentCategory,categories}=useSelector(mapToState)
+  const [addRecGlobal,setAddRecGlobal]=useState({})
+  const [groupRecsGlobal,setGroupRecsGlobal]=useState([])
+
+  
   //console.log("editFieldseditprod",editFields)
   //console.log("tituloh",titulo,otrotitulo)
   const dispatch=useDispatch()
@@ -173,7 +189,7 @@ const EditProduct = ({
     fields=editFields
   },[])
   console.log("fieldsnuevo",fields)*/
-  const updateState=(prods,indexPartials=0,indexArray=0,tit,idKey=editFields.id,ef=editFields)=>{
+  /*const updateState=(prods,indexPartials=0,indexArray=0,tit,idKey=editFields.id,ef=editFields)=>{
     //console.log("otrotituloind",tit,ind) 
     indexPartials=parseInt(indexPartials)
       indexArray=parseInt(indexArray)
@@ -182,9 +198,6 @@ const EditProduct = ({
       //let partials=ind
       //console.log("tipartials",ti,partials)
       let cp 
-      /*if(prods==undefined || prods==[]
-        ||prods=={})
-        return null*/
         partials=path
         ti=ind
 
@@ -202,10 +215,6 @@ const EditProduct = ({
         //console.log("importante",partials[indexPartials],tit)
         if(partials[indexPartials]==tit){
           //console.log("entro final")
-          /*ui=cp[partials[indexPartials]].filter(x=>{
-            console.log("xid deleteid",x.id,deleteId)
-            return x.id!==deleteId
-          })*/
           
           //console.log("ui",partials[indexPartials],cp[partials[indexPartials]])
           let ni
@@ -279,7 +288,8 @@ const EditProduct = ({
   }
   let ind
   let path
-  const getIndexes=(title)=>{
+
+  /*const getIndexes=(title)=>{
     for(let p in path){
       //console.log("ti pathp",tableIndexes,path[p])
       let curInd
@@ -288,31 +298,30 @@ const EditProduct = ({
       
     }
   
-    //let nti={...tableIndexes}
-    //console.log("eff2",editFields)
-    /*for(let p in path){
-      //console.log("ti pathp",tableIndexes,path[p])
-      let curInd
-      
-      //console.log("tb",tituloBefore)
-      if(title==otrotitulo && path[p]==otrotitulo){
-        
-        const n=`${title}Id`
-        //console.log("eaquii",n)
-        curInd=`-${editFields[n]}`
-      }else if(path[p]==title){
-        curInd=parseInt(indexInTable)
-      }else{
-        curInd=tableIndexes[path[p]]
-      }
-      ind.push(curInd)
-      
-    }*/
-    //console.log("indfinal",ind)
-  
   }
 
-  const getIndexesInverse=(titleCat,fi)=>{
+  const getIndexesInverse=(editRecord,pivoteTable,otherPivoteTable)=>{
+    for(let p in path){
+      if(path[p]!==pivoteTable){
+        let curInd
+        curInd=tableIndexes[path[p]]
+        ind.push(curInd)
+      }else{
+        if(path[p].startsWith("mtm")){
+          ind=ind.splice(0,ind.length-1)
+          ind=ind.splice(0,ind.length-2)
+          const uy=`${pivoteTable}Id`
+          ind.push(`-${editRecord[uy]}`)
+          let n=`${otherPivoteTable}Id`
+          ind.push(`-${editRecord[n]}`)
+          ind.push(`-${editRecord[uy]}`)
+        }
+      }
+    }
+  }*/
+
+ /*empieza getIndexesInverse antiguo
+ const getIndexesInverse=(titleCat,fi)=>{
     console.log("fiartificial",fi)
     for(let p in path){
       //console.log("ti pathp",tableIndexes,path[p])
@@ -351,47 +360,11 @@ const EditProduct = ({
       }
     }
   }
+  termina getIndexesInverse antiguo*/
 
-  /*const getIndexesInverse=(titleCat)=>{
-    //console.log("curcatname",titulo.substr(3),titleCat.substr(7))
-    let r=false
-    ind=[]
-    if(titulo.substr(3).startsWith(titleCat.substr(7))){
-      r=true
-    }
-    else{
-      r=false
-    }
-    //console.log("paramms",curCat.name,titleCat.substr(7))
-    //console.log("titulo,otrotitulo",titulo,otrotitulo)
-    if(r){
-      console.log(true)
-      const pr=`${titulo}Id`
-      ind.push(`-${editFields[pr]}`)
-      const n=`${otrotitulo}Id`
-
-      ind.push(`-${editFields[n]}`)
-      if(path.length>2){
-          const nn=`${titulo}Id`
-          ind.push(`-${editFields[nn]}`)
-        }
-    }else{
-      //console.log(false)
-      const uy=`${otrotitulo}Id`
-      ind.push(`-${editFields[uy]}`)
-      let n=`${titulo}Id`
-      ind.push(`-${editFields[n]}`)
-      if(path.length>2){
-        const nn=`${otrotitulo}Id`
-        ind.push(`-${editFields[nn]}`)
-      } 
-    }
+  //let indexSize=1
   
-  }*/
-  
-  let indexSize=1
-  
-  const getPath=(fields,title)=>{
+  /*const getPath=(fields,title)=>{
     //console.log("titlepath",title)
     if(title.startsWith('getData')){
       return path
@@ -420,7 +393,7 @@ const EditProduct = ({
     }else
       return
 
-  }
+  }*/
 
 
 
@@ -436,16 +409,159 @@ const EditProduct = ({
          setFieldsToDisplay(curCat?.fields?.filter(m=>{
             return !m.name.startsWith("mtm")
         }).map(x=>x.name))
-    }
+      }
      },[curCat])
+
+  let GET_ONE_DATA_MTM
+  let GET_DATA_MTM_GROUP
+  let pivoteTable,otherPivoteTable,tablaoriginal
+  let pR,nRc,nn,relMtMC,nC
+  let nameAliasOneMtm
+  let nameGroupAlias
+  let existe=false
+  if(titulo.startsWith("mtm")){
+    let sp=curCat.name.split("_")
+    let n1=`${sp[0]}${sp[1]}`
+    if(titulo==`mtm${n1}`){
+      pR=categories.filter(x=>x.name==sp[1])[0]
+      nRc=categories.filter(x=>x.name==sp[0])[0]
+    }else{
+      pR=categories.filter(x=>x.name==sp[0])[0]
+      nRc=categories.filter(x=>x.name==sp[1])[0]
+    }
+    if(pR?.name<nRc?.name)
+      nn=`${pR.name}_${nRc.name}`
+    else
+      nn=`${nRc.name}_${pR.name}`
+    relMtMC=categories.filter(x=>x.name==nn)[0]
+    nC=categories.filter(x=>x.name==nn)[0]
+    
+    console.log("prnrc",pR,nRc)
+    const path=[`getData${currentCategory.name}`]
+    //indexSize=1
+    
+
+    const p=resultPath(currentCategory.fields.filter(x=>
+      x.dataType=="relationship"
+    ),titulo,categories,path,true)
+    if(p[p.length-2].startsWith("mtm")){
+      pivoteTable=titulo
+      otherPivoteTable=otrotitulo
+      tablaoriginal=p[p.length-3]
+    }else{
+      pivoteTable=otrotitulo
+      otherPivoteTable=titulo
+      tablaoriginal=p[p.length-2]
+    }
+    
+    nameAliasOneMtm=`getonedata${otherPivoteTable}`
+    nameGroupAlias=`getdata${pivoteTable}`
+    if(pivoteTable==titulo){
+      GET_ONE_DATA_MTM=getonedatamtm(relMtMC,categories,nameAliasOneMtm,pR)
+      GET_DATA_MTM_GROUP=getdatamtmgroup(relMtMC,categories,nameGroupAlias,nRc)
+      
+    }else{
+      GET_ONE_DATA_MTM=getonedatamtm(relMtMC,categories,nameAliasOneMtm,nRc)
+      GET_DATA_MTM_GROUP=getdatamtmgroup(relMtMC,categories,nameGroupAlias,pR)
+      
+    }
+    
+  }else{
+    GET_ONE_DATA_MTM=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
+    GET_DATA_MTM_GROUP=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
+  }
    
   let MUTATION_EDIT_PRODUCT=""
+  let MUTATION_EDIT_PRODUCT_MTM=""
   console.log("ismanytomany",isManyToMany)
   if(!isManyToMany){
-    MUTATION_EDIT_PRODUCT=mutationEditProduct(curCat)
+    MUTATION_EDIT_PRODUCT=mutationEditProduct(curCat,categories)
+    MUTATION_EDIT_PRODUCT_MTM=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
   }else{
-    MUTATION_EDIT_PRODUCT=mutationEditProductManyToMany(curCat,keyFields)
+    MUTATION_EDIT_PRODUCT=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
+    MUTATION_EDIT_PRODUCT_MTM=mutationEditProductManyToMany(curCat,keyFields,categories,`editdatamtm${titulo.substr(3)}`,nRc)
   } 
+  const updateClusters=(tablaoriginal,pivoteTable,otherPivoteTable,dg,arg,ftadd,np)=>{
+    let currentData={...categoryProducts}
+    console.log("dg1",dg)
+    for(let x in dg){
+      console.log("curdate",currentData)
+      let ni=getIndexesInverse(dg[x],pivoteTable,otherPivoteTable,np,tableIndexes)
+      currentData=updateState(currentData,0,0,tablaoriginal,otherPivoteTable,pivoteTable,dg[x],arg,dg,ftadd,np,ni,titulo)
+    }
+    existe=false
+    dispatch(setCategoryProducts(currentData))
+  }
+  const [getOneMtm]=useMutation(GET_ONE_DATA_MTM,{
+    update:(cache,{data})=>{
+      let pivoteTable,otherPivoteTable,tablaoriginal
+      let path=[`getData${currentCategory.name}`]
+      //indexSize=1
+      const c1=resultPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
+      titulo,categories,path,true)
+      console.log("c1",c1)
+      if(c1[c1.length-2].startsWith("mtm")){
+        pivoteTable=titulo
+        otherPivoteTable=otrotitulo
+        tablaoriginal=c1[c1.length-3]
+      }else{
+        pivoteTable=otrotitulo
+        otherPivoteTable=titulo
+        tablaoriginal=c1[c1.length-2]
+        
+      }
+      path=[`getData${currentCategory.name}`]
+      //indexSize=1
+      let np=resultPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
+      pivoteTable,categories,path,true)
+      console.log("npb",np)
+      updateClusters(tablaoriginal,pivoteTable,otherPivoteTable,groupRecsGlobal,addRecGlobal,data[nameAliasOneMtm],np)
+    }
+  })
+
+  const [getGroupMtm]=useMutation(GET_DATA_MTM_GROUP,{
+    update:(cache,{data})=>{
+      setGroupRecsGlobal(()=>data[nameGroupAlias])
+      getOneMtm({variables:keyFields})
+    }
+  })
+
+  const [editProduct2]=useMutation(MUTATION_EDIT_PRODUCT_MTM,{
+    update:(cache,{data})=>{
+      const name=`editdatamtm${titulo.substr(3)}`
+      console.log("resu",data[name])
+      setAddRecGlobal(()=>data[name])
+      getGroupMtm({variables:keyFields})
+
+    }
+  })
+
+  const [editProduct1]=useMutation(MUTATION_EDIT_PRODUCT,{
+    update:(cache,{data})=>{
+      console.log("entro a mutationeditproductnotmtm")
+      const name=`edit${curCat.name}`
+      /*if(isManyToMany){
+        setAddRecGlobal(()=>data[name])
+        getGroupMtm({variables:keyFields})
+
+      }else{*/
+        console.log("entro a mutationeditproductnotmtm")
+        const path=[`getData${currentCategory.name}`]
+   
+        
+
+        const p=resultPath(currentCategory.fields.filter(x=>
+          x.dataType=="relationship"
+        ),titulo,categories,path,true)
+        const i=getIndexes(tableIndexes,p)
+
+        const res=simpleUpdateState(categoryProducts,0,0,data[name],titulo,p,i)
+        dispatch(setCategoryProducts(res))
+      //}
+    }
+  })
+
+  /*empieza edit mutation antiguo
   const[editProduct1]=useMutation(MUTATION_EDIT_PRODUCT,{
     update:(cache,{data})=>{
       //console.log("entroaquiii")
@@ -483,26 +599,27 @@ const EditProduct = ({
         dispatch(setCategoryProducts(nj))
       else 
         dispatch(setCategoryProducts(ni))
-      /*dispatch(editProduct({
-        product:editFields,
-        categoryName:curCat.name
-      }))*/
+      
       
     }
   })
+  termina edit mutation antiguo*/
  
   const formButtonClick=()=>{
-    //console.log("fields",editFields)
+    console.log("fields1",editFields)
     if(!isManyToMany){
-      
+      console.log("fields1",editFields)
+
       editProduct1({
         variables:editFields
       })
     }else{
+      console.log("fields1",editFields)
+
       const n=`${titulo}Id`
       //console.log("nuuu",n,indexInTable,titulo,keyFields)
       //setTableIndexes({...tableIndexes,[titulo]:indexInTable})
-      editProduct1({
+      editProduct2({
         variables:{...editFields,...keyFields}
       })
     }

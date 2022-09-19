@@ -2,13 +2,24 @@ import { useMutation } from '@apollo/client'
 import gql from 'graphql-tag'
 import React, { useState,useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import addMtmProductMutation from '../../gql/addMtmProductMutation'
+import addProductMutation from '../../gql/addProductMutation'
+import getdatamtmgroup from '../../gql/getdatamtmgroup'
+import getDummyMut from '../../gql/getDummyMut'
+import getonedatamtm from '../../gql/getonedatamtm'
+import simpleUpdateState from '../../gql/updatestatemtm/NewProduct/simpleUpdateState'
+import updateState from '../../gql/updatestatemtm/NewProduct/updateState'
+import getIndexes from '../../gql/updatestatemtm/utils/getIndexes'
+import getIndexesInverse from '../../gql/updatestatemtm/utils/getIndexesInverse'
+import {resultPath} from '../../gql/updatestatemtm/utils/getPath'
+import getPath from '../../gql/updatestatemtm/utils/getPath'
 import { addProduct, setCategoryProducts } from '../../redux/category/actions'
 import Dialog from '../Dialog'
 import DisplayFields from '../DisplayFields'
 import FormButton from '../Forms/FormButton'
 
 
-const getDummyMut=(cat)=>{
+/*const getDummyMut=(cat)=>{
   let argsf=cat.fields
   let args1=[]
   let ya
@@ -321,8 +332,7 @@ const addProductMutation=(category,categories,mtm)=>{
       args1.push(`$${argsf[f].name}GlobalCatQuery:Int`)
       args1.push(`$${argsf[f].name}FinalCatQuery:Int`)
       args1.push(`$${argsf[f].name}ProductQuery:Int`)
-      /*if(argsf[f].declaredType=="number")
-        args1.push(`$${argsf[f].name}:Int`)*/
+      
     }else if(argsf[f].declaredType=="number"){
       //if(ya[argsf[f].name]!==undefined && ya[argsf[f].name]!==true){
         args1.push(`$${argsf[f].name}:Int`)
@@ -340,12 +350,11 @@ const addProductMutation=(category,categories,mtm)=>{
       args2.push(`${argsf[f].name}GlobalCatQuery:$${argsf[f].name}GlobalCatQuery`)
       args2.push(`${argsf[f].name}FinalCatQuery:$${argsf[f].name}FinalCatQuery`)
       args2.push(`${argsf[f].name}ProductQuery:$${argsf[f].name}ProductQuery`)
-      /*if(argsf[f].declaredType=="number")
-        args2.push(`${argsf[f].name}:$${argsf[f].name}`)*/
+      
     }else if(argsf[f].declaredType=="number"){
-      //if(ya[argsf[f].name]!==undefined && ya[argsf[f].name]!==true){
+      
         args2.push(`${argsf[f].name}:$${argsf[f].name}`)
-      //}
+      
     }
     else if(argsf[f].dataType!=="relationship"){
       args2.push(`${argsf[f].name}:$${argsf[f].name}`)
@@ -368,14 +377,11 @@ const addProductMutation=(category,categories,mtm)=>{
       campos.push(`${argsf[f].name}GlobalCatQuery`)
       campos.push(`${argsf[f].name}FinalCatQuery`)
       campos.push(`${argsf[f].name}ProductQuery`)      
-      /*if(argsf[f].declaredType=="number"){
-        campos.push(`${argsf[f].name}`)
-        ya={[argsf[f].name]:true}
-      }*/
+      
     }else if(argsf[f].declaredType=="number"){
-      //if(ya[argsf[f].name]!==undefined && ya[argsf[f].name]!==true){
+      
         campos.push(`${argsf[f].name}`)
-      //}
+      
     }else
       campos.push(argsf[f].name)
   }
@@ -520,7 +526,7 @@ const addMtmProductMutation=(category,categories,titleMutation,crec)=>{
     }
   }`  
   return gql`${query}`
-}
+}*/
 
 
 const mapToState=({categories})=>({
@@ -581,7 +587,7 @@ const NewProduct = ({
     }
   },[])
 
-  const simpleUpdateState=(prods,indexPartials=0,indexArray=0,recToAdd,tit)=>{
+  /*const simpleUpdateState=(prods,indexPartials=0,indexArray=0,recToAdd,tit)=>{
     indexPartials=parseInt(indexPartials)
     indexArray=parseInt(indexArray)
     console.log("argsbien",recToAdd,tit)
@@ -618,9 +624,9 @@ const NewProduct = ({
         return y
       })
     }
-  }
+  }*/
 
-  const updateState=(prods,indexPartials=0,indexArray=0,to,pt,st,rec,addRecord,dg,firstTableRecord)=>{
+  /*const updateState=(prods,indexPartials=0,indexArray=0,to,pt,st,rec,addRecord,dg,firstTableRecord)=>{
     indexPartials=parseInt(indexPartials)
     indexArray=parseInt(indexArray)
     let ti=Object.keys(tableIndexes).map(x=>parseInt(tableIndexes[x]))
@@ -686,11 +692,11 @@ const NewProduct = ({
         return y
       })
     } 
-  }
+  }*/
 
   let ind
   let path
-  const getIndexesInverse=(addRecord,pivoteTable,otherPivoteTable)=>{
+  /*const getIndexesInverse=(addRecord,pivoteTable,otherPivoteTable)=>{
     for(let p in path){
       if(path[p]!==pivoteTable){
         let curInd
@@ -708,20 +714,20 @@ const NewProduct = ({
         }
       }
     }
-  }
+  }*/
 
- const getIndexes=()=>{
+ /*const getIndexes=()=>{
     for(let p in path){
       let curInd
       curInd=tableIndexes[path[p]]
       ind.push(curInd)
     }
     return ind
-  }
+  }*/
 
-  let indexSize=1
+  //let indexSize=1
   
-  const getPath=(fields,tit)=>{
+  /*const getPath=(fields,tit)=>{
     if(tit.startsWith('getData')){
       return path
     }
@@ -746,9 +752,9 @@ const NewProduct = ({
       }
     }else
       return
-  }
+  }*/
 
-  const checkHasSons=(prods,indexPartials=0,indexArray=0,tit)=>{
+  /*const checkHasSons=(prods,indexPartials=0,indexArray=0,tit)=>{
     indexPartials=parseInt(indexPartials)
     indexArray=parseInt(indexArray)
     let ti=Object.keys(tableIndexes).map(x=>parseInt(tableIndexes[x]))
@@ -775,14 +781,14 @@ const NewProduct = ({
        }
       return checkHasSons(cp[ti[indexArray]],indexPartials,indexArray+1,tit)
     }
-  }
+  }*/
 
-  const updateClusters=(tablaoriginal,pivoteTable,otherPivoteTable,dg,arg,ftadd)=>{
+  const updateClusters=(tablaoriginal,pivoteTable,otherPivoteTable,dg,arg,ftadd,np)=>{
     let currentData={...categoryProducts}
     for(let x in dg){
       ind=[]
-      getIndexesInverse(dg[x],pivoteTable,otherPivoteTable)
-      currentData=updateState(currentData,0,0,tablaoriginal,otherPivoteTable,pivoteTable,dg[x],arg,dg,ftadd)
+      let ni=getIndexesInverse(dg[x],pivoteTable,otherPivoteTable,np,tableIndexes)
+      currentData=updateState(currentData,0,0,tablaoriginal,otherPivoteTable,pivoteTable,dg[x],arg,dg,ftadd,np,ni,titulo)
     }
     existe=false
     dispatch(setCategoryProducts(currentData))
@@ -800,10 +806,11 @@ const NewProduct = ({
   
   if(titulo.startsWith("mtm")){
     path=[`getData${currentCategory.name}`]
-    indexSize=1
-    getPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
-    titulo)
-    if(path[path.length-2].startsWith("mtm")){
+    //indexSize=1
+    const c=resultPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
+    titulo,categories,path,true)
+    console.log("c22",c)
+    if(c[c.length-2].startsWith("mtm")){
       pivoteTable=titulo
       otherPivoteTable=otrotitulo
       tablaoriginal=path[path.length-3]
@@ -854,38 +861,41 @@ const NewProduct = ({
     update:(cache,{data})=>{
       let pivoteTable,otherPivoteTable,tablaoriginal
       path=[`getData${currentCategory.name}`]
-      indexSize=1
-      getPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
-      titulo)
-      if(path[path.length-2].startsWith("mtm")){
+      //indexSize=1
+      const c1=resultPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
+      titulo,categories,path,true)
+      console.log("c1",c1)
+      if(c1[c1.length-2].startsWith("mtm")){
         pivoteTable=titulo
         otherPivoteTable=otrotitulo
-        tablaoriginal=path[path.length-3]
+        tablaoriginal=c1[c1.length-3]
       }else{
         pivoteTable=otrotitulo
         otherPivoteTable=titulo
-        tablaoriginal=path[path.length-2]
+        tablaoriginal=c1[c1.length-2]
         
       }
       path=[`getData${currentCategory.name}`]
-      indexSize=1
-      getPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
-      pivoteTable)
-      updateClusters(tablaoriginal,pivoteTable,otherPivoteTable,groupRecsGlobal,addRecGlobal,data[nameAliasOneMtm])
+      //indexSize=1
+      let np=resultPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
+      pivoteTable,categories,path,true)
+      console.log("npb",np)
+      updateClusters(tablaoriginal,pivoteTable,otherPivoteTable,groupRecsGlobal,addRecGlobal,data[nameAliasOneMtm],np)
     }
   })  
   
   
   const [addProduct2]=useMutation(CREATE_PRODUCT_MUT,{
     update:(cache,{data})=>{
+      console.log("data45",titulo)
       let nombre=`create${respCat.name}`
       path=[`getData${currentCategory.name}`]
-      indexSize=1
-      getPath(currentCategory.fields.filter(x=>
-        x.dataType=="relationship"),titulo)  
-      ind=[]
-      getIndexes()
-      const us=simpleUpdateState(categoryProducts,0,0,data[nombre],titulo)
+      console.log("entro aquiii")
+      const c=resultPath(currentCategory.fields.filter(x=>
+        x.dataType=="relationship"),titulo,categories,path,true)  
+      console.log("c33",c)
+      const i=getIndexes(tableIndexes,c)
+      const us=simpleUpdateState(categoryProducts,0,0,data[nombre],titulo,c,i)
       dispatch(setCategoryProducts(us))
     }
   })
@@ -906,6 +916,7 @@ const NewProduct = ({
         }
       })
     }else{
+      console.log("entro46")
       addProduct2({
         variables:{
           ...fields

@@ -88,6 +88,29 @@ mtmGruposAlumnosId:Int,
 		 mtmGruposAlumnosIdProductQuery:Int,
 campo_mutuo1:String,
 ):datamtmGruposAlumnos
+            editdatamtmAlumnosGrupos(id:Int,
+mtmAlumnosGruposId:Int,
+		 mtmAlumnosGruposIdGlobalCatQuery:Int,
+		 mtmAlumnosGruposIdFinalCatQuery:Int,
+		 mtmAlumnosGruposIdProductQuery:Int,
+mtmGruposAlumnosId:Int,
+		 mtmGruposAlumnosIdGlobalCatQuery:Int,
+		 mtmGruposAlumnosIdFinalCatQuery:Int,
+		 mtmGruposAlumnosIdProductQuery:Int,
+campo_mutuo1:String,
+):datamtmAlumnosGrupos
+            editdatamtmGruposAlumnos(id:Int,
+mtmAlumnosGruposId:Int,
+		 mtmAlumnosGruposIdGlobalCatQuery:Int,
+		 mtmAlumnosGruposIdFinalCatQuery:Int,
+		 mtmAlumnosGruposIdProductQuery:Int,
+mtmGruposAlumnosId:Int,
+		 mtmGruposAlumnosIdGlobalCatQuery:Int,
+		 mtmGruposAlumnosIdFinalCatQuery:Int,
+		 mtmGruposAlumnosIdProductQuery:Int,
+campo_mutuo1:String,
+):datamtmGruposAlumnos
+
             
             
               createAlumnos_Grupos(
