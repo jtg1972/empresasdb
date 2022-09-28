@@ -407,8 +407,9 @@ const DisplaySingleTable = ({
       
       if(fws[cf].relationship=="onetomany" ||
       fws[cf].relationship=="manytomany"){
-        if(products[indTable][fws[cf].name]?.length>0){
-          return true
+        if(!isManyToMany)
+          if(products[indTable][fws[cf].name]?.length>0){
+            return true
         }
       }
     }        

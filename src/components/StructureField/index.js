@@ -1,15 +1,15 @@
 import { checkFetcher, gql, useMutation } from '@apollo/client'
 import React, { useState,useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { addCategory, addCategoryField, setCurrentCategory, setCurrentCategoryId, setTableState } from '../../redux/category/actions'
+import { addCategory, addCategoryField, addTableState, setCurrentCategory, setCurrentCategoryId, setTableState } from '../../redux/category/actions'
 import Dialog from '../Dialog'
 import FormButton from '../Forms/FormButton'
 import FormInput from '../Forms/FormInput'
 import AddQueryTargets from './AddQueryTargets'
 import './styles.scss'
 const CREATE_CATEGORY=gql`
-mutation CreateCategory($name: String!, $parentCategory: Int,$typeOfCategory: Int) {
-  createCategory(name: $name, parentCategory: $parentCategory, typeOfCategory: $typeOfCategory) {
+mutation CreateCategory($name: String!, $parentCategory: Int,$typeOfCategory: Int,$manyToMany:Boolean) {
+  createCategory(name: $name, parentCategory: $parentCategory, typeOfCategory: $typeOfCategory,manyToMany:$manyToMany) {
     id
     name
     parentCategories
@@ -52,6 +52,7 @@ query Categories{
     parentCategory
     typeOfCategory
     parentCategories
+    manyToMany
     bookmark{
       id
       name
@@ -230,10 +231,12 @@ const StructureField = ({
         id:data.createTableState.id,
         name:data.createTableState.name,
         category:data.createTableState.category,
-        state:"NOT_CREATED"
+        state:"NOT_OK"
       }))
     }
   })
+
+  
 
   const [createCategory]=useMutation(CREATE_CATEGORY,{
     update:(cache,{data})=>{
@@ -244,6 +247,7 @@ const StructureField = ({
       
       
     if(newCat.typeOfCategory==0){
+      
       createTableState({
         variables:{
           category:newCat.id,
@@ -251,6 +255,7 @@ const StructureField = ({
           state:"NOT_CREATED"
         }
       })
+      
       let mapeo=oc.fields.map(x=>{
         //if(x.declaredType=="number" ||
         //x.declaredType=="string"){
@@ -309,6 +314,14 @@ const StructureField = ({
         }
         
       })
+     /*dispatch(addTableState(
+        {
+          ID:
+          category:newCat.id,
+          name:newCat.name,
+          state:"NOT_CREATED"
+        }
+      ))*/
       dispatch(addCategory(newCat))
       dispatch(setCurrentCategoryId(newCat.id))
     }})
@@ -336,6 +349,35 @@ const StructureField = ({
 
         }
       })
+      console.log("currCat22",currentCategory)
+      if(currentCategory.manyToMany){
+        const cs=currentCategory.name.split("_")
+        const pc=categories.filter(c=>
+          c.name==cs[0])[0]
+        const sc=categories.filter(c=>
+          c.name==cs[1])[0]
+       console.log("currCat23",pc,sc)
+
+        dispatch(setTableState(
+            {
+              category:currentCategory.id,
+              name:currentCategory.name,
+              state:"NO_UPDATED"
+            }
+          ))  
+        dispatch(setTableState(
+          {
+            category:pc.id,
+            state:"NO_UPDATED"
+          }
+        ))
+        dispatch(setTableState(
+          {
+            category:sc.id,
+            state:"NO_UPDATED"
+          }
+        ))
+      }
     }else if(dataType=="relationship"){
       rc=categories.filter(t=>t.id==relationTable)[0]
 
@@ -381,6 +423,7 @@ const StructureField = ({
         }else{
           categoryName=`${rc.name}_${oc.name}`
         }
+        
         createCategory({
           variables:{
             name:categoryName,

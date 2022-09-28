@@ -43,8 +43,8 @@
                   const products=await db.Grupos.findAll()
                   return products     
                 }
-              },
-              Mutation:{
+              },Mutation:{
+                
                 createGrupos:async(parent,args,{db})=>{
                   const product=await db.Grupos.create(args)
                   return product
@@ -71,17 +71,16 @@
                 },
                 editGrupos:async(parent,args,{db})=>{
               await db.Grupos.update({
-                      id:args["id"],mtmAlumnosGrupos:args["mtmAlumnosGrupos"],grupo:args["grupo"]
-                    },
-                    {
-                    where:{id:args.id}
-                    }
-                  )
-                
-                  const nuevo=await db.Grupos.findByPk(args.id)
-                  return nuevo
+                        id:args["id"],mtmAlumnosGrupos:args.mtmAlumnosGrupos,grupo:args.grupo
+                      },
+                      {
+                      where:{id:args.id}
+                      }
+                    )
+                  
+                    const nuevo=await db.Grupos.findByPk(args.id)
+                    return nuevo
 
+                  }
                 }
               }
-            }
-          

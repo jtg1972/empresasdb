@@ -127,7 +127,7 @@ const getQueryFromCategory=(productCategories,categories)=>{
   q2=q2.join(`\n`)
   query+=q2
   query+=`}`
-  //console.log("query",query)
+  console.log("queryprod",query)
   return gql`${query}`
 }
 const getMutationForDelete=(categoryName)=>{

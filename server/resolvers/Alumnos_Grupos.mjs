@@ -131,7 +131,9 @@
               let rec=await db.Alumnos_Grupos.update({
                 
 
-campo_mutuo1:args.campo_mutuo1
+campo_mutuo1:args.campo_mutuo1,
+campo_mutuo2:args.campo_mutuo2,
+campo_mutuo3:args.campo_mutuo3,
               },
               {
                 where:{
@@ -157,7 +159,11 @@ campo_mutuo1:args.campo_mutuo1
             },
             editdatamtmGruposAlumnos:async(parent,args,{db})=>{
               let rec=await db.Alumnos_Grupos.update({
-                campo_mutuo1:args.campo_mutuo1
+                
+
+campo_mutuo1:args.campo_mutuo1,
+campo_mutuo2:args.campo_mutuo2,
+campo_mutuo3:args.campo_mutuo3,
               },
               {
                 where:{
@@ -216,7 +222,9 @@ campo_mutuo1:args.campo_mutuo1
               await db.Alumnos_Grupos.update({
                         mtmAlumnosGruposId:args.mtmAlumnosGruposId,
 mtmGruposAlumnosId:args.mtmGruposAlumnosId,
-campo_mutuo1:args.campo_mutuo1
+campo_mutuo1:args.campo_mutuo1,
+campo_mutuo2:args.campo_mutuo2,
+campo_mutuo3:args.campo_mutuo3
                       },
                       {
                         where:{

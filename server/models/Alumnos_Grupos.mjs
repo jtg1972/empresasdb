@@ -14,6 +14,8 @@ import Sequelize from 'sequelize'
 		 mtmGruposAlumnosIdGlobalCatQuery:DataTypes.INTEGER,
 		 mtmGruposAlumnosIdFinalCatQuery:DataTypes.INTEGER,
 		 mtmGruposAlumnosIdProductQuery:DataTypes.INTEGER,
-		 campo_mutuo1:DataTypes.STRING},{sequelize})
+		 campo_mutuo1:DataTypes.STRING,
+		 campo_mutuo2:DataTypes.STRING,
+		 campo_mutuo3:DataTypes.STRING},{sequelize})
 }}
 export default Alumnos_Grupos

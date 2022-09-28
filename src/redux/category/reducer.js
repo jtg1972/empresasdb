@@ -234,6 +234,24 @@ export default (state=INITIAL_STATE,action)=>{
         ).length>0?"NO_OK":"OK"
       }
     case types.SET_TABLE_STATE:
+      let found=false
+      let newRecs=state.tablesStateRecords.map(t=>{
+        if(t.category==action.payload.category){
+          found=true
+          return {...t,...action.payload}
+        }else
+          return t
+      })
+      if(found==false){
+        newRecs=[...newRecs,action.payload]
+      }
+      return {...state,
+        tablesStateRecords:newRecs,
+        tablesStateStatus:newRecs.filter(ts=>
+          ts.state!=="OK"  
+        ).length>0?"NO_OK":"OK"
+      }
+    /*case types.SET_TABLE_STATE:
       const newRecs=state.tablesStateRecords.map(t=>{
         if(t.category==action.payload.category)
           return {...t,...action.payload}
@@ -245,7 +263,7 @@ export default (state=INITIAL_STATE,action)=>{
         tablesStateStatus:newRecs.filter(ts=>
           ts.state!=="OK"  
         ).length>0?"NO_OK":"OK"
-      }
+      }*/
     case types.GET_TABLES_STATE:
       let resultado=""
       const noOkCount=state.tablesStateRecords.filter(t=>
@@ -315,6 +333,17 @@ export default (state=INITIAL_STATE,action)=>{
       return {
         ...state,
         filterResults:fetchFilterResults(action.payload.data,action.payload.conds)
+      }
+    case types.ADD_TABLE_STATE:
+      const nR=[...state.tablesStateRecords,
+        action.payload]
+      console.log("NR",nR,action.payload)
+      return {
+        ...state,
+        tablesStateRecords:nR,
+        tablesStateStatus:nR.filter(ts=>
+            ts.state!=="OK"  
+          ).length>0?"NO_OK":"OK"
       }
     default:
       return state

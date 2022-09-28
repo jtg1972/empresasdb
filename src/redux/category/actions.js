@@ -110,4 +110,9 @@ export const deleteAllFilters=()=>({
   type:types.DELETE_ALL_FILTERS
 })
 
+export const addTableState=(payload)=>({
+  type:types.ADD_TABLE_STATE,
+  payload
+})
+
 

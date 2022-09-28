@@ -390,14 +390,16 @@ export default{
                   cn=`${name}_${respCat.name}`
                 else
                   cn=`${respCat.name}_${name}`
-                const mtmCat=await db.Category.findOne({where:{name:cn},raw:true})  
+                let mtmCat=await db.Category.findAll({where:{name:cn},raw:true})
+                mtmCat=mtmCat[0]
                 let mtmFields=await db.Fields.findAll({where:{category:mtmCat.id},raw:true})
                 mtmFields=mtmFields.map(m=>{
                   if(m.declaredType=="string"){
                     return `${m.name}:String`
                   }else if(m.declaredType=="number"){
                     return `${m.name}:Int`
-                  }else if(m.declaredType=="queryCategory"){
+                  }else if(m.dataType=="queryCategory" &&
+                  m.declaredType=="number"){
                     return `${m["name"]}FinalCatQuery:Int\n
                      ${r["name"]}ProductQuery:Int`
 
@@ -411,7 +413,7 @@ export default{
                 
                 console.log("verrrr",`type datamtm${respCat.name}${name}{
                   ${catFields}
-                }`,indMtmFields)
+                }`,indMtmFields,mtmCat,mtmFields)
                 arrMtmFields.push(`type datamtm${respCat.name}${name}{
                   ${catFields}
                 }`)
@@ -545,17 +547,19 @@ export default{
             type Mutation{`
             let parts=name.split("_")
             let helpersFunctions=""
-            helpersFunctions=`
-            getonedatamtm${parts[0]}${parts[1]}(${x2}):datamtm${parts[0]}${parts[1]}
-            getonedatamtm${parts[1]}${parts[0]}(${x2}):datamtm${parts[1]}${parts[0]}
-            getdatamtm${parts[0]}${parts[1]}(${x2}):[datamtm${parts[0]}${parts[1]}]
-            getdatamtm${parts[1]}${parts[0]}(${x2}):[datamtm${parts[1]}${parts[0]}]
-            createdatamtm${parts[0]}${parts[1]}(${x2}):datamtm${parts[0]}${parts[1]}
-            createdatamtm${parts[1]}${parts[0]}(${x2}):datamtm${parts[1]}${parts[0]}
-            editdatamtm${parts[0]}${parts[1]}(${x2}):datamtm${parts[0]}${parts[1]}
-            editdatamtm${parts[1]}${parts[0]}(${x2}):datamtm${parts[1]}${parts[0]}
+            if(cats1[category].manyToMany){
+              helpersFunctions=`
+              getonedatamtm${parts[0]}${parts[1]}(${x2}):datamtm${parts[0]}${parts[1]}
+              getonedatamtm${parts[1]}${parts[0]}(${x2}):datamtm${parts[1]}${parts[0]}
+              getdatamtm${parts[0]}${parts[1]}(${x2}):[datamtm${parts[0]}${parts[1]}]
+              getdatamtm${parts[1]}${parts[0]}(${x2}):[datamtm${parts[1]}${parts[0]}]
+              createdatamtm${parts[0]}${parts[1]}(${x2}):datamtm${parts[0]}${parts[1]}
+              createdatamtm${parts[1]}${parts[0]}(${x2}):datamtm${parts[1]}${parts[0]}
+              editdatamtm${parts[0]}${parts[1]}(${x2}):datamtm${parts[0]}${parts[1]}
+              editdatamtm${parts[1]}${parts[0]}(${x2}):datamtm${parts[1]}${parts[0]}
 
-            `
+              `
+            }
             content2+=`${helpersFunctions}
             
               create${name}(
@@ -604,6 +608,7 @@ export default{
 
           let helperFunctionsResolvers=""
           parts=name.split("_")
+          if(cats1[category].manyToMany){
             helperFunctionsResolvers=`
             getonedatamtm${parts[0]}${parts[1]}:async(parent,args,{db})=>{
               try{
@@ -735,7 +740,7 @@ export default{
             let ctd=rc.map(fu=>{
               if(fu.name!==`mtm${parts[0]}${parts[1]}Id` &&
               fu.name!==`mtm${parts[1]}${parts[0]}Id`){
-                return `${fu.name}:args.${fu.name}`
+                return `${fu.name}:args.${fu.name},`
               }
               return ""
             })
@@ -770,7 +775,7 @@ export default{
             },
             editdatamtm${parts[1]}${parts[0]}:async(parent,args,{db})=>{
               let rec=await db.${name}.update({
-                ${ctd.join("")}
+                ${ctd.join("\n")}
               },
               {
                 where:{
@@ -795,6 +800,7 @@ export default{
               return {...r1,...r2}
             },
             `
+          }
 
             
 

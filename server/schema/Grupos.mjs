@@ -9,6 +9,8 @@ mtmGruposAlumnos:[datamtmGruposAlumnos]
 mtmAlumnosGruposId:Int
 mtmGruposAlumnosId:Int
 campo_mutuo1:String
+campo_mutuo2:String
+campo_mutuo3:String
                 }type Grupos{
               
               id:Int
@@ -23,6 +25,7 @@ grupo:String
               
             }
             type Mutation{
+            
               createGrupos(
                 id:Int,
 grupo:String,

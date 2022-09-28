@@ -13,6 +13,8 @@ mtmGruposAlumnosId:Int
 		 mtmGruposAlumnosIdFinalCatQuery:Int
 		 mtmGruposAlumnosIdProductQuery:Int
 campo_mutuo1:String
+campo_mutuo2:String
+campo_mutuo3:String
 
             }
 
@@ -22,7 +24,7 @@ campo_mutuo1:String
               
             }
             type Mutation{
-            getonedatamtmAlumnosGrupos(id:Int,
+              getonedatamtmAlumnosGrupos(id:Int,
 mtmAlumnosGruposId:Int,
 		 mtmAlumnosGruposIdGlobalCatQuery:Int,
 		 mtmAlumnosGruposIdFinalCatQuery:Int,
@@ -32,8 +34,10 @@ mtmGruposAlumnosId:Int,
 		 mtmGruposAlumnosIdFinalCatQuery:Int,
 		 mtmGruposAlumnosIdProductQuery:Int,
 campo_mutuo1:String,
+campo_mutuo2:String,
+campo_mutuo3:String,
 ):datamtmAlumnosGrupos
-            getonedatamtmGruposAlumnos(id:Int,
+              getonedatamtmGruposAlumnos(id:Int,
 mtmAlumnosGruposId:Int,
 		 mtmAlumnosGruposIdGlobalCatQuery:Int,
 		 mtmAlumnosGruposIdFinalCatQuery:Int,
@@ -43,8 +47,10 @@ mtmGruposAlumnosId:Int,
 		 mtmGruposAlumnosIdFinalCatQuery:Int,
 		 mtmGruposAlumnosIdProductQuery:Int,
 campo_mutuo1:String,
+campo_mutuo2:String,
+campo_mutuo3:String,
 ):datamtmGruposAlumnos
-            getdatamtmAlumnosGrupos(id:Int,
+              getdatamtmAlumnosGrupos(id:Int,
 mtmAlumnosGruposId:Int,
 		 mtmAlumnosGruposIdGlobalCatQuery:Int,
 		 mtmAlumnosGruposIdFinalCatQuery:Int,
@@ -54,8 +60,10 @@ mtmGruposAlumnosId:Int,
 		 mtmGruposAlumnosIdFinalCatQuery:Int,
 		 mtmGruposAlumnosIdProductQuery:Int,
 campo_mutuo1:String,
+campo_mutuo2:String,
+campo_mutuo3:String,
 ):[datamtmAlumnosGrupos]
-            getdatamtmGruposAlumnos(id:Int,
+              getdatamtmGruposAlumnos(id:Int,
 mtmAlumnosGruposId:Int,
 		 mtmAlumnosGruposIdGlobalCatQuery:Int,
 		 mtmAlumnosGruposIdFinalCatQuery:Int,
@@ -65,8 +73,10 @@ mtmGruposAlumnosId:Int,
 		 mtmGruposAlumnosIdFinalCatQuery:Int,
 		 mtmGruposAlumnosIdProductQuery:Int,
 campo_mutuo1:String,
+campo_mutuo2:String,
+campo_mutuo3:String,
 ):[datamtmGruposAlumnos]
-            createdatamtmAlumnosGrupos(id:Int,
+              createdatamtmAlumnosGrupos(id:Int,
 mtmAlumnosGruposId:Int,
 		 mtmAlumnosGruposIdGlobalCatQuery:Int,
 		 mtmAlumnosGruposIdFinalCatQuery:Int,
@@ -76,8 +86,10 @@ mtmGruposAlumnosId:Int,
 		 mtmGruposAlumnosIdFinalCatQuery:Int,
 		 mtmGruposAlumnosIdProductQuery:Int,
 campo_mutuo1:String,
+campo_mutuo2:String,
+campo_mutuo3:String,
 ):datamtmAlumnosGrupos
-            createdatamtmGruposAlumnos(id:Int,
+              createdatamtmGruposAlumnos(id:Int,
 mtmAlumnosGruposId:Int,
 		 mtmAlumnosGruposIdGlobalCatQuery:Int,
 		 mtmAlumnosGruposIdFinalCatQuery:Int,
@@ -87,8 +99,10 @@ mtmGruposAlumnosId:Int,
 		 mtmGruposAlumnosIdFinalCatQuery:Int,
 		 mtmGruposAlumnosIdProductQuery:Int,
 campo_mutuo1:String,
+campo_mutuo2:String,
+campo_mutuo3:String,
 ):datamtmGruposAlumnos
-            editdatamtmAlumnosGrupos(id:Int,
+              editdatamtmAlumnosGrupos(id:Int,
 mtmAlumnosGruposId:Int,
 		 mtmAlumnosGruposIdGlobalCatQuery:Int,
 		 mtmAlumnosGruposIdFinalCatQuery:Int,
@@ -98,8 +112,10 @@ mtmGruposAlumnosId:Int,
 		 mtmGruposAlumnosIdFinalCatQuery:Int,
 		 mtmGruposAlumnosIdProductQuery:Int,
 campo_mutuo1:String,
+campo_mutuo2:String,
+campo_mutuo3:String,
 ):datamtmAlumnosGrupos
-            editdatamtmGruposAlumnos(id:Int,
+              editdatamtmGruposAlumnos(id:Int,
 mtmAlumnosGruposId:Int,
 		 mtmAlumnosGruposIdGlobalCatQuery:Int,
 		 mtmAlumnosGruposIdFinalCatQuery:Int,
@@ -109,9 +125,11 @@ mtmGruposAlumnosId:Int,
 		 mtmGruposAlumnosIdFinalCatQuery:Int,
 		 mtmGruposAlumnosIdProductQuery:Int,
 campo_mutuo1:String,
+campo_mutuo2:String,
+campo_mutuo3:String,
 ):datamtmGruposAlumnos
 
-            
+              
             
               createAlumnos_Grupos(
                 id:Int,
@@ -124,6 +142,8 @@ mtmGruposAlumnosId:Int,
 		 mtmGruposAlumnosIdFinalCatQuery:Int,
 		 mtmGruposAlumnosIdProductQuery:Int,
 campo_mutuo1:String,
+campo_mutuo2:String,
+campo_mutuo3:String,
 
                 ):Alumnos_Grupos
               
@@ -140,6 +160,8 @@ mtmGruposAlumnosId:Int,
 		 mtmGruposAlumnosIdFinalCatQuery:Int,
 		 mtmGruposAlumnosIdProductQuery:Int,
 campo_mutuo1:String,
+campo_mutuo2:String,
+campo_mutuo3:String,
 ):Alumnos_Grupos
               getAlumnos_Grupos(id:Int):Alumnos_Grupos
               

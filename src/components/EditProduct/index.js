@@ -492,6 +492,7 @@ const EditProduct = ({
     existe=false
     dispatch(setCategoryProducts(currentData))
   }
+  
   const [getOneMtm]=useMutation(GET_ONE_DATA_MTM,{
     update:(cache,{data})=>{
       let pivoteTable,otherPivoteTable,tablaoriginal
