@@ -4,6 +4,7 @@ import {
   Routes,
   Route } from "react-router-dom";
 import DetailedProduct from "./pages/DetailedProduct";
+import Reports from "./pages/Reports";
 import client from './index'
 import { ApolloProvider } from "@apollo/client";
 import MainLayoutProducts from "./layouts/MainLayoutProducts";
@@ -24,6 +25,12 @@ const App=()=>(
             element={
               <MainLayoutProducts>
                 <DetailedProduct/>
+              </MainLayoutProducts>
+            }/>
+            <Route exact path="/reports/"
+            element={
+              <MainLayoutProducts>
+                <Reports/>
               </MainLayoutProducts>
             }/>
               
