@@ -8,18 +8,23 @@ import './styles.scss'
 
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
-  categories:categories.categories
+  categories:categories.categories,
+  categoryProducts:categories.categoryProducts
 })
 
 const Reports=()=>{
-  const {currentCategory,categories}=useSelector(mapToState)
+  const {
+    currentCategory,
+    categories,
+    categoryProducts
+  }=useSelector(mapToState)
   const [openDialog,setOpenDialog]=useState(false)
   const toggleDialog=()=>{setOpenDialog(!openDialog)}
   const [showFields,setShowFields]=useState(false)
   const [fieldsShown,setFieldsShown]=useState([])
   const [otmChoices,setOtmChoices]=useState({})
-  const[firstCatFields,setFirstCatFields]=useState([])
-  console.log("otmchoices",otmChoices,fieldsShown,firstCatFields)
+  const[firstCatNormalFields,setFirstCatNormalFields]=useState([])
+  console.log("otmchoices",otmChoices,fieldsShown,firstCatNormalFields)
   useEffect(()=>{
     setShowFields(false)
     setFieldsShown([])
@@ -32,14 +37,12 @@ const Reports=()=>{
     let secname=name.substring(lengthName)
     let cc=`otm${secname}`
     console.log("cc",cc,name)
-    sonOtmChoices={...sonOtmChoices,[name]:{}}
-    
-    
+    sonOtmChoices={...sonOtmChoices,[name]:{normal:[],otm:[]}}
     const sons=Object.keys(sonOtmChoices).
     filter(i=>i.startsWith(cc))
     console.log("current sons",name,sons,sonOtmChoices,cc)
     sons.forEach(y=>{
-      sonOtmChoices={...sonOtmChoices,[y]:{}}
+      sonOtmChoices={...sonOtmChoices,[y]:{otm:[],normal:[]}}
       secname=`otm${secname}`
       let nv=y.substring(secname.length)
       console.log("nv",nv)
@@ -58,40 +61,65 @@ const Reports=()=>{
       setOtmChoices(sonOtmChoices)
     }
     if(e.target.checked){
-    
+      console.log("otmchoices",otm,mainCat)
       console.log("arr",[...fieldsShown,name1])
       if(otm==true)
         setFieldsShown(x=>([...x,name1]))
-      if(mainCat)
-        setFirstCatFields(o=>([...o,name1]))
+      if(mainCat){
+        const n=`getData${padre}`
+        let  nu={[n]:{otm:[],normal:[]}}
+        if(firstCatNormalFields[n]==undefined)
+          setFirstCatNormalFields(e=>({...e,...nu}))
+        if(otm){
+          setFirstCatNormalFields(o=>({...o,[n]:{...o[n],otm:[...o[n]["otm"],name1]}}))
+          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[]}}))
+        }else{
+          setFirstCatNormalFields(o=>({...o,[n]:{...o[n],normal:[...o[n]["normal"],name1]}}))
+        }
+        //setFirstCatNormalFields(o=>([...o,name1]))
+      }
       if(mainCat==false){
         if(otm){  
-          const n=`otm${padre}`
-          setOtmChoices(e=>({...e,[name1]:{}}))
+          
+          
+          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[]},[nameOtm]:{...e[nameOtm],otm:[...e[nameOtm]["otm"],name1]}}))
+        
         }else{
-          setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[name1]:true}}))
+          setOtmChoices(e=>({...e,/*[name1]:{otm:[],normal:[]},*/[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"],name1]}}))
         }
-      }else{
-        setOtmChoices(e=>({...e,[name1]:true}))
       }
       
     }else{
       console.log("arr",fieldsShown.filter(x=>x!==name1))
       if(otm==true)
         setFieldsShown(x=>x.filter(r=>r!==name1))
-      if(mainCat)
-        setFirstCatFields(o=>o.filter(y=>y!==name1))
-
-      if(mainCat==false){
-        if(otm)
-          setOtmChoices(e=>({...e,[name1]:{}}))
-        else{
-          setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[name1]:false}}))
+      if(mainCat){
+        const n=`getData${padre}`
+        if(otm){
+          setFirstCatNormalFields(e=>{
+            e={...e,[n]:{...e[n],otm:[...e[n]["otm"].filter(x=>x!==name1)]}}
+            return e
+          })
+        }else{
+          setFirstCatNormalFields(e=>{
+            e={...e,[n]:{...e[n],normal:[...e[n]["normal"].filter(x=>x!==name1)]}}
+            return e
+          })
         }
-
-      }else{
-        setOtmChoices(e=>({...e,[name1]:false}))
+        
       }
+      if(mainCat==false){
+        if(otm){  
+          
+          
+          setOtmChoices(e=>({...e,[name1]:{normal:[],otm:[]},[nameOtm]:{...e[nameOtm],otm:[...e[nameOtm]["otm"].filter(u=>u!==name1)]}}))
+        
+        }else{
+          setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"].filter(u=>u!==name1)]}}))
+        }
+      }
+
+      
       
 
     }
@@ -119,11 +147,12 @@ const Reports=()=>{
         style={{marginRight:"10px"}}
         onChange={(e)=>{
           if(e.target.checked){
-            console.log("res11",{...otmChoices,[name]:{...otmChoices[name],"1":true}})
-            setOtmChoices(e=>({...e,[name]:{...e[name],"1":true}}))
+            
+            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["normal"],"1"]}}))
           }else{
-            console.log("res11",{...otmChoices,[name]:{...otmChoices[name],"1":false}})
-            setOtmChoices(e=>({...e,[name]:{...e[name],"1":false}}))
+            console.log("res11",{...otmChoices,[name]:{...otmChoices[name],normal:[...otmChoices[name]["normal"],"1"]}})
+            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["normal"].filter(
+              x=>x!=="1")]}}))
           }
 
         }}/>
@@ -136,13 +165,12 @@ const Reports=()=>{
         style={{marginRight:"10px"}}
         onChange={(e)=>{
           if(e.target.checked){
-            console.log("res11",{...otmChoices,[name]:{...otmChoices[name],"2":true}})
-            setOtmChoices(e=>({...e,[name]:{...e[name],"2":true}}))
+            
+            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["normal"],"2"]}}))
           }else{
-
-            console.log("res11",{...otmChoices,[name]:{...otmChoices[name],"2":false}})
-
-            setOtmChoices(e=>({...e,[name]:{...e[name],"2":false}}))
+            console.log("res11",{...otmChoices,[name]:{...otmChoices[name],normal:[...otmChoices[name]["normal"],"1"]}})
+            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["normal"].filter(
+              x=>x!=="2")]}}))
           }
         }}/>
         <p style={{flex:1}}>Total and Percentage of Parents Regarding Ranges of Total of Sons</p>
@@ -153,17 +181,17 @@ const Reports=()=>{
         style={{marginRight:"10px"}}
         onChange={(e)=>{
           if(e.target.checked){
-            console.log("res11",{...otmChoices,[name]:{...otmChoices[name],"3":true}})
-            setOtmChoices(i=>({...i,[name]:{...i[name],"3":true}}))
+            
+            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["normal"],"3"]}}))
           }else{
-            console.log("res11",{...otmChoices,[name]:{...otmChoices[name],"3":false}})
-
-            setOtmChoices(i=>({...i,[name]:{...i[name],"3":false}}))
+            console.log("res11",{...otmChoices,[name]:{...otmChoices[name],normal:[...otmChoices[name]["normal"],"1"]}})
+            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["normal"].filter(
+              x=>x!=="3")]}}))
           }
         }}/>
         <p>Total and Percentage of Parents Regarding Conditions of Son Atributes</p>
       </div>
-      {displayCurCategory(catDestiny,false,false,name)}
+      {displayCurCategory(catDestiny,false,false,name,false)}
     </div>
     )
     }else{
@@ -176,16 +204,17 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
   if(cat && showFields){  
     return (
     <div style={{marginLeft:space?"10px":"0px",width:primero?"50%":"100%"}}>
+      <p>HOla</p>
       {cat?.fields?.map(c=>{
         if(c.relationship=="onetomany"){
           return <>
             <input type="checkbox" 
             style={{marginRight:"5px", color:"white"}}
             onChange={(e)=>{
-              if(nameOtm!=="" && e.target.checked==true)
+              /*if(nameOtm!=="" && e.target.checked==true)
                 setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[c.name]:true}}))
               else if(nameOtm!=="" && e.target.checked==false)
-                setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[c.name]:false}}))
+                setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[c.name]:false}}))*/
               checkReview(e,c.name,true,cat.name,nameOtm,mainCat)
             }}
             />
@@ -208,6 +237,29 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
   }
 
 }
+const findParentSons=(data,parent="")=>{
+  if(parent==""){
+    for(let key in categoryProducts){
+    
+    }
+  }
+}
+const selectOtmSons=(parent,son)=>{
+  const otmFields=parent.filter(x=>
+    x.startsWith("otm") && !x.endsWith("Id")
+  )
+  const normalFields=parent.filter(x=>
+    !x.startsWith("otm") && x.endsWith("Id"))
+}
+/*const beginReport=()=>{
+  firstCatFields.map(y=>{
+    if(fieldsShown.includes(y)){
+      if(otmChoices["1"]){
+        displayMenuOption1()
+      }
+    }
+  })
+}*/
   return <div>
     <BreadCrumb toggleDialog={toggleDialog}/>
     {openDialog && 
@@ -222,7 +274,10 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
       Add New Report
     </FormButton>
     
-    {showFields && displayCurCategory(currentCategory,true,true,"",true)}
+    {showFields 
+    && 
+    displayCurCategory(currentCategory,true,true,"",true)
+    }
   </div>
 }
 
