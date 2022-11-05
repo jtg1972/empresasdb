@@ -24,6 +24,7 @@ const Reports=()=>{
   const [fieldsShown,setFieldsShown]=useState([])
   const [otmChoices,setOtmChoices]=useState({})
   const[firstCatNormalFields,setFirstCatNormalFields]=useState([])
+  const [reportShow,setReportShow]=useState(false)
   console.log("otmchoices",otmChoices,fieldsShown,firstCatNormalFields)
   useEffect(()=>{
     setShowFields(false)
@@ -237,30 +238,77 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
   }
 
 }
-const findParentSons=(data,parent="")=>{
-  if(parent==""){
-    for(let key in categoryProducts){
+const calculateInstancesNumber=(data,otmFieldName)=>{
+  const total=data[otmFieldName].length
+  return total
+}
+
+const beginReport=()=>{
+  const parentNodeName=`getData${currentCategory.name}`
+  const parentNode=firstCatNormalFields[parentNodeName]
+  console.log("importa",parentNode,parentNodeName,firstCatNormalFields)
+  return displayReport(parentNodeName,parentNode)
+
+
+
+}
+const displayReport=(parentNodeName,parentNode)=>{
+  const singleFields=parentNode["normal"]
+  const otmFields=parentNode["otm"]
+  let data=categoryProducts[parentNodeName]
+ /*return otmFields.map(x=>{
+    const otmNameNode=otmChoices[x]
+    if(otmNameNode["normal"].includes("1")){
+      return displayReport1(parentNode,parentNodeName,singleFields,otmFields,data)
+    }
+  })*/
+  return displayReport1(parentNode,parentNodeName,singleFields,otmFields,data)
+
+  
+}
+
+const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
+  //const otmNameNode=otmChoices[otmName]
+  //const dataParent=categoryProducts[parentNodeName]
+  return (
+  <>
+    <p>Sons of {parentNodeName}</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Id</th>
+          {singleFields.map(t=>{
+            return <th>{t}</th>
+          })}
+          {otmFields.map(y=>
+              <th>{y} Instances</th>  
+            )}
+          
+        </tr>
+      </thead>
+      <tbody>
+        {data.map(e=>{
+          return <tr>
+            <th>{e.id}</th>
+            {singleFields.map(t=>{
+            return <td>{e[t]}</td>
+            })}
+            {otmFields.map(y=>
+              <th>{calculateInstancesNumber(e,y)}</th>  
+            )}
+            
+          </tr>
+
+        })}
+        
+      </tbody>
+    </table>
     
-    }
-  }
-}
-const selectOtmSons=(parent,son)=>{
-  const otmFields=parent.filter(x=>
-    x.startsWith("otm") && !x.endsWith("Id")
+
+  </>
   )
-  const normalFields=parent.filter(x=>
-    !x.startsWith("otm") && x.endsWith("Id"))
 }
-/*const beginReport=()=>{
-  firstCatFields.map(y=>{
-    if(fieldsShown.includes(y)){
-      if(otmChoices["1"]){
-        displayMenuOption1()
-      }
-    }
-  })
-}*/
-  return <div>
+  return <div className="reports">
     <BreadCrumb toggleDialog={toggleDialog}/>
     {openDialog && 
     <SearchSubcategories
@@ -278,6 +326,9 @@ const selectOtmSons=(parent,son)=>{
     && 
     displayCurCategory(currentCategory,true,true,"",true)
     }
+    <FormButton onClick={()=>setReportShow(true)}>Show Report</FormButton>
+
+    {reportShow && beginReport()}
   </div>
 }
 
