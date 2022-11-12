@@ -25,6 +25,7 @@ const Reports=()=>{
   const [otmChoices,setOtmChoices]=useState({})
   const[firstCatNormalFields,setFirstCatNormalFields]=useState([])
   const [reportShow,setReportShow]=useState(false)
+  let subTotals={}
   console.log("otmchoices",otmChoices,fieldsShown,firstCatNormalFields)
   useEffect(()=>{
     setShowFields(false)
@@ -243,34 +244,157 @@ const calculateInstancesNumber=(data,otmFieldName)=>{
   return total
 }
 
-const beginReport=()=>{
-  const parentNodeName=`getData${currentCategory.name}`
-  const parentNode=firstCatNormalFields[parentNodeName]
-  console.log("importa",parentNode,parentNodeName,firstCatNormalFields)
-  return displayReport(parentNodeName,parentNode)
 
+const calculateGrandRoutes=(grandsRoute,nameCluster)=>{
+  let routes={}
+  let sons=otmChoices[nameCluster]["otm"].map(l=>{
+    routes[l]=[...grandsRoute,l]
+    routes={...routes,...calculateGrandRoutes(routes[l],l)}
+    
+  })
+  return routes
+
+}
+
+const calculateRoutes=(parentsRoute)=>{
+ let parentNodeName=`getData${currentCategory.name}`
+  let data=categoryProducts[parentNodeName]
+  let routes={}
+  let sons=firstCatNormalFields[parentNodeName]["otm"].map(l=>{
+    routes[l]=[...parentsRoute,l]
+    routes={...routes,...calculateGrandRoutes(routes[l],l)}
+    
+  })
+  return routes
 
 
 }
-const displayReport=(parentNodeName,parentNode)=>{
+
+const calculateAmountNotBegin=(routeKey,otmField)=>{
+  otmChoices[otmField]["otm"].map(o=>{
+
+  })
+}
+
+const findFinal=(each,routes,field)=>{
+  console.log("eachroutes",each,routes)
+  let lenEach=each.length
+  let finalField=field
+  Object.keys(routes).forEach(y=>{
+    console.log("checar",[1,2,3].includes([1,3]))
+    if(each.every(x=>routes[y].includes(x))
+      /*routes[y].includes(each)*/
+       && routes[y].length>lenEach){
+      lenEach=routes[y].length
+      finalField=y
+      findFinal([...each,y],routes,y)
+    }
+    
+  })
+  return finalField
+  
+}
+
+const routesFinal=(routes)=>{
+  let definitiveRoutes=[]
+  //const first=`getData${currentCategory.name}`
+  Object.keys(routes).forEach(x=>{
+    let each=[...routes[x]]
+    const i=findFinal(each,routes,x)
+    if(!definitiveRoutes.includes(i))
+      definitiveRoutes.push(i)
+  })
+  return definitiveRoutes
+}
+
+/*const calculateAmountsBegins=(routes)=>{
+  const begin=`getData${currentCategory.name}`
+ let parentNode=firstCatNormalFields[begin]["otm"].map(x=>{
+    let r=routes[x]
+    if(r){
+      Object.keys(routes).forEach(y=>{
+        routes[y].forEach((i,index)=>{
+          if(routes[y][index]==x && routes[y].length-1!==index){
+            let o=routes[y][length-1]
+            calculateAmountNotBegin(y,o)
+          }
+        })
+
+      })
+    }
+  })
+
+}*/
+const getLevelData=(eachRoute)=>{
+  console.log("eachroute",eachRoute)
+}
+
+const getLevelsData=(route,nameRoute)=>{
+  console.log("leveldata",route,nameRoute)
+  for(let i=route.length-1;
+    i>=0;
+    i--){
+      getLevelData(route[i])
+    }
+}
+
+
+const getDataReport=(routes,finalRoutes)=>{
+  for(let i=0;i<finalRoutes.length;i++){
+    getLevelsData(routes[finalRoutes[i]],finalRoutes[i])
+  }
+}
+
+const beginReport=(primero=false,name1,d1)=>{
+  console.log("croutes",calculateRoutes([`getData${currentCategory.name}`]))
+  
+  let routes=calculateRoutes([`getData${currentCategory.name}`])
+  console.log("routesfinal",routesFinal(routes))
+  let finalRoutes=routesFinal(routes)
+  getDataReport(routes,finalRoutes)
+  //calculateAmountsBegins(routes)
+
+  /*let parentNodeName,parentNode
+  let data=[]
+  if(primero){
+    parentNode=firstCatNormalFields[parentNodeName]
+    data=categoryProducts[parentNodeName]
+  }else{
+    parentNodeName=name1
+    parentNode=otmChoices[parentNodeName]
+    data=d1
+  }
+  console.log("importa",parentNode,parentNodeName,firstCatNormalFields,data)
+  return <>
+    {displayReport(parentNodeName,parentNode,data)}
+    {parentNode.otm.map((x,index)=>{
+      let nd=[]
+     return  nd=otmChoices[x]["otm"].map(l=>{
+        console.log("imp2",l,data[x][l])
+
+        return beginReport(false,l,data[x])
+      })
+      
+    })
+      //console.log("x555",x,data,data[x])
+    }
+
+  </>*/
+    
+
+}
+const displayReport=(parentNodeName,parentNode,data)=>{
   const singleFields=parentNode["normal"]
   const otmFields=parentNode["otm"]
-  let data=categoryProducts[parentNodeName]
- /*return otmFields.map(x=>{
-    const otmNameNode=otmChoices[x]
-    if(otmNameNode["normal"].includes("1")){
-      return displayReport1(parentNode,parentNodeName,singleFields,otmFields,data)
-    }
-  })*/
+  //let data=categoryProducts[parentNodeName]
+ 
   return displayReport1(parentNode,parentNodeName,singleFields,otmFields,data)
 
   
 }
 
 const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
-  //const otmNameNode=otmChoices[otmName]
-  //const dataParent=categoryProducts[parentNodeName]
-  return (
+    return (
   <>
     <p>Sons of {parentNodeName}</p>
     <table>
@@ -280,8 +404,12 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
           {singleFields.map(t=>{
             return <th>{t}</th>
           })}
-          {otmFields.map(y=>
-              <th>{y} Instances</th>  
+          {otmFields.map(y=>{
+            if(otmChoices[y]["normal"].includes("1"))
+              return <th>{y} Instances</th>  
+            return ""
+          }
+            
             )}
           
         </tr>
@@ -289,13 +417,16 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       <tbody>
         {data.map(e=>{
           return <tr>
-            <th>{e.id}</th>
+            <td>{e.id}</td>
             {singleFields.map(t=>{
             return <td>{e[t]}</td>
             })}
-            {otmFields.map(y=>
-              <th>{calculateInstancesNumber(e,y)}</th>  
-            )}
+            {otmFields.map(y=>{
+              if(otmChoices[y]["normal"].includes("1"))
+                return <td>{calculateInstancesNumber(e,y)}</td>  
+              return ""
+         
+            })}
             
           </tr>
 
@@ -328,7 +459,7 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
     }
     <FormButton onClick={()=>setReportShow(true)}>Show Report</FormButton>
 
-    {reportShow && beginReport()}
+    {reportShow && beginReport(true,"")}
   </div>
 }
 
