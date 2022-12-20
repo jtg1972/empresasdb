@@ -325,24 +325,254 @@ const routesFinal=(routes)=>{
   })
 
 }*/
-const getLevelData=(eachRoute)=>{
-  console.log("eachroute",eachRoute)
+let totalRoutes={}
+
+
+const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
+  let r=finalRoutes
+
+  let current=`${r[eachIndex+1]}total`
+  //let previous=`${r[eachIndex-1]}total`
+ /*if(totalRoutes[r[eachIndex]]==undefined){
+  
+    totalRoutes={...totalRoutes,[r[eachIndex]]:{[current]:0}}
+  
+  }else if(totalRoutes[r[eachIndex]][current]==undefined){  
+    totalRoutes={...totalRoutes,[r[eachIndex]]:{...totalRoutes[r[eachIndex]],[current]:0}}
+
+  }*/
+  if(totalRoutes[r[eachIndex]]==undefined)
+    totalRoutes={...totalRoutes,[r[eachIndex]]:{}}
+  if(current!=='undefinedtotal'){
+    let uu={}
+    if(totalRoutes[r[eachIndex]][current]!==undefined)
+      uu={...totalRoutes[r[eachIndex]][current]}
+  //if(totalRoutes[r[eachIndex]]==undefined){
+    totalRoutes={
+      ...totalRoutes,
+      [r[eachIndex]]:{
+        ...totalRoutes[r[eachIndex]],
+        [current]:{
+          ...uu
+        }
+      }
+    }
+  
+  //}/*else if(totalRoutes[r[eachIndex-1]][current]==undefined){  
+    //totalRoutes={...totalRoutes,[r[eachIndex-1]]:{...totalRoutes[r[eachIndex-1]],[current]:0}}
+
+  //}
+//console.log("totalesinicio",totalRoutes,r[eachIndex],r[eachIndex-1])
+//console.log("totales",totalRoutes[r[eachIndex]][current],
+//totalRoutes[r[eachIndex-1]][current])
+  let newData=[]
+  if(eachIndex!==r.length){
+    eachStopData.map((x,indice)=>{
+      console.log("xxxx",x)
+      newData=x[r[eachIndex+1]]
+      
+      //console.log("trigger",r,x,r[eachIndex-1],newData)
+      let eachId=r[eachIndex].substring(0,r[eachIndex].length)
+      console.log("eachId",`${eachId}Id`)
+      const len=newData.length
+      console.log("newData",x[r[eachIndex]],r[eachIndex+1])
+
+      
+      let final=[]
+      x[r[eachIndex+1]].forEach(y=>{
+        let t=y.id
+        final=[...final,t]
+        
+      })
+      totalRoutes={
+        ...totalRoutes,
+        [r[eachIndex]]:{
+          ...totalRoutes[r[eachIndex]],
+          [current]:{...totalRoutes[r[eachIndex]][current],[x.id]:{
+            total:0,
+            keys:[]
+          }}
+        }
+      }
+      console.log("nd2xid",x[r[eachIndex]],x[r[eachIndex+1]],final,x.id,eachStopData)
+      //console.log("parcial",len,totalRoutes,totalRoutes[r[eachIndex]][current],
+      //totalRoutes[r[eachIndex-1]][current],finalRoutes,x.id,len,r[eachIndex],r[eachIndex-1])
+      totalRoutes={
+        ...totalRoutes,
+        [r[eachIndex]]:{
+          ...totalRoutes[r[eachIndex]],
+          [current]:{
+            ...totalRoutes[r[eachIndex]][current],[x.id]:
+            {
+              ...totalRoutes[r[eachIndex]][current][x.id],
+              total:totalRoutes[r[eachIndex]][current][x.id]["total"]==undefined
+              ?len:
+              totalRoutes[r[eachIndex]][current][x.id]["total"]+len,
+              keys:final.length!==0/*eachIndex+1!==finalRoutes.length && x[r[eachIndex]][indice] && x[r[eachIndex]][indice][r[eachIndex+1]]*/?final:[]
+            }
+          }
+          /*[previous]:totalRoutes[r[eachIndex-1]][previous]+len}*/
+        }
+      }
+      //if(eachIndex+1!==r.length)
+      getLevelData(newData,finalRoutes,eachIndex+1)
+      
+    })
+  
+  }
+}  
 }
 
-const getLevelsData=(route,nameRoute)=>{
+/*const getLevelsData=(route,nameRoute)=>{
   console.log("leveldata",route,nameRoute)
   for(let i=route.length-1;
     i>=0;
     i--){
-      getLevelData(route[i])
+      getLevelData(categoryProducts[])
     }
+}*/
+
+let finalObject={}
+
+const calculateKeys=(finalObjectName,routeIndexToFind,routeIndex,routes,keys,totalRoutes,r,u,otmName)=>{
+  let trr=totalRoutes[routes[routeIndex]][`${routes[routeIndex+1]}total`]
+  console.log("trr",trr)
+  keys.forEach(k=>{
+    if(routeIndexToFind==routeIndex){
+      console.log("trr1",k)
+      finalObject={
+        ...finalObject,[otmName]:{
+          ...finalObject[otmName],[r]:{
+            ...finalObject[otmName][r],items:{
+              ...finalObject[otmName][r]["items"],
+              [u]:finalObject[otmName][r]["items"][u]+trr[k]["total"]
+            }
+          }
+        }
+      }
+    }else{
+
+      calculateKeys(finalObjectName,routeIndexToFind,routeIndex+1,routes,
+        totalRoutes[routes[routeIndex-1]][`${routes[routeIndex]}total`][k].keys
+        ,totalRoutes)
+    }
+
+
+  })
+
+}
+
+const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,cor=[],routeIndexToFind=0)=>{
+  let dataVar=routes[1]
+  let nn=`${routes[routeIndexToFind+1]}total`
+  let r=`${dataVar}total`
+  //let mainArray=[]
+  console.log("rmainArray",r,begin)
+  //if(r!==`undefinedtotal`){
+    if(begin==true){
+      mainArray=totalRoutes[routes[0]][r]
+    }
+    if(finalObject[otmName][nn]==undefined)
+      finalObject={...finalObject,[otmName]:{...finalObject[otmName],[nn]:{items:{}}}}
+   // console.log("ver22",claves,totalRoutes[routes[routeIndex]][r])
+console.log("mainArray",mainArray)
+    
+    
+    //mainArray=Object.keys(totalRoutes[routes[routeIndex]][r]).forEach(x=>claves)
+    //console.log("mainArray",claves,mainArray,routes[routeIndex],r,routeIndex)
+  //}
+  
+  if(mainArray){
+    if(Object.keys(mainArray).length>0){
+      if(finalObject[otmName]==undefined){
+        finalObject[otmName]={}
+      }
+
+    
+      
+      Object.keys(mainArray).forEach(u=>{
+        if(finalObject[otmName][nn]==undefined){
+          finalObject[otmName]={
+            [nn]:{}
+            
+          }
+        }
+      
+        if(finalObject[otmName][nn]["items"]==undefined)
+          finalObject[otmName][nn]["items"]={}
+        if(finalObject[otmName][nn]["items"][u]==undefined)
+        finalObject[otmName][nn]["items"][u]=0
+        
+        
+        
+        if(routeIndex==routeIndexToFind){
+            finalObject[otmName][nn]["items"][u]+=cor[u]["total"]
+          
+        }else{
+          console.log("cor11",mainArray,u,mainArray[u])
+          let keys=mainArray[u]["keys"]
+          let finalObjectName=finalObject[otmName][nn]["items"][u]
+          calculateKeys(finalObjectName,routeIndexToFind,routeIndex+1,routes,keys,totalRoutes,nn,u,otmName)
+        }
+      })  
+      
+      
+      
+    
+      
+    }
+  }
+  
 }
 
 
-const getDataReport=(routes,finalRoutes)=>{
-  for(let i=0;i<finalRoutes.length;i++){
-    getLevelsData(routes[finalRoutes[i]],finalRoutes[i])
+const getAccumulated=(routes,
+  otmName,routeIndex,begin=false,totalRoutes)=>{
+    let total=0
+    //if(otmName==routes[routeIndex]){
+      let r=routes[routeIndex+1]
+      let mainArray=totalRoutes[otmName][`${r}total`]?totalRoutes[routes[routeIndex]][`${r}total`]:[]
+      
+      console.log("datalog",otmName,totalRoutes,`${r}total`,mainArray)
+
+      let nuevoTotalVar=`${r}total`
+      let totalObject=Object.keys(totalRoutes[routes[routeIndex]][nuevoTotalVar]).length
+      finalObject={
+        ...finalObject,
+        [otmName]:{...finalObject[otmName],
+          [`${r}total`]:{granTotal:totalObject}}
+      }
+      //if(routeIndex+1!==routes.length-1)
+        //getAccumulated(routes,otmName,routeIndex+1,false,totalRoutes,true)
+    /*}else{
+
+      
+    }*/
+    for(let i=0;i<routes.length-1;i++){
+      console.log("ikey",i)
+      getData(routes,otmName,totalRoutes,0,null,true,totalRoutes[routes[i]][`${routes[i+1]}total`],i)
+    }
+      /*if(Object.keys(mainArray).length>0){
+        finalObject[otmName][r]=0
+        for(let x in mainArray){
+          finalObject[otmName][r]+=mainArray[x].total
+        }
+
+      }*/
+    
   }
+
+const getDataReport=(routes,finalRoutes)=>{
+  const root=`getData${currentCategory.name}`
+  totalRoutes={}
+  //for(let i=0;i<finalRoutes.length;i++){
+    getLevelData(categoryProducts[root],routes[finalRoutes[0]],0)
+    
+  //}
+  console.log("getLevelData",totalRoutes)
+  finalObject={}
+  getAccumulated(routes[finalRoutes[0]],routes[finalRoutes[0]][0],0,false,totalRoutes)
+  console.log("finalObject",finalObject)
 }
 
 const beginReport=(primero=false,name1,d1)=>{
@@ -351,6 +581,7 @@ const beginReport=(primero=false,name1,d1)=>{
   let routes=calculateRoutes([`getData${currentCategory.name}`])
   console.log("routesfinal",routesFinal(routes))
   let finalRoutes=routesFinal(routes)
+  console.log("finalRoutes",finalRoutes)
   getDataReport(routes,finalRoutes)
   //calculateAmountsBegins(routes)
 
