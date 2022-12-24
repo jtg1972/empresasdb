@@ -275,7 +275,12 @@ const calculateAmountNotBegin=(routeKey,otmField)=>{
 
   })
 }
-
+//findfinal(each,routes,x) each es un arreglo de cada una de las llaves de rutas,
+//x es cada llave
+//comienza con un ciclo por cada una de las llaves de rutas
+//si cada elemento de routes[y] incluya cada elemento en each y la longitud de 
+//routes[y] es mayor que la longitud de each
+//leneach=routes[y].length,finalfield=y, y se vuelve a llamar findfinal
 const findFinal=(each,routes,field)=>{
   console.log("eachroutes",each,routes)
   let lenEach=each.length
@@ -294,7 +299,12 @@ const findFinal=(each,routes,field)=>{
   return finalField
   
 }
+//que carajos hace esta funcion?
+//empieza con cada llave de las rutas, y lo asigna a la
+//variable i findfinal(each,routes,x) each es un arreglo de cada una de las llaves de rutas
 
+
+//que carajos hace findfinal
 const routesFinal=(routes)=>{
   let definitiveRoutes=[]
   //const first=`getData${currentCategory.name}`
@@ -454,7 +464,7 @@ const calculateKeys=(finalObjectName,routeIndexToFind,routeIndex,routes,keys,tot
 
       calculateKeys(finalObjectName,routeIndexToFind,routeIndex+1,routes,
         totalRoutes[routes[routeIndex-1]][`${routes[routeIndex]}total`][k].keys
-        ,totalRoutes)
+        ,totalRoutes,r,u,otmName)
     }
 
 
@@ -463,14 +473,14 @@ const calculateKeys=(finalObjectName,routeIndexToFind,routeIndex,routes,keys,tot
 }
 
 const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,cor=[],routeIndexToFind=0)=>{
-  let dataVar=routes[1]
+  let dataVar=routes[routeIndex+1]
   let nn=`${routes[routeIndexToFind+1]}total`
   let r=`${dataVar}total`
   //let mainArray=[]
   console.log("rmainArray",r,begin)
   //if(r!==`undefinedtotal`){
     if(begin==true){
-      mainArray=totalRoutes[routes[0]][r]
+      mainArray=totalRoutes[routes[routeIndex]][r]
     }
     if(finalObject[otmName][nn]==undefined)
       finalObject={...finalObject,[otmName]:{...finalObject[otmName],[nn]:{items:{}}}}
@@ -548,9 +558,10 @@ const getAccumulated=(routes,
 
       
     }*/
-    for(let i=0;i<routes.length-1;i++){
-      console.log("ikey",i)
-      getData(routes,otmName,totalRoutes,0,null,true,totalRoutes[routes[i]][`${routes[i+1]}total`],i)
+    for(let i=routeIndex;i<routes.length-1;i++){
+      console.log("ikey",i,totalRoutes[routes[i]][`${routes[i+1]}total`])
+      //getData(routes,otmName,totalRoutes,0,null,true,totalRoutes[routes[i]][`${routes[i+1]}total`],i)
+      getData(routes,otmName,totalRoutes,routeIndex,null,true,totalRoutes[routes[i]][`${routes[i+1]}total`],i)
     }
       /*if(Object.keys(mainArray).length>0){
         finalObject[otmName][r]=0
@@ -566,19 +577,33 @@ const getDataReport=(routes,finalRoutes)=>{
   const root=`getData${currentCategory.name}`
   totalRoutes={}
   //for(let i=0;i<finalRoutes.length;i++){
-    getLevelData(categoryProducts[root],routes[finalRoutes[0]],0)
+   getLevelData(categoryProducts[root],routes[finalRoutes[0]],0)
+   console.log("totalRoutes",totalRoutes)
     
   //}
   console.log("getLevelData",totalRoutes)
   finalObject={}
-  getAccumulated(routes[finalRoutes[0]],routes[finalRoutes[0]][0],0,false,totalRoutes)
+  totalRoutes={}
+
+  //getLevelData(categoryProducts[root],routes[finalRoutes[0]],0) 
+
+  for(let i=0;i<finalRoutes.length;i++){
+  //getAccumulated(routes[finalRoutes[0]],routes[finalRoutes[0]][0],0,false,totalRoutes)
+  totalRoutes={}
+  getLevelData(categoryProducts[root],routes[finalRoutes[i]],0)
+    for(let x=0;x<routes[finalRoutes[i]].length-1;x++){
+      getAccumulated(routes[finalRoutes[i]],routes[finalRoutes[i]][x],x,false,totalRoutes)
+  }
   console.log("finalObject",finalObject)
+  }
 }
 
 const beginReport=(primero=false,name1,d1)=>{
   console.log("croutes",calculateRoutes([`getData${currentCategory.name}`]))
   
   let routes=calculateRoutes([`getData${currentCategory.name}`])
+
+  //routesfinal encuentra la ultima parada de cada una de las rutas
   console.log("routesfinal",routesFinal(routes))
   let finalRoutes=routesFinal(routes)
   console.log("finalRoutes",finalRoutes)
