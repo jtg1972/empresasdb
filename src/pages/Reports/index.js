@@ -388,10 +388,41 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
       console.log("newData",x[r[eachIndex]],r[eachIndex+1])
 
       
+      
+
+      //added code
+      let otherAccVars={}
+      /*if(x[r[eachIndex+1]].length>0){
+        Object.keys(x[r[eachIndex+1]][0]).forEach(u=>{
+          if(typeof x[r[eachIndex+1]][0][u]=="number" && u!=="id" && !u.startsWith("otm")){
+            const n=`${u}total`
+            otherAccVars={...otherAccVars,[n]:0}
+        }
+        
+        })
+      }else{*/
+        otmChoices[r[eachIndex+1]]["normal"].forEach(l=>{
+          if(l!=="1" && l!=="2" && l!=="3"){
+            otherAccVars={...otherAccVars,[`${l}total`]:0}
+          }
+        })
+      
+      //}
       let final=[]
+      let oavTotals=otherAccVars
+      console.log("oavtotals1",oavTotals)//Object.keys(x[r[eachIndex+1]][0]))
       x[r[eachIndex+1]].forEach(y=>{
         let t=y.id
         final=[...final,t]
+        Object.keys(otherAccVars).forEach(p=>{
+          const nn=p.substring(0,p.length-5)
+
+          console.log("ppp",p,y[p],nn)
+          if(typeof y[nn]=="number"){
+            console.log("ppp1",y[nn])
+            oavTotals[p]+=y[nn]
+          }
+        })
         
       })
       totalRoutes={
@@ -400,7 +431,8 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
           ...totalRoutes[r[eachIndex]],
           [current]:{...totalRoutes[r[eachIndex]][current],[x.id]:{
             total:0,
-            keys:[]
+            keys:[],
+            ...otherAccVars
           }}
         }
       }
@@ -418,7 +450,8 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
               total:totalRoutes[r[eachIndex]][current][x.id]["total"]==undefined
               ?len:
               totalRoutes[r[eachIndex]][current][x.id]["total"]+len,
-              keys:final.length!==0/*eachIndex+1!==finalRoutes.length && x[r[eachIndex]][indice] && x[r[eachIndex]][indice][r[eachIndex+1]]*/?final:[]
+              keys:final.length!==0/*eachIndex+1!==finalRoutes.length && x[r[eachIndex]][indice] && x[r[eachIndex]][indice][r[eachIndex+1]]*/?final:[],
+              ...oavTotals
             }
           }
           /*[previous]:totalRoutes[r[eachIndex-1]][previous]+len}*/
@@ -444,18 +477,26 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
 
 let finalObject={}
 
-const calculateKeys=(finalObjectName,routeIndexToFind,routeIndex,routes,keys,totalRoutes,r,u,otmName)=>{
+const calculateKeys=(finalObjectName,routeIndexToFind,routeIndex,routes,keys,totalRoutes,r,u,otmName,otherAccVars)=>{
   let trr=totalRoutes[routes[routeIndex]][`${routes[routeIndex+1]}total`]
   console.log("trr",trr)
-  keys.forEach(k=>{
+  let otherfinalvars={}
+    keys.forEach(k=>{
     if(routeIndexToFind==routeIndex){
-      console.log("trr1",k)
+      console.log("trr1",k,trr,otherAccVars,finalObject[otmName][r]["items"][u])
+      Object.keys(otherAccVars).forEach(i=>{
+        otherfinalvars[i]=finalObject[otmName][r]["items"][u][i]+trr[k][i]
+      })
+    
       finalObject={
         ...finalObject,[otmName]:{
           ...finalObject[otmName],[r]:{
             ...finalObject[otmName][r],items:{
               ...finalObject[otmName][r]["items"],
-              [u]:finalObject[otmName][r]["items"][u]+trr[k]["total"]
+              [u]:{...finalObject[otmName][r]["items"][u],
+              total:finalObject[otmName][r]["items"][u]["total"]+trr[k]["total"],
+              ...otherfinalvars
+            }
             }
           }
         }
@@ -464,7 +505,7 @@ const calculateKeys=(finalObjectName,routeIndexToFind,routeIndex,routes,keys,tot
 
       calculateKeys(finalObjectName,routeIndexToFind,routeIndex+1,routes,
         totalRoutes[routes[routeIndex-1]][`${routes[routeIndex]}total`][k].keys
-        ,totalRoutes,r,u,otmName)
+        ,totalRoutes,r,u,otmName,otherAccVars)
     }
 
 
@@ -510,19 +551,72 @@ console.log("mainArray",mainArray)
       
         if(finalObject[otmName][nn]["items"]==undefined)
           finalObject[otmName][nn]["items"]={}
-        if(finalObject[otmName][nn]["items"][u]==undefined)
-        finalObject[otmName][nn]["items"][u]=0
+        if(finalObject[otmName][nn]["items"][u]==undefined){
+          //finalObject[otmName][nn]["items"][u]=0
+          finalObject[otmName][nn]["items"][u]={total:0}
+        }
         
+        //Added code
+        let otherAccVars={}
+        console.log("cor11",cor,cor[0])
+        const objlen=Object.keys(cor).length
+        let firstkey
+        if(objlen>0){
+          firstkey=Object.keys(cor)[0]
         
+      
+      Object.keys(cor[firstkey]).forEach(iu=>{
+        console.log("cor11iu",iu)
+        if(iu!=="keys" && iu!=="total"){
+          const n=`${iu}`
+          if(finalObject[otmName][nn]["items"][u][n]==undefined)
+            finalObject[otmName][nn]["items"][u][n]=0
+          otherAccVars={...otherAccVars,[n]:0}
+        }
+      })
+      }
+      console.log("otheraccvars",otherAccVars)
+      /*let final=[]
+      let oavTotals=otherAccVars
+      cor.forEach(y=>{
+        let t=y.id
+        final=[...final,t]
+        Object.keys(otherAccVars).forEach(p=>{
+          const nn=p.substring(0,p.length-5)
+
+          console.log("ppp",p,y[p],nn)
+          if(typeof y[nn]=="number"){
+            console.log("ppp1",y[nn])
+            oavTotals[p]+=y[nn]
+          }
+        })
         
+      })*/
+      //ends added code
+
         if(routeIndex==routeIndexToFind){
-            finalObject[otmName][nn]["items"][u]+=cor[u]["total"]
+            finalObject[otmName][nn]["items"][u]["total"]+=cor[u]["total"]
+            
+            Object.keys(otherAccVars).forEach(y=>{
+              //if(finalObject[otmName][nn]["items"][u][y]!==undefined){
+                if(cor[u][y]!==undefined){
+                otherAccVars[y]+=cor[u][y]
+
+                finalObject[otmName][nn]["items"][u][y]+=cor[u][y]
+              /*}
+              else  
+               //finalObject[otmName][nn]["items"][u][y]=0*/
+              console.log("prev", finalObject[otmName][nn]["items"][u][y],cor[u][y])
+            }
+
+            })
+            
           
         }else{
           console.log("cor11",mainArray,u,mainArray[u])
           let keys=mainArray[u]["keys"]
           let finalObjectName=finalObject[otmName][nn]["items"][u]
-          calculateKeys(finalObjectName,routeIndexToFind,routeIndex+1,routes,keys,totalRoutes,nn,u,otmName)
+          calculateKeys(finalObjectName,routeIndexToFind,routeIndex+1,routes,keys,totalRoutes,nn,u,otmName,otherAccVars)
         }
       })  
       
