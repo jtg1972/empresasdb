@@ -2,8 +2,15 @@ p,div{
   color:white
 }
 .reports{ 
+  width:100%;
+  overflow-y:scroll;
+  overflow-x:scroll;
+  &::-webkit-scrollbar{
+    width:0;
+    height:0;
+  }
   color:white;
-  margin:15px;
+  margin:10px;
   //width:100%;
   .addFirstButton{
     width:auto;
@@ -28,7 +35,7 @@ p,div{
     width:fit-content;
   }
   table{
-    width:100%;
+    width:auto;
     border-spacing:0px;
     border-collapse:collapse;
     td,th{
@@ -40,5 +47,16 @@ p,div{
       color:white;
 
     }
+  }
+}
+.notlastborder{
+  /*&:last-child{
+    border-right:none;
+  }*/
+  border-right:1px solid white;
+}
+.lastborderexceptlastblock{
+  &:last-child{
+    border-right:1px solid white;
   }
 }
