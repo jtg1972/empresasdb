@@ -830,8 +830,61 @@ const getDataReport=(routes,finalRoutes)=>{
       }
     }
   }
+
+  beginPrintFinalTables(totalRoutesArray)
   //return printTable(finalObject['getDataclientes'],'getDataclientes',`${routes[finalRoutes[0]][1]}total`)
   //printTable(totalRoutesArray,routes,finalRoutes)
+}
+
+const printFinalTable=(title,data)=>{
+  let fields=otmChoices[title]["normal"]
+  let head=[]
+  let rowCols=[]
+  let rows=[]
+  Object.keys(data).forEach((x,index)=>{
+    let specifics=data[x].normalData
+    rowCols=[]
+    fields.forEach(f=>{
+      
+      if(f!=="1" && f!=="2" && f!=="3"){
+        if(index==0){
+          head.push(<th style={{borderRight:"1px solid white"}}>{f}</th>)
+        }
+        rowCols.push(<td style={{borderRight:"1px solid white"}}>{specifics[f]}</td>)
+      }
+    })
+    rowCols.unshift(<td style={{borderRight:"1px solid white"}}>{specifics["id"]}</td>)
+    if(index==0)
+      head.unshift(<th style={{borderRight:"1px solid white"}}>Id</th>)
+    rows.push(<tr style={{border:"1px solid white"}}>{rowCols}</tr>)
+  })
+  let tableResult=
+  <table style={{marginBottom:"20px"}}>
+    <thead>
+      <tr style={{backgroundColor:"white",color:"black"}}>
+        <th style={{backgroundColor:"white",color:"black"}}>{title}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <table style={{border:"1px solid white"}}>
+        <thead>
+          <tr>
+            {head}
+          </tr>
+        </thead>
+        <tbody style={{border:"1px solid white"}}>
+          {rows}
+        </tbody>
+      </table>
+    </tbody>
+  </table>
+  totalTables.push(tableResult)
+}
+
+const beginPrintFinalTables=(totalRoutesArray)=>{
+  Object.keys(totalRoutesArray).forEach(key=>{
+    printFinalTable(key,totalRoutesArray[key])
+  })
 }
 
 
