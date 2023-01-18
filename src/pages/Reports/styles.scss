@@ -50,13 +50,27 @@ p,div{
   }
 }
 .notlastborder{
-  /*&:last-child{
-    border-right:none;
-  }*/
+  
   border-right:1px solid white;
 }
 .lastborderexceptlastblock{
   &:last-child{
     border-right:1px solid white;
+  }
+}
+.nlb{
+  
+  th{
+      border-right:1px solid black;
+      &:last-child{
+        border-right:none;
+      }
+  }
+}
+.nlb1{
+  
+  th{
+      border-right:1px solid white;
+      
   }
 }

@@ -261,11 +261,14 @@ const calculateRoutes=(parentsRoute)=>{
  let parentNodeName=`getData${currentCategory.name}`
   let data=categoryProducts[parentNodeName]
   let routes={}
-  let sons=firstCatNormalFields[parentNodeName]["otm"].map(l=>{
-    routes[l]=[...parentsRoute,l]
-    routes={...routes,...calculateGrandRoutes(routes[l],l)}
-    
-  })
+  if(firstCatNormalFields[parentNodeName]["otm"].length>0){
+    let sons=firstCatNormalFields[parentNodeName]["otm"].map(l=>{
+      routes[l]=[...parentsRoute,l]
+      routes={...routes,...calculateGrandRoutes(routes[l],l)}
+      
+    })
+  }else
+   return {[parentNodeName]:[parentNodeName]}
   return routes
 
 
@@ -341,8 +344,14 @@ let totalRoutes={}
 
 const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
   let r=finalRoutes
+  let current
+  
+  if(r && r[eachIndex+1]!==undefined){
+    current=`${r[eachIndex+1]}total`
+  }else
+    current='undefinedtotal'
 
-  let current=`${r[eachIndex+1]}total`
+
   let definitiveCurrent=current
   if(current=="undefinedtotal")
     definitiveCurrent="final"
@@ -357,7 +366,7 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
 
   }*/
   //console.log("eachstopdataundefined1",eachStopData)
-  if(totalRoutes[r[eachIndex]]==undefined)
+  if(r && totalRoutes[r[eachIndex]]==undefined)
     totalRoutes={...totalRoutes,[r[eachIndex]]:{}}
   /*if(current=='undefinedtotal'){
     console.log("eachstopdataundefined",eachStopData)
@@ -425,7 +434,7 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
 
   //if(current!=='undefinedtotal'){
     let uu={}
-    if(totalRoutes[r[eachIndex]][current]!==undefined)
+    if(r && totalRoutes[r[eachIndex]][current]!==undefined)
       uu={...totalRoutes[r[eachIndex]][current]}
   //if(totalRoutes[r[eachIndex]]==undefined){
     totalRoutes={
@@ -550,9 +559,11 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
       
     })
   
+  }
+  
   //}
 //}  
-}
+
 
 /*const getLevelsData=(route,nameRoute)=>{
   console.log("leveldata",route,nameRoute)
@@ -608,12 +619,12 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
   //let mainArray=[]
   console.log("rmainArray",r,begin)
   //if(r!==`undefinedtotal`){
-    if(begin==true){
-      mainArray=totalRoutes[routes[routeIndex]][r]
-    }
-    if(finalObject[otmName][nn]==undefined)
-      finalObject={...finalObject,[otmName]:{...finalObject[otmName],[nn]:{items:{}}}}
-   // console.log("ver22",claves,totalRoutes[routes[routeIndex]][r])
+  if(begin==true){
+    mainArray=totalRoutes[routes[routeIndex]][r]
+  }
+  if(finalObject[otmName][nn]==undefined)
+    finalObject={...finalObject,[otmName]:{...finalObject[otmName],[nn]:{items:{}}}}
+  // console.log("ver22",claves,totalRoutes[routes[routeIndex]][r])
 //console.log("mainArray",mainArray)
     
     
@@ -724,8 +735,9 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
     
       
     }
-  }
   
+  
+}
 }
 
 
@@ -779,9 +791,10 @@ const getDataReport=(routes,finalRoutes)=>{
   const root=`getData${currentCategory.name}`
   totalRoutes={}
   //for(let i=0;i<finalRoutes.length;i++){
+
    getLevelData(categoryProducts[root],routes[finalRoutes[0]],0)
-   console.log("totalRoutes",totalRoutes)
-    
+   console.log("totalRoutes",totalRoutes,categoryProducts[root],finalRoutes)
+
   //}
   //console.log("getLevelData",totalRoutes)
   finalObject={}
@@ -830,14 +843,25 @@ const getDataReport=(routes,finalRoutes)=>{
       }
     }
   }
+  if(Object.keys(totalRoutesArray).length==0){
+    totalRoutesArray={[routes[finalRoutes[0]][routes[finalRoutes[0]].length-1]]:totalRoutes[routes[finalRoutes[0]][routes[finalRoutes[0]].length-1]]['undefinedtotal']}
+    
 
+  }
   beginPrintFinalTables(totalRoutesArray)
   //return printTable(finalObject['getDataclientes'],'getDataclientes',`${routes[finalRoutes[0]][1]}total`)
   //printTable(totalRoutesArray,routes,finalRoutes)
 }
 
 const printFinalTable=(title,data)=>{
-  let fields=otmChoices[title]["normal"]
+  let fields
+  console.log("firstcat",firstCatNormalFields)
+  if(title!==`getData${currentCategory.name}`){
+    fields=otmChoices[title]["normal"]
+  }else{
+    fields=firstCatNormalFields[title]["normal"]
+  }
+  
   let head=[]
   let rowCols=[]
   let rows=[]
@@ -960,11 +984,12 @@ const printReportSegment=(object,primero,segmentTitle)=>{
   })
   
   enc.push(<th style={{textAlign:"center",margin:0,padding:0,
-  borderRight:"1px solid black", borderColor:"black",background:"white",color:"black"}}>{segmentTitle}</th>)
+  /*borderRight:"1px solid black",*/ borderColor:"black",background:"white",color:"black"}}
+  >{segmentTitle}</th>)
   outsideTable.push(
     
       <table style={{margin:0,boxSizing:"borderBox"}} >
-        <thead><tr style={{textAlign:"center",margin:0,padding:0,borderTop:"1px solid white",borderBottom:"1px solid white"}}>{eachSeg}</tr></thead>
+        <thead><tr style={{textAlign:"center",margin:0,padding:0,borderTop:"1px solid white",borderBottom:"1px solid white"}} className="nlb1">{eachSeg}</tr></thead>
         <tbody style={{margin:0,padding:0}}>
           {fullData.map(x=>{
             return x
@@ -1036,7 +1061,7 @@ const printTable=(objectToPrint,title,primero)=>{
     reporte=<table style={{boxSizing:"borderBox",borderLeft:"1px solid white",borderBottom:"1px solid white",borderTop:"1px solid white",borderRight:"none",marginBottom:"20px"}}>
       <thead>
         <tr style={{margin:0,padding:0,textAlign:"center",
-      }}>
+      }} className="nlb">
           {enc}
         </tr>
       
@@ -1086,7 +1111,7 @@ const beginReport=(primero=false,name1,d1)=>{
   //console.log("croutes",calculateRoutes([`getData${currentCategory.name}`]))
   
   let routes=calculateRoutes([`getData${currentCategory.name}`])
-
+  console.log("routes111",routes)
   //routesfinal encuentra la ultima parada de cada una de las rutas
   //console.log("routesfinal",routesFinal(routes))
   let finalRoutes=routesFinal(routes)
