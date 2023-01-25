@@ -27,7 +27,7 @@ const Reports=()=>{
   const[firstCatNormalFields,setFirstCatNormalFields]=useState([])
   const [reportShow,setReportShow]=useState(false)
   let subTotals={}
-  //console.log("otmchoices",otmChoices,fieldsShown,firstCatNormalFields)
+  console.log("otmchoices",otmChoices,fieldsShown,firstCatNormalFields)
   useEffect(()=>{
     setShowFields(false)
     setFieldsShown([])
@@ -40,12 +40,12 @@ const Reports=()=>{
     let secname=name.substring(lengthName)
     let cc=`otm${secname}`
     console.log("cc",cc,name)
-    sonOtmChoices={...sonOtmChoices,[name]:{normal:[],otm:[]}}
+    sonOtmChoices={...sonOtmChoices,[name]:{normal:[],otm:[],otmdestiny:[],options:[]}}
     const sons=Object.keys(sonOtmChoices).
     filter(i=>i.startsWith(cc))
     console.log("current sons",name,sons,sonOtmChoices,cc)
     sons.forEach(y=>{
-      sonOtmChoices={...sonOtmChoices,[y]:{otm:[],normal:[]}}
+      sonOtmChoices={...sonOtmChoices,[y]:{otm:[],normal:[],options:[],otmdestiny:[]}}
       secname=`otm${secname}`
       let nv=y.substring(secname.length)
       //console.log("nv",nv)
@@ -56,7 +56,7 @@ const Reports=()=>{
 
   }
 
-  const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false)=>{
+  const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="")=>{
     if(otm && !e.target.checked){
       //clearOtmChoicesSons(name,padre)
       sonOtmChoices=otmChoices
@@ -70,25 +70,30 @@ const Reports=()=>{
         setFieldsShown(x=>([...x,name1]))
       if(mainCat){
         const n=`getData${padre}`
-        let  nu={[n]:{otm:[],normal:[]}}
+        let  nu={[n]:{otm:[],normal:[],options:[],otmdestiny:[]}}
         if(firstCatNormalFields[n]==undefined)
           setFirstCatNormalFields(e=>({...e,...nu}))
         if(otm){
           setFirstCatNormalFields(o=>({...o,[n]:{...o[n],otm:[...o[n]["otm"],name1]}}))
-          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[]}}))
+          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[]}}))
+        }else if(otmdestiny=="otmdestiny"){
+          setFirstCatNormalFields(o=>({...o,[n]:{...o[n],otmdestiny:[...o[n]["otmdestiny"],name1]}}))
+          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[]}}))
         }else{
-          setFirstCatNormalFields(o=>({...o,[n]:{...o[n],normal:[...o[n]["normal"],name1]}}))
+          //setFirstCatNormalFields(o=>({...o,[n]:{...o[n],normal:[...o[n]["normal"],name1]}}))
+          setFirstCatNormalFields(o=>({...o,[n]:{...o[n],normal:[...o[n]["normal"],{type:declaredType,name1}]}}))
         }
-        //setFirstCatNormalFields(o=>([...o,name1]))
       }
       if(mainCat==false){
         if(otm){  
           
           
-          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[]},[nameOtm]:{...e[nameOtm],otm:[...e[nameOtm]["otm"],name1]}}))
+          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[]},[nameOtm]:{...e[nameOtm],otm:[...e[nameOtm]["otm"],name1]}}))
         
+        }else if(otmdestiny=="otmdestiny"){
+          setOtmChoices(e=>({...e,/*[name1]:{otm:[],normal:[]},*/[nameOtm]:{...e[nameOtm],otmdestiny:[...e[nameOtm]["otmdestiny"],name1]}}))
         }else{
-          setOtmChoices(e=>({...e,/*[name1]:{otm:[],normal:[]},*/[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"],name1]}}))
+          setOtmChoices(e=>({...e,/*[name1]:{otm:[],normal:[]},*/[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"],{name1,type:declaredType}]}}))
         }
       }
       
@@ -103,9 +108,14 @@ const Reports=()=>{
             e={...e,[n]:{...e[n],otm:[...e[n]["otm"].filter(x=>x!==name1)]}}
             return e
           })
+        }else if(otmdestiny=="otmdestiny"){
+          setFirstCatNormalFields(e=>{
+            e={...e,[n]:{...e[n],otmdestiny:[...e[n]["otmdestiny"].filter(x=>x.name1!==name1)]}}
+            return e
+          })
         }else{
           setFirstCatNormalFields(e=>{
-            e={...e,[n]:{...e[n],normal:[...e[n]["normal"].filter(x=>x!==name1)]}}
+            e={...e,[n]:{...e[n],normal:[...e[n]["normal"].filter(x=>x.name1!==name1)]}}
             return e
           })
         }
@@ -115,10 +125,12 @@ const Reports=()=>{
         if(otm){  
           
           
-          setOtmChoices(e=>({...e,[name1]:{normal:[],otm:[]},[nameOtm]:{...e[nameOtm],otm:[...e[nameOtm]["otm"].filter(u=>u!==name1)]}}))
+          setOtmChoices(e=>({...e,[name1]:{normal:[],otm:[],otmdestiny:[]},[nameOtm]:{...e[nameOtm],otm:[...e[nameOtm]["otm"].filter(u=>u!==name1)]}}))
         
+        }else if(otmdestiny=="otmdestiny"){
+          setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],otmdestiny:[...e[nameOtm]["otmdestiny"].filter(u=>u.name1!==name1)]}}))
         }else{
-          setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"].filter(u=>u!==name1)]}}))
+          setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"].filter(u=>u.name1!==name1)]}}))
         }
       }
 
@@ -151,10 +163,10 @@ const Reports=()=>{
         onChange={(e)=>{
           if(e.target.checked){
             
-            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["normal"],"1"]}}))
+            setOtmChoices(e=>({...e,[name]:{...e[name],options:[...e[name]["options"],"1"]}}))
           }else{
             //console.log("res11",{...otmChoices,[name]:{...otmChoices[name],normal:[...otmChoices[name]["normal"],"1"]}})
-            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["normal"].filter(
+            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["options"].filter(
               x=>x!=="1")]}}))
           }
 
@@ -169,10 +181,10 @@ const Reports=()=>{
         onChange={(e)=>{
           if(e.target.checked){
             
-            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["normal"],"2"]}}))
+            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["options"],"2"]}}))
           }else{
             //console.log("res11",{...otmChoices,[name]:{...otmChoices[name],normal:[...otmChoices[name]["normal"],"1"]}})
-            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["normal"].filter(
+            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["options"].filter(
               x=>x!=="2")]}}))
           }
         }}/>
@@ -185,16 +197,17 @@ const Reports=()=>{
         onChange={(e)=>{
           if(e.target.checked){
             
-            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["normal"],"3"]}}))
+            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["options"],"3"]}}))
           }else{
             //console.log("res11",{...otmChoices,[name]:{...otmChoices[name],normal:[...otmChoices[name]["normal"],"1"]}})
-            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["normal"].filter(
+            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["options"].filter(
               x=>x!=="3")]}}))
           }
         }}/>
         <p>Total and Percentage of Parents Regarding Conditions of Son Atributes</p>
       </div>
       {displayCurCategory(catDestiny,false,false,name,false)}
+      <FormButton onClick={()=>console.log("click")}>Composite Field</FormButton>
     </div>
     )
     }else{
@@ -229,7 +242,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
         return <>
         <input type="checkbox" 
         style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
-        onChange={(e)=>checkReview(e,c.name,false,cat.name,nameOtm,mainCat)}/>
+        onChange={(e)=>checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)}/>
           {c.name}
           <br/>
         </>
@@ -343,6 +356,7 @@ let totalRoutes={}
 
 
 const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
+  console.log("ead",eachStopData)
   let r=finalRoutes
   let current
   
@@ -475,10 +489,13 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
         })
       }else{*/
         otmChoices[r[eachIndex+1]]?.normal.forEach(l=>{
-          if(l!=="1" && l!=="2" && l!=="3"){
-            otherAccVars={...otherAccVars,[`${l}total`]:0}
+          //if(l!=="1" && l!=="2" && l!=="3"){
+          if(l.type=="number"){
+            otherAccVars={...otherAccVars,[`${l["name1"]}total`]:0}
           }
         })
+
+        
       
       //}
       let final=[]
@@ -491,10 +508,10 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
           const nn=p.substring(0,p.length-5)
 
           //console.log("ppp",p,y[p],nn)
-          if(typeof y[nn]=="number"){
+          //if(typeof y[nn]=="number"){
             //console.log("ppp1",y[nn])
             oavTotals[p]+=y[nn]
-          }
+          //}
         })
         
       })
@@ -515,13 +532,23 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
       let normalFields={}
       if(r[eachIndex]==`getData${currentCategory.name}`){
         firstCatNormalFields[r[eachIndex]]?.normal.forEach(oo=>{
-          if(oo!=="1" && oo!=="2" && oo!=="3")
+          if(oo["name1"]!=="1" && oo["name1"]!=="2" && oo["name1"]!=="3")
+            normalFields={...normalFields,[oo["name1"]]:x[oo["name1"]]}
+        })
+        firstCatNormalFields[r[eachIndex]]?.otmdestiny.forEach(oo=>{
+          
             normalFields={...normalFields,[oo]:x[oo]}
         })
         normalFields={id:x["id"],...normalFields}
       }else{
         otmChoices[r[eachIndex]]?.normal.forEach(oo=>{
-          if(oo!=="1" && oo!=="2" && oo!=="3")
+          //if(oo!=="1" && oo!=="2" && oo!=="3")
+          //if(oo.type=="number")
+            normalFields={...normalFields,[oo["name1"]]:x[oo["name1"]]}
+        })
+        otmChoices[r[eachIndex]]?.otmdestiny.forEach(oo=>{
+          //if(oo!=="1" && oo!=="2" && oo!=="3")
+          //if(oo.type=="number")
             normalFields={...normalFields,[oo]:x[oo]}
         })
         normalFields={id:x["id"],...normalFields}
@@ -617,7 +644,7 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
   let nn=`${routes[routeIndexToFind+1]}total`
   let r=`${dataVar}total`
   //let mainArray=[]
-  console.log("rmainArray",r,begin)
+  //console.log("rmainArray",cor,r,begin)
   //if(r!==`undefinedtotal`){
   if(begin==true){
     mainArray=totalRoutes[routes[routeIndex]][r]
@@ -647,6 +674,8 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
             
           }
         }
+        //console.log("rmainArray",cor,cor[u].normalData,r,begin)
+
       
         if(finalObject[otmName][nn]["items"]==undefined)
           finalObject[otmName][nn]["items"]={normalFields:{}}
@@ -854,17 +883,20 @@ const getDataReport=(routes,finalRoutes)=>{
 }
 
 const printFinalTable=(title,data)=>{
-  let fields
+  let fields=[]
   console.log("firstcat",firstCatNormalFields)
   if(title!==`getData${currentCategory.name}`){
-    fields=otmChoices[title]["normal"]
+    fields=otmChoices[title]["normal"].map(x=>x["name1"])
+    fields=[...fields,...otmChoices[title]["otmdestiny"]]
   }else{
-    fields=firstCatNormalFields[title]["normal"]
+    fields=firstCatNormalFields[title]["normal"].map(x=>x["name1"])
+    
   }
   
   let head=[]
   let rowCols=[]
   let rows=[]
+  console.log("fields11",fields)
   Object.keys(data).forEach((x,index)=>{
     let specifics=data[x].normalData
     rowCols=[]
@@ -927,6 +959,7 @@ const getValues=(o)=>{
   return de
 }
 let headerEach=[]
+
 const printReportSegment=(object,primero,segmentTitle)=>{
   
   //let dataEach=[]
@@ -945,7 +978,7 @@ const printReportSegment=(object,primero,segmentTitle)=>{
         Object.keys(object[u]).forEach(y=>{
           if(y!=="normalFields" && y!=="normalData"){
             headerEach.push(<th>{y}</th>)
-            eachSeg.push(<th className="notlastborder">{y}</th>)
+            eachSeg.push(<th className="notlastborder" style={{width:"100%"}}>{y}</th>)
           }
           
         })
@@ -983,13 +1016,13 @@ const printReportSegment=(object,primero,segmentTitle)=>{
   }
   })
   
-  enc.push(<th style={{textAlign:"center",margin:0,padding:0,
+  enc.push(<th style={{textAlign:"center",marginLeft:"5px",marginRight:"5px",padding:"5px",
   /*borderRight:"1px solid black",*/ borderColor:"black",background:"white",color:"black"}}
   >{segmentTitle}</th>)
   outsideTable.push(
     
-      <table style={{margin:0,boxSizing:"borderBox"}} >
-        <thead><tr style={{textAlign:"center",margin:0,padding:0,borderTop:"1px solid white",borderBottom:"1px solid white"}} className="nlb1">{eachSeg}</tr></thead>
+      <table style={{margin:0,boxSizing:"borderBox",width:"100%"}} >
+        <thead><tr style={{textAlign:"center",margin:0,padding:0,borderTop:"1px solid white",borderBottom:"1px solid white",width:"100%"}} className="nlb1">{eachSeg}</tr></thead>
         <tbody style={{margin:0,padding:0}}>
           {fullData.map(x=>{
             return x
