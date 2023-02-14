@@ -2,6 +2,8 @@ import { getVariableValues } from 'graphql'
 import gql from 'graphql-tag'
 import React,{useEffect, useState} from 'react'
 import { useSelector } from 'react-redux'
+import AddOtmIdFields from '../../AddOtmIdFields'
+import { AddCompositeField } from '../../components/AddCompositeField'
 import BreadCrumb from '../../components/BreadCrumb'
 import FormButton from '../../components/Forms/FormButton'
 import SearchSubcategories from '../../components/SearchSubcategories'
@@ -26,6 +28,13 @@ const Reports=()=>{
   const [otmChoices,setOtmChoices]=useState({})
   const[firstCatNormalFields,setFirstCatNormalFields]=useState([])
   const [reportShow,setReportShow]=useState(false)
+  const [openCompositeFieldDialog,setOpenCompositeFieldDialog]=useState(false)
+  const toggleCompositeFieldDialog=()=>setOpenCompositeFieldDialog(!openCompositeFieldDialog)
+  const [openOtmIdFieldsDialog,setOpenOtmIdFields]=useState(false)
+  const toggleOtmIdFieldsDialog=()=>setOpenOtmIdFields(!openOtmIdFieldsDialog)
+  const [otmCategoryFields,setOtmCategoryFields]=useState([])
+  const [allFieldsByOtm,setAllFieldsByOtm]=useState({})
+  
   let subTotals={}
   console.log("otmchoices",otmChoices,fieldsShown,firstCatNormalFields)
   useEffect(()=>{
@@ -207,7 +216,27 @@ const Reports=()=>{
         <p>Total and Percentage of Parents Regarding Conditions of Son Atributes</p>
       </div>
       {displayCurCategory(catDestiny,false,false,name,false)}
-      <FormButton onClick={()=>console.log("click")}>Composite Field</FormButton>
+      <FormButton style={{
+        textAlign:"left",
+        textDecoration:"underline",
+        marginLeft:0,
+        paddingLeft:0
+      }} onClick={()=>{
+        console.log("click",otmChoices[name]["normal"])
+        setOtmCategoryFields(pivote[name])
+        toggleCompositeFieldDialog()
+      }}>Add composite field</FormButton>
+      <FormButton style={{
+        textAlign:"left",
+        textDecoration:"underline",
+        marginLeft:0,
+        paddingLeft:0
+      }} onClick={()=>{
+        console.log("click")
+        setOtmCategoryFields(pivote[name])
+
+        toggleOtmIdFieldsDialog()
+      }}>Add field to identify parent in child relationships</FormButton>
     </div>
     )
     }else{
@@ -215,13 +244,20 @@ const Reports=()=>{
     }
   }
 
-
+let pivote={}
 const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
+  let fieldsSingle=[]
+  
+  if(pivote[`getData${currentCategory.name}`]==undefined)
+    pivote={...pivote,[`getData${currentCategory.name}`]:[]}
+  if(pivote[nameOtm]==undefined)
+     pivote={...pivote,[nameOtm]:[]}
+  
   if(cat && showFields){  
     return (
     <div style={{marginLeft:space?"10px":"0px",width:primero?"50%":"100%"}}>
       <p>HOla</p>
-      {cat?.fields?.map(c=>{
+      {fieldsSingle=cat?.fields?.map(c=>{
         if(c.relationship=="onetomany"){
           return <>
             <input type="checkbox" 
@@ -239,16 +275,57 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
             {isChecked(c.name) && displayMenu(c.name,cat.name)}
           </>
         }
-        return <>
+       /* return <>
         <input type="checkbox" 
         style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
         onChange={(e)=>checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)}/>
           {c.name}
           <br/>
-        </>
-      })
+        </>*/
+        if(nameOtm!=="")
+          pivote={
+            ...pivote,[nameOtm]:[...pivote[nameOtm],{name1:c.name,type:c.declaredType}]
+          }
+        else
+          pivote={
+          ...pivote,[`getData${currentCategory.name}`]:[...pivote[`getData${currentCategory.name}`],{name1:c.name,type:c.declaredType}]
+        }
+        //setAllFieldsByOtm(pivote)
+
+          return <>
+          <input type="checkbox" 
+          style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
+          onChange={(e)=>checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)}/>
+            {c.name}
+            <br/>
+          </>
+
+      })}
+      {primero && fieldsSingle && (<><FormButton style={{
+          textAlign:"left",
+          textDecoration:"underline",
+          marginLeft:0,
+          paddingLeft:0
+        }} onClick={()=>{
+          setOtmCategoryFields(pivote[`getData${currentCategory.name}`])
+          toggleCompositeFieldDialog()
+          console.log("click")
+        }}>Add composite field</FormButton> 
+        <FormButton style={{
+          textAlign:"left",
+          textDecoration:"underline",
+          marginLeft:0,
+          paddingLeft:0
+        }} onClick={()=>{
+            console.log("click")
+            setOtmCategoryFields(pivote[`getData${currentCategory.name}`])
+            toggleOtmIdFieldsDialog()
+        }}>Add field to identify parent in child relationships</FormButton>
+          </>)
       
+
       }
+      {/*!primero && fieldsSingle*/}
     </div>)
   }
 
@@ -922,9 +999,9 @@ const printFinalTable=(title,data)=>{
       </tr>
     </thead>
     <tbody>
-      <table style={{border:"1px solid white"}}>
+      <table style={{border:"1px solid white",width:"100%"}}>
         <thead>
-          <tr>
+          <tr style={{width:"100%"}}>
             {head}
           </tr>
         </thead>
@@ -1250,6 +1327,17 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       }}>
       Add New Report
     </FormButton>
+    <AddCompositeField
+      open={openCompositeFieldDialog}
+      toggleDialog={toggleCompositeFieldDialog}
+      otmCategoryFields={otmCategoryFields}
+    />
+    <AddOtmIdFields
+      open={openOtmIdFieldsDialog}
+      toggleDialog={toggleOtmIdFieldsDialog}
+      otmCategoryFields={otmCategoryFields}
+    />
+
     
     {showFields 
     && 
