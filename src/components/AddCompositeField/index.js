@@ -1,42 +1,55 @@
 import React,{useState,useEffect} from 'react'
 import Dialog from '../Dialog'
 import FormButton from '../Forms/FormButton'
+import FormInput from '../Forms/FormInput'
+import './styles.scss'
 
 const DisplayList=({compositeField})=>{
   return <div style={{display:"flex",flexDirection:"row",
-  justifyContent:"space-between"}}>
-    <div>
+  justifyContent:"space-between",flex:1,flexGrow:0}}>
+    
+    <div style={{width:"60px",display:"flex",flexDirection:"column"}}>
     {compositeField.map((x,index)=>{
     if(index%2==0){
-      return <div style={{display:"flex",flexDirection:"row",
-      justifyContent:"space-between"}}>
-        <p style={{color:"black"}}>{x}</p>
+      return <div style={{display:"flex",
+      justifyContent:"space-between",flex:"1 0 0"}}>
+        <p style={{color:"black",flex:"1 0 0",overflow:"hidden"}}>{x}</p>
             
       </div>
     }
     
     })}
     </div>
-    <div>
+    <div style={{flex:1,flexGrow:0/*flex:"1 0 0",display:"flex",flexDirection:"column"*/}}>
       {compositeField.map((x,index)=>{
-      if(index%2==0){
-        return <div style={{display:"flex",flexDirection:"row",
-        justifyContent:"space-between"}}>
+      
+      if(index%2!=0){
+        if(typeof compositeField[index]!=="object")
+          return <div style={{display:"flex",flexDirection:"row",
+          justifyContent:"space-between",flex:1,flexGrow:0} }>
          
-          {index+1<compositeField.length &&
-          <p style={{color:"black"}}>{compositeField[index+1]}</p>}
           
-        </div>
+            <p style={{color:"black",width:"275px"/*flex:1,flexGrow:0,overflow:"hidden"*/}}>{compositeField[index]}</p>
+          
+          </div>
+        else
+          return <div style={{display:"flex",flexDirection:"row",
+          justifyContent:"space-between",flex:1,flexGrow:1}}>
+         
+          
+            <p className="ofx">{compositeField[index]["field"]} chars:{compositeField[index]["chars"]} from:{compositeField[index]["start"]}</p>
+          
+          </div> 
       }
       })}
       </div>
-      <div>
+      <div style={{width:"10px",marginLeft:"5px",marginRight:"5px"/*,display:"flex",flexDirection:"column"*/}}>
       {compositeField.map((x,index)=>{
     if(index%2==0){
-      return <div style={{display:"flex",flexDirection:"row",
-      justifyContent:"space-between"}}>
+      return <div style={{display:"flex",flexDirection:"column",
+      justifyContent:"space-between",flex:"1 0 0"}}>
         
-        <p style={{color:"red"}}>-</p>
+        <p style={{color:"red",flex:1}}>-</p>
       </div>
     }
     
@@ -58,21 +71,26 @@ export const AddCompositeField = ({
   const [primero,setPrimero]=useState(true)
   const [isString,setIsString]=useState(false)
   const [operator,setOperator]=useState("")
+  const [addText,setAddText]=useState("")
   const [stringFields,setStringFields]=useState([])
-  const numberOperators=["+","-","*","/"]
-  const stringOperators=["concat","substring"]
+  const [start,setStart]=useState(0)
+  const [chars,setChars]=useState(0)
+  const numberOperators=["+","-","*","/","substring","add text"]
+  const stringOperators=["concat","substring","add text"]
+  const initalOperators=["none","add text","add field","substring"]
+
 
   useEffect(()=>{
 
     setField(otmCategoryFields[0]?.name1)
     setCompositeField([])
     setStringFields([])
-    setOperator(()=>{
+    setOperator("none")/*()=>{
       if(otmCategoryFields[0]?.type=="string")
         return stringOperators[0]
       else
         return numberOperators[0]
-    })
+    })*/
     setPrimero(true)
       
       
@@ -81,11 +99,13 @@ export const AddCompositeField = ({
   ,[otmCategoryFields])
 
   useEffect(()=>{
+    if(primero==false){
     if(stringFields.length==0)
       setOperator(numberOperators[0])
     else  
       setOperator(stringOperators[0])
-  },[stringFields])
+    }
+  },[stringFields,primero])
 
   const searchType=(name)=>{
     let u=otmCategoryFields.filter(
@@ -98,14 +118,16 @@ export const AddCompositeField = ({
   const updateNumberOperatorsforConcat=(arr,sf)=>{
     if(sf.length>0){
       console.log("arryy",arr,arr.map((x,index)=>{
-        if(index%2!==0)
-          if(numberOperators.includes(x))
+        if(index%2==0)
+        if(numberOperators.filter(y=>(y!=="substring" && y!=="add text" && y!=="none")).includes(x))
+          
             return "concat"
         return x
       }))
       setCompositeField(arr.map((x,index)=>{
-        if(index%2!==0)
-          if(numberOperators.includes(x))
+        if(index%2==0)
+          if(numberOperators.filter(y=>(y!=="substring" && y!=="add text" && y!=="none")).includes(x))
+          
             return "concat"
         return x
       }))
@@ -123,7 +145,7 @@ export const AddCompositeField = ({
       headline="Add Composite Field"
     >
       
-      {!primero && 
+      {!primero &&
         (stringFields.length>0 ? 
           <select onChange={(e)=>setOperator(e.target.value)} 
           value={operator}>
@@ -137,35 +159,72 @@ export const AddCompositeField = ({
             numberOperators.map(x=><option value={x}>{x}</option>)
             }
             </select>)}
-
-            <select onChange={(e)=>{
-        setField(e.target.value)
-      }}>
+            {primero &&
+        <select 
+        onChange={e=>setOperator(e.target.value)}
+        value={operator}>
+          {
+            initalOperators.map(x=><option value={x}>{x}</option>)
+          }
+        </select>
+      }
+      {operator=="add text" &&
+        <FormInput placeholder="write text"
+        onChange={(e)=>setAddText(e.target.value)}></FormInput>
+      }
+      {operator=="substring" && 
+      <>
+        <FormInput type="number"
+         placeholder="from"
+         onChange={(e)=>setStart(e.target.value)}></FormInput>
+        <FormInput type="number" 
+        placeholder="No. of chars"
+        onChange={e=>setChars(e.target.value)}>
+        </FormInput>
+      </>
+      }
+      
+       {(operator!=="add text") &&  
+        <select onChange={(e)=>{
+          setField(e.target.value)
+        }}>
+       
+      
       {otmCategoryFields.map(x=>{
         
         return <option value={x.name1}>{x.name1}</option>
       })}
       </select>
+      }
       <FormButton onClick={()=>{
         let sf=stringFields
-        let t=searchType(field)
-        if(t=="string"){
+        if(operator!=="add text" && operator!=="substring"){
+          let t=searchType(field)
+          if(t=="string"){
+            
+            setIsString(true)
+            sf=[...stringFields,field]
+            setStringFields((e)=>([...e,field]))
           
-          setIsString(true)
+          }else
+            setIsString(false)
+          if(primero==true){
+            updateNumberOperatorsforConcat([operator,field],stringFields)
+            //setCompositeField(e=>([field]))
+            setPrimero(false)
+          }else{
+            updateNumberOperatorsforConcat([...compositeField,operator,field],sf)
+            //setCompositeField(e=>([...e,operator,field]))
+          }
+        }else if(operator=="add text"){
+          sf=[...stringFields,addText]
+          setStringFields(sf)
+          updateNumberOperatorsforConcat([...compositeField,operator,addText],sf)
+        }else if(operator=="substring"){
           sf=[...stringFields,field]
-          setStringFields((e)=>([...e,field]))
-        
-        }else
-          setIsString(false)
-        if(primero==true){
-          updateNumberOperatorsforConcat([field],stringFields)
-          //setCompositeField(e=>([field]))
-          setPrimero(false)
-        }else{
-          updateNumberOperatorsforConcat([...compositeField,operator,field],sf)
-          //setCompositeField(e=>([...e,operator,field]))
-        }
-        
+          setStringFields(sf)
+          updateNumberOperatorsforConcat([...compositeField,operator,{op:"substring",start,chars,field}],sf)
+        } 
 
       }}>Add</FormButton>
 
