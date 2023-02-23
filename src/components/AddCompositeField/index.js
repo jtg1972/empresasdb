@@ -4,7 +4,8 @@ import FormButton from '../Forms/FormButton'
 import FormInput from '../Forms/FormInput'
 import './styles.scss'
 
-const DisplayList=({compositeField})=>{
+const DisplayList=({compositeField,setCompositeField,
+updateNumberOperatorsforConcat})=>{
   return <div style={{display:"flex",flexDirection:"row",
   justifyContent:"space-between",flex:1,flexGrow:0}}>
     
@@ -13,7 +14,7 @@ const DisplayList=({compositeField})=>{
     if(index%2==0){
       return <div style={{display:"flex",
       justifyContent:"space-between",flex:"1 0 0"}}>
-        <p style={{color:"black",flex:"1 0 0",overflow:"hidden"}}>{x}</p>
+        <p style={{color:"black",flex:"1 0 0",overflow:"hidden",whiteSpace:"nowrap"}}>{x}</p>
             
       </div>
     }
@@ -29,7 +30,7 @@ const DisplayList=({compositeField})=>{
           justifyContent:"space-between",flex:1,flexGrow:0} }>
          
           
-            <p style={{color:"black",width:"275px"/*flex:1,flexGrow:0,overflow:"hidden"*/}}>{compositeField[index]}</p>
+            <p style={{color:"black",width:"275px",marginLeft:"5px"/*flex:1,flexGrow:0,overflow:"hidden"*/}}>{compositeField[index]}</p>
           
           </div>
         else
@@ -49,7 +50,29 @@ const DisplayList=({compositeField})=>{
       return <div style={{display:"flex",flexDirection:"column",
       justifyContent:"space-between",flex:"1 0 0"}}>
         
-        <p style={{color:"red",flex:1}}>-</p>
+        <p style={{color:"red",flex:1}}
+        onClick={()=>{
+          let j=index
+          let y=compositeField.filter((i,inx)=>{
+            if(j==inx || j+1==inx)
+              return false
+            return true
+          })
+          let sf=[]
+          for(let u=0;u<y.length;u++){
+            if(u%2==0)
+              if(y[u]=="add text" || y[u]=="concat" || y[u]=="substring")
+                sf.push(y[u+1])
+          }
+          console.log("sfff",sf)
+          updateNumberOperatorsforConcat(y,sf)
+          /*setCompositeField(o=>o.filter((i,inx)=>{
+            if(j==inx || j+1==inx)
+              return false
+            return true
+          }))*/
+        
+        }}>-</p>
       </div>
     }
     
@@ -78,7 +101,7 @@ export const AddCompositeField = ({
   const numberOperators=["+","-","*","/","substring","add text"]
   const stringOperators=["concat","substring","add text"]
   const initalOperators=["none","add text","add field","substring"]
-
+  console.log("sfadd",stringFields,compositeField)
 
   useEffect(()=>{
 
@@ -124,6 +147,13 @@ export const AddCompositeField = ({
             return "concat"
         return x
       }))
+      let scf=arr.map((x,index)=>{
+        if(index%2==0)
+          if(numberOperators.filter(y=>(y!=="substring" && y!=="add text" && y!=="none")).includes(x))
+          
+            return "concat"
+        return x
+      })
       setCompositeField(arr.map((x,index)=>{
         if(index%2==0)
           if(numberOperators.filter(y=>(y!=="substring" && y!=="add text" && y!=="none")).includes(x))
@@ -131,8 +161,18 @@ export const AddCompositeField = ({
             return "concat"
         return x
       }))
-    }else
+      let sf1=[]
+      for(let u=0;u<scf.length;u++){
+        if(u%2==0)
+          if(scf[u]=="add text" || scf[u]=="concat" || scf[u]=="substring")
+            sf1.push(scf[u+1])
+      }
+      setStringFields(sf1)
+    }else{
       setCompositeField(arr)
+      setStringFields(sf)
+      setPrimero(true)
+    }
 
   }
 
@@ -228,7 +268,9 @@ export const AddCompositeField = ({
 
       }}>Add</FormButton>
 
-      <DisplayList compositeField={compositeField}></DisplayList>
+      <DisplayList compositeField={compositeField}
+      setCompositeField={setCompositeField}
+      updateNumberOperatorsforConcat={updateNumberOperatorsforConcat}></DisplayList>
     </Dialog>
   )
 }
