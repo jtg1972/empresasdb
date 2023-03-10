@@ -28,12 +28,17 @@ const Reports=()=>{
   const [otmChoices,setOtmChoices]=useState({})
   const[firstCatNormalFields,setFirstCatNormalFields]=useState([])
   const [reportShow,setReportShow]=useState(false)
+  const[specificOtmName,setSpecificOtmName]=useState("")
   const [openCompositeFieldDialog,setOpenCompositeFieldDialog]=useState(false)
-  const toggleCompositeFieldDialog=()=>setOpenCompositeFieldDialog(!openCompositeFieldDialog)
+  const toggleCompositeFieldDialog=(name)=>{
+    setSpecificOtmName(name)
+    setOpenCompositeFieldDialog(!openCompositeFieldDialog)
+  }
   const [openOtmIdFieldsDialog,setOpenOtmIdFields]=useState(false)
   const toggleOtmIdFieldsDialog=()=>setOpenOtmIdFields(!openOtmIdFieldsDialog)
   const [otmCategoryFields,setOtmCategoryFields]=useState([])
   const [allFieldsByOtm,setAllFieldsByOtm]=useState({})
+  const [compFieldsArray,setCompFieldsArray]=useState([])
   
   let subTotals={}
   console.log("otmchoices",otmChoices,fieldsShown,firstCatNormalFields)
@@ -49,12 +54,12 @@ const Reports=()=>{
     let secname=name.substring(lengthName)
     let cc=`otm${secname}`
     console.log("cc",cc,name)
-    sonOtmChoices={...sonOtmChoices,[name]:{normal:[],otm:[],otmdestiny:[],options:[]}}
+    sonOtmChoices={...sonOtmChoices,[name]:{normal:[],otm:[],otmdestiny:[],options:[],compositeFields:[]}}
     const sons=Object.keys(sonOtmChoices).
     filter(i=>i.startsWith(cc))
     console.log("current sons",name,sons,sonOtmChoices,cc)
     sons.forEach(y=>{
-      sonOtmChoices={...sonOtmChoices,[y]:{otm:[],normal:[],options:[],otmdestiny:[]}}
+      sonOtmChoices={...sonOtmChoices,[y]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]}}
       secname=`otm${secname}`
       let nv=y.substring(secname.length)
       //console.log("nv",nv)
@@ -65,7 +70,7 @@ const Reports=()=>{
 
   }
 
-  const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="")=>{
+  const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false,dcf={})=>{
     if(otm && !e.target.checked){
       //clearOtmChoicesSons(name,padre)
       sonOtmChoices=otmChoices
@@ -79,16 +84,21 @@ const Reports=()=>{
         setFieldsShown(x=>([...x,name1]))
       if(mainCat){
         const n=`getData${padre}`
-        let  nu={[n]:{otm:[],normal:[],options:[],otmdestiny:[]}}
+        let  nu={[n]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]}}
         if(firstCatNormalFields[n]==undefined)
           setFirstCatNormalFields(e=>({...e,...nu}))
         if(otm){
           setFirstCatNormalFields(o=>({...o,[n]:{...o[n],otm:[...o[n]["otm"],name1]}}))
-          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[]}}))
+          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]}}))
         }else if(otmdestiny=="otmdestiny"){
           setFirstCatNormalFields(o=>({...o,[n]:{...o[n],otmdestiny:[...o[n]["otmdestiny"],name1]}}))
-          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[]}}))
-        }else{
+
+
+          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]}}))
+        }else if(cf==true){
+          setFirstCatNormalFields(o=>({...o,[n]:{...o[n],compositeFields:[...o[n]["compositeFields"],dcf]}}))
+        }
+        else{
           //setFirstCatNormalFields(o=>({...o,[n]:{...o[n],normal:[...o[n]["normal"],name1]}}))
           setFirstCatNormalFields(o=>({...o,[n]:{...o[n],normal:[...o[n]["normal"],{type:declaredType,name1}]}}))
         }
@@ -97,10 +107,12 @@ const Reports=()=>{
         if(otm){  
           
           
-          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[]},[nameOtm]:{...e[nameOtm],otm:[...e[nameOtm]["otm"],name1]}}))
+          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]},[nameOtm]:{...e[nameOtm],otm:[...e[nameOtm]["otm"],name1]}}))
         
         }else if(otmdestiny=="otmdestiny"){
           setOtmChoices(e=>({...e,/*[name1]:{otm:[],normal:[]},*/[nameOtm]:{...e[nameOtm],otmdestiny:[...e[nameOtm]["otmdestiny"],name1]}}))
+        }else if(cf==true){
+          setOtmChoices(o=>({...o,[nameOtm]:{...o[nameOtm],compositeFields:[...o[nameOtm]["compositeFields"],dcf]}}))
         }else{
           setOtmChoices(e=>({...e,/*[name1]:{otm:[],normal:[]},*/[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"],{name1,type:declaredType}]}}))
         }
@@ -122,6 +134,11 @@ const Reports=()=>{
             e={...e,[n]:{...e[n],otmdestiny:[...e[n]["otmdestiny"].filter(x=>x.name1!==name1)]}}
             return e
           })
+        }else if(cf==true){
+          setFirstCatNormalFields(e=>{
+            e={...e,[n]:{...e[n],compositeFields:[...e[n]["compositeFields"].filter(x=>x.name1!==name1)]}}
+            return e
+          })
         }else{
           setFirstCatNormalFields(e=>{
             e={...e,[n]:{...e[n],normal:[...e[n]["normal"].filter(x=>x.name1!==name1)]}}
@@ -138,6 +155,11 @@ const Reports=()=>{
         
         }else if(otmdestiny=="otmdestiny"){
           setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],otmdestiny:[...e[nameOtm]["otmdestiny"].filter(u=>u.name1!==name1)]}}))
+        }else if(cf==true){
+          setOtmChoices(e=>{
+            e={...e,[nameOtm]:{...e[nameOtm],compositeFields:[...e[nameOtm]["compositeFields"].filter(x=>x.name1!==name1)]}}
+            return e
+          })
         }else{
           setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"].filter(u=>u.name1!==name1)]}}))
         }
@@ -224,8 +246,26 @@ const Reports=()=>{
       }} onClick={()=>{
         console.log("click",otmChoices[name]["normal"])
         setOtmCategoryFields(pivote[name])
-        toggleCompositeFieldDialog()
+        toggleCompositeFieldDialog(name)
       }}>Add composite field</FormButton>
+      {compFieldsArray[name]?.map(d=>{
+          return <>
+          <input type="checkbox" 
+            style={{marginRight:"5px", color:"white"}}
+            onChange={(e)=>{
+              /*if(nameOtm!=="" && e.target.checked==true)
+                setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[c.name]:true}}))
+              else if(nameOtm!=="" && e.target.checked==false)
+                setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[c.name]:false}}))*/
+              //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
+
+              checkReview(e,d.name1,false,""/*cat.name*/,name,false,true,"",true,d)
+            }}
+            />
+            <a style={{color:"yellow"}}>{d.name1}</a>
+            <br/>
+            </>
+        })}
       <FormButton style={{
         textAlign:"left",
         textDecoration:"underline",
@@ -289,7 +329,8 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
         else
           pivote={
           ...pivote,[`getData${currentCategory.name}`]:[...pivote[`getData${currentCategory.name}`],{name1:c.name,type:c.declaredType}]
-        }
+          }
+       
         //setAllFieldsByOtm(pivote)
 
           return <>
@@ -308,9 +349,33 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
           paddingLeft:0
         }} onClick={()=>{
           setOtmCategoryFields(pivote[`getData${currentCategory.name}`])
-          toggleCompositeFieldDialog()
+          toggleCompositeFieldDialog(`getData${currentCategory.name}`)
           console.log("click")
-        }}>Add composite field</FormButton> 
+        }}>Add composite field</FormButton>
+        {compFieldsArray[`getData${currentCategory.name}`]?.map(d=>{
+          //const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
+
+          return <>
+          <input type="checkbox" 
+            style={{marginRight:"5px", color:"white"}}
+            onChange={(e)=>{
+              /*if(nameOtm!=="" && e.target.checked==true)
+                setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[c.name]:true}}))
+              else if(nameOtm!=="" && e.target.checked==false)
+                setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[c.name]:false}}))*/
+                //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
+
+              
+              checkReview(e,d.name1,false,cat.name,"",true,false,"",true,d)
+            }}
+            />
+            <a style={{color:"yellow"}}>{d.name1}</a>
+            <br/>
+            </>
+        })}
+        {pivote[`getData${currentCategory.name}`]?.map(d=>{
+          <p>{d.name1}</p>
+        })}
         <FormButton style={{
           textAlign:"left",
           textDecoration:"underline",
@@ -328,6 +393,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
       {/*!primero && fieldsSingle*/}
     </div>)
   }
+  
 
 }
 const calculateInstancesNumber=(data,otmFieldName)=>{
@@ -1331,6 +1397,11 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       open={openCompositeFieldDialog}
       toggleDialog={toggleCompositeFieldDialog}
       otmCategoryFields={otmCategoryFields}
+      setOtmChoices={setOtmCategoryFields}
+      otmChoices={otmCategoryFields}
+      specificOtmName={specificOtmName}
+      compFieldsArray={compFieldsArray}
+      setCompFieldsArray={setCompFieldsArray}
     />
     <AddOtmIdFields
       open={openOtmIdFieldsDialog}

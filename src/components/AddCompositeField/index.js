@@ -90,8 +90,14 @@ updateNumberOperatorsforConcat})=>{
 export const AddCompositeField = ({
   open,
   toggleDialog,
-  otmCategoryFields
+  otmCategoryFields,
+  setOtmChoices,
+  otmChoices,
+  specificOtmName,
+  compFieldsArray,
+  setCompFieldsArray
 }) => {
+  console.log("parametros",otmChoices,setOtmChoices,specificOtmName)
   const [field,setField]=useState("")
   const [compositeField,setCompositeField]=useState([])
   const [primero,setPrimero]=useState(true)
@@ -101,6 +107,7 @@ export const AddCompositeField = ({
   const [stringFields,setStringFields]=useState([])
   const [start,setStart]=useState(0)
   const [chars,setChars]=useState(0)
+  const [compositeFieldName,setCompositeFieldName]=useState("")
   const numberOperators=["+","-","*","/","substring","add text"]
   const stringOperators=["concat","substring","add text"]
   const initalOperators=["none","add text",/*"add field",*/"substring"]
@@ -111,6 +118,7 @@ export const AddCompositeField = ({
     setField(otmCategoryFields[0]?.name1)
     setCompositeField([])
     setStringFields([])
+    setCompositeFieldName("")
     setOperator("none")/*()=>{
       if(otmCategoryFields[0]?.type=="string")
         return stringOperators[0]
@@ -118,6 +126,8 @@ export const AddCompositeField = ({
         return numberOperators[0]
     })*/
     setPrimero(true)
+    if(compFieldsArray[specificOtmName]==undefined)
+      setCompFieldsArray(e=>({...e,[specificOtmName]:[]}))
       
       
     }
@@ -180,13 +190,21 @@ export const AddCompositeField = ({
         
         else{
           let u=searchType(arr[1])
-          if(u=="string"){
+          if(u=="string") {
             console.log("entro con dos string")
 
             strFields=[arr[1]]
           //if(arr[0]!=="substring")
             compFields=arr
+          }else if(u=="number"){
+            strFields=[]
+            compFields=["none",arr[1]]
           }else{
+            strFields=[arr[1]]
+            compFields=arr
+          }
+          
+          /*else{
             console.log("entro con dos number")
 
             strFields=[]
@@ -296,7 +314,10 @@ export const AddCompositeField = ({
       closeDialog={toggleDialog} 
       headline="Add Composite Field"
     >
-      
+      <FormInput placeholder="Name of the Field" 
+      value={compositeFieldName}
+      onChange={(e)=>setCompositeFieldName(e.target.value)}
+      />
       {!primero &&
         (stringFields.length>0 ? 
           <select onChange={(e)=>setOperator(e.target.value)} 
@@ -346,6 +367,10 @@ export const AddCompositeField = ({
         
         return <option value={x.name1}>{x.name1}</option>
       })}
+      {compFieldsArray[specificOtmName]?.map(x=>{
+        
+        return <option value={x.name1}>{x.name1}</option>
+      })}
       </select>
       }
       <FormButton onClick={()=>{
@@ -389,6 +414,56 @@ export const AddCompositeField = ({
         }
 
       }}>Add</FormButton>
+      <FormButton onClick={()=>{
+        /*console.log("structure",{
+          ...otmChoices,
+          [specificOtmName]:
+          [
+            ...otmChoices[specificOtmName],
+            {
+              name1:compositeFieldName,
+              structure:compositeField
+            }
+          ]
+        }
+        )*/
+        /*console.log("structure",[
+          ...otmChoices,
+          {
+              name1:compositeFieldName,
+              structure:compositeField,
+              compositeField:true
+            }
+        ])
+        setOtmChoices(e=>([
+          ...e,
+          {
+              name1:compositeFieldName,
+              structure:compositeField,
+              compositeField:true
+            }
+        ]))*/
+        setCompFieldsArray(e=>({...e,[specificOtmName]:[
+          ...e[specificOtmName],
+          {
+            name1:compositeFieldName,
+            structure:compositeField,
+            compositeField:true
+          }]}))
+          /*{...e[specificOtmName],
+          compositeFields:{
+            ...e[specificOtmName]["compositeFields"],
+            [compositeFieldName]:{
+              name1:compositeFieldName,
+              structure:compositeField
+
+            }
+          
+          }}
+        }))*/
+      }}>
+        Add CompositeField
+      </FormButton>
 
       <DisplayList compositeField={compositeField}
       setCompositeField={setCompositeField}
