@@ -159,6 +159,12 @@ export const AddCompositeField = ({
       return u[0].type
   }
 
+  const checkIsNumber=()=>{
+    if(stringFields.length==0)
+      return true
+    return false
+  }
+
   const updateNumberOperatorsforConcat=(arr,sf,pri=false)=>{
     let compFields=[]
     let strFields=[]
@@ -448,7 +454,8 @@ export const AddCompositeField = ({
           {
             name1:compositeFieldName,
             structure:compositeField,
-            compositeField:true
+            compositeField:true,
+            type:checkIsNumber()?"number":"string"
           }]}))
           /*{...e[specificOtmName],
           compositeFields:{
