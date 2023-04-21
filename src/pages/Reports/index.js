@@ -39,25 +39,28 @@ const Reports=()=>{
   const [otmCategoryFields,setOtmCategoryFields]=useState([])
   const [allFieldsByOtm,setAllFieldsByOtm]=useState({})
   const [compFieldsArray,setCompFieldsArray]=useState([])
-  
+  const[allCompFieldsCluster,setAllCompFieldsCluster]=useState([])
   let subTotals={}
-  console.log("otmchoices",otmChoices,fieldsShown,firstCatNormalFields)
+  const [grandTotalsSt,setGrandTotalsSt]=useState({})
+  //console.log("otmchoices",otmChoices,fieldsShown,firstCatNormalFields)
   useEffect(()=>{
     setShowFields(false)
     setFieldsShown([])
   },[currentCategory])
  let sonOtmChoices={}
  //console.log("sonotm")
+ let grandTotals={}
+ //console.log("grandTotals",grandTotalsSt)
   const clearOtmChoicesSons=(name,padre,choicesSonsvars)=>{
     const partialName=`otm${padre}`
     const lengthName=partialName.length
     let secname=name.substring(lengthName)
     let cc=`otm${secname}`
-    console.log("cc",cc,name)
+    //console.log("cc",cc,name)
     sonOtmChoices={...sonOtmChoices,[name]:{normal:[],otm:[],otmdestiny:[],options:[],compositeFields:[]}}
     const sons=Object.keys(sonOtmChoices).
     filter(i=>i.startsWith(cc))
-    console.log("current sons",name,sons,sonOtmChoices,cc)
+    //console.log("current sons",name,sons,sonOtmChoices,cc)
     sons.forEach(y=>{
       sonOtmChoices={...sonOtmChoices,[y]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]}}
       secname=`otm${secname}`
@@ -83,6 +86,8 @@ const Reports=()=>{
       if(otm==true)
         setFieldsShown(x=>([...x,name1]))
       if(mainCat){
+        setAllCompFieldsCluster(compFieldsArray[`getData${currentCategory.name}`])
+
         const n=`getData${padre}`
         let  nu={[n]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]}}
         if(firstCatNormalFields[n]==undefined)
@@ -104,6 +109,8 @@ const Reports=()=>{
         }
       }
       if(mainCat==false){
+        setAllCompFieldsCluster(compFieldsArray[nameOtm])
+
         if(otm){  
           
           
@@ -244,7 +251,7 @@ const Reports=()=>{
         marginLeft:0,
         paddingLeft:0
       }} onClick={()=>{
-        console.log("click",otmChoices[name]["normal"])
+        //console.log("click",otmChoices[name]["normal"])
         setOtmCategoryFields(pivote[name])
         toggleCompositeFieldDialog(name)
       }}>Add composite field</FormButton>
@@ -272,7 +279,7 @@ const Reports=()=>{
         marginLeft:0,
         paddingLeft:0
       }} onClick={()=>{
-        console.log("click")
+        //console.log("click")
         setOtmCategoryFields(pivote[name])
 
         toggleOtmIdFieldsDialog()
@@ -350,7 +357,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
         }} onClick={()=>{
           setOtmCategoryFields(pivote[`getData${currentCategory.name}`])
           toggleCompositeFieldDialog(`getData${currentCategory.name}`)
-          console.log("click")
+          //console.log("click")
         }}>Add composite field</FormButton>
         {compFieldsArray[`getData${currentCategory.name}`]?.map(d=>{
           //const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
@@ -382,7 +389,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
           marginLeft:0,
           paddingLeft:0
         }} onClick={()=>{
-            console.log("click")
+            //console.log("click")
             setOtmCategoryFields(pivote[`getData${currentCategory.name}`])
             toggleOtmIdFieldsDialog()
         }}>Add field to identify parent in child relationships</FormButton>
@@ -495,45 +502,156 @@ const routesFinal=(routes)=>{
   })
 
 }*/
-const getCompFieldNumber=(row,structure)=>{
+
+const getCompFieldString=(row,structure,compF)=>{
+  //console.log("structure22",structure,compF)
+  let finalString=""
+  structure.forEach((x,index)=>{
+    if(index%2==0){
+      if(row[structure[index+1]]!==null){
+        if(x=="none"){
+          let did=false
+          let c=buscaCompField(compF,structure[index+1])
+          if(c!==false){
+            if(c.type=="string")
+              finalString+=getCompFieldString(row,c.structure,compF)
+            else if(c.type=="number")
+              finalString+=`${getCompFieldNumber(row,c.structure,compF)}`.toString()
+            did=true
+            
+          }
+          if(did==false)
+            finalString+=`${row[structure[index+1]]}`+" "
+        }else if(x=="concat"){
+          let did=false
+          let c=buscaCompField(compF,structure[index+1])
+          if(c!==false){
+            if(c.type=="string")
+              finalString+=getCompFieldString(row,c.structure,compF)
+            else if(c.type=="number")
+              finalString+=`${getCompFieldNumber(row,c.structure,compF)}`.toString()
+            did=true
+
+            
+          }
+          if(did==false)
+          
+            finalString+=`${row[structure[index+1]]}`+" "
+        }else if(x=="add text"){
+          
+          finalString+=`${structure[index+1].value}`+" "
+          
+          //finalString+=`${structure[index+1]}`+" "
+        }else if(typeof structure[index+1]=="object"){
+          if(structure[index+1].op=="substring"){
+            let z=structure[index+1]
+            
+            let y=`${row[structure[index+1].field]}`
+            if(y!=="null")
+              finalString+=y.substring(
+                z.start,z.chars)+" "
+            
+          }
+        }
+      }
+    }
+  })
+  return finalString
+}
+
+const getCompFieldNumber=(row,structure,compF)=>{
   let subtotal=0
+  //console.log("compnum",row,structure)
+  let did=false
   structure.forEach((x,index)=>{
     if(index%2==0){
       if(x=="none"){
-        if(row[structure[index+1]]!==null){
-          subtotal=row[structure[index+1]]
-        } 
-      }else{
-        console.log("estruc",row,structure,subtotal,index,row[structure[index+1]])
+        let c=buscaCompField(compF,structure[index+1])
+          if(c!==false){
+            subtotal+=parseFloat(getCompFieldNumber(row,c.structure,compF).toFixed(2))
+            subtotal=parseFloat(subtotal.toFixed(2))
+              did=true
+            
+          }
+          if(did==false)
+            subtotal+=row[structure[index+1]]
+        
+      }else if(x=="add text"){
+        //console.log("j23",structure[index+1],subtotal+structure[index+1].value)
+        subtotal+=parseFloat((structure[index+1].value).toFixed(2))
+        subtotal=parseFloat(subtotal.toFixed(2))
 
-        if(row[structure[index+1]]!==null){
+      }
+      else{
+        let temp=0
+        //console.log("estruc",row,structure,subtotal,index,row[structure[index+1]])
+        let c=buscaCompField(compF,structure[index+1])
+          if(c!==false){
+            temp=parseFloat(getCompFieldNumber(row,c.structure,compF).toFixed(2))
+
+              did=true
+            
+          }else{
+            if(typeof row[structure[index+1]]=="number")
+            
+              temp=parseFloat(row[structure[index+1]].toFixed(2))
+            else  
+              temp=0
+          }
+        
+        //if(row[structure[index+1]]!==null){
           if(x=="+")
-            subtotal=subtotal+row[structure[index+1]]
+            subtotal=subtotal+temp
           if(x=="-")
-            subtotal=subtotal-row[structure[index+1]]
+            subtotal=subtotal-temp
           if(x=="/")
-            subtotal=subtotal/row[structure[index+1]]
+            subtotal=subtotal/temp
           if(x=="*")
-            subtotal=subtotal*row[structure[index+1]]
-          console.log("estruc",row,structure,subtotal,index,row[structure[index+1]])
+            subtotal=subtotal*temp
+          subtotal=parseFloat(subtotal.toFixed(2))
 
-        }
+          //console.log("estruc",row,structure,subtotal,index,row[structure[index+1]])
+
+        //}
       }
     }
    
   })
-  console.log("res68",row.id,subtotal)
-  return parseInt(subtotal)
+  //console.log("res68",row.id,subtotal)
+  if(typeof subtotal=="number")
+    return parseFloat(subtotal.toFixed(2))
+  else 
+    return 0
 }
 
 let totalRoutes={}
 
-
 const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
-  console.log("ead",eachStopData)
+  //console.log("ead",eachStopData)
   let r=finalRoutes
   let current
   
+  if(r && r[eachIndex]!==undefined){
+    if(grandTotals[r[eachIndex]]==undefined){
+      grandTotals={...grandTotals,
+        [r[eachIndex]]:{
+          
+        }
+        
+      }
+    }
+  }
+  if(r[eachIndex+1]==undefined){
+    if(grandTotals[r[eachIndex]][r[eachIndex+1]]==undefined){
+      grandTotals={...grandTotals,
+        [r[eachIndex]]:{
+          [r[eachIndex+1]]:{}  
+        }
+        
+      }
+    }
+  }
+
   if(r && r[eachIndex+1]!==undefined){
     current=`${r[eachIndex+1]}total`
   }else
@@ -663,19 +781,67 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
         
         })
       }else{*/
+        
+      if(current!=="undefinedtotal"){
+        let doneGt1=false
         otmChoices[r[eachIndex+1]]?.normal.forEach(l=>{
-          //if(l!=="1" && l!=="2" && l!=="3"){
+        //if(l!=="1" && l!=="2" && l!=="3"){
           if(l.type=="number"){
+            
             otherAccVars={...otherAccVars,[`${l["name1"]}total`]:0}
+            /*if(doneGt1==false){
+              grandTotals[r[eachIndex]][r[eachIndex+1]]={...grandTotals[r[eachIndex]][r[eachIndex+1]],[`${l["name1"]}GrandTotal`]:0}
+              
+            }*/
           }
         })
+        doneGt1=false
+        let doneGt2=false
         otmChoices[r[eachIndex+1]]?.compositeFields.forEach(l=>{
           if(l.type=="number"){
             otherAccVars={...otherAccVars,[`${l["name1"]}total`]:0}
-            
+            /*if(doneGt2==false){
+              grandTotals[r[eachIndex]][r[eachIndex+1]]={...grandTotals[r[eachIndex]][r[eachIndex+1]],[`${l["name1"]}GrandTotal`]:0}
+            }*/
+
             
           }
         })
+        doneGt2=false
+        /*if(r[eachIndex+1]=="otmclientesfacturas")
+          console.log("prprpr",otherAccVars)*/
+
+      }else{//undefinedtotal
+        //console.log("alerta")
+        let doneGt3=false
+        let doneGt1=false
+          /*otmChoices[r[eachIndex]]?.normal.forEach(l=>{
+        if(l!=="1" && l!=="2" && l!=="3"){
+          if(l.type=="number"){
+            console.log("x")
+            //otherAccVars={...otherAccVars,[`${l["name1"]}total`]:0}
+            //if(doneGt1==false){
+              //grandTotals[r[eachIndex]][r[eachIndex+1]]={...grandTotals[r[eachIndex]][r[eachIndex+1]],[`${l["name1"]}GrandTotal`]:0}
+              
+            //}
+          }
+        })*/
+        doneGt1=false
+
+        otmChoices[r[eachIndex]]?.compositeFields.forEach(l=>{
+          if(l.type=="number"){
+            otherAccVars={...otherAccVars,[`${l["name1"]}`]:0}
+            /*if(doneGt3==false){
+              grandTotals[r[eachIndex]]={...grandTotals[r[eachIndex]],[`${l["name1"]}GrandTotal`]:0}
+            }*/
+
+            
+          }
+        })
+        doneGt3=false
+
+        //console.log("alerta1",otherAccVars)
+      }
         
 
         
@@ -684,26 +850,37 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
       let final=[]
       let oavTotals=otherAccVars
       //console.log("oavtotals1",oavTotals)//Object.keys(x[r[eachIndex+1]][0]))
-      x[r[eachIndex+1]]?.forEach(y=>{
-        let t=y.id
-        final=[...final,t]
-        Object.keys(otherAccVars).forEach(p=>{
-          const nn=p.substring(0,p.length-5)
+      if(current!=="undefinedtotal"){
+        x[r[eachIndex+1]]?.forEach(y=>{
+          let t=y.id
+          final=[...final,t]
+          Object.keys(otherAccVars).forEach(p=>{
+            const nn=p.substring(0,p.length-5)
 
-          //console.log("ppp",p,y[p],nn)
-          //if(typeof y[nn]=="number"){
-            //console.log("ppp1",y[nn])
-            let oo=buscaCompField(otmChoices[r[eachIndex+1]]?.compositeFields,nn)
-            if(oo!==false){
+            //console.log("ppp",p,y[p],nn)
+            //if(typeof y[nn]=="number"){
+              //console.log("ppp1",y[nn])
+              let oo=buscaCompField(compFieldsArray[r[eachIndex+1]]/*otmChoices[r[eachIndex+1]]?.compositeFields*/,nn)
+              if(oo!==false){
 
-              //let otmc=otmChoices[r[eachIndex+1]]?.compositeFields
-              //let l=otmc[p]
-              console.log("gcf",getCompFieldNumber(y,oo.structure))
-              oavTotals[p]+=getCompFieldNumber(y,oo.structure)
-            }else
-              oavTotals[p]+=y[nn]
-          //}
-        })
+                //let otmc=otmChoices[r[eachIndex+1]]?.compositeFields
+                //let l=otmc[p]
+                if(oo.type=="number"){
+                  console.log("gcf",oavTotals,p,oavTotals[p],getCompFieldNumber(y,oo.structure))
+                  oavTotals[p]+=parseFloat(getCompFieldNumber(y,oo.structure,compFieldsArray[r[eachIndex+1]])/*otmChoices[r[eachIndex+1]]?.compositeFields*/)
+                  oavTotals[p]=parseFloat(oavTotals[p].toFixed(2))
+                }
+              }else{
+                console.log("fijo y nn y[nn] oavtotals p oavtotalsp",y,nn,y[nn],oavTotals,p,oavTotals[p])
+                if(y[nn]!==null){
+                oavTotals[p]+=parseFloat(y[nn].toFixed(2))
+                oavTotals[p]=parseFloat(oavTotals[p].toFixed(2))
+                }
+              }
+            //}
+          })
+        
+            
         /*otmChoices[r[eachIndex+1]]?.compositeFields.forEach(l=>{
           if(l.type=="number"){
             if(oavTotals[`${l["name1"]}total`]==undefined)
@@ -717,66 +894,120 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
      
         
       })
+    }else{//undefinedtotal
+      //console.log("adventure",x)
+      
+        let t=x.id
+        final=[...final,t]
+        /*Object.keys(otherAccVars).forEach(p=>{
+          //const nn=p.substring(0,p.length-5)
+
+          //console.log("ppp",p,y[p],nn)
+          //if(typeof y[nn]=="number"){
+            //console.log("ppp1",y[nn])
+            let oo=buscaCompField(allCompFieldsCluster,p)
+            if(oo!==false){
+
+              //let otmc=otmChoices[r[eachIndex+1]]?.compositeFields
+              //let l=otmc[p]
+              if(oo.type=="number"){
+                //console.log("gcf",getCompFieldNumber(x,oo.structure))
+                oavTotals[p]+=parseFloat(getCompFieldNumber(x,oo.structure,compFieldsArray[r[eachIndex]]).toFixed(2))
+                oavTotals[p]=parseFloat(oavTotals[p].toFixed(2))
+              }
+            }else{
+              if(x[p]!==null){
+                console.log("x p x[p]",x,p,x[p])
+                oavTotals[p]+=parseFloat(x[p].toFixed(2))
+                oavTotals[p]=parseFloat(oavTotals[p].toFixed(2))
+              }
+            }
+          //}
+        })
+      
+          
+      /*otmChoices[r[eachIndex+1]]?.compositeFields.forEach(l=>{
+        if(l.type=="number"){
+          if(oavTotals[`${l["name1"]}total`]==undefined)
+            oavTotals={...oavTotals,[`${l["name1"]}total`]:0}
+         
+            oavTotals[`${l["name1"]}total`]+=getCompFieldNumber(y,l.structure)
+        }
+      })]*/
+        
+      
+   
+      
+    
+    }
 
       
-      totalRoutes={
-        ...totalRoutes,
-        [r[eachIndex]]:{
-          ...totalRoutes[r[eachIndex]],
-          [current]:{...totalRoutes[r[eachIndex]][current],
-            
-            [x.id]:{
-            normalData:{},
-            total:0,
-            keys:[],
-            ...otherAccVars
-          }}
-        }
+    totalRoutes={
+      ...totalRoutes,
+      [r[eachIndex]]:{
+        ...totalRoutes[r[eachIndex]],
+        [current]:{...totalRoutes[r[eachIndex]][current],
+          
+          [x.id]:{
+          normalData:{},
+          total:0,
+          keys:[],
+          ...otherAccVars
+        }}
       }
-      let normalFields={}
-      if(r[eachIndex]==`getData${currentCategory.name}`){
-        firstCatNormalFields[r[eachIndex]]?.normal.forEach(oo=>{
-          if(oo["name1"]!=="1" && oo["name1"]!=="2" && oo["name1"]!=="3")
-            normalFields={...normalFields,[oo["name1"]]:x[oo["name1"]]}
-        })
-        firstCatNormalFields[r[eachIndex]]?.otmdestiny.forEach(oo=>{
-          
-            normalFields={...normalFields,[oo]:x[oo]}
-        })
-        firstCatNormalFields[r[eachIndex]]?.compositeFields.forEach(l=>{
-          if(l.type=="number"){
-          
-          
-            normalFields={...normalFields,[`${l["name1"]}`]:getCompFieldNumber(x,l.structure)}
-          }
-        })
+    }
+    let normalFields={}
+    if(r[eachIndex]==`getData${currentCategory.name}`){
+      firstCatNormalFields[r[eachIndex]]?.normal.forEach(oo=>{
+        if(oo["name1"]!=="1" && oo["name1"]!=="2" && oo["name1"]!=="3")
+          normalFields={...normalFields,[oo["name1"]]:x[oo["name1"]]}
+      })
+      firstCatNormalFields[r[eachIndex]]?.otmdestiny.forEach(oo=>{
         
-        normalFields={id:x["id"],...normalFields}
-      }else{
-        otmChoices[r[eachIndex]]?.normal.forEach(oo=>{
-          //if(oo!=="1" && oo!=="2" && oo!=="3")
-          //if(oo.type=="number")
-            normalFields={...normalFields,[oo["name1"]]:x[oo["name1"]]}
-        })
-        otmChoices[r[eachIndex]]?.otmdestiny.forEach(oo=>{
-          //if(oo!=="1" && oo!=="2" && oo!=="3")
-          //if(oo.type=="number")
-            normalFields={...normalFields,[oo]:x[oo]}
-        })
-        otmChoices[r[eachIndex]]?.compositeFields.forEach(l=>{
-          if(l.type=="number"){
-          
-          
-            normalFields={...normalFields,[`${l["name1"]}`]:getCompFieldNumber(x,l.structure)}
-          }
-        })
-        normalFields={id:x["id"],...normalFields}
-      }
+          normalFields={...normalFields,[oo]:x[oo]}
+      })
+      firstCatNormalFields[r[eachIndex]]?.compositeFields.forEach(l=>{
+        if(l.type=="number"){
+        
+        
+          normalFields={...normalFields,[`${l["name1"]}`]:getCompFieldNumber(x,l.structure,compFieldsArray[`getData${currentCategory.name}`])}
+        }else 
+        if(l.type=="string"){
+          normalFields={...normalFields,[`${l["name1"]}`]:getCompFieldString(x,l.structure,compFieldsArray[`getData${currentCategory.name}`])}
+        }
+      })
+      
+      normalFields={id:x["id"],...normalFields}
+    }else{//diferente a principal
+      otmChoices[r[eachIndex]]?.normal.forEach(oo=>{
+        //if(oo!=="1" && oo!=="2" && oo!=="3")
+        //if(oo.type=="number")
+          normalFields={...normalFields,[oo["name1"]]:x[oo["name1"]]}
+      })
+      otmChoices[r[eachIndex]]?.otmdestiny.forEach(oo=>{
+        //if(oo!=="1" && oo!=="2" && oo!=="3")
+        //if(oo.type=="number")
+          normalFields={...normalFields,[oo]:x[oo]}
+      })
+      otmChoices[r[eachIndex]]?.compositeFields.forEach(l=>{
+        if(l.type=="number"){
+        
+          //console.log("x l.struc compfiearr[rindex]",x,l.structure,compFieldsArray[r[eachIndex]],getCompFieldNumber(x,l.structure,compFieldsArray[r[eachIndex]]))
+          normalFields={...normalFields,[`${l["name1"]}`]:getCompFieldNumber(x,l.structure,compFieldsArray[r[eachIndex]])}
+        }else
+          if(l.type=="string"){
+          normalFields={...normalFields,[`${l["name1"]}`]:getCompFieldString(x,l.structure,compFieldsArray[r[eachIndex]])}
+        }
+      })
+      normalFields={id:x["id"],...normalFields}
+    }
+    console.log("vertigo",normalFields)
       //console.log("normalfields",normalFields)
       //console.log("firstCatnormal",firstCatNormalFields)
       //console.log("nd2xid",x[r[eachIndex]],x[r[eachIndex+1]],final,x.id,eachStopData)
       //console.log("parcial",len,totalRoutes,totalRoutes[r[eachIndex]][current],
       //totalRoutes[r[eachIndex-1]][current],finalRoutes,x.id,len,r[eachIndex],r[eachIndex-1])
+    if(current!=="undefinedtotal"){
       totalRoutes={
         ...totalRoutes,
         [r[eachIndex]]:{
@@ -800,6 +1031,37 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
           /*[previous]:totalRoutes[r[eachIndex-1]][previous]+len}*/
         }
       }
+    }else{
+      //console.log("oavTotals22",oavTotals)
+      totalRoutes={
+        ...totalRoutes,
+        [r[eachIndex]]:{
+          ...totalRoutes[r[eachIndex]],
+          [current]:{
+            ...totalRoutes[r[eachIndex]][current],
+            
+            [x.id]:
+            {
+
+              ...totalRoutes[r[eachIndex]][current][x.id],
+              normalData:{...normalFields/*,...oavTotals*/},
+              total:totalRoutes[r[eachIndex]][current][x.id]["total"]==undefined
+              ?len:
+              totalRoutes[r[eachIndex]][current][x.id]["total"]+len,
+              keys:final.length!==0/*eachIndex+1!==finalRoutes.length && x[r[eachIndex]][indice] && x[r[eachIndex]][indice][r[eachIndex+1]]*/?final:[],
+              ...oavTotals
+              
+            }
+          }
+          
+          /*[previous]:totalRoutes[r[eachIndex-1]][previous]+len}*/
+        }
+      }
+      //console.log("tr22",totalRoutes)
+    }
+    //setGrandTotalsSt(grandTotals)
+
+    
       if(eachIndex+1<r.length)
       getLevelData(newData,finalRoutes,eachIndex+1)
       
@@ -830,7 +1092,7 @@ let finalObject={}
 
 const calculateKeys=(finalObjectName,routeIndexToFind,routeIndex,routes,keys,totalRoutes,r,u,otmName,otherAccVars)=>{
   let trr=totalRoutes[routes[routeIndex]][`${routes[routeIndex+1]}total`]
-  console.log("trr",trr)
+  //console.log("trr",trr)
   let otherfinalvars={}
     keys.forEach(k=>{
     if(routeIndexToFind==routeIndex){
@@ -840,16 +1102,30 @@ const calculateKeys=(finalObjectName,routeIndexToFind,routeIndex,routes,keys,tot
         if(i in o){
           otherfinalvars[i]=finalObject[otmName][r]["items"][u][i]+getCompFieldNumber(trr[k],o[i].structure)
         }else*/
-        console.log("revisai",i)
+        //console.log("revisai",i)
         let val=0
-        if(trr[k][i]!==null)
-          val=trr[k][i]
+        
+        if(trr[k][i]!==null){
+          //console.log("trr",trr[k][i])
+          let ooi=trr[k][i]
+          val=parseFloat(ooi)
+        }
 
-        if(i=="j1total")
-          console.log("revisa",u,otmName,r,u,i,finalObject[otmName][r]["items"][u][i],trr[k][i],routes[routeIndex],`${routes[routeIndex+1]}total`,trr,k,i,val)
-        if(finalObject[otmName][r]["items"][u][i]==undefined)
+        /*if(i=="j1total")
+          console.log("revisa",u,otmName,r,u,i,finalObject[otmName][r]["items"][u][i],trr[k][i],routes[routeIndex],`${routes[routeIndex+1]}total`,trr,k,i,val)*/
+        let oop=0
+        if(finalObject[otmName][r]["items"][u][i]==undefined){
+
           finalObject[otmName][r]["items"][u]={...finalObject[otmName][r]["items"][u],[i]:0}
-        otherfinalvars[i]=finalObject[otmName][r]["items"][u][i]+val
+        } 
+        if(grandTotals[otmName][r][i]==undefined)
+          grandTotals[otmName][r]={...grandTotals[otmName][r],[i]:0}
+
+        oop=finalObject[otmName][r]["items"][u][i]+val
+        
+        otherfinalvars[i]=parseFloat(oop.toFixed(2))
+        grandTotals[otmName][r][i]+=val
+        grandTotals[otmName][r][i]=parseFloat(grandTotals[otmName][r][i].toFixed(2))
       })
     
       finalObject={
@@ -892,7 +1168,8 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
     finalObject={...finalObject,[otmName]:{...finalObject[otmName],[nn]:{items:{}}}}
   // console.log("ver22",claves,totalRoutes[routes[routeIndex]][r])
 //console.log("mainArray",mainArray)
-    
+  if(grandTotals[otmName][`${dataVar}`]==undefined)
+    grandTotals={...grandTotals,[otmName]:{...grandTotals[otmName],[nn]:{}}}  
     
     //mainArray=Object.keys(totalRoutes[routes[routeIndex]][r]).forEach(x=>claves)
     //console.log("mainArray",claves,mainArray,routes[routeIndex],r,routeIndex)
@@ -903,6 +1180,9 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
       if(finalObject[otmName]==undefined){
         finalObject[otmName]={}
       }
+      if(grandTotals[otmName]==undefined){
+        grandTotals[otmName]={}
+      }
 
     
       
@@ -911,6 +1191,11 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
           finalObject[otmName]={
             [nn]:{}
             
+          }
+        }
+        if(grandTotals[otmName][nn]==undefined){
+          grandTotals[otmName]={
+            [nn]:{}
           }
         }
         //console.log("rmainArray",cor,cor[u].normalData,r,begin)
@@ -943,7 +1228,7 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
 
 
       end added code 2*/
-      console.log("cor45",cor[firstkey])
+      //console.log("cor45",cor[firstkey])
 
       Object.keys(cor[firstkey]).forEach(iu=>{
         //console.log("cor11iu",iu)
@@ -951,6 +1236,8 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
           const n=`${iu}`
           if(finalObject[otmName][nn]["items"][u][n]==undefined)
             finalObject[otmName][nn]["items"][u][n]=0
+          if(grandTotals[otmName][nn][n]==undefined)
+            grandTotals[otmName][nn][n]=0
           otherAccVars={...otherAccVars,[n]:0}
           
         }
@@ -991,6 +1278,7 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
                   otherAccVars[y]+=cor[u][y]
 
                 finalObject[otmName][nn]["items"][u][y]+=cor[u][y]
+                grandTotals[otmName][nn][y]+=cor[u][y]
               /*}
               else  
                //finalObject[otmName][nn]["items"][u][y]=0*/
@@ -1046,6 +1334,7 @@ const getAccumulated=(routes,
       //getData(routes,otmName,totalRoutes,0,null,true,totalRoutes[routes[i]][`${routes[i+1]}total`],i)
       getData(routes,otmName,totalRoutes,routeIndex,null,true,totalRoutes[routes[i]][`${routes[i+1]}total`],i)
     }
+    console.log("grandTotals1",grandTotals)
       /*if(Object.keys(mainArray).length>0){
         finalObject[otmName][r]=0
         for(let x in mainArray){
@@ -1071,7 +1360,7 @@ const getDataReport=(routes,finalRoutes)=>{
   //for(let i=0;i<finalRoutes.length;i++){
 
    getLevelData(categoryProducts[root],routes[finalRoutes[0]],0)
-   console.log("totalRoutes",totalRoutes,categoryProducts[root],finalRoutes)
+   //console.log("totalRoutes",totalRoutes,categoryProducts[root],finalRoutes)
 
   //}
   //console.log("getLevelData",totalRoutes)
@@ -1095,11 +1384,11 @@ const getDataReport=(routes,finalRoutes)=>{
       }
 
   }
-  console.log("finalObject",finalObject)
+  //console.log("finalObject",finalObject)
   }
   let done=[]
   let printTablesBool=[]
-  console.log("totalRoutesArray",totalRoutesArray)
+  //console.log("totalRoutesArray",totalRoutesArray)
   for(let i=0;i<finalRoutes.length;i++){
     for(let j=0;j<routes[finalRoutes[i]].length;j++){
       
@@ -1113,7 +1402,7 @@ const getDataReport=(routes,finalRoutes)=>{
       enc=[]
      
       if(j!==routes[finalRoutes[i]].length-1){
-        console.log("check22",printTablesBool,routes[finalRoutes[i]][j])
+        //console.log("check22",printTablesBool,routes[finalRoutes[i]][j])
         if(!printTablesBool.includes(routes[finalRoutes[i]][j])){
           printTable(finalObject[routes[finalRoutes[i]][j]],routes[finalRoutes[i]][j],`${routes[finalRoutes[i]][j+1]}total`)
           printTablesBool.push(routes[finalRoutes[i]][j])
@@ -1126,6 +1415,7 @@ const getDataReport=(routes,finalRoutes)=>{
     
 
   }
+  console.log("grandTotals",grandTotals)
   beginPrintFinalTables(totalRoutesArray)
   //return printTable(finalObject['getDataclientes'],'getDataclientes',`${routes[finalRoutes[0]][1]}total`)
   //printTable(totalRoutesArray,routes,finalRoutes)
@@ -1133,32 +1423,46 @@ const getDataReport=(routes,finalRoutes)=>{
 
 const printFinalTable=(title,data)=>{
   let fields=[]
-  console.log("firstcat",firstCatNormalFields)
+  //console.log("data555",data)
+  let compF
+  let cf
+  //console.log("firstcat",firstCatNormalFields)
   if(title!==`getData${currentCategory.name}`){
     fields=otmChoices[title]["normal"].map(x=>x["name1"])
     fields=[...fields,...otmChoices[title]["otmdestiny"]]
-    let cf=otmChoices[title]["compositeFields"].map(x=>x["name1"])
-    fields=[...fields,cf]
+    compF=otmChoices[title]["compositeFields"]
+    cf=compF.map(x=>x["name1"])
+    fields=[...fields,...cf]
   }else{
     fields=firstCatNormalFields[title]["normal"].map(x=>x["name1"])
-    let cf=firstCatNormalFields[title]["compositeFields"].map(x=>x["name1"])
-    fields=[...fields,cf]
+    compF=firstCatNormalFields[title]["compositeFields"]
+    let cf=compF.map(x=>{
+      
+      
+      return x["name1"]
+    })
+    fields=[...fields,...cf]
   }
   
   let head=[]
   let rowCols=[]
   let rows=[]
-  console.log("fields11",fields)
+  //console.log("fields11",fields)
   Object.keys(data).forEach((x,index)=>{
     let specifics=data[x].normalData
     rowCols=[]
-    fields.forEach(f=>{
+    fields.forEach((f,i)=>{
       
       if(f!=="1" && f!=="2" && f!=="3"){
         if(index==0){
           head.push(<th style={{borderRight:"1px solid white"}}>{f}</th>)
         }
-        rowCols.push(<td style={{borderRight:"1px solid white"}}>{specifics[f]}</td>)
+        let bcm=buscaCompField(compF,f)
+          if(bcm!==false &&
+            bcm.type=="number")
+            rowCols.push(<td style={{borderRight:"1px solid white"}}>{specifics[f]}</td>)
+          else
+            rowCols.push(<td style={{borderRight:"1px solid white"}}>{specifics[f]}</td>)
       }
     })
     rowCols.unshift(<td style={{borderRight:"1px solid white"}}>{specifics["id"]}</td>)
@@ -1203,7 +1507,7 @@ const getValues=(o)=>{
   Object.keys(o).forEach((y,index)=>{
         
     if(y!=="normalFields" && y!=="normalData"){
-      de.push(<td style={{margin:0}} className="notlastborder">{o[y]}</td>)
+      de.push(<td style={{margin:0,overflowX:"scroll",whiteSpace:"nowrap"}} className="notlastborder">{o[y]}</td>)
     }
   
   })
@@ -1215,7 +1519,7 @@ let headerEach=[]
 const printReportSegment=(object,primero,segmentTitle)=>{
   
   //let dataEach=[]
-  console.log("object",object)
+  //console.log("object",object)
   let fullheader=[]
   
   //let eachHeader
@@ -1305,14 +1609,14 @@ const printTable=(objectToPrint,title,primero)=>{
   reporte=""
   outsideTable=[]
   let keys=Object.keys(objectToPrint)
-  console.log("primero1",primero)
+  //console.log("primero1",primero)
 
   for(let i=0;i<keys.length;i++){
     let data=objectToPrint[`${keys[i]}`]
     
       
       if(keys[i]==primero){
-        console.log("primero",primero)
+        //console.log("primero",primero)
         printReportSegment(objectToPrint[primero]["items"]["normalFields"],true,title)         
 
       }
@@ -1396,7 +1700,7 @@ const beginReport=(primero=false,name1,d1)=>{
   //console.log("croutes",calculateRoutes([`getData${currentCategory.name}`]))
   
   let routes=calculateRoutes([`getData${currentCategory.name}`])
-  console.log("routes111",routes)
+  //console.log("routes111",routes)
   //routesfinal encuentra la ultima parada de cada una de las rutas
   //console.log("routesfinal",routesFinal(routes))
   let finalRoutes=routesFinal(routes)

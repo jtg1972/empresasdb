@@ -37,9 +37,12 @@ updateNumberOperatorsforConcat})=>{
           return <div style={{display:"flex",flexDirection:"row",
           justifyContent:"space-between",flex:1,flexGrow:1}}>
          
-          
+          {compositeField[index]["op"]=="substring" &&
             <p className="ofx">{compositeField[index]["field"]} chars:{compositeField[index]["chars"]} from:{compositeField[index]["start"]}</p>
-          
+          }
+          {compositeField[index]["op"]=="add text" &&
+            <p className="ofx">{compositeField[index]["value"]}</p>
+          }
           </div> 
       }
       })}
@@ -62,12 +65,18 @@ updateNumberOperatorsforConcat})=>{
           for(let u=0;u<y.length;u++){
             if(u%2==0)
               
-              if(y[u]=="add text" || y[u]=="concat")
+              //if(y[u]=="add text" || y[u]=="concat")
+                //sf.push(y[u+1])
+              if(y[u]=="add text")
+                if(y[u+1].type=="string"){
+                  sf.push(y[u+1].value)
+                }
+              if(y[u]=="concat")
                 sf.push(y[u+1])
               if(y[u]=="substring")
                 sf.push(y[u+1].field)
           }
-          console.log("sfff",sf)
+          //console.log("sfff",sf)
           updateNumberOperatorsforConcat(y,sf)
           /*setCompositeField(o=>o.filter((i,inx)=>{
             if(j==inx || j+1==inx)
@@ -97,7 +106,7 @@ export const AddCompositeField = ({
   compFieldsArray,
   setCompFieldsArray
 }) => {
-  console.log("parametros",otmChoices,setOtmChoices,specificOtmName)
+  //console.log("parametros",otmChoices,setOtmChoices,specificOtmName)
   const [field,setField]=useState("")
   const [compositeField,setCompositeField]=useState([])
   const [primero,setPrimero]=useState(true)
@@ -111,7 +120,9 @@ export const AddCompositeField = ({
   const numberOperators=["+","-","*","/","substring","add text"]
   const stringOperators=["concat","substring","add text"]
   const initalOperators=["none","add text",/*"add field",*/"substring"]
+  const [addTextNumber,setAddTextNumber]=useState(false)
   console.log("sfadd",stringFields,compositeField)
+  console.log("compfieldsarray",compFieldsArray)
   let pr=true
   useEffect(()=>{
 
@@ -152,6 +163,18 @@ export const AddCompositeField = ({
   
 
   const searchType=(name)=>{
+    let oo=compFieldsArray[specificOtmName]
+    for(let l in oo){
+      if(oo[l].name1==name){
+        //console.log("oo1",oo,oo[l].type)
+        return oo[l].type
+      }
+        
+
+        
+    }
+    
+
     let u=otmCategoryFields.filter(
       x=>x.name1==name
     )
@@ -169,45 +192,57 @@ export const AddCompositeField = ({
     let compFields=[]
     let strFields=[]
     let uno=false
+    //console.log("arr0900",arr)
     if(sf.length>0){
       if(arr.length==2){
         uno=true
         if(arr[0]!=="concat" && arr[0]!=="add text" && arr[0]!=="substring"){
-          console.log("entro con dos")
+          //console.log("entro con dos")
           let u=searchType(arr[1])
           if(u=="string"){
-            console.log("entro con dos string")
+            //console.log("entro con dos string")
 
             strFields=[arr[1]]
           //if(arr[0]!=="substring")
             compFields=arr
           }else{
-            console.log("entro con dos number")
+            //console.log("entro con dos number")
 
             strFields=[]
             compFields=["none",arr[1]]
           }
           //compFields=["none",arr[1]]
           
-          console.log("revisa ww",strFields,compFields)
+          //console.log("revisa ww",strFields,compFields)
           
             
         } 
         
         else{
-          let u=searchType(arr[1])
-          if(u=="string") {
-            console.log("entro con dos string")
+          if(typeof arr[1]!=="object"){
+            let u=searchType(arr[1])
+            if(u=="string") {
+              //console.log("entro con dos string")
 
-            strFields=[arr[1]]
-          //if(arr[0]!=="substring")
-            compFields=arr
-          }else if(u=="number"){
-            strFields=[]
-            compFields=["none",arr[1]]
+              strFields=[arr[1]]
+            //if(arr[0]!=="substring")
+              compFields=arr
+            }else if(u=="number"){
+              strFields=[]
+              compFields=["none",arr[1]]
+            }else{
+              strFields=[arr[1]]
+              compFields=arr
+            }
           }else{
-            strFields=[arr[1]]
-            compFields=arr
+            if(arr[1].op=="add text" && arr[1].type=="string"){
+              strFields=[arr[1].value]
+              compFields=arr
+            }else if(arr[1].op=="substring"){
+              strFields=[]
+              compFields=["substring",arr[1]]
+            }
+
           }
           
           /*else{
@@ -228,13 +263,13 @@ export const AddCompositeField = ({
             compFields=["none",arr[1]]
           //strFields=sf
           compFields=arr*/
-          console.log("revisa wy",strFields,compFields)
+          //console.log("revisa wy",strFields,compFields)
 
         }
       }else{
-        console.log("revisa 1")
+        //console.log("revisa 1")
         compFields=arr.map((x,index)=>{
-          console.log("revisa",x,index)
+          //console.log("revisa",x,index)
           if(index%2==0){
             if(index!==0){
               if(numberOperators.filter(y=>(y!=="add text" && y!=="concat" && y!=="substring" && y!=="none")).includes(x))
@@ -244,9 +279,9 @@ export const AddCompositeField = ({
               return x
 
             }else{
-              console.log("entro cero")
+              //console.log("entro cero")
               if(x!=="concat" && x!=="add text" && x!=="substring"){
-                console.log("entro none")
+                //console.log("entro none")
                 return "none"
                   
               }else 
@@ -275,6 +310,10 @@ export const AddCompositeField = ({
                 sf1.push(compFields[u+1])
               if(compFields[u]=="substring")
                 sf1.push(compFields[u+1].field)
+              if(compFields[u]=="add text"){
+                if(compFields[u+1].type=="string")
+                  sf1.push(compFields[u+1].value)
+              }
             }
           }
           if(!uno){
@@ -288,17 +327,31 @@ export const AddCompositeField = ({
           }
       
     }else{
-      console.log("entro aqui pendejo")
+      //console.log("entro aqui pendejo")
       if(arr.length==2){
-          console.log("x22")
-          compFields=["none",arr[1]]
-          console.log("revisa ww",strFields,compFields)
+          //console.log("x22")
+          if(arr[1].op=="add text"){
+          
+            compFields=["add text",arr[1]]
+
+          }
+          else if(arr[1].op=="substring")
+            compFields=["substring",arr[1]]
+          else 
+            compFields=["none",arr[1]]
+          //console.log("revisa ww",strFields,compFields)
             
       }else if(arr.length>2) {
-        console.log("x33")
+        //console.log("x33")
+        if(arr[1].op!=="add text" && arr[1].op!=="substring"){
+          arr[0]="none"
+        }
         compFields=arr
-        compFields[0]="none"
-        console.log("revisa wy",strFields,compFields)
+
+          
+
+        
+        //console.log("revisa wy",strFields,compFields)
 
       }else if(arr.length==0)
         setStringFields([])
@@ -348,8 +401,24 @@ export const AddCompositeField = ({
         </select>
       }
       {operator=="add text" &&
+      <>
         <FormInput placeholder="write text"
+        type={addTextNumber?"number":"text"}
+        value={addText}
         onChange={(e)=>setAddText(e.target.value)}></FormInput>
+        <br/><input type="checkbox" onChange={
+          (e)=>{
+            if(e.target.checked==true){
+              setAddTextNumber(true)
+              
+            }else{
+              setAddTextNumber(false)
+            }
+            setAddText("")
+          }
+      }
+        /> <span style={{color:"black"}}>Number</span>
+      </>
       }
       {operator=="substring" && 
       <>
@@ -381,7 +450,7 @@ export const AddCompositeField = ({
       }
       <FormButton onClick={()=>{
         let sf=stringFields
-        console.log("searchtype",searchType(field),operator)
+        //console.log("searchtype",searchType(field),operator)
 
         if(operator!=="add text" && operator!=="substring" && operator!=="concat"){
           let t=searchType(field)
@@ -408,9 +477,11 @@ export const AddCompositeField = ({
           updateNumberOperatorsforConcat([...compositeField,operator,field],sf)
         
         }else if(operator=="add text"){
-          sf=[...stringFields,addText]
+          if(!addTextNumber)
+            sf=[...stringFields,addText]
+            //console.log("alarm",[...compositeField,operator,{op:"add text",type:addTextNumber?"number":"string",value:addTextNumber?parseInt(addText):addText,field:`${addText}`}])
           //setStringFields(sf)
-          updateNumberOperatorsforConcat([...compositeField,operator,addText],sf)
+          updateNumberOperatorsforConcat([...compositeField,operator,{op:"add text",type:addTextNumber?"number":"string",value:addTextNumber?parseFloat(addText):addText,field:`${addText}`}],sf)
         }else if(operator=="substring"){
           sf=[...stringFields,field]
           //setStringFields(sf)
