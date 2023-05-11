@@ -117,11 +117,11 @@ const Reports=()=>{
           setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]},[nameOtm]:{...e[nameOtm],otm:[...e[nameOtm]["otm"],name1]}}))
         
         }else if(otmdestiny=="otmdestiny"){
-          setOtmChoices(e=>({...e,/*[name1]:{otm:[],normal:[]},*/[nameOtm]:{...e[nameOtm],otmdestiny:[...e[nameOtm]["otmdestiny"],name1]}}))
+          setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],otmdestiny:[...e[nameOtm]["otmdestiny"],name1]}}))
         }else if(cf==true){
           setOtmChoices(o=>({...o,[nameOtm]:{...o[nameOtm],compositeFields:[...o[nameOtm]["compositeFields"],dcf]}}))
         }else{
-          setOtmChoices(e=>({...e,/*[name1]:{otm:[],normal:[]},*/[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"],{name1,type:declaredType}]}}))
+          setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"],{name1,type:declaredType}]}}))
         }
       }
       
@@ -260,13 +260,9 @@ const Reports=()=>{
           <input type="checkbox" 
             style={{marginRight:"5px", color:"white"}}
             onChange={(e)=>{
-              /*if(nameOtm!=="" && e.target.checked==true)
-                setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[c.name]:true}}))
-              else if(nameOtm!=="" && e.target.checked==false)
-                setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[c.name]:false}}))*/
               //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
 
-              checkReview(e,d.name1,false,""/*cat.name*/,name,false,true,"",true,d)
+              checkReview(e,d.name1,false,"",name,false,true,"",true,d)
             }}
             />
             <a style={{color:"yellow"}}>{d.name1}</a>
@@ -310,10 +306,6 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
             <input type="checkbox" 
             style={{marginRight:"5px", color:"white"}}
             onChange={(e)=>{
-              /*if(nameOtm!=="" && e.target.checked==true)
-                setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[c.name]:true}}))
-              else if(nameOtm!=="" && e.target.checked==false)
-                setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[c.name]:false}}))*/
               checkReview(e,c.name,true,cat.name,nameOtm,mainCat)
             }}
             />
@@ -322,13 +314,6 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
             {isChecked(c.name) && displayMenu(c.name,cat.name)}
           </>
         }
-       /* return <>
-        <input type="checkbox" 
-        style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
-        onChange={(e)=>checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)}/>
-          {c.name}
-          <br/>
-        </>*/
         if(nameOtm!=="")
           pivote={
             ...pivote,[nameOtm]:[...pivote[nameOtm],{name1:c.name,type:c.declaredType}]
@@ -366,10 +351,6 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
           <input type="checkbox" 
             style={{marginRight:"5px", color:"white"}}
             onChange={(e)=>{
-              /*if(nameOtm!=="" && e.target.checked==true)
-                setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[c.name]:true}}))
-              else if(nameOtm!=="" && e.target.checked==false)
-                setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],[c.name]:false}}))*/
                 //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
 
               
@@ -397,7 +378,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
       
 
       }
-      {/*!primero && fieldsSingle*/}
+      
     </div>)
   }
   
@@ -455,7 +436,7 @@ const findFinal=(each,routes,field)=>{
   Object.keys(routes).forEach(y=>{
     //console.log("checar",[1,2,3].includes([1,3]))
     if(each.every(x=>routes[y].includes(x))
-      /*routes[y].includes(each)*/
+  
        && routes[y].length>lenEach){
       lenEach=routes[y].length
       finalField=y
@@ -625,14 +606,17 @@ const getCompFieldNumber=(row,structure,compF)=>{
 }
 
 let totalRoutes={}
-
+let doneLd={}
 const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
   //console.log("ead",eachStopData)
   let r=finalRoutes
   let current
   
+  if(doneLd[r[eachIndex]]==undefined)
+    doneLd={...doneLd,[r[eachIndex]]:{done:false,len:0,count:0,nodeDone:[]}}
+  
   if(r && r[eachIndex]!==undefined){
-    if(grandTotals[r[eachIndex]]==undefined){
+    if(!grandTotals[r[eachIndex]]){
       grandTotals={...grandTotals,
         [r[eachIndex]]:{
           
@@ -641,16 +625,25 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
       }
     }
   }
-  if(r[eachIndex+1]==undefined){
-    if(grandTotals[r[eachIndex]][r[eachIndex+1]]==undefined){
-      grandTotals={...grandTotals,
-        [r[eachIndex]]:{
-          [r[eachIndex+1]]:{}  
-        }
-        
+  if(!grandTotals[r[eachIndex]][`${r[eachIndex]}total`]){
+    let nv=`${r[eachIndex]}total`
+    grandTotals={...grandTotals,[r[eachIndex]]:{...grandTotals[r[eachIndex]],[nv]:{}}}
+    console.log("gtlog",grandTotals)
+  }
+
+  
+  
+  if(!grandTotals[r[eachIndex]][`${r[eachIndex+1]}total`]){
+    grandTotals={...grandTotals,
+      [r[eachIndex]]:{
+        ...grandTotals[r[eachIndex]],
+        [`${r[eachIndex+1]}total`]:{}  
       }
+      
     }
   }
+  console.log("uiop",grandTotals)
+  
 
   if(r && r[eachIndex+1]!==undefined){
     current=`${r[eachIndex+1]}total`
@@ -663,80 +656,11 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
     definitiveCurrent="final"
   
   //let previous=`${r[eachIndex-1]}total`
- /*if(totalRoutes[r[eachIndex]]==undefined){
-  
-    totalRoutes={...totalRoutes,[r[eachIndex]]:{[current]:0}}
-  
-  }else if(totalRoutes[r[eachIndex]][current]==undefined){  
-    totalRoutes={...totalRoutes,[r[eachIndex]]:{...totalRoutes[r[eachIndex]],[current]:0}}
-
-  }*/
+ 
   //console.log("eachstopdataundefined1",eachStopData)
   if(r && totalRoutes[r[eachIndex]]==undefined)
     totalRoutes={...totalRoutes,[r[eachIndex]]:{}}
-  /*if(current=='undefinedtotal'){
-    console.log("eachstopdataundefined",eachStopData)
-    let uu={}
-    if(totalRoutes[r[eachIndex]][r[`${r[eachIndex]}total`]]!==undefined)
-      uu={...totalRoutes[r[eachIndex]][`${r[eachIndex]}total`]}
-    //if(totalRoutes[r[eachIndex]]==undefined){
-    totalRoutes={
-      ...totalRoutes,
-      [r[eachIndex]]:{
-        ...totalRoutes[r[eachIndex]],
-        [`${r[eachIndex]}total`]:{
-          ...uu
-        }
-      }
-    }
-    eachStopData.map((x,indice)=>{
-      totalRoutes={
-        ...totalRoutes,
-        [r[eachIndex]]:{
-          ...totalRoutes[r[eachIndex]],
-          [`${r[eachIndex]}total`]:{
-            ...totalRoutes[r[eachIndex]][`${r[eachIndex]}total`],
-            
-            [x.id]:{
-              normalData:{},
-              total:0,
-              keys:[],
-              
-            }
-          }
-        }
-      }
-      let normalFields={}
-      if(r[eachIndex]==`getData${currentCategory.name}`){
-        firstCatNormalFields[r[eachIndex]]["normal"].forEach(oo=>{
-          if(oo!=="1" && oo!=="2" && oo!=="3")
-            normalFields={...normalFields,[oo]:x[oo]}
-        })
-      }else{
-        otmChoices[r[eachIndex]]["normal"].forEach(oo=>{
-          if(oo!=="1" && oo!=="2" && oo!=="3")
-            normalFields={...normalFields,[oo]:x[oo]}
-        })
-      }
-      totalRoutes={
-        ...totalRoutes,
-        [r[eachIndex]]:{
-          ...totalRoutes[r[eachIndex]],
-          [`${r[eachIndex]}total`]:{
-            ...totalRoutes[r[eachIndex]][`${r[eachIndex]}total`],
-            
-            [x.id]:{
-              ...totalRoutes[r[eachIndex]][`${r[eachIndex]}total`][x.id],
-              normalData:normalFields,
-              total:eachStopData.length,
-              keys:[]
-            }
-          }
-          //[previous]:totalRoutes[r[eachIndex-1]][previous]+len}
-        }
-      }
-    })
-  }*/
+  
 
   //if(current!=='undefinedtotal'){
     let uu={}
@@ -756,9 +680,21 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
     
   //if(eachIndex!==r.length){
     let newData
+    const lenCluster=eachStopData.length
+
+    doneLd={...doneLd,[r[eachIndex]]:{...doneLd[r[eachIndex]],len:lenCluster}}
+
     eachStopData.map((x,indice)=>{
       //console.log("xxxx",x)
       newData=x[r[eachIndex+1]]
+      let ui=[...doneLd[r[eachIndex]].nodeDone]
+      if([...ui].includes(x["id"]))
+        doneLd={...doneLd,[r[eachIndex]]:{...doneLd[r[eachIndex]],count:doneLd[r[eachIndex]].count++,
+        done:true}}
+      else
+      doneLd={...doneLd,[r[eachIndex]]:{...doneLd[r[eachIndex]],nodeDone:[...doneLd[r[eachIndex]]["nodeDone"],x["id"]],count:doneLd[r[eachIndex]].count++,
+        done:false}}
+          
       
       //console.log("trigger",r,x,r[eachIndex-1],newData)
       let eachId=r[eachIndex].substring(0,r[eachIndex].length)
@@ -772,15 +708,6 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
       //added code
       let otherAccVars={}
       let otherAccCompositeVars={}
-      /*if(x[r[eachIndex+1]].length>0){
-        Object.keys(x[r[eachIndex+1]][0]).forEach(u=>{
-          if(typeof x[r[eachIndex+1]][0][u]=="number" && u!=="id" && !u.startsWith("otm")){
-            const n=`${u}total`
-            otherAccVars={...otherAccVars,[n]:0}
-        }
-        
-        })
-      }else{*/
         
       if(current!=="undefinedtotal"){
         let doneGt1=false
@@ -789,10 +716,7 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
           if(l.type=="number"){
             
             otherAccVars={...otherAccVars,[`${l["name1"]}total`]:0}
-            /*if(doneGt1==false){
-              grandTotals[r[eachIndex]][r[eachIndex+1]]={...grandTotals[r[eachIndex]][r[eachIndex+1]],[`${l["name1"]}GrandTotal`]:0}
-              
-            }*/
+            
           }
         })
         doneGt1=false
@@ -800,41 +724,23 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
         otmChoices[r[eachIndex+1]]?.compositeFields.forEach(l=>{
           if(l.type=="number"){
             otherAccVars={...otherAccVars,[`${l["name1"]}total`]:0}
-            /*if(doneGt2==false){
-              grandTotals[r[eachIndex]][r[eachIndex+1]]={...grandTotals[r[eachIndex]][r[eachIndex+1]],[`${l["name1"]}GrandTotal`]:0}
-            }*/
-
+            
             
           }
         })
         doneGt2=false
-        /*if(r[eachIndex+1]=="otmclientesfacturas")
-          console.log("prprpr",otherAccVars)*/
-
+        
       }else{//undefinedtotal
         //console.log("alerta")
         let doneGt3=false
         let doneGt1=false
-          /*otmChoices[r[eachIndex]]?.normal.forEach(l=>{
-        if(l!=="1" && l!=="2" && l!=="3"){
-          if(l.type=="number"){
-            console.log("x")
-            //otherAccVars={...otherAccVars,[`${l["name1"]}total`]:0}
-            //if(doneGt1==false){
-              //grandTotals[r[eachIndex]][r[eachIndex+1]]={...grandTotals[r[eachIndex]][r[eachIndex+1]],[`${l["name1"]}GrandTotal`]:0}
-              
-            //}
-          }
-        })*/
+          
         doneGt1=false
 
         otmChoices[r[eachIndex]]?.compositeFields.forEach(l=>{
           if(l.type=="number"){
             otherAccVars={...otherAccVars,[`${l["name1"]}`]:0}
-            /*if(doneGt3==false){
-              grandTotals[r[eachIndex]]={...grandTotals[r[eachIndex]],[`${l["name1"]}GrandTotal`]:0}
-            }*/
-
+            
             
           }
         })
@@ -860,35 +766,27 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
             //console.log("ppp",p,y[p],nn)
             //if(typeof y[nn]=="number"){
               //console.log("ppp1",y[nn])
-              let oo=buscaCompField(compFieldsArray[r[eachIndex+1]]/*otmChoices[r[eachIndex+1]]?.compositeFields*/,nn)
+              let oo=buscaCompField(compFieldsArray[r[eachIndex+1]],nn)
               if(oo!==false){
 
                 //let otmc=otmChoices[r[eachIndex+1]]?.compositeFields
                 //let l=otmc[p]
                 if(oo.type=="number"){
                   console.log("gcf",oavTotals,p,oavTotals[p],getCompFieldNumber(y,oo.structure))
-                  oavTotals[p]+=parseFloat(getCompFieldNumber(y,oo.structure,compFieldsArray[r[eachIndex+1]])/*otmChoices[r[eachIndex+1]]?.compositeFields*/)
+                  oavTotals[p]+=parseFloat(getCompFieldNumber(y,oo.structure,compFieldsArray[r[eachIndex+1]]))
                   oavTotals[p]=parseFloat(oavTotals[p].toFixed(2))
                 }
               }else{
                 console.log("fijo y nn y[nn] oavtotals p oavtotalsp",y,nn,y[nn],oavTotals,p,oavTotals[p])
                 if(y[nn]!==null){
-                oavTotals[p]+=parseFloat(y[nn].toFixed(2))
-                oavTotals[p]=parseFloat(oavTotals[p].toFixed(2))
+                  oavTotals[p]+=parseFloat(y[nn].toFixed(2))
+                  oavTotals[p]=parseFloat(oavTotals[p].toFixed(2))
                 }
               }
             //}
           })
         
             
-        /*otmChoices[r[eachIndex+1]]?.compositeFields.forEach(l=>{
-          if(l.type=="number"){
-            if(oavTotals[`${l["name1"]}total`]==undefined)
-              oavTotals={...oavTotals,[`${l["name1"]}total`]:0}
-           
-              oavTotals[`${l["name1"]}total`]+=getCompFieldNumber(y,l.structure)
-          }
-        })]*/
           
         
      
@@ -923,17 +821,9 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
               }
             }
           //}
-        })
+        })*/
       
           
-      /*otmChoices[r[eachIndex+1]]?.compositeFields.forEach(l=>{
-        if(l.type=="number"){
-          if(oavTotals[`${l["name1"]}total`]==undefined)
-            oavTotals={...oavTotals,[`${l["name1"]}total`]:0}
-         
-            oavTotals[`${l["name1"]}total`]+=getCompFieldNumber(y,l.structure)
-        }
-      })]*/
         
       
    
@@ -957,12 +847,50 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
       }
     }
     let normalFields={}
+    
     if(r[eachIndex]==`getData${currentCategory.name}`){
       firstCatNormalFields[r[eachIndex]]?.normal.forEach(oo=>{
-        if(oo["name1"]!=="1" && oo["name1"]!=="2" && oo["name1"]!=="3")
+        if(oo["name1"]!=="1" && oo["name1"]!=="2" && oo["name1"]!=="3"){
           normalFields={...normalFields,[oo["name1"]]:x[oo["name1"]]}
-      })
-      firstCatNormalFields[r[eachIndex]]?.otmdestiny.forEach(oo=>{
+          if(doneLd[r[eachIndex]].done==false){
+            if(oo.type=="number"){
+              if(grandTotals[r[eachIndex]][`${r[eachIndex]}total`][oo["name1"]]==undefined){
+                let nc=0
+                if(x[oo["name1"]]!==null)
+                  nc=x[oo["name1"]]
+                
+                
+                grandTotals={
+                  ...grandTotals,
+                  [r[eachIndex]]:{
+                    ...grandTotals[r[eachIndex]],[`${r[eachIndex]}total`]:{
+                      ...grandTotals[r[eachIndex]][`${r[eachIndex]}total`],
+                      [oo["name1"]]:nc
+                    }
+                
+                  }
+                }
+
+              }else{
+                let nuevoTotal=grandTotals[r[eachIndex]][`${r[eachIndex]}total`][oo["name1"]]+x[oo["name1"]]
+                grandTotals={
+                  ...grandTotals,
+                  [r[eachIndex]]:{
+                    ...grandTotals[r[eachIndex]],[`${r[eachIndex]}total`]:{
+                      ...grandTotals[r[eachIndex]][`${r[eachIndex]}total`],
+                      [oo["name1"]]:nuevoTotal
+                    }
+                
+                  }
+                }
+                
+              }
+            }
+          }
+        }
+        })
+      
+        firstCatNormalFields[r[eachIndex]]?.otmdestiny.forEach(oo=>{
         
           normalFields={...normalFields,[oo]:x[oo]}
       })
@@ -971,18 +899,124 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
         
         
           normalFields={...normalFields,[`${l["name1"]}`]:getCompFieldNumber(x,l.structure,compFieldsArray[`getData${currentCategory.name}`])}
-        }else 
-        if(l.type=="string"){
+          if(doneLd[r[eachIndex]].done==false){
+
+          if(l.type=="number"){
+            let nc=0
+            if(getCompFieldNumber(x,l.structure,compFieldsArray[r[eachIndex]])!==null)
+              nc=getCompFieldNumber(x,l.structure,compFieldsArray[r[eachIndex]])
+            
+            
+              if(grandTotals[r[eachIndex]][`${r[eachIndex]}total`][l["name1"]]==undefined){
+                grandTotals={
+                  ...grandTotals,
+                  [r[eachIndex]]:{
+                    ...grandTotals[r[eachIndex]],[`${r[eachIndex]}total`]:{
+                      ...grandTotals[r[eachIndex]][`${r[eachIndex]}total`],
+                      [l["name1"]]:nc
+                    }
+                
+                  }
+                }
+                /*grandTotals[r[eachIndex]][r[eachIndex]]={
+                  ...grandTotals[r[eachIndex]][r[eachIndex]],
+                  [l["name1"]]:0
+                }*/
+              }else{
+                let ni=eachIndex-1
+                if(ni==-1)
+                  ni=0
+                  let nc=0
+                if(getCompFieldNumber(x,l.structure,compFieldsArray[r[eachIndex]])!==null)
+                  nc=getCompFieldNumber(x,l.structure,compFieldsArray[r[eachIndex]])
+                
+              //if(doneLd[r[n1]].done==false){
+              let nuevoTotal=grandTotals[r[eachIndex]][`${r[eachIndex]}total`][l["name1"]]+nc
+                //if(doneLd[r[n1]].done==false){
+                  
+                  grandTotals={
+                    ...grandTotals,
+                    [r[eachIndex]]:{
+                      ...grandTotals[r[eachIndex]],[`${r[eachIndex]}total`]:{
+                        ...grandTotals[r[eachIndex]][`${r[eachIndex]}total`],
+                        [l["name1"]]:nuevoTotal
+                      }
+                  
+                    }
+                  }
+                  /*grandTotals[r[eachIndex]][r[eachIndex]]={
+                    ...grandTotals[r[eachIndex]][r[eachIndex]],
+                    [l["name1"]]:nuevoTotal
+                  }*/
+                //}
+              }
+              
+            
+          }
+        }
+        }else if(l.type=="string"){
           normalFields={...normalFields,[`${l["name1"]}`]:getCompFieldString(x,l.structure,compFieldsArray[`getData${currentCategory.name}`])}
         }
       })
-      
+      //if(indice==(doneLd[r[eachIndex]].len-1))
+        //doneLd[r[eachIndex]].done=true
+
       normalFields={id:x["id"],...normalFields}
     }else{//diferente a principal
       otmChoices[r[eachIndex]]?.normal.forEach(oo=>{
         //if(oo!=="1" && oo!=="2" && oo!=="3")
         //if(oo.type=="number")
           normalFields={...normalFields,[oo["name1"]]:x[oo["name1"]]}
+          if(doneLd[r[eachIndex]].done==false){
+
+          if(oo.type=="number"){
+            let ni=eachIndex-1
+            if(ni==-1)
+            ni=0
+            
+              console.log("fijo22",grandTotals[r[eachIndex]][`${r[eachIndex]}total`][oo["name1"]],r[eachIndex],oo["name1"],x["id"],x[oo["name1"]])
+              if(grandTotals[r[eachIndex]][`${r[eachIndex]}total`][oo["name1"]]==undefined){
+                let nc=0
+                if(x[oo["name1"]]!==null)
+                  nc=x[oo["name1"]]
+                grandTotals={
+                  ...grandTotals,
+                  [r[eachIndex]]:{
+                    ...grandTotals[r[eachIndex]],[`${r[eachIndex]}total`]:{
+                      ...grandTotals[r[eachIndex]][`${r[eachIndex]}total`],
+                      [oo["name1"]]:nc
+                    }
+                
+                  }
+                }
+                /*grandTotals[r[eachIndex]][r[eachIndex]]={
+                  ...grandTotals[r[eachIndex]][r[eachIndex]],
+                  [oo["name1"]]:0
+                }*/
+              }else{
+                let nc=0
+                if(x[oo["name1"]]!==null)
+                  nc=x[oo["name1"]]
+                let nuevoTotal=grandTotals[r[eachIndex]][`${r[eachIndex]}total`][oo["name1"]]+nc
+                console.log("nuevototal",nuevoTotal)
+                grandTotals={
+                  ...grandTotals,
+                  [r[eachIndex]]:{
+                    ...grandTotals[r[eachIndex]],[`${r[eachIndex]}total`]:{
+                      ...grandTotals[r[eachIndex]][`${r[eachIndex]}total`],
+                      [oo["name1"]]:nuevoTotal
+                    }
+                
+                  }
+                }
+                /*grandTotals[r[eachIndex]][r[eachIndex]]={
+                  ...grandTotals[r[eachIndex]][r[eachIndex]],
+                  [oo["name1"]]:nuevoTotal
+                }*/
+              }
+            
+          }
+        }  
       })
       otmChoices[r[eachIndex]]?.otmdestiny.forEach(oo=>{
         //if(oo!=="1" && oo!=="2" && oo!=="3")
@@ -994,14 +1028,67 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
         
           //console.log("x l.struc compfiearr[rindex]",x,l.structure,compFieldsArray[r[eachIndex]],getCompFieldNumber(x,l.structure,compFieldsArray[r[eachIndex]]))
           normalFields={...normalFields,[`${l["name1"]}`]:getCompFieldNumber(x,l.structure,compFieldsArray[r[eachIndex]])}
+          if(doneLd[r[eachIndex]].done==false){
+            let nc=0
+            if(getCompFieldNumber(x,l.structure,compFieldsArray[r[eachIndex]])!==null)
+              nc=getCompFieldNumber(x,l.structure,compFieldsArray[r[eachIndex]])
+            
+            if(grandTotals[r[eachIndex]][`${r[eachIndex]}total`][l["name1"]]==undefined){
+              grandTotals={
+                ...grandTotals,
+                [r[eachIndex]]:{
+                  ...grandTotals[r[eachIndex]],[`${r[eachIndex]}total`]:{
+                    ...grandTotals[r[eachIndex]][`${r[eachIndex]}total`],
+                    [l["name1"]]:nc
+                  }
+              
+                }
+              }  
+              /*grandTotals[r[eachIndex]][r[eachIndex]]={
+                ...grandTotals[r[eachIndex]][r[eachIndex]],
+                [l["name1"]]:0
+              }*/
+            }else{
+              let ni=eachIndex-1
+              if(ni==-1)
+                ni=0
+                let nc=0
+                if(getCompFieldNumber(x,l.structure,compFieldsArray[r[eachIndex]])!==null)
+                  nc=getCompFieldNumber(x,l.structure,compFieldsArray[r[eachIndex]])
+                
+              //if(doneLd[r[n1]].done==false){
+              let nuevoTotal=grandTotals[r[eachIndex]][`${r[eachIndex]}total`][l["name1"]]+nc
+              /*grandTotals[r[eachIndex]][r[eachIndex]]={
+                ...grandTotals[r[eachIndex]][r[eachIndex]],
+                [l["name1"]]:nuevoTotal
+              }*/
+              grandTotals={
+                ...grandTotals,
+                [r[eachIndex]]:{
+                  ...grandTotals[r[eachIndex]],[`${r[eachIndex]}total`]:{
+                    ...grandTotals[r[eachIndex]][`${r[eachIndex]}total`],
+                    [l["name1"]]:nuevoTotal
+                  }
+              
+                }
+              }
+                
+              //}
+            }
+          }
+        
+          
         }else
           if(l.type=="string"){
           normalFields={...normalFields,[`${l["name1"]}`]:getCompFieldString(x,l.structure,compFieldsArray[r[eachIndex]])}
         }
       })
+      //if(indice==(doneLd[r[eachIndex]].length-1))
+        //doneLd[r[eachIndex]].done=true
+
       normalFields={id:x["id"],...normalFields}
     }
-    console.log("vertigo",normalFields)
+    console.log("vertigo",doneLd)
       //console.log("normalfields",normalFields)
       //console.log("firstCatnormal",firstCatNormalFields)
       //console.log("nd2xid",x[r[eachIndex]],x[r[eachIndex+1]],final,x.id,eachStopData)
@@ -1023,12 +1110,12 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
               total:totalRoutes[r[eachIndex]][current][x.id]["total"]==undefined
               ?len:
               totalRoutes[r[eachIndex]][current][x.id]["total"]+len,
-              keys:final.length!==0/*eachIndex+1!==finalRoutes.length && x[r[eachIndex]][indice] && x[r[eachIndex]][indice][r[eachIndex+1]]*/?final:[],
+              keys:final.length!==0?final:[],
               
               ...oavTotals
             }
           }
-          /*[previous]:totalRoutes[r[eachIndex-1]][previous]+len}*/
+          
         }
       }
     }else{
@@ -1044,30 +1131,36 @@ const getLevelData=(eachStopData,finalRoutes,eachIndex)=>{
             {
 
               ...totalRoutes[r[eachIndex]][current][x.id],
-              normalData:{...normalFields/*,...oavTotals*/},
+              normalData:{...normalFields},
               total:totalRoutes[r[eachIndex]][current][x.id]["total"]==undefined
               ?len:
               totalRoutes[r[eachIndex]][current][x.id]["total"]+len,
-              keys:final.length!==0/*eachIndex+1!==finalRoutes.length && x[r[eachIndex]][indice] && x[r[eachIndex]][indice][r[eachIndex+1]]*/?final:[],
+              keys:final.length!==0?final:[],
               ...oavTotals
               
             }
           }
           
-          /*[previous]:totalRoutes[r[eachIndex-1]][previous]+len}*/
+          
         }
       }
       //console.log("tr22",totalRoutes)
     }
     //setGrandTotalsSt(grandTotals)
-
-    
+    /*let ui=new Set([...r[eachIndex].nodeDone,x["id"]])
+    let mi=doneLd[r[eachIndex]].count++
+    doneLd={...doneLd,[r[eachIndex]]:{...doneLd[r[eachIndex]],nodeDone:ui,count:doneLd[r[eachIndex]].count++,
+    done:}*/
+    console.log("doneld",doneLd)
       if(eachIndex+1<r.length)
-      getLevelData(newData,finalRoutes,eachIndex+1)
+      getLevelData(newData,finalRoutes,eachIndex+1,true)
+
       
     })
+    
   
   }
+
   
   //}
 //}  
@@ -1118,14 +1211,36 @@ const calculateKeys=(finalObjectName,routeIndexToFind,routeIndex,routes,keys,tot
 
           finalObject[otmName][r]["items"][u]={...finalObject[otmName][r]["items"][u],[i]:0}
         } 
-        if(grandTotals[otmName][r][i]==undefined)
-          grandTotals[otmName][r]={...grandTotals[otmName][r],[i]:0}
+        if(grandTotals[otmName][`${r}`][i]==undefined)
+        /*grandTotals={
+          ...grandTotals,
+          [otmName]:{
+            ...grandTotals[otmName],[r]:{
+              ...grandTotals[otmName][r],
+              [i]:0
+            }
+        
+          }
+        }*/
+          grandTotals[otmName][`${r}total`]={...grandTotals[otmName][`${r}`],[i]:0}
 
         oop=finalObject[otmName][r]["items"][u][i]+val
         
         otherfinalvars[i]=parseFloat(oop.toFixed(2))
-        grandTotals[otmName][r][i]+=val
-        grandTotals[otmName][r][i]=parseFloat(grandTotals[otmName][r][i].toFixed(2))
+        grandTotals={
+          ...grandTotals,
+          [otmName]:{
+            ...grandTotals[otmName],[`${r}`]:{
+              ...grandTotals[otmName][`${r}`],
+              [i]:grandTotals[otmName][`${r}`][i]+val
+            }
+        
+          }
+        }
+
+
+        //grandTotals[otmName][r][i]+=val
+        grandTotals[otmName][`${r}`][i]=parseFloat(grandTotals[otmName][`${r}`][i].toFixed(2))
       })
     
       finalObject={
@@ -1168,8 +1283,12 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
     finalObject={...finalObject,[otmName]:{...finalObject[otmName],[nn]:{items:{}}}}
   // console.log("ver22",claves,totalRoutes[routes[routeIndex]][r])
 //console.log("mainArray",mainArray)
-  if(grandTotals[otmName][`${dataVar}`]==undefined)
-    grandTotals={...grandTotals,[otmName]:{...grandTotals[otmName],[nn]:{}}}  
+  if(grandTotals[otmName][`${otmName}total`]==undefined){
+    grandTotals={...grandTotals,[otmName]:{[`${otmName}total`]:{}}} 
+  }
+    
+  /*if(grandTotals[otmName][otmName]==undefined)
+    grandTotals={...grandTotals,[otmName]:{...grandTotals[otmName],[otmName]:{}}}*/
     
     //mainArray=Object.keys(totalRoutes[routes[routeIndex]][r]).forEach(x=>claves)
     //console.log("mainArray",claves,mainArray,routes[routeIndex],r,routeIndex)
@@ -1181,7 +1300,7 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
         finalObject[otmName]={}
       }
       if(grandTotals[otmName]==undefined){
-        grandTotals[otmName]={}
+        grandTotals={...grandTotals,[otmName]:{}}
       }
 
     
@@ -1193,9 +1312,12 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
             
           }
         }
-        if(grandTotals[otmName][nn]==undefined){
-          grandTotals[otmName]={
-            [nn]:{}
+        if(grandTotals[otmName][`${nn}`]==undefined){
+          grandTotals={...grandTotals,
+            [otmName]:{
+              ...grandTotals[otmName],[`${nn}`]:{}
+
+             }
           }
         }
         //console.log("rmainArray",cor,cor[u].normalData,r,begin)
@@ -1236,8 +1358,17 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
           const n=`${iu}`
           if(finalObject[otmName][nn]["items"][u][n]==undefined)
             finalObject[otmName][nn]["items"][u][n]=0
-          if(grandTotals[otmName][nn][n]==undefined)
-            grandTotals[otmName][nn][n]=0
+          if(grandTotals[otmName][`${nn}`][n]==undefined)
+            grandTotals={...grandTotals,
+              [otmName]:{
+                ...grandTotals[otmName],
+                [`${nn}`]:{
+                  ...grandTotals[otmName][`${nn}`],
+                  [n]:0
+                }
+              }
+            } 
+             // grandTotals[otmName][nn][n]=0
           otherAccVars={...otherAccVars,[n]:0}
           
         }
@@ -1278,12 +1409,20 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
                   otherAccVars[y]+=cor[u][y]
 
                 finalObject[otmName][nn]["items"][u][y]+=cor[u][y]
-                grandTotals[otmName][nn][y]+=cor[u][y]
-              /*}
-              else  
+                grandTotals={...grandTotals,[otmName]:{
+                  ...grandTotals[otmName],
+                  [`${nn}`]:{
+                    ...grandTotals[otmName][`${nn}`],
+                    [y]:grandTotals[otmName][`${nn}`][y]+cor[u][y]
+                  }
+                }
+              }
+                //grandTotals[otmName][nn][y]+=cor[u][y]
+              
+              //else 
                //finalObject[otmName][nn]["items"][u][y]=0*/
               //console.log("prev", finalObject[otmName][nn]["items"][u][y],cor[u][y])
-            }
+                }
 
             })
             
@@ -1306,6 +1445,17 @@ const getData=(routes,otmName,totalRoutes,routeIndex,mainArray=[],begin=false,co
 }
 }
 
+/*const calculateGrandTotals=()=>{
+  Object.keys(finalObject).forEach((x,ind)=>{
+    if(ind==0){
+      let public=finalObject[x]
+      let key=Object.keys(public)[0]
+      let data=public[key].normalFields
+      
+    }
+  })
+}
+*/
 
 const getAccumulated=(routes,
   otmName,routeIndex,begin=false,totalRoutes)=>{
@@ -1334,7 +1484,8 @@ const getAccumulated=(routes,
       //getData(routes,otmName,totalRoutes,0,null,true,totalRoutes[routes[i]][`${routes[i+1]}total`],i)
       getData(routes,otmName,totalRoutes,routeIndex,null,true,totalRoutes[routes[i]][`${routes[i+1]}total`],i)
     }
-    console.log("grandTotals1",grandTotals)
+    //console.log("finalObject",finalObject)
+    //console.log("grandTotals1",grandTotals)
       /*if(Object.keys(mainArray).length>0){
         finalObject[otmName][r]=0
         for(let x in mainArray){
@@ -1345,7 +1496,83 @@ const getAccumulated=(routes,
     
   }
 
-  let reporte=""
+
+const printGtSegment=(data={},segment)=>{
+  //console.log("datagr",data)
+  if(Object.keys(data).filter(x=>x!=="normalData").length!==0)
+  return <div style={{width:"32%",marginRight:"10px",marginBottom:"15px"}}>
+  {Object.keys(data).length>0?<>
+  <p>{segment}</p>
+  <table style={{width:"100%"}}>
+    <thead>
+      <tr style={{border:"2px solid black"}}>
+        <th>Field</th>
+        <th>Grand Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {Object.keys(data).map(k=>{
+        if(k!=="normalData")
+        return <tr style={{border:"1px solid white"}}>
+          <td>{k}</td>
+          <td>{data[k]}</td>
+        </tr>
+      })}
+    </tbody>
+  </table>
+  
+  </>:""}
+  </div>
+  else
+    return null
+}
+
+const printGrandTotals=(segment,ata)=>{
+  let block=[]
+  const l=grandTotals[segment]
+  const ks=Object.keys(l)
+  const primero=l[segment]
+  //block.push(printGtSegment(primero,segment,ata))
+  let cont=false
+  for(let i in ata){
+    if(ata[i]==segment || cont==true){
+
+      let data=grandTotals[segment][`${ata[i]}total`]
+      console.log("verific",ks,`${ata[i]}total`)
+      if(ks.includes(`${ata[i]}total`)){
+        cont=true
+        let bl=printGtSegment(data,ata[i],ata)
+        if(bl!==null)
+          block.push(bl)
+      }
+    }
+
+  }
+
+  return block.length>0?<div>
+    <p>Grand Totals</p>
+    <div style={{display:"flex",width:"100vw",justifyContent:"start",flexWrap:"wrap"}}>
+    
+      {block}
+    </div>
+  </div>:""
+}
+
+const getAllTablesArray=(fr,r)=>{
+  let ret=[]
+  
+  for(let i in fr){
+    let arr=r[fr[i]]
+    for(let j in arr){
+      if(!ret.includes(arr[j])){
+        ret=[...ret,arr[j]]
+      }
+    }
+  }
+  return ret
+}
+
+let reporte=""
 let eachHeader
 let dataEach=[]
 let fullbody=[]
@@ -1359,7 +1586,8 @@ const getDataReport=(routes,finalRoutes)=>{
   totalRoutes={}
   //for(let i=0;i<finalRoutes.length;i++){
 
-   getLevelData(categoryProducts[root],routes[finalRoutes[0]],0)
+   getLevelData(categoryProducts[root],routes[finalRoutes[0]],0,true)
+   console.log("gt222",grandTotals)
    //console.log("totalRoutes",totalRoutes,categoryProducts[root],finalRoutes)
 
   //}
@@ -1370,11 +1598,15 @@ const getDataReport=(routes,finalRoutes)=>{
   //getLevelData(categoryProducts[root],routes[finalRoutes[0]],0) 
   let totalRoutesArray={}
   let done1=[]
+  let allTablesArray=getAllTablesArray(finalRoutes,routes)
+  console.log("alltablesarray",allTablesArray)
+  
   for(let i=0;i<finalRoutes.length;i++){
   //getAccumulated(routes[finalRoutes[0]],routes[finalRoutes[0]][0],0,false,totalRoutes)
   totalRoutes={}
+
   
-  getLevelData(categoryProducts[root],routes[finalRoutes[i]],0)
+  getLevelData(categoryProducts[root],routes[finalRoutes[i]],0,true)
     for(let x=0;x<routes[finalRoutes[i]].length-1;x++){
       getAccumulated(routes[finalRoutes[i]],routes[finalRoutes[i]][x],x,false,totalRoutes)
       if(!done1.includes(finalRoutes[i])){
@@ -1389,6 +1621,7 @@ const getDataReport=(routes,finalRoutes)=>{
   let done=[]
   let printTablesBool=[]
   //console.log("totalRoutesArray",totalRoutesArray)
+  let comp=""
   for(let i=0;i<finalRoutes.length;i++){
     for(let j=0;j<routes[finalRoutes[i]].length;j++){
       
@@ -1404,11 +1637,18 @@ const getDataReport=(routes,finalRoutes)=>{
       if(j!==routes[finalRoutes[i]].length-1){
         //console.log("check22",printTablesBool,routes[finalRoutes[i]][j])
         if(!printTablesBool.includes(routes[finalRoutes[i]][j])){
-          printTable(finalObject[routes[finalRoutes[i]][j]],routes[finalRoutes[i]][j],`${routes[finalRoutes[i]][j+1]}total`)
+          let ui=printGrandTotals(routes[finalRoutes[i]][j],allTablesArray)
+
+          printTable(finalObject[routes[finalRoutes[i]][j]],routes[finalRoutes[i]][j],`${routes[finalRoutes[i]][j+1]}total`,ui)
+          
           printTablesBool.push(routes[finalRoutes[i]][j])
         }
+        
+      }else{
+        comp=routes[finalRoutes[i]][j]
       }
-    }
+    } 
+
   }
   if(Object.keys(totalRoutesArray).length==0){
     totalRoutesArray={[routes[finalRoutes[0]][routes[finalRoutes[0]].length-1]]:totalRoutes[routes[finalRoutes[0]][routes[finalRoutes[0]].length-1]]['undefinedtotal']}
@@ -1416,12 +1656,16 @@ const getDataReport=(routes,finalRoutes)=>{
 
   }
   console.log("grandTotals",grandTotals)
-  beginPrintFinalTables(totalRoutesArray)
+  //let ui=printGrandTotals(comp,allTablesArray)
+  beginPrintFinalTables(totalRoutesArray,allTablesArray)
+
+
+  //printGrandTotals(comp)
   //return printTable(finalObject['getDataclientes'],'getDataclientes',`${routes[finalRoutes[0]][1]}total`)
   //printTable(totalRoutesArray,routes,finalRoutes)
 }
 
-const printFinalTable=(title,data)=>{
+const printFinalTable=(title,data,ui)=>{
   let fields=[]
   //console.log("data555",data)
   let compF
@@ -1491,11 +1735,13 @@ const printFinalTable=(title,data)=>{
     </tbody>
   </table>
   totalTables.push(tableResult)
+  totalTables.push(ui)
 }
 
-const beginPrintFinalTables=(totalRoutesArray)=>{
+const beginPrintFinalTables=(totalRoutesArray,ata)=>{
   Object.keys(totalRoutesArray).forEach(key=>{
-    printFinalTable(key,totalRoutesArray[key])
+    let ui=printGrandTotals(key,ata)
+    printFinalTable(key,totalRoutesArray[key],ui)
   })
 }
 
@@ -1605,7 +1851,7 @@ const printReportSegment=(object,primero,segmentTitle)=>{
 //const printTable=(totalRoutesArray,routes,finalRoutes)=>{
   
 let totalTables=[]
-const printTable=(objectToPrint,title,primero)=>{
+const printTable=(objectToPrint,title,primero,grandTotals)=>{
   reporte=""
   outsideTable=[]
   let keys=Object.keys(objectToPrint)
@@ -1693,6 +1939,7 @@ const printTable=(objectToPrint,title,primero)=>{
       </tbody></table>*/
     
   totalTables.push(reporte)
+  totalTables.push(grandTotals)
   
 }
 
@@ -1704,6 +1951,8 @@ const beginReport=(primero=false,name1,d1)=>{
   //routesfinal encuentra la ultima parada de cada una de las rutas
   //console.log("routesfinal",routesFinal(routes))
   let finalRoutes=routesFinal(routes)
+  grandTotals={}
+  doneLd={}
   //console.log("finalRoutes",finalRoutes)
   getDataReport(routes,finalRoutes)
   //calculateAmountsBegins(routes)
