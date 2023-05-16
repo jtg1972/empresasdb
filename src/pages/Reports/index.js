@@ -191,7 +191,7 @@ const Reports=()=>{
     return false
   }
 
-  const displayAncestorsCats=(trackCatPath,ntm="",cn="")=>{
+  const displayAncestorsCats=(trackCatPath,ntm="")=>{
     let output=[]
     for(let l in trackCatPath){
       if(l<trackCatPath.length-1){
