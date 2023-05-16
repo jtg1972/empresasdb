@@ -7,6 +7,7 @@ import { AddCompositeField } from '../../components/AddCompositeField'
 import BreadCrumb from '../../components/BreadCrumb'
 import FormButton from '../../components/Forms/FormButton'
 import SearchSubcategories from '../../components/SearchSubcategories'
+import { WhereStatementDialog } from '../../components/WhereStatementDialog'
 import './styles.scss'
 
 const mapToState=({categories})=>({
@@ -34,6 +35,13 @@ const Reports=()=>{
     setSpecificOtmName(name)
     setOpenCompositeFieldDialog(!openCompositeFieldDialog)
   }
+  const [varsHeadWhereStatement,setVarsHeadWhereStatement]=useState({})
+  const [openWhereStatementDialog,setOpenWhereStatementDialog]=useState(false)
+  const toggleOpenWhereStatementDialog=(vars)=>{
+    console.log("vars22",vars)
+    setVarsHeadWhereStatement(vars)
+    setOpenWhereStatementDialog(!openWhereStatementDialog)
+  }
   const [openOtmIdFieldsDialog,setOpenOtmIdFields]=useState(false)
   const toggleOtmIdFieldsDialog=()=>setOpenOtmIdFields(!openOtmIdFieldsDialog)
   const [otmCategoryFields,setOtmCategoryFields]=useState([])
@@ -42,7 +50,7 @@ const Reports=()=>{
   const[allCompFieldsCluster,setAllCompFieldsCluster]=useState([])
   let subTotals={}
   const [grandTotalsSt,setGrandTotalsSt]=useState({})
-  //console.log("otmchoices",otmChoices,fieldsShown,firstCatNormalFields)
+  console.log("otmchoices",otmChoices)//,fieldsShown,firstCatNormalFields)
   useEffect(()=>{
     setShowFields(false)
     setFieldsShown([])
@@ -183,12 +191,54 @@ const Reports=()=>{
     return false
   }
 
-  const displayMenu=(name,padre)=>{
+  const displayAncestorsCats=(trackCatPath,ntm="",cn="")=>{
+    let output=[]
+    for(let l in trackCatPath){
+      if(l<trackCatPath.length-1){
+        output.push(<div>
+          <p style={{color:"orange"}}>{trackCatPath[l]}</p>
+          {otmChoices[trackCatPath[trackCatPath.length-1]]?.normal.map(x=>{
+            if(x.type=="number")
+              return <p><span style={{marginRight:"10px"}}>{x.name1}total</span><a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  toggleOpenWhereStatementDialog({
+                    categoryName:trackCatPath[l],
+                    fieldName:`${x.name1}total`,
+                    segment:ntm
+                  })
+                }
+              }>Add where condition</a></p>
+          })}
+          {otmChoices[trackCatPath[trackCatPath.length-1]]?.compositeFields.map(x=>{
+            if(x.type=="number")
+            return <p><span style={{marginRight:"10px"}}>{x.name1}total</span><a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                toggleOpenWhereStatementDialog({
+                categoryName:trackCatPath[l],
+                fieldName:`${x.name1}total`,
+                segment:ntm
+              })
+            }}>Add where condition</a></p>
+          })}
+        </div>)
+
+      }
+        
+    }
+    return output
+  }
+
+  const displayMenu=(name,padre,trackCatPath)=>{
     //console.log("name",name)
     const partialName=`otm${padre}`
     const lengthName=partialName.length
     const destCatName=name.slice(lengthName)
     const catDestiny=categories.filter(c=>c.name==destCatName)[0]
+    console.log("trackcatpath",trackCatPath)
     //console.log("dcn",destCatName,catDestiny)
     
     if(isChecked(name)){
@@ -244,7 +294,7 @@ const Reports=()=>{
         }}/>
         <p>Total and Percentage of Parents Regarding Conditions of Son Atributes</p>
       </div>
-      {displayCurCategory(catDestiny,false,false,name,false)}
+      {displayCurCategory(catDestiny,false,false,name,false,trackCatPath)}
       <FormButton style={{
         textAlign:"left",
         textDecoration:"underline",
@@ -257,6 +307,9 @@ const Reports=()=>{
       }}>Add composite field</FormButton>
       {compFieldsArray[name]?.map(d=>{
           return <>
+          {d.type=="number" && <p>
+
+          
           <input type="checkbox" 
             style={{marginRight:"5px", color:"white"}}
             onChange={(e)=>{
@@ -265,10 +318,50 @@ const Reports=()=>{
               checkReview(e,d.name1,false,"",name,false,true,"",true,d)
             }}
             />
-            <a style={{color:"yellow"}}>{d.name1}</a>
-            <br/>
-            </>
-        })}
+            <a style={{color:"yellow", marginRight:"10px"}}>{d.name1}Number</a>
+            {isReadyToWhere(name,d.name1,true) && <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                toggleOpenWhereStatementDialog({
+                  fieldName:d.name1,
+                  categoryName:name,
+                  segment:""
+                })
+              }
+            }>Add where condition</a>
+            }</p>
+            
+            
+            
+        }
+        {d.type=="string" && <p>
+
+          
+        <input type="checkbox" 
+          style={{marginRight:"5px", color:"white"}}
+          onChange={(e)=>{
+            //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
+
+            checkReview(e,d.name1,false,"",name,false,true,"",true,d)
+          }}
+          />
+          <a style={{color:"yellow",marginRight:"10px"}}>{d.name1}String</a>
+          {isReadyToWhere(name,d.name1,true) && <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                
+                toggleOpenWhereStatementDialog({categoryName:name,
+                fieldName:d.name1,
+                segment:""})
+              }
+            }>Add where condition</a>
+          }
+          
+          </p>
+          
+}</>})}
       <FormButton style={{
         textAlign:"left",
         textDecoration:"underline",
@@ -288,7 +381,41 @@ const Reports=()=>{
   }
 
 let pivote={}
-const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
+
+const isReadyToWhere=(otm,busca,comp=false)=>{
+  let res=[]
+  if(comp==false)
+    return otmChoices[otm]?.normal.filter(x=>{
+      if(x.name1==busca)
+        return true
+      return false
+    }).length>=1?true:false
+  else if (comp==true){
+    return otmChoices[otm]?.compositeFields.filter(x=>{
+      if(x.name1==busca)
+        return true
+      return false
+    }).length>=1?true:false
+  }
+}
+const isReadyToWhereFirst=(otm,busca,comp=false)=>{
+  let res=[]
+  if(comp==false)
+    return firstCatNormalFields[otm]?.normal.filter(x=>{
+      if(x.name1==busca)
+        return true
+      return false
+    }).length>=1?true:false
+  else if (comp==true){
+    return firstCatNormalFields[otm]?.compositeFields.filter(x=>{
+      if(x.name1==busca)
+        return true
+      return false
+    }).length>=1?true:false
+  }
+}
+
+const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackCatPath)=>{
   let fieldsSingle=[]
   
   if(pivote[`getData${currentCategory.name}`]==undefined)
@@ -311,7 +438,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
             />
             <a style={{color:"green"}}>{c.name}</a>
             <br/>
-            {isChecked(c.name) && displayMenu(c.name,cat.name)}
+            {isChecked(c.name) && displayMenu(c.name,cat.name,[...trackCatPath,c.name])}
           </>
         }
         if(nameOtm!=="")
@@ -326,14 +453,73 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
         //setAllFieldsByOtm(pivote)
 
           return <>
-          <input type="checkbox" 
+          
+            {c.declaredType=="number" &&
+            <p style={{marginBottom:"0px"}}>
+              <input type="checkbox" 
           style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
           onChange={(e)=>checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)}/>
-            {c.name}
-            <br/>
+          
+              <span style={{marginRight:"10px"}}>{c.name}Number</span>
+              {(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
+              isReadyToWhere(nameOtm,c.name,false)) && <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                if(nameOtm==""){
+                    toggleOpenWhereStatementDialog({
+                      categoryName:`getData${currentCategory.name}`,
+                      fieldName:c.name,
+                      segment:""
+                    })
+              
+                }else{
+                  toggleOpenWhereStatementDialog({
+                    categoryName:nameOtm,
+                    fieldName:c.name,
+                    segment:""
+                  })
+                }
+              }
+            }>Add where condition</a>}
+            </p>
+          }
+          {c.declaredType=="string" &&
+            <p style={{marginBottom:"0px"}}>
+              <input type="checkbox" 
+          style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
+          onChange={(e)=>checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)}/>
+          
+              <span style={{marginRight:"10px"}}>{c.name}String</span>
+              {(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
+              isReadyToWhere(nameOtm,c.name,false)) && <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                if(nameOtm==""){
+                    toggleOpenWhereStatementDialog({
+                      categoryName:`getData${currentCategory.name}`,
+                      fieldName:c.name,
+                      segment:""
+                    })
+              
+                }else{
+                  toggleOpenWhereStatementDialog({
+                    categoryName:nameOtm,
+                    fieldName:c.name,
+                    segment:""
+                  })
+                }
+              }}>Add where condition</a>
+            }</p>
+          }
+            
+            
+
           </>
 
       })}
+      {displayAncestorsCats(trackCatPath,nameOtm,cat.name)}
       {primero && fieldsSingle && (<><FormButton style={{
           textAlign:"left",
           textDecoration:"underline",
@@ -348,6 +534,36 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
           //const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
 
           return <>
+          {d.type=="number" &&
+          <p>
+          <input type="checkbox" 
+            style={{marginRight:"5px", color:"white"}}
+            onChange={(e)=>{
+                //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
+
+              
+              checkReview(e,d.name1,false,cat.name,"",true,false,"",true,d)
+            }}
+            />
+            
+            <span style={{marginRight:"10px"}}>{d.name1}Number</span>
+            {isReadyToWhereFirst(`getData${currentCategory.name}`,d.name1,true) &&
+            <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                toggleOpenWhereStatementDialog({
+                  categoryName:`getData${currentCategory.name}`,
+                  fieldName:d.name1,
+                  segment:""
+                })
+              }
+            }>Add where condition</a>
+            }
+            
+            </p>}
+            {d.type=="string" &&
+          <p>
           <input type="checkbox" 
             style={{marginRight:"5px", color:"white"}}
             onChange={(e)=>{
@@ -358,8 +574,25 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
             }}
             />
             <a style={{color:"yellow"}}>{d.name1}</a>
-            <br/>
-            </>
+            <span style={{marginRight:"10px"}}>{d.name1}String</span>
+            {isReadyToWhereFirst(`getData${currentCategory.name}`,d.name1,true) && <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                toggleOpenWhereStatementDialog({
+                  categoryName:`getData${currentCategory.name}`,
+                  fieldName:d.name1,
+                  segment:""
+                })
+                
+              }
+            }>Add where condition</a>
+            }
+            
+            </p>}
+
+          </>
+
         })}
         {pivote[`getData${currentCategory.name}`]?.map(d=>{
           <p>{d.name1}</p>
@@ -2070,11 +2303,16 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       toggleDialog={toggleOtmIdFieldsDialog}
       otmCategoryFields={otmCategoryFields}
     />
+    <WhereStatementDialog
+      open={openWhereStatementDialog}
+      toggleDialog={toggleOpenWhereStatementDialog}
+      {...varsHeadWhereStatement}
+    />
 
     
     {showFields 
     && 
-    displayCurCategory(currentCategory,true,true,"",true)
+    displayCurCategory(currentCategory,true,true,"",true,[`getData${currentCategory.name}`])
     }
     <FormButton onClick={()=>setReportShow(true)}>Show Report</FormButton>
 

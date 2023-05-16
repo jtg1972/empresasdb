@@ -16,7 +16,7 @@ const Dialog = ({
       <div className="dialog">
         <div className="header">
           <h1 className="headline">{headline}</h1>
-          <p className="close" onClick={closeDialog}>X</p>
+          <p className="close" style={{marginLeft:"10px"}} onClick={closeDialog}>X</p>
         </div>
         <div className="childContent">
           {children}
