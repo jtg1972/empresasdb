@@ -7,7 +7,8 @@ import { AddCompositeField } from '../../components/AddCompositeField'
 import BreadCrumb from '../../components/BreadCrumb'
 import FormButton from '../../components/Forms/FormButton'
 import SearchSubcategories from '../../components/SearchSubcategories'
-import { WhereStatementDialog } from '../../components/WhereStatementDialog'
+import { WhereStatementStringDialog } from '../../components/WhereStatementStringDialog'
+import { WhereStatementNumberDialog } from '../../components/WhereStatementNumberDialog'
 import './styles.scss'
 
 const mapToState=({categories})=>({
@@ -36,11 +37,17 @@ const Reports=()=>{
     setOpenCompositeFieldDialog(!openCompositeFieldDialog)
   }
   const [varsHeadWhereStatement,setVarsHeadWhereStatement]=useState({})
-  const [openWhereStatementDialog,setOpenWhereStatementDialog]=useState(false)
-  const toggleOpenWhereStatementDialog=(vars)=>{
+  const [openWhereStatementStringDialog,setOpenWhereStatementStringDialog]=useState(false)
+  const toggleOpenWhereStatementStringDialog=(vars)=>{
     console.log("vars22",vars)
     setVarsHeadWhereStatement(vars)
-    setOpenWhereStatementDialog(!openWhereStatementDialog)
+    setOpenWhereStatementStringDialog(!openWhereStatementStringDialog)
+  }
+  const [openWhereStatementNumberDialog,setOpenWhereStatementNumberDialog]=useState(false)
+  const toggleOpenWhereStatementNumberDialog=(vars)=>{
+    console.log("vars22",vars)
+    setVarsHeadWhereStatement(vars)
+    setOpenWhereStatementNumberDialog(!openWhereStatementNumberDialog)
   }
   const [openOtmIdFieldsDialog,setOpenOtmIdFields]=useState(false)
   const toggleOtmIdFieldsDialog=()=>setOpenOtmIdFields(!openOtmIdFieldsDialog)
@@ -48,6 +55,8 @@ const Reports=()=>{
   const [allFieldsByOtm,setAllFieldsByOtm]=useState({})
   const [compFieldsArray,setCompFieldsArray]=useState([])
   const[allCompFieldsCluster,setAllCompFieldsCluster]=useState([])
+  const[conditionsWhere,setConditionsWhere]=useState({})
+
   let subTotals={}
   const [grandTotalsSt,setGrandTotalsSt]=useState({})
   console.log("otmchoices",otmChoices)//,fieldsShown,firstCatNormalFields)
@@ -203,7 +212,7 @@ const Reports=()=>{
               style={{textDecoration:"underline"}} onClick={
                 (e)=>{
                   e.preventDefault()
-                  toggleOpenWhereStatementDialog({
+                  toggleOpenWhereStatementNumberDialog({
                     categoryName:trackCatPath[l],
                     fieldName:`${x.name1}total`,
                     segment:ntm
@@ -217,7 +226,7 @@ const Reports=()=>{
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
                 e.preventDefault()
-                toggleOpenWhereStatementDialog({
+                toggleOpenWhereStatementNumberDialog({
                 categoryName:trackCatPath[l],
                 fieldName:`${x.name1}total`,
                 segment:ntm
@@ -323,10 +332,10 @@ const Reports=()=>{
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
                 e.preventDefault()
-                toggleOpenWhereStatementDialog({
+                toggleOpenWhereStatementNumberDialog({
                   fieldName:d.name1,
                   categoryName:name,
-                  segment:""
+                  segment:name
                 })
               }
             }>Add where condition</a>
@@ -352,9 +361,9 @@ const Reports=()=>{
               (e)=>{
                 e.preventDefault()
                 
-                toggleOpenWhereStatementDialog({categoryName:name,
+                toggleOpenWhereStatementStringDialog({categoryName:name,
                 fieldName:d.name1,
-                segment:""})
+                segment:name})
               }
             }>Add where condition</a>
           }
@@ -467,17 +476,17 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
               (e)=>{
                 e.preventDefault()
                 if(nameOtm==""){
-                    toggleOpenWhereStatementDialog({
+                    toggleOpenWhereStatementNumberDialog({
                       categoryName:`getData${currentCategory.name}`,
                       fieldName:c.name,
-                      segment:""
+                      segment:`getData${currentCategory.name}`,
                     })
               
                 }else{
-                  toggleOpenWhereStatementDialog({
+                  toggleOpenWhereStatementNumberDialog({
                     categoryName:nameOtm,
                     fieldName:c.name,
-                    segment:""
+                    segment:nameOtm
                   })
                 }
               }
@@ -497,17 +506,17 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
               (e)=>{
                 e.preventDefault()
                 if(nameOtm==""){
-                    toggleOpenWhereStatementDialog({
+                    toggleOpenWhereStatementStringDialog({
                       categoryName:`getData${currentCategory.name}`,
                       fieldName:c.name,
-                      segment:""
+                      segment:`getData${currentCategory.name}`
                     })
               
                 }else{
-                  toggleOpenWhereStatementDialog({
+                  toggleOpenWhereStatementStringDialog({
                     categoryName:nameOtm,
                     fieldName:c.name,
-                    segment:""
+                    segment:nameOtm
                   })
                 }
               }}>Add where condition</a>
@@ -552,10 +561,10 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
                 e.preventDefault()
-                toggleOpenWhereStatementDialog({
+                toggleOpenWhereStatementNumberDialog({
                   categoryName:`getData${currentCategory.name}`,
                   fieldName:d.name1,
-                  segment:""
+                  segment:`getData${currentCategory.name}`
                 })
               }
             }>Add where condition</a>
@@ -579,10 +588,10 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
                 e.preventDefault()
-                toggleOpenWhereStatementDialog({
+                toggleOpenWhereStatementStringDialog({
                   categoryName:`getData${currentCategory.name}`,
                   fieldName:d.name1,
-                  segment:""
+                  segment:`getData${currentCategory.name}`
                 })
                 
               }
@@ -2303,12 +2312,20 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       toggleDialog={toggleOtmIdFieldsDialog}
       otmCategoryFields={otmCategoryFields}
     />
-    <WhereStatementDialog
-      open={openWhereStatementDialog}
-      toggleDialog={toggleOpenWhereStatementDialog}
+    <WhereStatementStringDialog
+      open={openWhereStatementStringDialog}
+      toggleDialog={toggleOpenWhereStatementStringDialog}
+      conditionsWhere={conditionsWhere}
+      setConditionsWhere={setConditionsWhere}
       {...varsHeadWhereStatement}
     />
-
+    <WhereStatementNumberDialog
+      open={openWhereStatementNumberDialog}
+      toggleDialog={toggleOpenWhereStatementNumberDialog}
+      conditionsWhere={conditionsWhere}
+      setConditionsWhere={setConditionsWhere}
+      {...varsHeadWhereStatement}
+    />
     
     {showFields 
     && 

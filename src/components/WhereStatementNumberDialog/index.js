@@ -4,14 +4,20 @@ import FormButton from '../Forms/FormButton'
 import FormInput from '../Forms/FormInput'
 import './styles.scss'
 
-const DisplayList=({compositeField,setCompositeField,
-updateNumberOperatorsforConcat})=>{
+const DisplayList=({
+  addConditionWhereArray,
+  setAddConditionWhereArray,
+  setConditionsWhere,
+  categoryName,
+  segment,
+  fieldName
+})=>{
   return <div style={{display:"flex",flexDirection:"row",
   justifyContent:"space-between",flex:1,flexGrow:0}}>
     
     <div style={{width:"60px",display:"flex",flexDirection:"column"}}>
-    {compositeField.map((x,index)=>{
-    if(index%2==0){
+    {addConditionWhereArray?.map((x,index)=>{
+    if(index%3==0){
       return <div style={{display:"flex",
       justifyContent:"space-between",flex:"1 0 0"}}>
         <p style={{color:"black",flex:"1 0 0",overflow:"hidden",whiteSpace:"nowrap"}}>{x}</p>
@@ -21,87 +27,79 @@ updateNumberOperatorsforConcat})=>{
     
     })}
     </div>
-    <div style={{flex:1,flexGrow:0/*flex:"1 0 0",display:"flex",flexDirection:"column"*/}}>
-      {compositeField.map((x,index)=>{
+    <div style={{width:"25px",flexGrow:0/*flex:"1 0 0",display:"flex",flexDirection:"column"*/}}>
+      {addConditionWhereArray?.map((x,index)=>{
       
-      if(index%2!=0){
-        if(typeof compositeField[index]!=="object")
+      if(index%3==1){
+        
           return <div style={{display:"flex",flexDirection:"row",
           justifyContent:"space-between",flex:1,flexGrow:0} }>
          
           
-            <p style={{color:"black",width:"275px",marginLeft:"5px"/*flex:1,flexGrow:0,overflow:"hidden"*/}}>{compositeField[index]}</p>
+            <p style={{color:"black",width:"275px",marginLeft:"5px"/*flex:1,flexGrow:0,overflow:"hidden"*/}}>{addConditionWhereArray[index]=="wherePrevious"?"rule":addConditionWhereArray[index]}</p>
           
           </div>
-        else
-          return <div style={{display:"flex",flexDirection:"row",
-          justifyContent:"space-between",flex:1,flexGrow:1}}>
-         
-          {compositeField[index]["op"]=="substring" &&
-            <p className="ofx">{compositeField[index]["field"]} chars:{compositeField[index]["chars"]} from:{compositeField[index]["start"]}</p>
-          }
-          {compositeField[index]["op"]=="add text" &&
-            <p className="ofx">{compositeField[index]["value"]}</p>
-          }
-          </div> 
+        
       }
       })}
       </div>
-      <div style={{width:"10px",marginLeft:"5px",marginRight:"5px"/*,display:"flex",flexDirection:"column"*/}}>
-      {compositeField.map((x,index)=>{
-    if(index%2==0){
-      return <div style={{display:"flex",flexDirection:"column",
-      justifyContent:"space-between",flex:"1 0 0"}}>
-        
-        <p style={{color:"red",flex:1}}
+      <div style={{width:"100px",marginLeft:"5px",marginRight:"5px"/*,display:"flex",flexDirection:"column"*/}}>
+      {addConditionWhereArray?.map((x,index)=>{
+    if(index%3==2){
+
+      return <div style={{display:"flex",flexDirection:"row",
+          justifyContent:"space-between",flex:1,flexGrow:0} }>
+         
+          
+            <p style={{color:"black",width:"275px",marginLeft:"5px"/*flex:1,flexGrow:0,overflow:"hidden"*/}}>{addConditionWhereArray[index]}</p>
+          
+          </div>
+    }})}
+    </div>
+
+
+    <div style={{width:"10px",marginLeft:"5px",marginRight:"5px"/*,display:"flex",flexDirection:"column"*/}}>
+      {addConditionWhereArray?.map((x,index)=>{ 
+        if(index%3==0) 
+        return <p style={{color:"red",flex:1}}
         onClick={()=>{
           let j=index
-          let y=compositeField.filter((i,inx)=>{
-            if(j==inx || j+1==inx)
+          let y=addConditionWhereArray.filter((i,inx)=>{
+            if(j==inx || j+1==inx || j+2==inx)
               return false
             return true
           })
-          let sf=[]
-          for(let u=0;u<y.length;u++){
-            if(u%2==0)
-              
-              //if(y[u]=="add text" || y[u]=="concat")
-                //sf.push(y[u+1])
-              if(y[u]=="add text")
-                if(y[u+1].type=="string"){
-                  sf.push(y[u+1].value)
-                }
-              if(y[u]=="concat")
-                sf.push(y[u+1])
-              if(y[u]=="substring")
-                sf.push(y[u+1].field)
+
+          if(y.length==3){
+            if(["<","=","<=",">",">=","wherePrevious"].includes(y[1]))
+              if(["and not","or not","not"].includes(y[0]))
+                y[0]="not"
+              else
+                y[0]="none"
           }
-          //console.log("sfff",sf)
-          updateNumberOperatorsforConcat(y,sf)
-          /*setCompositeField(o=>o.filter((i,inx)=>{
-            if(j==inx || j+1==inx)
-              return false
-            return true
-          }))*/
-        
+          setAddConditionWhereArray(y)
+          
         }}>-</p>
-      </div>
-    }
+      })}
+    </div>
     
-    })}
+    
+    
     </div>
       
 
 
-  </div>
+  
 }
 
-export const WhereStatementDialog = ({
+export const WhereStatementNumberDialog = ({
   open,
   toggleDialog,
   fieldName,
   categoryName,
   segment,
+  setConditionsWhere,
+  conditionsWhere,
   otmCategoryFields,
   setOtmChoices,
   otmChoices,
@@ -350,7 +348,119 @@ export const WhereStatementDialog = ({
     }
 
   }*/
+  const mathOperators=[">",">=","<","<=","=","!="]
+  const logicalOperators=["and","or","and not","or not"]
+  const [mathOperator,setMathOperator]=useState(mathOperators[0])
+  const [logicalOperator,setLogicalOperator]=useState(logicalOperators[0])
+  const [valueRule,setValueRule]=useState(0)
+  const [nameWhereClause,setNameWhereClause]=useState("")
+  const [typeWhereDefinition,setTypeWhereDefinition]=useState("normal")
+  let p=conditionsWhere?.[categoryName]?.[segment]?.[fieldName]
+  let iv=""
+  if(p!==undefined){
+    let sfcw=Object.keys(conditionsWhere?.[categoryName]?.[segment]?.[fieldName])
+    
+    if(sfcw.length>0){
+      iv=sfcw[0]
+    }
+  }
+  let [addConditionWhereArray,setAddConditionWhereArray]=useState([])
 
+  const [fieldConditionWhere,setFieldConditionWhere]=useState(iv)
+  
+  useEffect(()=>{
+    //setTypeWhereDefinition("normal")
+    let iv=""
+    if(typeWhereDefinition=="previous"){
+      let p=conditionsWhere?.[categoryName]?.[segment]?.[fieldName]
+      if(p!==undefined){
+      let sfcw=Object.keys(conditionsWhere?.[categoryName]?.[segment]?.[fieldName]).filter(x=>{
+        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type")
+            return true
+          return false
+      })
+      
+      if(sfcw.length>0){
+        iv=sfcw[0]
+        setFieldConditionWhere(iv)
+      }
+      }
+  }
+  },[typeWhereDefinition])
+
+  const displayMathOperators=()=>{
+    return(<select style={{backgroundColor:"brown",color:"white",border:"none",padding:0,margin:0,
+    outline:"none",marginRight:"10px"}}
+    onChange={(e)=>{
+      setMathOperator(e.target.value)
+    }}
+    value={mathOperator}>
+      {mathOperators.map(x=><option value={x}>{x}</option>)}
+    </select>)
+  }
+  const displayLogicalOperators=()=>{
+    return (<select style={{backgroundColor:"brown",color:"white",border:"none",outline:"none",padding:0,margin:0,marginLeft:"10px",marginRight:"10px"}}
+    onChange={e=>setLogicalOperator(e.target.value)}
+    value={logicalOperator}>
+      {logicalOperators.map(x=><option value={x}>{x}</option>)}
+    </select>)
+  }
+
+  const addWhereConditionInArray=()=>{
+    let acwa=addConditionWhereArray
+    if(typeWhereDefinition=="normal"){
+      if(addConditionWhereArray.length==0)
+        acwa=[...acwa,logicalOperator,mathOperator,valueRule]
+      else  
+
+        acwa=[...acwa,logicalOperator,mathOperator,valueRule]
+    }
+    else if(typeWhereDefinition=="previous"){
+      if(addConditionWhereArray.length==0)
+        acwa=[...acwa,logicalOperator,"wherePrevious",fieldConditionWhere]
+      else  
+        acwa=[...acwa,logicalOperator,"wherePrevious",fieldConditionWhere]
+    }
+        
+    console.log("acwa",acwa)
+    setAddConditionWhereArray(acwa)
+  }
+  const addCondition=()=>{
+    let mapeo=conditionsWhere
+    if(mapeo[categoryName]==undefined){
+      mapeo={...mapeo,[categoryName]:{}}
+    }
+    if(mapeo[categoryName][segment]==undefined){
+      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],[segment]:{}}}
+    }
+    if(mapeo[categoryName][segment][fieldName]==undefined){
+      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],[segment]:{
+        ...mapeo[categoryName][segment],
+        [fieldName]:{
+
+      }}}}
+    }
+    
+    
+      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],[segment]:{
+        ...mapeo[categoryName][segment],
+        [fieldName]:{
+          ...mapeo[categoryName][segment][fieldName],
+          [nameWhereClause]:{
+            name:nameWhereClause,
+            rule:addConditionWhereArray
+          },
+          type:"number",
+          categoryName,
+          segment,
+          fieldName
+        }
+      }}}
+    
+    console.log("mapeo",mapeo)
+    setConditionsWhere(mapeo)
+    
+  }
 
 
   return (
@@ -360,6 +470,104 @@ export const WhereStatementDialog = ({
       headline={"Category: "+categoryName+(segment!==""?", Segment: "+segment:"")+", Field: "+fieldName}
         
     >
+    
+      <FormInput style={{width:"100%",border:"none",marginBottom:"5px",
+      padding:0,outline:"none",borderBottom:"1px solid black"}} 
+      onChange={e=>setNameWhereClause(e.target.value)}
+      
+      placeholder="Name of the where clause"/>
+      
+      <select onChange={e=>setTypeWhereDefinition(e.target.value)}
+      style={{border:"none",margin:0,padding:0,marginBottom:"5px",padding:0,outline:"none",
+      borderBottom:"1px solid black"}}
+      value={typeWhereDefinition}>
+        <option 
+        value="previous"
+        >
+          Previously Defined Field Where Clause
+        </option>
+        <option 
+        value="normal"
+        
+        >
+          Define Where Clause
+        </option>
+      </select>
+      {typeWhereDefinition=="normal" &&
+      <p style={{display:"flex",alignItems:"center",height:"20px",
+      backgroundColor:"brown",color:"white"}}>
+        {addConditionWhereArray.length>0 ?
+        <p style={{backgroundColor:"brown",color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayLogicalOperators()}</p>:
+        <select style={{backgroundColor:"brown",color:"white",width:"100px",border:"none",outline:"none",padding:0,margin:0,marginLeft:"10px",marginRight:"10px"}} onChange={e=>{
+          if(logicalOperator!=="none" && logicalOperator!=="not")
+            setLogicalOperator("none")
+          else
+          setLogicalOperator(e.target.value)
+        }}>
+            <option value="none">None</option>
+            <option value="not">Not</option>
+          </select>
+        }
+
+        <p style={{width:"70px", height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayMathOperators()}</p>
+        <input style={{backgroundColor:"brown",color:"white",flex:1,border:"none",height:"20px",outline:"none",margin:0,marginLeft:0,marginRight:"10px"}}
+        onChange={e=>setValueRule(e.target.value)}
+        placeholder="value"></input>
+        <FormButton style={{width:"60px", height:"20px",backgroundColor:"brown",color:"white",margin:0,padding:0}}
+        onClick={e=>{
+          addWhereConditionInArray()
+        }}
+        >Add</FormButton>
+        
+      </p>}
+      {typeWhereDefinition=="previous" &&
+        <p style={{display:"flex",alignItems:"center",height:"20px"}}>
+          {addConditionWhereArray.length>0?
+            <p style={{width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayLogicalOperators()}</p>:
+            <select style={{border:"none",outline:"none",padding:0,margin:0,marginLeft:"10px",marginRight:"10px"}} onChange={e=>setLogicalOperator(e.target.value)}>
+              <option value="none">None</option>
+              <option value="not">Not</option>
+            </select>
+          }
+          
+          {conditionsWhere?.[categoryName]?.[segment]?.[fieldName]!==undefined &&
+          Object.keys(conditionsWhere?.[categoryName]?.[segment]?.[fieldName]).filter(x=>{
+            if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type")
+              return true
+            return false
+          }).length>0 &&
+          <select style={{height:"20px",outline:"none",border:"none",
+          margin:0,padding:0}} onChange={(e)=>setFieldConditionWhere(e.target.value)}>
+            
+            {Object.keys(conditionsWhere?.[categoryName]?.[segment]?.[fieldName]).filter(x=>{
+            if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type")
+              return true
+            return false
+          }).map(x=>
+              <option value={x}>{x}</option>
+          )}
+          </select>
+          }
+          <FormButton style={{width:"60px",height:"20px",margin:"0px",padding:"0px"}}
+          onClick={e=>{
+            addWhereConditionInArray()
+          }}
+          >Add</FormButton>
+        
+        
+      </p>}
+      <DisplayList 
+        addConditionWhereArray={addConditionWhereArray}
+        setAddConditionWhereArray={setAddConditionWhereArray}
+        setConditionsWhere={setConditionsWhere}
+        categoryName={categoryName}
+        segment={segment}
+        fieldName={fieldName}
+      />
+      
+      <FormButton 
+        style={{marginTop:"10px"}}
+        onClick={()=>addCondition()}>Add Rule Where</FormButton>
   {/*<FormInput placeholder="Name of the Field" 
       value={compositeFieldName}
       onChange={(e)=>setCompositeFieldName(e.target.value)}
