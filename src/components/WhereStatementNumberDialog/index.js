@@ -71,7 +71,7 @@ const DisplayList=({
           })
 
           if(y.length==3){
-            if(["<","=","<=",">",">=","wherePrevious"].includes(y[1]))
+            if(["<","=","<=",">",">=","!=","wherePrevious"].includes(y[1]))
               if(["and not","or not","not"].includes(y[0]))
                 y[0]="not"
               else
@@ -350,8 +350,11 @@ export const WhereStatementNumberDialog = ({
   }*/
   const mathOperators=[">",">=","<","<=","=","!="]
   const logicalOperators=["and","or","and not","or not"]
+
+  const initialLogicalOperators=["none","not"]
   const [mathOperator,setMathOperator]=useState(mathOperators[0])
   const [logicalOperator,setLogicalOperator]=useState(logicalOperators[0])
+  const [initialLogicalOperator,setInitialLogicalOperator]=useState(initialLogicalOperators[0])
   const [valueRule,setValueRule]=useState(0)
   const [nameWhereClause,setNameWhereClause]=useState("")
   const [typeWhereDefinition,setTypeWhereDefinition]=useState("normal")
@@ -367,6 +370,7 @@ export const WhereStatementNumberDialog = ({
   let [addConditionWhereArray,setAddConditionWhereArray]=useState([])
 
   const [fieldConditionWhere,setFieldConditionWhere]=useState(iv)
+  let type
   
   useEffect(()=>{
     //setTypeWhereDefinition("normal")
@@ -397,11 +401,27 @@ export const WhereStatementNumberDialog = ({
     value={mathOperator}>
       {mathOperators.map(x=><option value={x}>{x}</option>)}
     </select>)
+
+
+  }
+
+  const displayInitialLogicalOperators=()=>{
+    
+    return (<select style={{height:"20px",backgroundColor:"brown",color:"white",border:"none",outline:"none",padding:0,margin:0,marginLeft:"10px",marginRight:"10px"}}
+    onChange={e=>{
+      setInitialLogicalOperator(e.target.value)
+    }}
+    value={initialLogicalOperator}>
+      {initialLogicalOperators.map(x=><option value={x}>{x}</option>)}
+    </select>)
   }
   const displayLogicalOperators=()=>{
-    return (<select style={{backgroundColor:"brown",color:"white",border:"none",outline:"none",padding:0,margin:0,marginLeft:"10px",marginRight:"10px"}}
-    onChange={e=>setLogicalOperator(e.target.value)}
-    value={logicalOperator}>
+    
+    return (<select style={{height:"20px",backgroundColor:"brown",color:"white",border:"none",outline:"none",padding:0,margin:0,marginLeft:"10px",marginRight:"10px"}}
+    onChange={e=>{
+      setLogicalOperator(e.target.value)
+    }}
+    value={logicalOperator==""?logicalOperators[0]:logicalOperator}>
       {logicalOperators.map(x=><option value={x}>{x}</option>)}
     </select>)
   }
@@ -410,14 +430,15 @@ export const WhereStatementNumberDialog = ({
     let acwa=addConditionWhereArray
     if(typeWhereDefinition=="normal"){
       if(addConditionWhereArray.length==0)
-        acwa=[...acwa,logicalOperator,mathOperator,valueRule]
+        acwa=[...acwa,initialLogicalOperator,mathOperator,valueRule]
       else  
-
         acwa=[...acwa,logicalOperator,mathOperator,valueRule]
+        
+      
     }
     else if(typeWhereDefinition=="previous"){
       if(addConditionWhereArray.length==0)
-        acwa=[...acwa,logicalOperator,"wherePrevious",fieldConditionWhere]
+        acwa=[...acwa,initialLogicalOperator,"wherePrevious",fieldConditionWhere]
       else  
         acwa=[...acwa,logicalOperator,"wherePrevious",fieldConditionWhere]
     }
@@ -476,7 +497,12 @@ export const WhereStatementNumberDialog = ({
       onChange={e=>setNameWhereClause(e.target.value)}
       
       placeholder="Name of the where clause"/>
-      
+      {conditionsWhere?.[categoryName]?.[segment]?.[fieldName]!==undefined &&
+          Object.keys(conditionsWhere?.[categoryName]?.[segment]?.[fieldName]).filter(x=>{
+            if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type")
+              return true
+            return false
+          }).length>0 &&
       <select onChange={e=>setTypeWhereDefinition(e.target.value)}
       style={{border:"none",margin:0,padding:0,marginBottom:"5px",padding:0,outline:"none",
       borderBottom:"1px solid black"}}
@@ -492,21 +518,14 @@ export const WhereStatementNumberDialog = ({
         >
           Define Where Clause
         </option>
-      </select>
+      </select>}
       {typeWhereDefinition=="normal" &&
       <p style={{display:"flex",alignItems:"center",height:"20px",
       backgroundColor:"brown",color:"white"}}>
         {addConditionWhereArray.length>0 ?
         <p style={{backgroundColor:"brown",color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayLogicalOperators()}</p>:
-        <select style={{backgroundColor:"brown",color:"white",width:"100px",border:"none",outline:"none",padding:0,margin:0,marginLeft:"10px",marginRight:"10px"}} onChange={e=>{
-          if(logicalOperator!=="none" && logicalOperator!=="not")
-            setLogicalOperator("none")
-          else
-          setLogicalOperator(e.target.value)
-        }}>
-            <option value="none">None</option>
-            <option value="not">Not</option>
-          </select>
+        <p style={{backgroundColor:"brown",color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayInitialLogicalOperators()}</p>
+            
         }
 
         <p style={{width:"70px", height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayMathOperators()}</p>
@@ -515,6 +534,7 @@ export const WhereStatementNumberDialog = ({
         placeholder="value"></input>
         <FormButton style={{width:"60px", height:"20px",backgroundColor:"brown",color:"white",margin:0,padding:0}}
         onClick={e=>{
+          
           addWhereConditionInArray()
         }}
         >Add</FormButton>
@@ -523,11 +543,8 @@ export const WhereStatementNumberDialog = ({
       {typeWhereDefinition=="previous" &&
         <p style={{display:"flex",alignItems:"center",height:"20px"}}>
           {addConditionWhereArray.length>0?
-            <p style={{width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayLogicalOperators()}</p>:
-            <select style={{border:"none",outline:"none",padding:0,margin:0,marginLeft:"10px",marginRight:"10px"}} onChange={e=>setLogicalOperator(e.target.value)}>
-              <option value="none">None</option>
-              <option value="not">Not</option>
-            </select>
+           <p style={{backgroundColor:"brown",color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayLogicalOperators()}</p>:
+           <p style={{backgroundColor:"brown",color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayInitialLogicalOperators()}</p>
           }
           
           {conditionsWhere?.[categoryName]?.[segment]?.[fieldName]!==undefined &&
@@ -536,8 +553,8 @@ export const WhereStatementNumberDialog = ({
               return true
             return false
           }).length>0 &&
-          <select style={{height:"20px",outline:"none",border:"none",
-          margin:0,padding:0}} onChange={(e)=>setFieldConditionWhere(e.target.value)}>
+          <select style={{height:"20px",outline:"none",border:"none",backgroundColor:"brown",color:"white",
+          margin:0,padding:0,flex:1}} onChange={(e)=>setFieldConditionWhere(e.target.value)}>
             
             {Object.keys(conditionsWhere?.[categoryName]?.[segment]?.[fieldName]).filter(x=>{
             if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type")
@@ -550,6 +567,7 @@ export const WhereStatementNumberDialog = ({
           }
           <FormButton style={{width:"60px",height:"20px",margin:"0px",padding:"0px"}}
           onClick={e=>{
+            
             addWhereConditionInArray()
           }}
           >Add</FormButton>
