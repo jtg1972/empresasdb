@@ -51,7 +51,7 @@ const DisplayList=({
           justifyContent:"space-between",flex:1,flexGrow:0} }>
          
           
-            <p style={{color:"black",width:"275px",marginLeft:"5px"/*flex:1,flexGrow:0,overflow:"hidden"*/}}>{addConditionWhereArray[index]}</p>
+            <p style={{color:"black",width:"275px",marginLeft:"5px",color:"black"/*flex:1,flexGrow:0,overflow:"hidden"*/}}>{addConditionWhereArray[index]}</p>
           
           </div>
     }})}
@@ -493,7 +493,8 @@ export const WhereStatementNumberDialog = ({
     >
     
       <FormInput style={{width:"100%",border:"none",marginBottom:"5px",
-      padding:0,outline:"none",borderBottom:"1px solid black"}} 
+      padding:0,outline:"none",border:"none"}}
+      className="ph2" 
       onChange={e=>setNameWhereClause(e.target.value)}
       
       placeholder="Name of the where clause"/>
@@ -504,8 +505,7 @@ export const WhereStatementNumberDialog = ({
             return false
           }).length>0 &&
       <select onChange={e=>setTypeWhereDefinition(e.target.value)}
-      style={{border:"none",margin:0,padding:0,marginBottom:"5px",padding:0,outline:"none",
-      borderBottom:"1px solid black"}}
+      style={{border:"none",margin:0,marginLeft:"-5px",padding:0,marginBottom:"5px",padding:0,outline:"none"}}
       value={typeWhereDefinition}>
         <option 
         value="previous"
@@ -529,9 +529,10 @@ export const WhereStatementNumberDialog = ({
         }
 
         <p style={{width:"70px", height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayMathOperators()}</p>
-        <input style={{backgroundColor:"brown",color:"white",flex:1,border:"none",height:"20px",outline:"none",margin:0,marginLeft:0,marginRight:"10px"}}
+        <FormInput style={{backgroundColor:"brown",color:"white",flex:1,border:"none",height:"20px",outline:"none",margin:0,marginLeft:0,marginRight:"10px"}}
         onChange={e=>setValueRule(e.target.value)}
-        placeholder="value"></input>
+        className="ph1"
+        placeholder="value"></FormInput>
         <FormButton style={{width:"60px", height:"20px",backgroundColor:"brown",color:"white",margin:0,padding:0}}
         onClick={e=>{
           
