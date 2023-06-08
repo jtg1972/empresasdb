@@ -36,7 +36,10 @@ const DisplayList=({
           justifyContent:"space-between",flex:1,flexGrow:0} }>
          
           
-            <p style={{color:"black",width:"275px",marginLeft:"5px",whiteSpace:"nowrap",/*flex:1,flexGrow:0,overflow:"hidden"*/}}>{addConditionWhereArray[index]=="wherePrevious"?"rule":addConditionWhereArray[index]}</p>
+            <p style={{color:"black",width:"275px",marginLeft:"5px",whiteSpace:"nowrap",/*flex:1,flexGrow:0,overflow:"hidden"*/}}>
+              {addConditionWhereArray[index]=="wherePrevious"?"rule":addConditionWhereArray[index]
+
+              }</p>
           
           </div>
         
@@ -51,7 +54,10 @@ const DisplayList=({
           justifyContent:"space-between",flex:1,flexGrow:0} }>
          
           
-            <p style={{color:"black",width:"275px",marginLeft:"5px",color:"black",whiteSpacing:"no-wrap",/*flex:1,flexGrow:0,overflow:"hidden"*/}}>{addConditionWhereArray[index]}</p>
+            <p style={{color:"black",width:"285px",marginLeft:"5px",color:"black",whiteSpace:"nowrap",overflowX:"hidden"/*flex:1,flexGrow:0,overflow:"hidden"*/}}>
+              {addConditionWhereArray[index-1]!=="between"?
+              addConditionWhereArray[index]:
+              `${addConditionWhereArray[index]["initial"]} to ${addConditionWhereArray[index]["final"]}`}</p>
           
           </div>
     }})}
@@ -355,9 +361,11 @@ export const WhereStatementStringDialog = ({
   const [stringOperator,setStringOperator]=useState(stringOperators[0])
   const [logicalOperator,setLogicalOperator]=useState(logicalOperators[0])
   const [initialLogicalOperator,setInitialLogicalOperator]=useState(initialLogicalOperators[0])
-  const [valueRule,setValueRule]=useState(0)
+  const [valueRule,setValueRule]=useState("")
   const [nameWhereClause,setNameWhereClause]=useState("")
   const [typeWhereDefinition,setTypeWhereDefinition]=useState("normal")
+  const [initialBetween,setInitialBetween]=useState("")
+  const [finalBetween,setFinalBetween]=useState("")
   let p=conditionsWhere?.[categoryName]?.[segment]?.[fieldName]
   let iv=""
   if(p!==undefined){
@@ -391,6 +399,17 @@ export const WhereStatementStringDialog = ({
       }
   }
   },[typeWhereDefinition])
+  useEffect(()=>{
+    if(stringOperator=="between"){
+      setInitialBetween("")
+      setFinalBetween("")
+    }
+    if(stringOperator=="starts with" || stringOperator=="ends with" || stringOperator=="contains"){
+      setValueRule("")
+    }
+
+
+  },[stringOperator])
 
   const displayMathOperators=()=>{
     return(<select style={{backgroundColor:"brown",color:"white",border:"none",padding:0,margin:0,
@@ -428,11 +447,41 @@ export const WhereStatementStringDialog = ({
 
   const addWhereConditionInArray=()=>{
     let acwa=addConditionWhereArray
+    let initial
+    let final
     if(typeWhereDefinition=="normal"){
-      if(addConditionWhereArray.length==0)
-        acwa=[...acwa,initialLogicalOperator,stringOperator,valueRule]
-      else  
-        acwa=[...acwa,logicalOperator,stringOperator,valueRule]
+      if(addConditionWhereArray.length==0){
+        if(stringOperator!=="between")
+          acwa=[...acwa,initialLogicalOperator,stringOperator,valueRule]
+        else{
+          console.log("analise", initialBetween.toUpperCase(),finalBetween.toUpperCase(),initialBetween.toUpperCase()>finalBetween.toUpperCase())
+
+          if(initialBetween.toUpperCase()>finalBetween.toUpperCase()){
+            initial=finalBetween
+            final=initialBetween
+            acwa=[...acwa,initialLogicalOperator,stringOperator,{initial:finalBetween,final:initialBetween}]  
+          }else{
+            acwa=[...acwa,initialLogicalOperator,stringOperator,{initial:initialBetween,final:finalBetween}]  
+          }
+        }
+          
+          
+      }
+      else{
+        if(stringOperator!=="between")
+          acwa=[...acwa,logicalOperator,stringOperator,valueRule]
+        else{
+          console.log("analise", initialBetween.toUpperCase(),finalBetween.toUpperCase(),initialBetween.toUpperCase()>finalBetween.toUpperCase())
+          if(initialBetween.toUpperCase()>finalBetween.toUpperCase()){
+            initial=finalBetween
+            final=initialBetween
+            acwa=[...acwa,logicalOperator,stringOperator,{initial:finalBetween,final:initialBetween}]  
+          }else{
+            acwa=[...acwa,logicalOperator,stringOperator,{initial:initialBetween,final:finalBetween}]  
+          }
+        }  
+        
+      }
         
       
     }
@@ -529,10 +578,10 @@ export const WhereStatementStringDialog = ({
         }
 
         <p style={{width:"70px", height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayMathOperators()}</p>
-        <FormInput style={{backgroundColor:"brown",color:"white",flex:1,border:"none",height:"20px",outline:"none",margin:0,marginLeft:0,marginRight:"10px"}}
+        {stringOperator!=="between" &&<FormInput style={{backgroundColor:"brown",color:"white",flex:1,border:"none",height:"20px",outline:"none",margin:0,marginLeft:0,marginRight:"10px"}}
         onChange={e=>setValueRule(e.target.value)}
         className="ph1"
-        placeholder="value"></FormInput>
+        placeholder="value"></FormInput>}
         <FormButton style={{width:"60px", height:"20px",backgroundColor:"brown",color:"white",margin:0,padding:0}}
         onClick={e=>{
           
@@ -578,8 +627,18 @@ export const WhereStatementStringDialog = ({
 
       {stringOperator=="between" && 
       <div style={{display:"flex",marginTop:"5px"}}>
-        <FormInput style={{margin:0,padding:0,flex:1,marginRight:"5px",border:"none"}}placeholder="Initial Value"></FormInput>
-        <FormInput style={{margin:0,padding:0,flex:1,border:"none"}}placeholder="Final Value"></FormInput>
+        <FormInput 
+        style={{margin:0,padding:0,flex:1,marginRight:"5px",border:"none"}} 
+        placeholder="Initial Value"
+        onChange={(e)=>setInitialBetween(e.target.value)}
+        value={initialBetween}></FormInput>
+        
+
+        <FormInput 
+        style={{margin:0,padding:0,flex:1,border:"none"}}
+        placeholder="Final Value"
+        onChange={(e)=>setFinalBetween(e.target.value)}
+        value={finalBetween}></FormInput>
       </div>}
       <DisplayList 
         addConditionWhereArray={addConditionWhereArray}
