@@ -413,7 +413,7 @@ export const WhereStatementStringDialog = ({
 
   const displayMathOperators=()=>{
     return(<select style={{backgroundColor:"brown",color:"white",border:"none",padding:0,margin:0,
-    outline:"none",marginRight:"10px"}}
+    outline:"none",marginRight:"10px",width:"100%"}}
     onChange={(e)=>{
       setStringOperator(e.target.value)
     }}
@@ -572,13 +572,17 @@ export const WhereStatementStringDialog = ({
       <p style={{display:"flex",alignItems:"center",height:"20px",
       backgroundColor:"brown",color:"white"}}>
         {addConditionWhereArray.length>0 ?
-        <p style={{backgroundColor:"brown",color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayLogicalOperators()}</p>:
-        <p style={{backgroundColor:"brown",color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayInitialLogicalOperators()}</p>
+        <p style={{backgroundColor:"brown",color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px",
+        }}>{displayLogicalOperators()}</p>:
+        <p style={{backgroundColor:"brown",
+        color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px",
+        }}>{displayInitialLogicalOperators()}</p>
             
         }
 
-        <p style={{width:"70px", height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayMathOperators()}</p>
-        {stringOperator!=="between" &&<FormInput style={{backgroundColor:"brown",color:"white",flex:1,border:"none",height:"20px",outline:"none",margin:0,marginLeft:0,marginRight:"10px"}}
+        <p style={{width:"70px",flex:stringOperator=="between" && 1,height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayMathOperators()}</p>
+        {stringOperator!=="between" &&<FormInput style={{backgroundColor:"brown",color:"white",flex:1,border:"none",height:"20px",outline:"none",margin:0,marginLeft:0,marginRight:"10px",
+        }}
         onChange={e=>setValueRule(e.target.value)}
         className="ph1"
         placeholder="value"></FormInput>}
