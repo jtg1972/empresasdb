@@ -1,3 +1,4 @@
+import { valueFromAST } from 'graphql'
 import React,{useState,useEffect} from 'react'
 import Dialog from '../Dialog'
 import FormButton from '../Forms/FormButton'
@@ -355,9 +356,10 @@ export const WhereStatementNumberDialog = ({
   const [mathOperator,setMathOperator]=useState(mathOperators[0])
   const [logicalOperator,setLogicalOperator]=useState(logicalOperators[0])
   const [initialLogicalOperator,setInitialLogicalOperator]=useState(initialLogicalOperators[0])
-  const [valueRule,setValueRule]=useState(0)
+  const [valueRule,setValueRule]=useState("")
   const [nameWhereClause,setNameWhereClause]=useState("")
   const [typeWhereDefinition,setTypeWhereDefinition]=useState("normal")
+  const [added,setAdded]=useState(false)
   let p=conditionsWhere?.[categoryName]?.[segment]?.[fieldName]
   let iv=""
   if(p!==undefined){
@@ -391,6 +393,45 @@ export const WhereStatementNumberDialog = ({
       }
   }
   },[typeWhereDefinition])
+
+  useEffect(()=>{
+    if(open==true || added==true){
+      setNameWhereClause("")
+      setAddConditionWhereArray([])
+      setTypeWhereDefinition("normal")
+      setMathOperator(mathOperators[0])
+      setInitialLogicalOperator(initialLogicalOperators[0])
+      setLogicalOperator(logicalOperators[0])
+      setValueRule("")
+      setAdded(false)
+    }
+
+  },[categoryName,segment,fieldName,added,open])
+
+  const checkPreviousAdd=()=>{
+    let sfcw=conditionsWhere?.[categoryName]?.[segment]?.[fieldName]
+    if(nameWhereClause=="")
+      return true
+    if(sfcw!=undefined && sfcw!=null){
+      sfcw=Object.keys(sfcw)
+      sfcw=sfcw.filter(x=>{
+        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type")
+          return true
+       return false
+      })
+  
+      if(addConditionWhereArray.length==0)
+        return true
+      if(sfcw.includes(nameWhereClause))
+        return true
+      return false
+    }else{
+      if(addConditionWhereArray.length==0)
+        return true
+      return false
+    }
+
+  }
 
   const displayMathOperators=()=>{
     return(<select style={{backgroundColor:"brown",color:"white",border:"none",padding:0,margin:0,
@@ -445,6 +486,7 @@ export const WhereStatementNumberDialog = ({
         
     console.log("acwa",acwa)
     setAddConditionWhereArray(acwa)
+    
   }
   const addCondition=()=>{
     let mapeo=conditionsWhere
@@ -480,6 +522,8 @@ export const WhereStatementNumberDialog = ({
     
     console.log("mapeo",mapeo)
     setConditionsWhere(mapeo)
+    setNameWhereClause("")
+    setAdded(true)
     
   }
 
@@ -496,7 +540,7 @@ export const WhereStatementNumberDialog = ({
       padding:0,outline:"none",border:"none"}}
       className="ph2" 
       onChange={e=>setNameWhereClause(e.target.value)}
-      
+      value={nameWhereClause}
       placeholder="Name of the where clause"/>
       {conditionsWhere?.[categoryName]?.[segment]?.[fieldName]!==undefined &&
           Object.keys(conditionsWhere?.[categoryName]?.[segment]?.[fieldName]).filter(x=>{
@@ -532,7 +576,8 @@ export const WhereStatementNumberDialog = ({
         <FormInput style={{backgroundColor:"brown",color:"white",flex:1,border:"none",height:"20px",outline:"none",margin:0,marginLeft:0,marginRight:"10px"}}
         onChange={e=>setValueRule(e.target.value)}
         className="ph1"
-        placeholder="value"></FormInput>
+        placeholder="value"
+        value={valueRule}></FormInput>
         <FormButton style={{width:"60px", height:"20px",backgroundColor:"brown",color:"white",margin:0,padding:0}}
         onClick={e=>{
           
@@ -585,8 +630,9 @@ export const WhereStatementNumberDialog = ({
       />
       
       <FormButton 
-        style={{marginTop:"10px"}}
-        onClick={()=>addCondition()}>Add Rule Where</FormButton>
+        style={{marginTop:"10px",opacity:checkPreviousAdd()?0.7:1}}
+        onClick={()=>addCondition()}
+        disabled={()=>checkPreviousAdd()}>Add Rule Where</FormButton>
   {/*<FormInput placeholder="Name of the Field" 
       value={compositeFieldName}
       onChange={(e)=>setCompositeFieldName(e.target.value)}

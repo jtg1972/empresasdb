@@ -403,6 +403,9 @@ export const WhereStatementStringDialog = ({
     if(stringOperator=="between"){
       setInitialBetween("")
       setFinalBetween("")
+      setStringOperator(stringOperators[0])
+      setInitialLogicalOperator(initialLogicalOperators[0])
+      setLogicalOperator(logicalOperator[0])
     }
     if(stringOperator=="starts with" || stringOperator=="ends with" || stringOperator=="contains"){
       setValueRule("")
@@ -410,6 +413,18 @@ export const WhereStatementStringDialog = ({
 
 
   },[stringOperator])
+
+  useEffect(()=>{
+    if(open==true){
+      setAddConditionWhereArray([])
+      setTypeWhereDefinition("normal")
+      setStringOperator(stringOperators[0])
+      setInitialLogicalOperator(initialLogicalOperators[0])
+      setLogicalOperator(logicalOperators[0])
+      setValueRule("")
+    }
+
+  },[categoryName,segment,fieldName,open])
 
   const displayMathOperators=()=>{
     return(<select style={{backgroundColor:"brown",color:"white",border:"none",padding:0,margin:0,
