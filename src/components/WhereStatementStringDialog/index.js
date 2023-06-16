@@ -1,9 +1,10 @@
+import { checkDEV } from '@apollo/client/utilities/globals'
 import React,{useState,useEffect} from 'react'
 import Dialog from '../Dialog'
 import FormButton from '../Forms/FormButton'
 import FormInput from '../Forms/FormInput'
 import './styles.scss'
-
+//checar las referencias circulares para la otra
 const DisplayList=({
   addConditionWhereArray,
   setAddConditionWhereArray,
@@ -366,9 +367,11 @@ export const WhereStatementStringDialog = ({
   const [typeWhereDefinition,setTypeWhereDefinition]=useState("normal")
   const [initialBetween,setInitialBetween]=useState("")
   const [finalBetween,setFinalBetween]=useState("")
+  const [added,setAdded]=useState(false)
+  const [disabled,setDisabled]=useState(true)
   let p=conditionsWhere?.[categoryName]?.[segment]?.[fieldName]
   let iv=""
-  if(p!==undefined){
+  if(p!==undefined && p!==null){
     let sfcw=Object.keys(conditionsWhere?.[categoryName]?.[segment]?.[fieldName])
     
     if(sfcw.length>0){
@@ -400,12 +403,14 @@ export const WhereStatementStringDialog = ({
   }
   },[typeWhereDefinition])
   useEffect(()=>{
+    checkRowAddOn()
     if(stringOperator=="between"){
       setInitialBetween("")
       setFinalBetween("")
       setStringOperator(stringOperators[0])
       setInitialLogicalOperator(initialLogicalOperators[0])
       setLogicalOperator(logicalOperator[0])
+      
     }
     if(stringOperator=="starts with" || stringOperator=="ends with" || stringOperator=="contains"){
       setValueRule("")
@@ -415,17 +420,70 @@ export const WhereStatementStringDialog = ({
   },[stringOperator])
 
   useEffect(()=>{
-    if(open==true){
+    
+    if(open==true || added==true){
       setAddConditionWhereArray([])
       setTypeWhereDefinition("normal")
       setStringOperator(stringOperators[0])
       setInitialLogicalOperator(initialLogicalOperators[0])
       setLogicalOperator(logicalOperators[0])
       setValueRule("")
+      setAdded(false)
+      setNameWhereClause("")
+      setDisabled(true)
     }
 
-  },[categoryName,segment,fieldName,open])
+  },[categoryName,segment,fieldName,open,added])
 
+  const checkRowAddOn=()=>{
+    console.log("valid",initialBetween.trim(),finalBetween.trim(),valueRule.trim())
+
+    if(stringOperator=="between"){
+      if(initialBetween.trim()=="" || finalBetween.trim()==""){
+        console.log("valid false")
+        return false
+      }
+      else{ 
+        console.log("valid true")
+        return true
+      }
+    }else{
+      if(valueRule.trim()==""){
+        console.log("valid false")
+        return false
+      }
+        
+      else  {
+        console.log("valid true")
+        return true
+      }
+    }
+  }
+
+  const checkPreviousAdd=()=>{
+    let sfcw=conditionsWhere?.[categoryName]?.[segment]?.[fieldName]
+    if(nameWhereClause=="")
+      return true
+    if(sfcw!=undefined && sfcw!=null){
+      sfcw=Object.keys(sfcw)
+      sfcw=sfcw.filter(x=>{
+        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type")
+          return true
+       return false
+      })
+  
+      if(addConditionWhereArray.length==0)
+        return true
+      if(sfcw.includes(nameWhereClause))
+        return true
+      return false
+    }else{
+      if(addConditionWhereArray.length==0)
+        return true
+      return false
+    }
+
+  }
   const displayMathOperators=()=>{
     return(<select style={{backgroundColor:"brown",color:"white",border:"none",padding:0,margin:0,
     outline:"none",marginRight:"10px",width:"100%"}}
@@ -535,7 +593,7 @@ export const WhereStatementStringDialog = ({
             name:nameWhereClause,
             rule:addConditionWhereArray
           },
-          type:"number",
+          type:"string",
           categoryName,
           segment,
           fieldName
@@ -544,6 +602,7 @@ export const WhereStatementStringDialog = ({
     
     console.log("mapeo",mapeo)
     setConditionsWhere(mapeo)
+    setAdded(true)
     
   }
 
@@ -561,7 +620,8 @@ export const WhereStatementStringDialog = ({
       className="ph2" 
       onChange={e=>setNameWhereClause(e.target.value)}
       
-      placeholder="Name of the where clause"/>
+      placeholder="Name of the where clause"
+      value={nameWhereClause}/>
       {conditionsWhere?.[categoryName]?.[segment]?.[fieldName]!==undefined &&
           Object.keys(conditionsWhere?.[categoryName]?.[segment]?.[fieldName]).filter(x=>{
             if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type")
@@ -598,13 +658,23 @@ export const WhereStatementStringDialog = ({
         <p style={{width:"70px",flex:stringOperator=="between" && 1,height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayMathOperators()}</p>
         {stringOperator!=="between" &&<FormInput style={{backgroundColor:"brown",color:"white",flex:1,border:"none",height:"20px",outline:"none",margin:0,marginLeft:0,marginRight:"10px",
         }}
-        onChange={e=>setValueRule(e.target.value)}
+        onChange={e=>{
+          if(e.target.value!=="" && disabled==false )
+            setDisabled(false)
+          else if(e.target.value=="" && disabled!==true)
+            setDisabled(true)
+          setValueRule(e.target.value)
+        }}
         className="ph1"
+        value={valueRule}
         placeholder="value"></FormInput>}
-        <FormButton style={{width:"60px", height:"20px",backgroundColor:"brown",color:"white",margin:0,padding:0}}
+        <FormButton style={{width:"60px", height:"20px",backgroundColor:"brown",color:"white",margin:0,padding:0,
+        opacity:checkRowAddOn()?1:0.7}}
+        disabled={!checkRowAddOn()}
         onClick={e=>{
-          
+          setValueRule("")
           addWhereConditionInArray()
+          
         }}
         >Add</FormButton>
         
@@ -669,7 +739,8 @@ export const WhereStatementStringDialog = ({
       />
       
       <FormButton 
-        style={{marginTop:"10px"}}
+        style={{marginTop:"10px",opacity:checkPreviousAdd()?0.7:1}}
+        disabled={checkPreviousAdd()}
         onClick={()=>addCondition()}>Add Rule Where</FormButton>
   {/*<FormInput placeholder="Name of the Field" 
       value={compositeFieldName}

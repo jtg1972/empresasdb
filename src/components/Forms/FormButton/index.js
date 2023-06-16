@@ -5,13 +5,16 @@
     children,
     fullLength,
     style,
-    className
+    className,
+    ...props
   }) => {
     return (
       <button
       className={"btn "+className}
       onClick={onClick}
       style={style}
+
+      {...props}
       >
         {children}
       </button>

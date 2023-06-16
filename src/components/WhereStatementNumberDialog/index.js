@@ -632,7 +632,7 @@ export const WhereStatementNumberDialog = ({
       <FormButton 
         style={{marginTop:"10px",opacity:checkPreviousAdd()?0.7:1}}
         onClick={()=>addCondition()}
-        disabled={()=>checkPreviousAdd()}>Add Rule Where</FormButton>
+        disabled={checkPreviousAdd()}>Add Rule Where</FormButton>
   {/*<FormInput placeholder="Name of the Field" 
       value={compositeFieldName}
       onChange={(e)=>setCompositeFieldName(e.target.value)}
