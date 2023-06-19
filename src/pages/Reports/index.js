@@ -303,6 +303,7 @@ const Reports=()=>{
         }}/>
         <p>Total and Percentage of Parents Regarding Conditions of Son Atributes</p>
       </div>
+      <p>All category where conditions</p>
       {displayCurCategory(catDestiny,false,false,name,false,trackCatPath)}
       <FormButton style={{
         textAlign:"left",
@@ -529,6 +530,8 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
 
       })}
       {displayAncestorsCats(trackCatPath,nameOtm,cat.name)}
+
+      {primero && fieldsSingle && <p>All conditions of category</p>}
       {primero && fieldsSingle && (<><FormButton style={{
           textAlign:"left",
           textDecoration:"underline",

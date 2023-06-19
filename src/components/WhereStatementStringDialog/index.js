@@ -4,7 +4,9 @@ import Dialog from '../Dialog'
 import FormButton from '../Forms/FormButton'
 import FormInput from '../Forms/FormInput'
 import './styles.scss'
-//checar las referencias circulares para la otra
+//en las clausulas where de cada campo no puede haber referencias
+//circulares porque la primera existe antes que la segunda por lo que
+//no se pueden incluir mutuamente
 const DisplayList=({
   addConditionWhereArray,
   setAddConditionWhereArray,
@@ -78,7 +80,7 @@ const DisplayList=({
           })
 
           if(y.length==3){
-            if(["<","=","<=",">",">=","!=","wherePrevious"].includes(y[1]))
+            if(["starts with","contains","ends with","between","wherePrevious"].includes(y[1]))
               if(["and not","or not","not"].includes(y[0]))
                 y[0]="not"
               else
@@ -672,9 +674,9 @@ export const WhereStatementStringDialog = ({
         opacity:checkRowAddOn()?1:0.7}}
         disabled={!checkRowAddOn()}
         onClick={e=>{
-          setValueRule("")
+        
           addWhereConditionInArray()
-          
+          setValueRule("")  
         }}
         >Add</FormButton>
         

@@ -408,6 +408,16 @@ export const WhereStatementNumberDialog = ({
 
   },[categoryName,segment,fieldName,added,open])
 
+  const checkRowAddOn=()=>{
+    
+
+    if(valueRule.trim()==""){
+      return false
+    }
+    return true
+  }
+
+
   const checkPreviousAdd=()=>{
     let sfcw=conditionsWhere?.[categoryName]?.[segment]?.[fieldName]
     if(nameWhereClause=="")
@@ -527,6 +537,8 @@ export const WhereStatementNumberDialog = ({
     
   }
 
+  
+
 
   return (
     <Dialog 
@@ -577,12 +589,16 @@ export const WhereStatementNumberDialog = ({
         onChange={e=>setValueRule(e.target.value)}
         className="ph1"
         placeholder="value"
+        type="number"
         value={valueRule}></FormInput>
-        <FormButton style={{width:"60px", height:"20px",backgroundColor:"brown",color:"white",margin:0,padding:0}}
+        <FormButton style={{width:"60px", height:"20px",backgroundColor:"brown",color:"white",margin:0,padding:0,
+        opacity:!checkRowAddOn()?0.7:1}}
         onClick={e=>{
           
           addWhereConditionInArray()
+          setValueRule("")
         }}
+        disabled={!checkRowAddOn()}
         >Add</FormButton>
         
       </p>}
