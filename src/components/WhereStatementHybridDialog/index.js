@@ -11,8 +11,7 @@ const DisplayList=({
   setConditionsWhere,
   categoryName,
   segment,
-  fieldName,
-  
+  fieldName
 })=>{
   return <div style={{display:"flex",flexDirection:"row",
   justifyContent:"space-between",flex:1,flexGrow:0}}>
@@ -94,7 +93,7 @@ const DisplayList=({
   
 }
 
-export const WhereStatementNumberDialog = ({
+export const WhereStatementHybridDialog = ({
   open,
   toggleDialog,
   fieldName,
@@ -352,17 +351,18 @@ export const WhereStatementNumberDialog = ({
     }
 
   }*/
-  const mathOperators=[">",">=","<","<=","=","!="]
+  
   const logicalOperators=["and","or","and not","or not"]
 
   const initialLogicalOperators=["none","not"]
-  const [mathOperator,setMathOperator]=useState(mathOperators[0])
+  
   const [logicalOperator,setLogicalOperator]=useState(logicalOperators[0])
   const [initialLogicalOperator,setInitialLogicalOperator]=useState(initialLogicalOperators[0])
-  const [valueRule,setValueRule]=useState("")
+  
   const [nameWhereClause,setNameWhereClause]=useState("")
   const [typeWhereDefinition,setTypeWhereDefinition]=useState("normal")
   const [added,setAdded]=useState(false)
+  const [thereAreConditions,setThereAreConditions]=useState(false)
   let p=conditionsWhere?.[categoryName]?.[segment]?.[fieldName]
   let iv=""
   if(p!==undefined){
@@ -372,13 +372,21 @@ export const WhereStatementNumberDialog = ({
       iv=sfcw[0]
     }
   }
-  let [addConditionWhereArray,setAddConditionWhereArray]=useState([])
+  const [addConditionWhereArray,setAddConditionWhereArray]=useState([])
+  const [displayCombo,setDisplayCombo]=useState("")
 
   const [fieldConditionWhere,setFieldConditionWhere]=useState(iv)
+  const [selectedSegment,setSelectedSegment]=useState("")
+  const [selectedField,setSelectedField]=useState("")
+  const [selectedRule,setSelectedRule]=useState("")
+  const [listSegments,setListSegments]=useState([])
+  const [listFields,setListFields]=useState([])
+  const [listRules,setListRules]=useState([])
   let type
+  let displayAllCombo=""
   
   useEffect(()=>{
-    //setTypeWhereDefinition("normal")
+    setTypeWhereDefinition("normal")
     let iv=""
     if(typeWhereDefinition=="previous"){
       let p=conditionsWhere?.[categoryName]?.[segment]?.[fieldName]
@@ -398,28 +406,123 @@ export const WhereStatementNumberDialog = ({
   },[typeWhereDefinition])
 
   useEffect(()=>{
+    displayAllWhereClausesSelect()
+  },[conditionsWhere])
+
+  useEffect(()=>{
+    displayFieldsCombo()
+  },[selectedSegment])
+  const displayAllWhereClausesSelect=()=>{
+
+
+    let comboData=comboDataSt
+    console.log("initial",comboData)
+
+    
+    if(typeof conditionsWhere=="object"){
+      let cats=Object.keys(conditionsWhere).map(u=>{
+        if(comboData?.[u]==undefined)
+          comboData={...comboData,[u]:{}}
+    
+        
+
+        if(typeof conditionsWhere?.[u]=="object"){
+          let segments=Object.keys(conditionsWhere?.[u])?.map(x=>{
+            if(comboData?.[u]?.[x]==undefined)
+              comboData={...comboData,[u]:{...comboData[u],[x]:{}}}
+            
+          
+      
+            
+            if(typeof conditionsWhere?.[u]?.[x]=="object"){
+              let rules=Object.keys(conditionsWhere?.[u]?.[x]).filter(z=>{
+                if(z!=="categoryName" && z!=="segment" && z!=="fieldName" && z!=="type"){
+                  if(comboData[u][x][`${x} ${z}`]==undefined){
+                    comboData={...comboData,
+                      [u]:{
+                        ...comboData[u],
+                        [x]:{
+                          ...comboData[u][x],
+                          [z]:{
+                            name:z,
+                            rules:conditionsWhere?.[u]?.[x]?.[z]
+                          }
+                        }
+                      }
+                    }
+                    /*if(typeof conditionsWhere?.[u]?.[x]?.[`${x} ${z}`]=="object"){
+                      Object.keys(conditionsWhere?.[u]?.[x]?.[`${x} ${z}`]).filter(o=>{
+                        if(o!=="categoryName" && o!=="segment" && o!=="fieldName" && o!=="type"){
+                          comboData={
+                              ...comboData,[u]:{
+                                ...comboData[u],
+                                [x]:{...comboData[u][x],[`${x} ${z}`]:{
+                              
+                                  ...comboData[u][x][`${x} ${z}`],
+                                  rules:[
+                                    ...comboData[u][x][`${x} ${z}`]["rules"]
+                                    ,o
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                            
+                          
+                        }
+                          
+                      
+                      })
+                    }*/
+                  }
+                }
+              })
+            }
+          })
+        }
+      })
+    }
+    console.log("comboData",comboData) 
+    //displayAllCombo=displayCombo(comboData)
+ 
+    setComboDataSt(comboData)
+
+    
+    
+  
+  
+
+    
+  }
+
+
+  useEffect(()=>{
+
     if(open==true || added==true){
+      if(thereAreConditions==true)
+        setThereAreConditions(false)
+      
       setNameWhereClause("")
       setAddConditionWhereArray([])
       setTypeWhereDefinition("normal")
-      setMathOperator(mathOperators[0])
+      
       setInitialLogicalOperator(initialLogicalOperators[0])
       setLogicalOperator(logicalOperators[0])
-      setValueRule("")
-      setAdded(false)
+      setSelectedSegment("Select Segment")
+      setSelectedField("Select Field")
+      setSelectedRule("Select Rule")
+      setListSegments([])
+      setListFields([])
+      setListRules([])
+      displaySegmentsCombo()
+      console.log("entro222")
+      
+      
     }
 
-  },[categoryName,segment,fieldName,added,open])
+  },[categoryName,added,open])
 
-  const checkRowAddOn=()=>{
-    
-
-    if(valueRule.trim()==""){
-      return false
-    }
-    return true
-  }
-
+  
 
   const checkPreviousAdd=()=>{
     let sfcw=conditionsWhere?.[categoryName]?.[segment]?.[fieldName]
@@ -446,19 +549,7 @@ export const WhereStatementNumberDialog = ({
 
   }
 
-  const displayMathOperators=()=>{
-    return(<select style={{backgroundColor:"brown",color:"white",border:"none",padding:0,margin:0,
-    outline:"none",marginRight:"10px"}}
-    onChange={(e)=>{
-      setMathOperator(e.target.value)
-    }}
-    value={mathOperator}>
-      {mathOperators.map(x=><option value={x}>{x}</option>)}
-    </select>)
-
-
-  }
-
+  
   const displayInitialLogicalOperators=()=>{
     
     return (<select style={{height:"20px",backgroundColor:"brown",color:"white",border:"none",outline:"none",padding:0,margin:0,marginLeft:"10px",marginRight:"10px"}}
@@ -482,22 +573,14 @@ export const WhereStatementNumberDialog = ({
 
   const addWhereConditionInArray=()=>{
     let acwa=addConditionWhereArray
-    if(typeWhereDefinition=="normal"){
-      if(addConditionWhereArray.length==0)
-        acwa=[...acwa,initialLogicalOperator,mathOperator,valueRule]
-      else  
-        acwa=[...acwa,logicalOperator,mathOperator,valueRule]
-        
+  
+    if(addConditionWhereArray.length==0)
+      acwa=[...acwa,initialLogicalOperator,fieldConditionWhere]
+    else  
+      acwa=[...acwa,logicalOperator,fieldConditionWhere]
       
-    }
-    else if(typeWhereDefinition=="previous"){
-      if(addConditionWhereArray.length==0)
-        acwa=[...acwa,initialLogicalOperator,"wherePrevious",fieldConditionWhere]
-      else  
-        acwa=[...acwa,logicalOperator,"wherePrevious",fieldConditionWhere]
-    }
-        
-    console.log("acwa",acwa)
+      
+    
     setAddConditionWhereArray(acwa)
     
   }
@@ -507,11 +590,11 @@ export const WhereStatementNumberDialog = ({
       mapeo={...mapeo,[categoryName]:{}}
     }
     if(mapeo[categoryName][segment]==undefined){
-      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],[segment]:{}}}
+      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],hybrid:{}}}
     }
-    if(mapeo[categoryName][segment][fieldName]==undefined){
-      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],[segment]:{
-        ...mapeo[categoryName][segment],
+    if(mapeo[categoryName]["hybrid"]==undefined){
+      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],hybrid:{
+        ...mapeo[categoryName]["hybrid"],
         [fieldName]:{
 
       }}}}
@@ -539,7 +622,95 @@ export const WhereStatementNumberDialog = ({
     setAdded(true)
     
   }
+  let doneUno=false
 
+  //const displayComboFunc=()=>{
+  let displayedFields
+
+  const displaySegmentsCombo=()=>{
+    let res=[]
+    //res.push("Select Segment")
+    if(conditionsWhere?.[categoryName]!==undefined){
+      Object.keys(conditionsWhere?.[categoryName]).map(x=>{
+        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
+          if(conditionsWhere?.[categoryName]?.[x]!==undefined){
+            res.push(x)
+        
+          }
+        }
+      })
+      setListSegments(res)
+    }
+
+    /*if(conditionsWhere?.[categoryName]!==undefined){
+      Object.keys(conditionsWhere?.[categoryName]).map(x=>{
+        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
+          if(comboDataSt?.[categoryName]?.[x]!==undefined){
+            res.push(<option style={{color:"yellow"}} disabled>seg{x}</option>)
+            Object.keys(conditionsWhere?.[categoryName]?.[x]).map(y=>{
+              
+              if(conditionsWhere?.[categoryName]?.[x]?.[y]!==undefined){
+                res.push(<option style={{color:"gray"}} disabled>&nbsp;{y}</option>)
+                Object.keys(conditionsWhere?.[categoryName]?.[x]?.[y]).map(z=>{
+                  if(z!=="categoryName" && z!=="segment" && z!=="fieldName" && z!=="type"){
+                    res.push(<option>&nbsp;&nbsp;{z}</option>)
+                    if(thereAreConditions==false)
+                      setThereAreConditions(true)
+                  }
+                })
+              }
+            })
+          }
+        }
+          
+      })
+      let r1=<div style={{display:"flex",flex:1,backgroundColor:"brown",color:"white",height:"20px",padding:0,margin:0,marginRight:"10px"}}><select style={{outline:"none",margin:0,padding:0,alignItems:"center",width:"100%",backgroundColor:"brown",color:"white",border:"none",height:"20px",lineHeight:"20px"}}><option>jorge</option>{res}</select></div>
+      console.log("r1",r1)
+      setDisplayCombo(r1)
+      
+
+    }*/
+  }
+  const displayFieldsCombo=(ss)=>{
+    let res=[]
+    //res.push("Select Field")
+    console.log("rastreo",ss)
+    if(conditionsWhere?.[categoryName]?.[ss]!==undefined){
+    
+      console.log("rastreo",Object.keys(conditionsWhere?.[categoryName]?.[ss]))
+      Object.keys(conditionsWhere?.[categoryName]?.[ss]).map(x=>{
+        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
+          if(conditionsWhere?.[categoryName]?.[ss]?.[x]!==undefined){
+            res.push(x)
+        
+          }
+        }
+      })
+      setListFields(res)
+    }
+  }
+
+  const displayRulesCombo=(ss,ff)=>{
+    let res=[]
+    //res.push("Select Rule")
+
+    if(conditionsWhere?.[categoryName]?.[ss]?.[ff]!==undefined){
+    
+    
+      Object.keys(conditionsWhere?.[categoryName]?.[ss]?.[ff]).map(x=>{
+        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
+          if(conditionsWhere?.[categoryName]?.[ss]?.[ff]?.[x]!==undefined){
+            res.push(x)
+        
+          }
+        }
+      })
+      setListRules(res)
+    }
+  }
+    
+
+  
   
 
 
@@ -557,78 +728,72 @@ export const WhereStatementNumberDialog = ({
       onChange={e=>setNameWhereClause(e.target.value)}
       value={nameWhereClause}
       placeholder="Name of the where clause"/>
-      {conditionsWhere?.[categoryName]?.[segment]?.[fieldName]!==undefined &&
-          Object.keys(conditionsWhere?.[categoryName]?.[segment]?.[fieldName]).filter(x=>{
+      {/*comboDataSt?.[categoryName]!==undefined &&
+          Object.keys(comboDataSt?.[categoryName]).filter(x=>{
             if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type")
               return true
             return false
-          }).length>0 &&
-      <select onChange={e=>setTypeWhereDefinition(e.target.value)}
-      style={{border:"none",margin:0,marginLeft:"-5px",padding:0,marginBottom:"5px",padding:0,outline:"none"}}
-      value={typeWhereDefinition}>
-        <option 
-        value="previous"
-        >
-          Previously Defined Field Where Clause
-        </option>
-        <option 
-        value="normal"
-        
-        >
-          Define Where Clause
-        </option>
-      </select>}
-      {typeWhereDefinition=="normal" &&
-      <p style={{display:"flex",alignItems:"center",height:"20px",
-      backgroundColor:"brown",color:"white"}}>
-        {addConditionWhereArray.length>0 ?
-        <p style={{backgroundColor:"brown",color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayLogicalOperators()}</p>:
-        <p style={{backgroundColor:"brown",color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayInitialLogicalOperators()}</p>
-            
+          }).length>0 &&*/}
+      <div style={{display:"flex",flex:1,backgroundColor:"brown",color:"white",height:"20px",padding:0,margin:0,marginRight:0,marginBottom:"5px"}}>
+        <select  onChange={(e)=>{
+          setSelectedSegment(e.target.value)
+          setSelectedField("")
+          setSelectedRule("")
+          console.log("rastreo1",e.target.value)
+          displayFieldsCombo(e.target.value)}
         }
-
-        <p style={{width:"70px", height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayMathOperators()}</p>
-        <FormInput style={{backgroundColor:"brown",color:"white",flex:1,border:"none",height:"20px",outline:"none",margin:0,marginLeft:0,marginRight:"10px"}}
-        onChange={e=>setValueRule(e.target.value)}
-        className="ph1"
-        placeholder="value"
-        type="number"
-        value={valueRule}></FormInput>
-        <FormButton style={{width:"60px", height:"20px",backgroundColor:"brown",color:"white",margin:0,padding:0,
-        opacity:!checkRowAddOn()?0.7:1}}
-        onClick={e=>{
-          
-          addWhereConditionInArray()
-          setValueRule("")
+        value={selectedSegment}
+          style={{outline:"none",margin:0,padding:0,alignItems:"center",width:"100%",backgroundColor:"brown",color:"white",border:"none",height:"20px",lineHeight:"20px"}}>
+            <option value="">Select Segment</option>
+            {listSegments.map(x=><option value={x}>{x}</option>)}
+        </select>
+        </div>
+      <div style={{display:"flex",flex:1,backgroundColor:"brown",color:"white",height:"20px",padding:0,margin:0,marginRight:0,marginBottom:"5px"}}>
+        <select  onChange={(e)=>{
+          setSelectedField(e.target.value)
+          setSelectedRule("")
+          displayRulesCombo(selectedSegment,e.target.value)
         }}
-        disabled={!checkRowAddOn()}
-        >Add</FormButton>
-        
-      </p>}
-      {typeWhereDefinition=="previous" &&
-        <p style={{display:"flex",alignItems:"center",height:"20px"}}>
+          value={selectedField}
+          style={{outline:"none",margin:0,padding:0,alignItems:"center",width:"100%",backgroundColor:"brown",color:"white",border:"none",height:"20px",lineHeight:"20px"}}>
+            <option value="">Select Field</option>
+            {listFields.map(x=><option value={x}>{x}</option>)}
+            
+        </select>
+      </div>
+      <div style={{display:"flex",flex:1,backgroundColor:"brown",color:"white",height:"20px",padding:0,margin:0,marginRight:0,marginBottom:"5px"}}>
+        <select  onChange={(e)=>{
+          setSelectedRule(e.target.value)
+          //displayRulesCombo(e.target.value)
+        }}
+          value={selectedRule}
+          style={{outline:"none",margin:0,padding:0,alignItems:"center",width:"100%",backgroundColor:"brown",color:"white",border:"none",height:"20px",lineHeight:"20px"}}>
+            <option value="">Select Rule</option>
+            {listRules.map(x=><option value={x}>{x}</option>)}
+            
+        </select>
+      </div>
+      
+      {listRules.length>0 && 
+      <p style={{display:"flex",alignItems:"center",height:"20px",background:"brown",color:"white"}}>
           {addConditionWhereArray.length>0?
            <p style={{backgroundColor:"brown",color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayLogicalOperators()}</p>:
            <p style={{backgroundColor:"brown",color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayInitialLogicalOperators()}</p>
           }
-          
-          {conditionsWhere?.[categoryName]?.[segment]?.[fieldName]!==undefined &&
-          Object.keys(conditionsWhere?.[categoryName]?.[segment]?.[fieldName]).filter(x=>{
-            if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type")
-              return true
-            return false
-          }).length>0 &&
-          <select style={{height:"20px",outline:"none",border:"none",backgroundColor:"brown",color:"white",
-          margin:0,padding:0,flex:1}} onChange={(e)=>setFieldConditionWhere(e.target.value)}>
+          <div style={{display:"flex",flex:1,backgroundColor:"brown",color:"white",height:"20px",padding:0,margin:0,marginRight:0}}>
+        <select  onChange={(e)=>{
+          setSelectedRule(e.target.value)
+          //displayRulesCombo(e.target.value)
+        }}
+          value={selectedRule}
+          style={{outline:"none",margin:0,padding:0,alignItems:"center",width:"100%",backgroundColor:"brown",color:"white",border:"none",height:"20px",lineHeight:"20px"}}>
+            {listRules.map(x=><option value={x}>{x}</option>)}
             
-            {Object.keys(conditionsWhere?.[categoryName]?.[segment]?.[fieldName]).filter(x=>{
-            if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type")
-              return true
-            return false
-          }).map(x=>
-              <option value={x}>{x}</option>
-          )}
-          </select>
+        </select>
+      </div>
+
+          
+          {//displayCombo
           }
           <FormButton style={{width:"60px",height:"20px",margin:"0px",padding:"0px"}}
           onClick={e=>{
@@ -636,9 +801,12 @@ export const WhereStatementNumberDialog = ({
             addWhereConditionInArray()
           }}
           >Add</FormButton>
+
         
         
       </p>}
+      
+      
       <DisplayList 
         addConditionWhereArray={addConditionWhereArray}
         setAddConditionWhereArray={setAddConditionWhereArray}

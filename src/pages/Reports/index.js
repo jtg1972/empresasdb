@@ -10,6 +10,7 @@ import SearchSubcategories from '../../components/SearchSubcategories'
 import { WhereStatementStringDialog } from '../../components/WhereStatementStringDialog'
 import { WhereStatementNumberDialog } from '../../components/WhereStatementNumberDialog'
 import './styles.scss'
+import { WhereStatementHybridDialog } from '../../components/WhereStatementHybridDialog'
 
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
@@ -49,6 +50,12 @@ const Reports=()=>{
     setVarsHeadWhereStatement(vars)
     setOpenWhereStatementNumberDialog(!openWhereStatementNumberDialog)
   }
+  const [openWhereStatementHybridDialog,setOpenWhereStatementHybridDialog]=useState(false)
+  const toggleOpenWhereStatementHybridDialog=(vars)=>{
+    console.log("vars22",vars)
+    setVarsHeadWhereStatement(vars)
+    setOpenWhereStatementHybridDialog(!openWhereStatementHybridDialog)
+  }
   const [openOtmIdFieldsDialog,setOpenOtmIdFields]=useState(false)
   const toggleOtmIdFieldsDialog=()=>setOpenOtmIdFields(!openOtmIdFieldsDialog)
   const [otmCategoryFields,setOtmCategoryFields]=useState([])
@@ -59,6 +66,7 @@ const Reports=()=>{
 
   let subTotals={}
   const [grandTotalsSt,setGrandTotalsSt]=useState({})
+  const [comboDataSt,setComboDataSt]=useState({})
   console.log("otmchoices",otmChoices)//,fieldsShown,firstCatNormalFields)
   useEffect(()=>{
     setShowFields(false)
@@ -303,7 +311,27 @@ const Reports=()=>{
         }}/>
         <p>Total and Percentage of Parents Regarding Conditions of Son Atributes</p>
       </div>
-      <p>All category where conditions</p>
+      <a style={{textDecoration:"underline"}}
+      onClick={e=>{
+        e.preventDefault()
+        toggleOpenWhereStatementHybridDialog({
+          fieldName:"hybrid",
+          categoryName:name,
+          segment:name
+        })
+        }
+      }
+      >Add main where condition</a><br/>
+      <a style={{textDecoration:"underline"}}
+      onClick={e=>{
+        e.preventDefault()
+        toggleOpenWhereStatementHybridDialog({
+          fieldName:"hybrid",
+          categoryName:name,
+          segment:name
+        })
+      }
+      }>Add multiple field where condition</a>
       {displayCurCategory(catDestiny,false,false,name,false,trackCatPath)}
       <FormButton style={{
         textAlign:"left",
@@ -531,7 +559,29 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
       })}
       {displayAncestorsCats(trackCatPath,nameOtm,cat.name)}
 
-      {primero && fieldsSingle && <p>All conditions of category</p>}
+      {primero && fieldsSingle && <div>
+        <a style={{textDecoration:"underline"}}
+        onClick={e=>{
+          e.preventDefault()
+          toggleOpenWhereStatementNumberDialog({
+            categoryName:`getData${currentCategory.name}`,
+            fieldName:"hybrid",
+            segment:`getData${currentCategory.name}`
+          })
+          }
+        }>Add main where condition</a><br/>
+        <a style={{textDecoration:"underline"}}
+        onClick={e=>{
+          e.preventDefault()
+          toggleOpenWhereStatementNumberDialog({
+            categoryName:`getData${currentCategory.name}`,
+            fieldName:"hybrid",
+            segment:`getData${currentCategory.name}`
+          })
+          }
+        }
+        >Add multiple field where condition</a>
+      </div>}
       {primero && fieldsSingle && (<><FormButton style={{
           textAlign:"left",
           textDecoration:"underline",
@@ -2320,6 +2370,8 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       toggleDialog={toggleOpenWhereStatementStringDialog}
       conditionsWhere={conditionsWhere}
       setConditionsWhere={setConditionsWhere}
+      comboDataSt={comboDataSt}
+      setComboDataSt={setComboDataSt}
       {...varsHeadWhereStatement}
     />
     <WhereStatementNumberDialog
@@ -2327,6 +2379,17 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       toggleDialog={toggleOpenWhereStatementNumberDialog}
       conditionsWhere={conditionsWhere}
       setConditionsWhere={setConditionsWhere}
+      comboDataSt={comboDataSt}
+      setComboDataSt={setComboDataSt}
+      {...varsHeadWhereStatement}
+    />
+    <WhereStatementHybridDialog
+      open={openWhereStatementHybridDialog}
+      toggleDialog={toggleOpenWhereStatementHybridDialog}
+      conditionsWhere={conditionsWhere}
+      setConditionsWhere={setConditionsWhere}
+      comboDataSt={comboDataSt}
+      setComboDataSt={setComboDataSt}
       {...varsHeadWhereStatement}
     />
     

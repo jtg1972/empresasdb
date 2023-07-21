@@ -109,6 +109,8 @@ export const WhereStatementStringDialog = ({
   segment,
   setConditionsWhere,
   conditionsWhere,
+  comboDataSt,
+  setComboDataSt,
   otmCategoryFields,
   setOtmChoices,
   otmChoices,
