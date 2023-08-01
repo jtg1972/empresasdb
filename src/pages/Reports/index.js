@@ -11,7 +11,7 @@ import { WhereStatementStringDialog } from '../../components/WhereStatementStrin
 import { WhereStatementNumberDialog } from '../../components/WhereStatementNumberDialog'
 import './styles.scss'
 import { WhereStatementHybridDialog } from '../../components/WhereStatementHybridDialog'
-
+import { WhereSelectMainDialog } from '../../components/WhereSelectMainDialog'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categories:categories.categories,
@@ -55,6 +55,11 @@ const Reports=()=>{
     console.log("vars22",vars)
     setVarsHeadWhereStatement(vars)
     setOpenWhereStatementHybridDialog(!openWhereStatementHybridDialog)
+  }
+  const [openWhereSelectMain,setOpenWhereSelectMain]=useState(false)
+  const toggleOpenWhereSelectMain=(vars)=>{
+    setVarsHeadWhereStatement(vars)
+    setOpenWhereSelectMain(!openWhereSelectMain)
   }
   const [openOtmIdFieldsDialog,setOpenOtmIdFields]=useState(false)
   const toggleOtmIdFieldsDialog=()=>setOpenOtmIdFields(!openOtmIdFieldsDialog)
@@ -314,11 +319,10 @@ const Reports=()=>{
       <a style={{textDecoration:"underline"}}
       onClick={e=>{
         e.preventDefault()
-        toggleOpenWhereStatementHybridDialog({
-          fieldName:"hybrid",
-          categoryName:name,
-          segment:name
-        })
+        toggleOpenWhereSelectMain({
+          categoryName:name
+        }
+        )
         }
       }
       >Add main where condition</a><br/>
@@ -2391,6 +2395,15 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       comboDataSt={comboDataSt}
       setComboDataSt={setComboDataSt}
       {...varsHeadWhereStatement}
+    />
+
+    <WhereSelectMainDialog
+      open={openWhereSelectMain}
+      toggleDialog={toggleOpenWhereSelectMain}
+      conditionsWhere={conditionsWhere}
+      setConditionsWhere={setConditionsWhere}
+      {...varsHeadWhereStatement}
+    
     />
     
     {showFields 

@@ -80,7 +80,7 @@ const DisplayList=({
   
 }
 
-export const WhereStatementHybridDialog = ({
+export const WhereSelectMainDialog = ({
   open,
   toggleDialog,
   fieldName,
@@ -350,6 +350,7 @@ export const WhereStatementHybridDialog = ({
   const [typeWhereDefinition,setTypeWhereDefinition]=useState("normal")
   const [added,setAdded]=useState(false)
   const [thereAreConditions,setThereAreConditions]=useState(false)
+  const [mainWhereClause,setMainWhereClause]=useState("none")
   let p=conditionsWhere?.[categoryName]?.[segment]?.[fieldName]
   let iv=""
   if(p!==undefined){
@@ -369,6 +370,7 @@ export const WhereStatementHybridDialog = ({
   const [listSegments,setListSegments]=useState([])
   const [listFields,setListFields]=useState([])
   const [listRules,setListRules]=useState([])
+  const [isWhereCondition,setIsWhereCondition]=useState("none")
   let type
   let displayAllCombo=""
   
@@ -392,97 +394,8 @@ export const WhereStatementHybridDialog = ({
   }
   },[typeWhereDefinition])
 
-  useEffect(()=>{
-    displayAllWhereClausesSelect()
-  },[conditionsWhere])
-
-  useEffect(()=>{
-    displayFieldsCombo()
-  },[selectedSegment])
-  const displayAllWhereClausesSelect=()=>{
-
-
-    let comboData=comboDataSt
-    console.log("initial",comboData)
-
-    
-    if(typeof conditionsWhere=="object"){
-      let cats=Object.keys(conditionsWhere).map(u=>{
-        if(comboData?.[u]==undefined)
-          comboData={...comboData,[u]:{}}
-    
-        
-
-        if(typeof conditionsWhere?.[u]=="object"){
-          let segments=Object.keys(conditionsWhere?.[u])?.map(x=>{
-            if(comboData?.[u]?.[x]==undefined)
-              comboData={...comboData,[u]:{...comboData[u],[x]:{}}}
-            
-          
-      
-            
-            if(typeof conditionsWhere?.[u]?.[x]=="object"){
-              let rules=Object.keys(conditionsWhere?.[u]?.[x]).filter(z=>{
-                if(z!=="categoryName" && z!=="segment" && z!=="fieldName" && z!=="type"){
-                  if(comboData[u][x][`${x} ${z}`]==undefined){
-                    comboData={...comboData,
-                      [u]:{
-                        ...comboData[u],
-                        [x]:{
-                          ...comboData[u][x],
-                          [z]:{
-                            name:z,
-                            rules:conditionsWhere?.[u]?.[x]?.[z]
-                          }
-                        }
-                      }
-                    }
-                    /*if(typeof conditionsWhere?.[u]?.[x]?.[`${x} ${z}`]=="object"){
-                      Object.keys(conditionsWhere?.[u]?.[x]?.[`${x} ${z}`]).filter(o=>{
-                        if(o!=="categoryName" && o!=="segment" && o!=="fieldName" && o!=="type"){
-                          comboData={
-                              ...comboData,[u]:{
-                                ...comboData[u],
-                                [x]:{...comboData[u][x],[`${x} ${z}`]:{
-                              
-                                  ...comboData[u][x][`${x} ${z}`],
-                                  rules:[
-                                    ...comboData[u][x][`${x} ${z}`]["rules"]
-                                    ,o
-                                  ]
-                                }
-                              }
-                            }
-                          }
-                            
-                          
-                        }
-                          
-                      
-                      })
-                    }*/
-                  }
-                }
-              })
-            }
-          })
-        }
-      })
-    }
-    console.log("comboData",comboData) 
-    //displayAllCombo=displayCombo(comboData)
+  
  
-    setComboDataSt(comboData)
-
-    
-    
-  
-  
-
-    
-  }
-
-
   useEffect(()=>{
 
     if(open==true || added==true){
@@ -495,9 +408,9 @@ export const WhereStatementHybridDialog = ({
       
       setInitialLogicalOperator(initialLogicalOperators[0])
       setLogicalOperator(logicalOperators[0])
-      setSelectedSegment("Select Segment")
-      setSelectedField("Select Field")
-      setSelectedRule("Select Rule")
+      setSelectedSegment("")
+      setSelectedField("")
+      setSelectedRule("")
       setListSegments([])
       setListFields([])
       setListRules([])
@@ -513,27 +426,13 @@ export const WhereStatementHybridDialog = ({
 
   const checkPreviousAdd=()=>{
     let sfcw=conditionsWhere?.[categoryName]?.[segment]?.[fieldName]
-    if(nameWhereClause=="")
+    if(isWhereCondition=="none")
       return true
-    if(sfcw!=undefined && sfcw!=null){
-      sfcw=Object.keys(sfcw)
-      sfcw=sfcw.filter(x=>{
-        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type")
-          return true
-       return false
-      })
-  
-      if(addConditionWhereArray.length==0)
+    else{
+      if(selectedRule!=="")
         return true
-      if(sfcw.includes(nameWhereClause))
-        return true
-      return false
-    }else{
-      if(addConditionWhereArray.length==0)
-        return true
-      return false
     }
-
+    return false
   }
 
   
@@ -588,36 +487,19 @@ export const WhereStatementHybridDialog = ({
     if(mapeo[categoryName]==undefined){
       mapeo={...mapeo,[categoryName]:{}}
     }
-    if(mapeo[categoryName][segment]==undefined){
-      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],hybrid:{}}}
+    if(mapeo[categoryName]["main"]==undefined){
+      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],main:"none"}}
+      
     }
-    if(mapeo[categoryName]["hybrid"]==undefined){
-      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],hybrid:{
-        ...mapeo[categoryName]["hybrid"],
-        ["hybrid"]:{
-
-      }}}}
-    }
-    
-    
-      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],["hybrid"]:{
-        ...mapeo[categoryName]["hybrid"],
-        ["hybrid"]:{
-          ...mapeo[categoryName]["hybrid"]["hybrid"],
-          [nameWhereClause]:{
-            name:nameWhereClause,
-            rule:addConditionWhereArray
-          },
-          type:"hybrid",
-          categoryName,
-          segment:"hybrid",
-          fieldName:"hybrid"
-        }
-      }}}
+    mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],main:isWhereCondition!=="none"?{
+      category:categoryName,
+      segment:selectedSegment,
+      field:selectedField,
+      rule:selectedRule}:"none"}}
     
     console.log("mapeo",mapeo)
     setConditionsWhere(mapeo)
-    setNameWhereClause("")
+    
     setAdded(true)
     
   }
@@ -631,7 +513,7 @@ export const WhereStatementHybridDialog = ({
     //res.push("Select Segment")
     if(conditionsWhere?.[categoryName]!==undefined){
       Object.keys(conditionsWhere?.[categoryName]).map(x=>{
-        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
+        if(x!=="main" && x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
           if(conditionsWhere?.[categoryName]?.[x]!==undefined){
             res.push(x)
         
@@ -695,7 +577,7 @@ export const WhereStatementHybridDialog = ({
 
     if(conditionsWhere?.[categoryName]?.[ss]?.[ff]!==undefined){
     
-    
+      
       Object.keys(conditionsWhere?.[categoryName]?.[ss]?.[ff]).map(x=>{
         if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
           if(conditionsWhere?.[categoryName]?.[ss]?.[ff]?.[x]!==undefined){
@@ -707,6 +589,13 @@ export const WhereStatementHybridDialog = ({
       setListRules(res)
     }
   }
+
+  const displayCurrentMainCategory=()=>{
+    if(typeof conditionsWhere?.[categoryName]?.main=="object")
+      return conditionsWhere?.[categoryName]?.["main"]?.["rule"]
+    else
+      return "none"
+  }
     
 
   
@@ -717,22 +606,20 @@ export const WhereStatementHybridDialog = ({
     <Dialog 
       open={open}
       closeDialog={toggleDialog} 
-      headline={"Category: "+categoryName+(segment!==""?", Segment: "+segment:"")+", Field: "+fieldName}
-        
-    >
+      headline={"Category: "+categoryName+", Setting Main Where Clause"}
+   >     
+  
+      <p style={{backgroundColor:"brown",color:"white",border:"none",outline:"none",padding:"3px",marginBottom:"5px"}}>Current main category: {displayCurrentMainCategory()}</p>
+      <select style={{border:"none",outline:"none",padding:0,marginLeft:"-3px",fontFamily:"inherit", fontSize:"inherit",marginBottom:"5px"}} onChange={(e)=>setIsWhereCondition(e.target.value)}
+      value={isWhereCondition}>
+        <option value="none">None</option>
+        <option value="where">Where condition</option>
+      </select>
+
+      {isWhereCondition=="where" && 
+       <>
+   
     
-      <FormInput style={{width:"100%",border:"none",marginBottom:"5px",
-      padding:0,outline:"none",border:"none"}}
-      className="ph2" 
-      onChange={e=>setNameWhereClause(e.target.value)}
-      value={nameWhereClause}
-      placeholder="Name of the where clause"/>
-      {/*comboDataSt?.[categoryName]!==undefined &&
-          Object.keys(comboDataSt?.[categoryName]).filter(x=>{
-            if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type")
-              return true
-            return false
-          }).length>0 &&*/}
       <div style={{display:"flex",flex:1,backgroundColor:"brown",color:"white",height:"20px",padding:0,margin:0,marginRight:0,marginBottom:"5px"}}>
         <select  onChange={(e)=>{
           setSelectedSegment(e.target.value)
@@ -772,53 +659,20 @@ export const WhereStatementHybridDialog = ({
             
         </select>
       </div>
+  </>
+      }
       
-      {listRules.length>0 && 
-      <p style={{display:"flex",alignItems:"center",height:"20px",background:"brown",color:"white"}}>
-          {addConditionWhereArray.length>0?
-           <p style={{backgroundColor:"brown",color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayLogicalOperators()}</p>:
-           <p style={{backgroundColor:"brown",color:"white",width:"100px",height:"20px",padding:0,margin:0,marginRight:"10px"}}>{displayInitialLogicalOperators()}</p>
-          }
-          <div style={{display:"flex",flex:1,backgroundColor:"brown",color:"white",height:"20px",padding:0,margin:0,marginRight:0}}>
-        <select  onChange={(e)=>{
-          setSelectedRule(e.target.value)
-          //displayRulesCombo(e.target.value)
-        }}
-          value={selectedRule}
-          style={{outline:"none",margin:0,padding:0,alignItems:"center",width:"100%",backgroundColor:"brown",color:"white",border:"none",height:"20px",lineHeight:"20px"}}>
-            {listRules.map(x=><option value={x}>{x}</option>)}
-            
-        </select>
-      </div>
-
+      
+      
           
-          {//displayCombo
-          }
-          <FormButton style={{width:"60px",height:"20px",margin:"0px",padding:"0px"}}
-          onClick={e=>{
-            
-            addWhereConditionInArray()
-          }}
-          >Add</FormButton>
-
-        
-        
-      </p>}
       
       
-      <DisplayList 
-        addConditionWhereArray={addConditionWhereArray}
-        setAddConditionWhereArray={setAddConditionWhereArray}
-        setConditionsWhere={setConditionsWhere}
-        categoryName={categoryName}
-        segment={segment}
-        fieldName={fieldName}
-      />
       
       <FormButton 
-        style={{marginTop:"10px",opacity:checkPreviousAdd()?0.7:1}}
+        style={{marginTop:"0px",opacity:(selectedRule=="" && isWhereCondition!=="none")?0.7:1}}
         onClick={()=>addCondition()}
-        disabled={checkPreviousAdd()}>Add Rule Where</FormButton>
+        disabled={selectedRule=="" && isWhereCondition!=="none"}
+      >Set Main Where</FormButton>
   {/*<FormInput placeholder="Name of the Field" 
       value={compositeFieldName}
       onChange={(e)=>setCompositeFieldName(e.target.value)}
