@@ -567,20 +567,20 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
         <a style={{textDecoration:"underline"}}
         onClick={e=>{
           e.preventDefault()
-          toggleOpenWhereStatementNumberDialog({
+          toggleOpenWhereSelectMain({
             categoryName:`getData${currentCategory.name}`,
             fieldName:"hybrid",
-            segment:`getData${currentCategory.name}`
+            segment:"hybrid"
           })
           }
         }>Add main where condition</a><br/>
         <a style={{textDecoration:"underline"}}
         onClick={e=>{
           e.preventDefault()
-          toggleOpenWhereStatementNumberDialog({
+          toggleOpenWhereStatementHybridDialog({
             categoryName:`getData${currentCategory.name}`,
             fieldName:"hybrid",
-            segment:`getData${currentCategory.name}`
+            segment:"hybrid"
           })
           }
         }
