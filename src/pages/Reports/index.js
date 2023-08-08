@@ -215,6 +215,7 @@ const Reports=()=>{
 
   const displayAncestorsCats=(trackCatPath,ntm="")=>{
     let output=[]
+    
     for(let l in trackCatPath){
       if(l<trackCatPath.length-1){
         output.push(<div>
@@ -225,27 +226,36 @@ const Reports=()=>{
               style={{textDecoration:"underline"}} onClick={
                 (e)=>{
                   e.preventDefault()
+                  console.log("bit1",trackCatPath[l],ntm,`${x.name1}total`)
                   toggleOpenWhereStatementNumberDialog({
                     categoryName:trackCatPath[l],
                     fieldName:`${x.name1}total`,
                     segment:ntm
                   })
                 }
-              }>Add where condition</a></p>
+              }>xAdd where condition</a>
+              <p>{displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}</p>
+              </p>
           })}
+          
           {otmChoices[trackCatPath[trackCatPath.length-1]]?.compositeFields.map(x=>{
             if(x.type=="number")
             return <p><span style={{marginRight:"10px"}}>{x.name1}total</span><a  
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
                 e.preventDefault()
+                console.log("bit1",trackCatPath[l],ntm,`${x.name1}total`)
                 toggleOpenWhereStatementNumberDialog({
                 categoryName:trackCatPath[l],
                 fieldName:`${x.name1}total`,
                 segment:ntm
               })
-            }}>Add where condition</a></p>
+            }}>xAdd where condition</a>
+            <p>{displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}</p>
+            </p>
+            
           })}
+          
         </div>)
 
       }
@@ -336,6 +346,7 @@ const Reports=()=>{
         })
       }
       }>Add multiple field where condition</a>
+      {displayWhereClauses(name,"hybrid")}
       {displayCurCategory(catDestiny,false,false,name,false,trackCatPath)}
       <FormButton style={{
         textAlign:"left",
@@ -372,7 +383,10 @@ const Reports=()=>{
                 })
               }
             }>Add where condition</a>
-            }</p>
+            }
+            x
+            {displayWhereClauses(name,d.name1)}
+            </p>
             
             
             
@@ -400,7 +414,8 @@ const Reports=()=>{
               }
             }>Add where condition</a>
           }
-          
+          x
+          {displayWhereClauses(name,d.name1)}
           </p>
           
 }</>})}
@@ -455,6 +470,34 @@ const isReadyToWhereFirst=(otm,busca,comp=false)=>{
       return false
     }).length>=1?true:false
   }
+}
+
+const displayWhereClauses=(cat,field,seg="")=>{
+  
+  let nc
+  let ns
+  nc=cat==""?`getData${currentCategory.name}`:cat
+  ns=seg==""?nc:seg
+  let cls
+  console.log("bitac",nc,ns,field)
+  if(cat!==""){
+    if(conditionsWhere[nc]?.[ns]?.[field]!==undefined)
+      cls=Object.keys(conditionsWhere[nc]?.[ns]?.[field]).map(x=>{
+        if(x!=="categoryName" && x!=="fieldName" && x!=="segment" && x!=="type"){
+          return <p style={{color:"yellow"}}>{x}</p>
+        }
+      })
+    return cls
+  }else{
+    if(conditionsWhere[nc]?.[ns]?.[field]!==undefined)
+      cls=Object.keys(conditionsWhere[nc]?.[ns]?.[field]).map(x=>{
+        if(x!=="categoryName" && x!=="fieldName" && x!=="segment" && x!=="type"){
+          return <p style={{color:"yellow"}}>{x}</p>
+        }
+      })
+    return cls
+  }
+
 }
 
 const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackCatPath)=>{
@@ -524,6 +567,8 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
                 }
               }
             }>Add where condition</a>}
+
+            {c.name!==`${nameOtm}Id` && displayWhereClauses(nameOtm,c.name)}
             </p>
           }
           {c.declaredType=="string" &&
@@ -552,8 +597,9 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
                     segment:nameOtm
                   })
                 }
-              }}>Add where condition</a>
-            }</p>
+              }}>Add where condition</a>}
+              {c.name!==`${nameOtm}Id` && displayWhereClauses(nameOtm,c.name)}
+            </p>
           }
             
             
