@@ -12,6 +12,9 @@ import { WhereStatementNumberDialog } from '../../components/WhereStatementNumbe
 import './styles.scss'
 import { WhereStatementHybridDialog } from '../../components/WhereStatementHybridDialog'
 import { WhereSelectMainDialog } from '../../components/WhereSelectMainDialog'
+import { ViewWhereStatementNumberDialog } from '../../components/ViewWhereStatementNumberDialog'
+import { ViewWhereStatementStringDialog } from '../../components/ViewWhereStatementStringDialog'
+import { ViewWhereStatementHybridDialog } from '../../components/VIewWhereStatementHybridDialog'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categories:categories.categories,
@@ -68,6 +71,35 @@ const Reports=()=>{
   const [compFieldsArray,setCompFieldsArray]=useState([])
   const[allCompFieldsCluster,setAllCompFieldsCluster]=useState([])
   const[conditionsWhere,setConditionsWhere]=useState({})
+
+  const [listOfViewConditions,setListOfViewConditions]=useState([])
+
+  const[openViewWhereStatementNumberDialog,setOpenViewWhereStatementNumberDialog]=useState(false)
+  const toggleOpenViewWhereStatementNumberDialog=(values,vars)=>{
+    setListOfViewConditions(values)
+    setVarsHeadWhereStatement(vars)
+
+    setOpenViewWhereStatementNumberDialog(!openViewWhereStatementNumberDialog)
+
+  }
+
+  const[openViewWhereStatementStringDialog,setOpenViewWhereStatementStringDialog]=useState(false)
+  const toggleOpenViewWhereStatementStringDialog=(values,vars)=>{
+    setListOfViewConditions(values)
+    setVarsHeadWhereStatement(vars)
+
+    setOpenViewWhereStatementStringDialog(!openViewWhereStatementStringDialog)
+
+  }
+  const[openViewWhereStatementHybridDialog,setOpenViewWhereStatementHybridDialog]=useState(false)
+  const toggleOpenViewWhereStatementHybridDialog=(values,vars)=>{
+
+    setListOfViewConditions(values)
+    setVarsHeadWhereStatement(vars)
+
+    setOpenViewWhereStatementHybridDialog(!openViewWhereStatementHybridDialog)
+
+  }
 
   let subTotals={}
   const [grandTotalsSt,setGrandTotalsSt]=useState({})
@@ -236,6 +268,7 @@ const Reports=()=>{
               }>xAdd where condition</a>
               <p>{displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}</p>
               </p>
+          
           })}
           
           {otmChoices[trackCatPath[trackCatPath.length-1]]?.compositeFields.map(x=>{
@@ -342,11 +375,11 @@ const Reports=()=>{
         toggleOpenWhereStatementHybridDialog({
           fieldName:"hybrid",
           categoryName:name,
-          segment:name
+          segment:"hybrid"
         })
       }
       }>Add multiple field where condition</a>
-      {displayWhereClauses(name,"hybrid")}
+      {displayWhereClauses(name,"hybrid","hybrid")}
       {displayCurCategory(catDestiny,false,false,name,false,trackCatPath)}
       <FormButton style={{
         textAlign:"left",
@@ -480,15 +513,45 @@ const displayWhereClauses=(cat,field,seg="")=>{
   ns=seg==""?nc:seg
   let cls
   console.log("bitac",nc,ns,field)
+  if(ns=="hybrid"){
+    if(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]!==undefined)
+    cls=Object.keys(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]).map(x=>{
+      if(x!=="categoryName" && x!=="fieldName" && x!=="segment" && x!=="type"){
+        if(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]?.["type"]=="hybrid")
+          return <p style={{color:"yellow"}}
+          onClick={()=>toggleOpenViewWhereStatementHybridDialog(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]?.[x]?.["rule"],
+          {
+            fieldName:"hybrid",
+            categoryName:nc,
+            segment:"hybrid"
+          })}>{x}</p>
+        
+      }
+   })
+  return cls
+  }
   if(cat!==""){
     if(conditionsWhere[nc]?.[ns]?.[field]!==undefined)
       cls=Object.keys(conditionsWhere[nc]?.[ns]?.[field]).map(x=>{
         if(x!=="categoryName" && x!=="fieldName" && x!=="segment" && x!=="type"){
-          return <p style={{color:"yellow"}}>{x}</p>
+          if(conditionsWhere[nc]?.[ns]?.[field]?.["type"]=="number")
+            return <p style={{color:"yellow"}}
+            onClick={()=>toggleOpenViewWhereStatementNumberDialog(conditionsWhere[nc]?.[ns]?.[field]?.[x]?.["rule"],{
+              fieldName:field,
+              categoryName:nc,
+              segment:ns
+            })}>{x}</p>
+          else if(conditionsWhere[nc]?.[ns]?.[field]?.["type"]=="string")
+            return <p style={{color:"yellow"}}
+              onClick={()=>toggleOpenViewWhereStatementStringDialog(conditionsWhere[nc]?.[ns]?.[field]?.[x]?.["rule"],{
+                fieldName:field,
+                categoryName:nc,
+                segment:ns
+              })}>{x}</p>
         }
       })
     return cls
-  }else{
+  }/*else{
     if(conditionsWhere[nc]?.[ns]?.[field]!==undefined)
       cls=Object.keys(conditionsWhere[nc]?.[ns]?.[field]).map(x=>{
         if(x!=="categoryName" && x!=="fieldName" && x!=="segment" && x!=="type"){
@@ -496,7 +559,7 @@ const displayWhereClauses=(cat,field,seg="")=>{
         }
       })
     return cls
-  }
+  }*/
 
 }
 
@@ -618,6 +681,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             fieldName:"hybrid",
             segment:"hybrid"
           })
+          
           }
         }>Add main where condition</a><br/>
         <a style={{textDecoration:"underline"}}
@@ -632,6 +696,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
         }
         >Add multiple field where condition</a>
       </div>}
+      {displayWhereClauses(`getData${currentCategory.name}`,"hybrid","hybrid")}
       {primero && fieldsSingle && (<><FormButton style={{
           textAlign:"left",
           textDecoration:"underline",
@@ -2451,6 +2516,29 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       {...varsHeadWhereStatement}
     
     />
+    {openViewWhereStatementNumberDialog && <ViewWhereStatementNumberDialog
+      open={openViewWhereStatementNumberDialog}
+      toggleDialog={toggleOpenViewWhereStatementNumberDialog}
+      addConditionWhereArray={listOfViewConditions}
+      {...varsHeadWhereStatement}
+
+    />}
+    {openViewWhereStatementStringDialog && <ViewWhereStatementStringDialog
+      open={openViewWhereStatementStringDialog}
+      toggleDialog={toggleOpenViewWhereStatementStringDialog}
+      addConditionWhereArray={listOfViewConditions}
+      {...varsHeadWhereStatement}
+
+    />}
+    {openViewWhereStatementHybridDialog && <ViewWhereStatementHybridDialog
+      open={openViewWhereStatementHybridDialog}
+      toggleDialog={toggleOpenViewWhereStatementHybridDialog}
+      addConditionWhereArray={listOfViewConditions}
+      {...varsHeadWhereStatement}
+
+    />}
+
+
     
     {showFields 
     && 

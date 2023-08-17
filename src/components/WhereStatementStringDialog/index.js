@@ -411,9 +411,9 @@ export const WhereStatementStringDialog = ({
     if(stringOperator=="between"){
       setInitialBetween("")
       setFinalBetween("")
-      setStringOperator(stringOperators[0])
-      setInitialLogicalOperator(initialLogicalOperators[0])
-      setLogicalOperator(logicalOperator[0])
+      //setStringOperator(stringOperators[0])
+      //setInitialLogicalOperator(initialLogicalOperators[0])
+      //setLogicalOperator(logicalOperator[0])
       
     }
     if(stringOperator=="starts with" || stringOperator=="ends with" || stringOperator=="contains"){
