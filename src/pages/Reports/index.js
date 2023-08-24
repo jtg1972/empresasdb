@@ -490,13 +490,25 @@ const isReadyToWhere=(otm,busca,comp=false)=>{
 }
 const isReadyToWhereFirst=(otm,busca,comp=false)=>{
   let res=[]
-  if(comp==false)
-    return firstCatNormalFields[otm]?.normal.filter(x=>{
-      if(x.name1==busca)
+  if(comp==false){
+    console.log("res222",busca,firstCatNormalFields[otm]?.normal.filter(x=>{
+      if(x.name1==busca){
+        console.log("istwf",true)
         return true
+      }
+      console.log("istwf",false)
+      return false
+    }).length>=1?true:false)
+    return firstCatNormalFields[otm]?.normal.filter(x=>{
+      if(x.name1==busca){
+        console.log("istwf",true)
+        return true
+      }
+      console.log("istwf",false)
       return false
     }).length>=1?true:false
-  else if (comp==true){
+
+  }else if (comp==true){
     return firstCatNormalFields[otm]?.compositeFields.filter(x=>{
       if(x.name1==busca)
         return true
@@ -511,27 +523,29 @@ const displayWhereClauses=(cat,field,seg="")=>{
   let ns
   nc=cat==""?`getData${currentCategory.name}`:cat
   ns=seg==""?nc:seg
-  let cls
+  let cls=""
   console.log("bitac",nc,ns,field)
   if(ns=="hybrid"){
-    if(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]!==undefined)
-    cls=Object.keys(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]).map(x=>{
-      if(x!=="categoryName" && x!=="fieldName" && x!=="segment" && x!=="type"){
-        if(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]?.["type"]=="hybrid")
-          return <p style={{color:"yellow"}}
-          onClick={()=>toggleOpenViewWhereStatementHybridDialog(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]?.[x]?.["rule"],
-          {
-            fieldName:"hybrid",
-            categoryName:nc,
-            segment:"hybrid"
-          })}>{x}</p>
-        
-      }
-   })
-  return cls
+    if(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]!==undefined){
+      cls=Object.keys(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]).map(x=>{
+        if(x!=="categoryName" && x!=="fieldName" && x!=="segment" && x!=="type"){
+          if(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]?.["type"]=="hybrid")
+            return <p style={{color:"yellow"}}
+            onClick={()=>toggleOpenViewWhereStatementHybridDialog(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]?.[x]?.["rule"],
+            {
+              fieldName:"hybrid",
+              categoryName:nc,
+              segment:"hybrid"
+            })}>{x}</p>
+          
+        }
+      
+      })
+    }
+    return cls
   }
-  if(cat!==""){
-    if(conditionsWhere[nc]?.[ns]?.[field]!==undefined)
+  //if(cat!==""){
+    if(conditionsWhere[nc]?.[ns]?.[field]!==undefined){
       cls=Object.keys(conditionsWhere[nc]?.[ns]?.[field]).map(x=>{
         if(x!=="categoryName" && x!=="fieldName" && x!=="segment" && x!=="type"){
           if(conditionsWhere[nc]?.[ns]?.[field]?.["type"]=="number")
@@ -551,7 +565,8 @@ const displayWhereClauses=(cat,field,seg="")=>{
         }
       })
     return cls
-  }/*else{
+    }
+  /*}else{
     if(conditionsWhere[nc]?.[ns]?.[field]!==undefined)
       cls=Object.keys(conditionsWhere[nc]?.[ns]?.[field]).map(x=>{
         if(x!=="categoryName" && x!=="fieldName" && x!=="segment" && x!=="type"){
@@ -609,8 +624,8 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
           onChange={(e)=>checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)}/>
           
               <span style={{marginRight:"10px"}}>{c.name}Number</span>
-              {(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
-              isReadyToWhere(nameOtm,c.name,false)) && <a  
+              {nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
+              isReadyToWhere(nameOtm,c.name,false) && <a  
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
                 e.preventDefault()
@@ -637,13 +652,14 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
           {c.declaredType=="string" &&
             <p style={{marginBottom:"0px"}}>
               <input type="checkbox" 
-          style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
-          onChange={(e)=>checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)}/>
+              style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
+               onChange={(e)=>checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)}/>
           
               <span style={{marginRight:"10px"}}>{c.name}String</span>
               {(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
-              isReadyToWhere(nameOtm,c.name,false)) && <a  
-            style={{textDecoration:"underline"}} onClick={
+              isReadyToWhere(nameOtm,c.name,false)) &&
+              <a 
+              style={{textDecoration:"underline",color:"white"}} onClick={
               (e)=>{
                 e.preventDefault()
                 if(nameOtm==""){
@@ -660,13 +676,17 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
                     segment:nameOtm
                   })
                 }
-              }}>Add where condition</a>}
+              }}>Add where condition</a>
+              
+              }
               {c.name!==`${nameOtm}Id` && displayWhereClauses(nameOtm,c.name)}
-            </p>
+              
+            
+          
+            
+            
+          </p>
           }
-            
-            
-
           </>
 
       })}
@@ -725,6 +745,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             
             <span style={{marginRight:"10px"}}>{d.name1}Number</span>
             {isReadyToWhereFirst(`getData${currentCategory.name}`,d.name1,true) &&
+            <>
             <a  
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
@@ -736,7 +757,10 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
                 })
               }
             }>Add where condition</a>
+            {displayWhereClauses(`getData${currentCategory.name}`,d.name1)}
+            </>
             }
+            
             
             </p>}
             {d.type=="string" &&
@@ -751,8 +775,10 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             }}
             />
             <a style={{color:"yellow"}}>{d.name1}</a>
-            <span style={{marginRight:"10px"}}>{d.name1}String</span>
-            {isReadyToWhereFirst(`getData${currentCategory.name}`,d.name1,true) && <a  
+            {/*<span style={{marginRight:"10px"}}>{d.name1}String22</span>*/}
+            {isReadyToWhereFirst(`getData${currentCategory.name}`,d.name1,true) && <>
+            &nbsp;
+            <a  
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
                 e.preventDefault()
@@ -764,7 +790,11 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
                 
               }
             }>Add where condition</a>
+            
+            </>
             }
+            
+            {displayWhereClauses(`getData${currentCategory.name}`,d.name1)}
             
             </p>}
 

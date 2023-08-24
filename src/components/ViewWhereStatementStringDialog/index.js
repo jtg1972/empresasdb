@@ -16,6 +16,23 @@ export const ViewWhereStatementStringDialog=({
   segment,
   fieldName
 })=>{
+  const printHeader=()=>{
+    return <div style={{display:"flex",flexDirection:"row",
+    width:"100%",flexGrow:0,backgroundColor:"black",color:"white"}}>
+    
+    <div style={{width:"120px",display:"flex",flexDirection:"column",backgroundColor:"black",color:"white"}}>
+    <p style={{backgroundColor:"black",color:"white",paddingLeft:"3px",flex:1}}>Logical Operator</p>
+    </div>
+    <div style={{width:"120px",display:"flex",flexDirection:"column",backgroundColor:"black",color:"white"}}>
+    <p style={{backgroundColor:"black",color:"white",paddingLeft:"3px",flex:1}}>String Operator</p>
+    </div>
+    <div style={{flex:1,flexGrow:0,marginLeft:"5px",display:"flex"/*flex:"1 0 0",display:"flex",flexDirection:"column"*/}}>
+    <p style={{backgroundColor:"black",color:"white",flex:1}}>Value</p>
+    </div>
+    </div>
+   
+  
+  }
   return <Dialog 
   open={open}
   closeDialog={toggleDialog} 
@@ -23,11 +40,11 @@ export const ViewWhereStatementStringDialog=({
     
 >
 
-  
+  {printHeader()}
   <div style={{display:"flex",flexDirection:"row",
   justifyContent:"space-between",flex:1,flexGrow:0}}>
     
-    <div style={{width:"60px",display:"flex",flexDirection:"column"}}>
+    <div style={{width:"120px",display:"flex",flexDirection:"column"}}>
     {addConditionWhereArray?.map((x,index)=>{
     if(index%3==0){
       return <div style={{display:"flex",
@@ -39,7 +56,7 @@ export const ViewWhereStatementStringDialog=({
     
     })}
     </div>
-    <div style={{width:"25px",flexGrow:0/*flex:"1 0 0",display:"flex",flexDirection:"column"*/}}>
+    <div style={{width:"120px",flexGrow:0/*flex:"1 0 0",display:"flex",flexDirection:"column"*/}}>
       {addConditionWhereArray?.map((x,index)=>{
       
       if(index%3==1){
@@ -48,7 +65,7 @@ export const ViewWhereStatementStringDialog=({
           justifyContent:"space-between",flex:1,flexGrow:0} }>
          
           
-            <p style={{color:"black",width:"275px",marginLeft:"5px",whiteSpace:"nowrap",/*flex:1,flexGrow:0,overflow:"hidden"*/}}>
+            <p style={{color:"black",flex:1,marginLeft:"5px",whiteSpace:"nowrap",/*flex:1,flexGrow:0,overflow:"hidden"*/}}>
               {addConditionWhereArray[index]=="wherePrevious"?"rule":addConditionWhereArray[index]
 
               }</p>
@@ -58,7 +75,7 @@ export const ViewWhereStatementStringDialog=({
       }
       })}
       </div>
-      <div style={{width:"100px",marginLeft:"5px",marginRight:"5px"/*,display:"flex",flexDirection:"column"*/}}>
+      <div style={{flex:1,marginLeft:"5px",marginRight:"0"/*,display:"flex",flexDirection:"column"*/}}>
       {addConditionWhereArray?.map((x,index)=>{
     if(index%3==2){
 
@@ -66,7 +83,7 @@ export const ViewWhereStatementStringDialog=({
           justifyContent:"space-between",flex:1,flexGrow:0} }>
          
           
-            <p style={{color:"black",width:"285px",marginLeft:"5px",color:"black",whiteSpace:"nowrap",overflowX:"hidden"/*flex:1,flexGrow:0,overflow:"hidden"*/}}>
+            <p style={{color:"black",flex:1,marginLeft:"0px",color:"black",whiteSpace:"nowrap",overflowX:"hidden"/*flex:1,flexGrow:0,overflow:"hidden"*/}}>
               {addConditionWhereArray[index-1]!=="between"?
               addConditionWhereArray[index]:
               `${addConditionWhereArray[index]["initial"]} to ${addConditionWhereArray[index]["final"]}`}</p>
