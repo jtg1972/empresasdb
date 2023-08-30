@@ -448,7 +448,7 @@ export const WhereStatementNumberDialog = ({
 
   const displayMathOperators=()=>{
     return(<select style={{backgroundColor:"brown",color:"white",border:"none",padding:0,margin:0,
-    outline:"none",marginRight:"10px"}}
+    outline:"none",marginRight:"10px",height:"20px"}}
     onChange={(e)=>{
       setMathOperator(e.target.value)
     }}

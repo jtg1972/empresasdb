@@ -15,6 +15,7 @@ import { WhereSelectMainDialog } from '../../components/WhereSelectMainDialog'
 import { ViewWhereStatementNumberDialog } from '../../components/ViewWhereStatementNumberDialog'
 import { ViewWhereStatementStringDialog } from '../../components/ViewWhereStatementStringDialog'
 import { ViewWhereStatementHybridDialog } from '../../components/VIewWhereStatementHybridDialog'
+import { ViewMainWhereCondition } from '../../components/ViewMainWhereCondition'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categories:categories.categories,
@@ -98,6 +99,16 @@ const Reports=()=>{
     setVarsHeadWhereStatement(vars)
 
     setOpenViewWhereStatementHybridDialog(!openViewWhereStatementHybridDialog)
+
+  }
+
+  const[openViewMainWhereConditionDialog,setOpenViewMainWhereConditionDialog]=useState(false)
+  const toggleOpenViewMainWhereConditionDialog=(vars)=>{
+
+    
+    setVarsHeadWhereStatement(vars)
+
+    setOpenViewMainWhereConditionDialog(!openViewMainWhereConditionDialog)
 
   }
 
@@ -369,7 +380,13 @@ const Reports=()=>{
         }
       }
       >Add main where condition</a><br/>
-      <a style={{textDecoration:"underline"}}
+      {(conditionsWhere[name]?.["main"]==undefined || typeof conditionsWhere[name]?.["main"]!=="object")?<p>none</p>:
+      <p onClick={()=>toggleOpenViewMainWhereConditionDialog({categoryName:name,
+        segment:conditionsWhere[name]?.["main"]?.["segment"],
+        field:conditionsWhere[name]?.["main"]?.["field"]})}>{conditionsWhere[name]?.["main"]?.["rule"]}</p>
+      }
+     
+      <a style={{textDecoration:"underline",display:"block"}}
       onClick={e=>{
         e.preventDefault()
         toggleOpenWhereStatementHybridDialog({
@@ -624,8 +641,8 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
           onChange={(e)=>checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)}/>
           
               <span style={{marginRight:"10px"}}>{c.name}Number</span>
-              {nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
-              isReadyToWhere(nameOtm,c.name,false) && <a  
+              {(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
+              isReadyToWhere(nameOtm,c.name,false)) && <a  
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
                 e.preventDefault()
@@ -704,6 +721,18 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
           
           }
         }>Add main where condition</a><br/>
+        <p onClick={()=>toggleOpenViewMainWhereConditionDialog({categoryName:`getData${currentCategory.name}`})}></p>
+        {(conditionsWhere[`getData${currentCategory.name}`]?.["main"]==undefined || typeof conditionsWhere[`getData${currentCategory.name}`]?.["main"]!=="object")?<p>none</p>:
+      <p onClick={()=>toggleOpenViewMainWhereConditionDialog({categoryName:`getData${currentCategory.name}`,
+        segment:conditionsWhere[`getData${currentCategory.name}`]?.["main"]?.["segment"],
+        field:conditionsWhere[`getData${currentCategory.name}`]?.["main"]?.["field"]})}>{conditionsWhere[`getData${currentCategory.name}`]?.["main"]?.["rule"]}</p>
+      }
+        
+        {/*(conditionsWhere[`getData${currentCategory.name}`]?.["main"]==undefined ||
+        typeof conditionsWhere[`getData${currentCategory.name}`]?.["main"]!=="object")?"none":
+    conditionsWhere[`getData${currentCategory.name}`]?.["main"]?.["rule"]*/}
+        
+        
         <a style={{textDecoration:"underline"}}
         onClick={e=>{
           e.preventDefault()
@@ -2564,6 +2593,14 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       open={openViewWhereStatementHybridDialog}
       toggleDialog={toggleOpenViewWhereStatementHybridDialog}
       addConditionWhereArray={listOfViewConditions}
+      {...varsHeadWhereStatement}
+
+    />}
+    {openViewMainWhereConditionDialog && <ViewMainWhereCondition
+      open={openViewMainWhereConditionDialog}
+      toggleDialog={toggleOpenViewMainWhereConditionDialog}
+      addConditionWhereArray={listOfViewConditions}
+      conditionsWhere={conditionsWhere}
       {...varsHeadWhereStatement}
 
     />}

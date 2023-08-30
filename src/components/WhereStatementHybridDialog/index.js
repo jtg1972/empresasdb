@@ -631,7 +631,7 @@ export const WhereStatementHybridDialog = ({
     //res.push("Select Segment")
     if(conditionsWhere?.[categoryName]!==undefined){
       Object.keys(conditionsWhere?.[categoryName]).map(x=>{
-        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
+        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type" && x!=="main"){
           if(conditionsWhere?.[categoryName]?.[x]!==undefined){
             res.push(x)
         

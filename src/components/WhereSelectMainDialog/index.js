@@ -591,7 +591,7 @@ export const WhereSelectMainDialog = ({
   }
 
   const displayCurrentMainCategory=()=>{
-    if(typeof conditionsWhere?.[categoryName]?.main=="object")
+    if(typeof conditionsWhere?.[categoryName]?.["main"]=="object")
       return conditionsWhere?.[categoryName]?.["main"]?.["rule"]
     else
       return "none"

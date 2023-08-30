@@ -489,7 +489,7 @@ export const WhereStatementStringDialog = ({
 
   }
   const displayMathOperators=()=>{
-    return(<select style={{backgroundColor:"brown",color:"white",border:"none",padding:0,margin:0,
+    return(<select style={{backgroundColor:"brown",color:"white",border:"none",padding:0,margin:0,height:"20px",
     outline:"none",marginRight:"10px",width:"100%"}}
     onChange={(e)=>{
       setStringOperator(e.target.value)
