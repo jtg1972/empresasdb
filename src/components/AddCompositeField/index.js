@@ -130,7 +130,7 @@ export const AddCompositeField = ({
     setCompositeField([])
     setStringFields([])
     setCompositeFieldName("")
-    setOperator("none")/*()=>{
+    setOperator("")/*()=>{
       if(otmCategoryFields[0]?.type=="string")
         return stringOperators[0]
       else
@@ -375,18 +375,23 @@ export const AddCompositeField = ({
     >
       <FormInput placeholder="Name of the Field" 
       value={compositeFieldName}
+      style={{border:"none",borderBottom:"1px solid black",color:"grey",borderBottom:"1px solid grey",
+      outline:"none",marginBottom:"1px"}}
       onChange={(e)=>setCompositeFieldName(e.target.value)}
       />
       {!primero &&
         (stringFields.length>0 ? 
           <select onChange={(e)=>setOperator(e.target.value)} 
-          value={operator}>
+          value={operator}
+          style={{border:"none",color:"black",borderBottom:"1px grey solid",outline:"none",marginBottom:"1px"}}>
             {
               stringOperators.map(x=><option value={x}>{x}</option>)
             }
         </select> : 
             <select onChange={(e)=>setOperator(e.target.value)}
-            value={operator}>
+            value={operator}
+            style={{border:"none",borderBottom:"1px solid grey",marginBottom:"1px",outline:"none"}}>
+            <option value="">Select math operator</option>
             {
             numberOperators.map(x=><option value={x}>{x}</option>)
             }
@@ -394,7 +399,9 @@ export const AddCompositeField = ({
             {primero &&
         <select 
         onChange={e=>setOperator(e.target.value)}
-        value={operator}>
+        value={operator}
+        style={{border:"none",borderBottom:"1px solid grey",marginBottom:"1px",outline:"none"}}>
+          <option value="">Select initial operator</option>
           {
             initalOperators.map(x=><option value={x}>{x}</option>)
           }
@@ -405,8 +412,9 @@ export const AddCompositeField = ({
         <FormInput placeholder="write text"
         type={addTextNumber?"number":"text"}
         value={addText}
+        style={{border:"none",borderBottom:"1px solid grey",marginBottom:"10px",outline:"none"}}
         onChange={(e)=>setAddText(e.target.value)}></FormInput>
-        <br/><input type="checkbox" onChange={
+        <input type="checkbox" onChange={
           (e)=>{
             if(e.target.checked==true){
               setAddTextNumber(true)
@@ -424,20 +432,24 @@ export const AddCompositeField = ({
       <>
         <FormInput type="number"
          placeholder="from"
+         style={{border:"none",borderBottom:"1px solid grey",marginBottom:"1px",outline:"none"}}
          onChange={(e)=>setStart(e.target.value)}></FormInput>
         <FormInput type="number" 
         placeholder="No. of chars"
+        style={{border:"none",borderBottom:"1px solid grey",marginBottom:"1px",outline:"none"}}
         onChange={e=>setChars(e.target.value)}>
         </FormInput>
       </>
       }
       
        {(operator!=="add text") &&  
-        <select onChange={(e)=>{
+        <select 
+        style={{border:"none",borderBottom:"1px solid grey",marginBottom:"3px",outline:"none"}}
+        onChange={(e)=>{
           setField(e.target.value)
         }}>
        
-      
+       <option value="">Select field</option>
       {otmCategoryFields.map(x=>{
         
         return <option value={x.name1}>{x.name1}</option>
@@ -490,7 +502,8 @@ export const AddCompositeField = ({
           updateNumberOperatorsforConcat([...compositeField,operator,field,pr],sf)
         }
 
-      }}>Add</FormButton>
+      }}
+      style={{marginBottom:"3px",marginTop:"5px"}}>Add</FormButton>
       <FormButton onClick={()=>{
         /*console.log("structure",{
           ...otmChoices,
