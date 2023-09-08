@@ -121,6 +121,14 @@ export const AddCompositeField = ({
   const stringOperators=["concat","substring","add text"]
   const initalOperators=["none","add text",/*"add field",*/"substring"]
   const [addTextNumber,setAddTextNumber]=useState(false)
+  const [validated,setValidated]=useState(false)
+
+  const [currentFilledFieldsWithCurrentOperator,setCurrentFilledFieldsWithCurrentOperator]=useState(["",[]])
+  const fieldsOperatorConcat=["field"]
+  const fieldsOperatorAddText=["addText"]
+  const fieldsOperatorSubstring=["from","chars","field"]
+  const fieldsOperatorNone=["field"]
+
   console.log("sfadd",stringFields,compositeField)
   console.log("compfieldsarray",compFieldsArray)
   let pr=true
@@ -151,14 +159,24 @@ export const AddCompositeField = ({
     else  
     setPrimero(false)
   },[compositeField])
+
   useEffect(()=>{
     if(primero==false){
     if(stringFields.length==0)
-      setOperator(numberOperators[0])
+      setOperator("")//numberOperators[0])
     else  
-      setOperator(stringOperators[0])
+      setOperator("")//stringOperators[0])
     }
   },[stringFields,primero])
+
+  useEffect(()=>{
+    console.log("uju")
+    setAddText("")
+    setStart("")
+    setChars("")
+    setField("")
+    setCurrentFilledFieldsWithCurrentOperator(["",[]])
+  },[operator])
 
   
 
@@ -188,11 +206,44 @@ export const AddCompositeField = ({
     return false
   }
 
+  const validateRuleValues=(params)=>{
+    if(operator=="")
+      return false
+    if(operator=="add text"){
+      if(fieldsOperatorAddText.every(x=>currentFilledFieldsWithCurrentOperator[1].includes(x)))
+        return true
+      return false
+    }else if(operator=="substring"){
+      if(fieldsOperatorSubstring.every(x=>currentFilledFieldsWithCurrentOperator[1].includes(x)))
+        return true
+      return false
+      
+    }else{
+      if(fieldsOperatorNone.every(x=>currentFilledFieldsWithCurrentOperator[1].includes(x)))
+        return true
+      else
+        return false
+    }
+  }
+
+  const checkIsDisabledAddCompositeField=()=>{
+    if(compositeField.length==0)
+      return true
+    if(compositeFieldName.trim()=="")
+      return true
+    if(compFieldsArray[specificOtmName].filter(x=>x.name1==compositeFieldName).length>0)
+      return true
+    return false
+
+  }
+  
+
   const updateNumberOperatorsforConcat=(arr,sf,pri=false)=>{
     let compFields=[]
     let strFields=[]
     let uno=false
     //console.log("arr0900",arr)
+    
     if(sf.length>0){
       if(arr.length==2){
         uno=true
@@ -375,7 +426,7 @@ export const AddCompositeField = ({
     >
       <FormInput placeholder="Name of the Field" 
       value={compositeFieldName}
-      style={{border:"none",borderBottom:"1px solid black",color:"grey",borderBottom:"1px solid grey",
+      style={{border:"none",borderBottom:"1px solid black",color:"black",borderBottom:"1px solid grey",
       outline:"none",marginBottom:"1px"}}
       onChange={(e)=>setCompositeFieldName(e.target.value)}
       />
@@ -384,11 +435,15 @@ export const AddCompositeField = ({
           <select onChange={(e)=>setOperator(e.target.value)} 
           value={operator}
           style={{border:"none",color:"black",borderBottom:"1px grey solid",outline:"none",marginBottom:"1px"}}>
+            <option value="">Select a string operator</option>
             {
               stringOperators.map(x=><option value={x}>{x}</option>)
             }
         </select> : 
-            <select onChange={(e)=>setOperator(e.target.value)}
+            <select onChange={(e)=>{
+              setOperator(e.target.value)
+              setCurrentFilledFieldsWithCurrentOperator([e.target.value,[...currentFilledFieldsWithCurrentOperator[1]]])
+            }}
             value={operator}
             style={{border:"none",borderBottom:"1px solid grey",marginBottom:"1px",outline:"none"}}>
             <option value="">Select math operator</option>
@@ -398,7 +453,10 @@ export const AddCompositeField = ({
             </select>)}
             {primero &&
         <select 
-        onChange={e=>setOperator(e.target.value)}
+        onChange={e=>{
+          setOperator(e.target.value)
+          setCurrentFilledFieldsWithCurrentOperator([e.target.value,[...currentFilledFieldsWithCurrentOperator[1]]])
+        }}
         value={operator}
         style={{border:"none",borderBottom:"1px solid grey",marginBottom:"1px",outline:"none"}}>
           <option value="">Select initial operator</option>
@@ -413,7 +471,15 @@ export const AddCompositeField = ({
         type={addTextNumber?"number":"text"}
         value={addText}
         style={{border:"none",borderBottom:"1px solid grey",marginBottom:"10px",outline:"none"}}
-        onChange={(e)=>setAddText(e.target.value)}></FormInput>
+        onChange={(e)=>{
+          setAddText(e.target.value)
+          if(e.target.value.trim()!=="" && !currentFilledFieldsWithCurrentOperator[1].includes("addText"))
+            setCurrentFilledFieldsWithCurrentOperator([currentFilledFieldsWithCurrentOperator[0],[...currentFilledFieldsWithCurrentOperator[1],"addText"]])
+          else if(e.target.value.trim()=="" && currentFilledFieldsWithCurrentOperator[1].includes("addText"))
+            setCurrentFilledFieldsWithCurrentOperator([currentFilledFieldsWithCurrentOperator[0],[...currentFilledFieldsWithCurrentOperator[1].filter(x=>x!=="addText")]])
+
+
+        }}></FormInput>
         <input type="checkbox" onChange={
           (e)=>{
             if(e.target.checked==true){
@@ -422,6 +488,7 @@ export const AddCompositeField = ({
             }else{
               setAddTextNumber(false)
             }
+            setCurrentFilledFieldsWithCurrentOperator([currentFilledFieldsWithCurrentOperator[0],[...currentFilledFieldsWithCurrentOperator[1].filter(x=>x!=="addText")]])
             setAddText("")
           }
       }
@@ -433,11 +500,25 @@ export const AddCompositeField = ({
         <FormInput type="number"
          placeholder="from"
          style={{border:"none",borderBottom:"1px solid grey",marginBottom:"1px",outline:"none"}}
-         onChange={(e)=>setStart(e.target.value)}></FormInput>
+         onChange={(e)=>{
+           setStart(e.target.value)
+           if(e.target.value.trim()!=="" && !currentFilledFieldsWithCurrentOperator[1].includes("from"))
+            setCurrentFilledFieldsWithCurrentOperator([currentFilledFieldsWithCurrentOperator[0],[...currentFilledFieldsWithCurrentOperator[1],"from"]])
+          else if(e.target.value.trim()=="" && currentFilledFieldsWithCurrentOperator[1].includes("from"))
+            setCurrentFilledFieldsWithCurrentOperator([currentFilledFieldsWithCurrentOperator[0],[...currentFilledFieldsWithCurrentOperator[1].filter(x=>x!=="from")]])
+
+         }}></FormInput>
         <FormInput type="number" 
         placeholder="No. of chars"
         style={{border:"none",borderBottom:"1px solid grey",marginBottom:"1px",outline:"none"}}
-        onChange={e=>setChars(e.target.value)}>
+        onChange={e=>{
+          setChars(e.target.value)
+          if(e.target.value.trim()!=="" && !currentFilledFieldsWithCurrentOperator[1].includes("chars"))
+            setCurrentFilledFieldsWithCurrentOperator([currentFilledFieldsWithCurrentOperator[0],[...currentFilledFieldsWithCurrentOperator[1],"chars"]])
+          else if(e.target.value.trim()=="" && currentFilledFieldsWithCurrentOperator[1].includes("chars"))
+            setCurrentFilledFieldsWithCurrentOperator([currentFilledFieldsWithCurrentOperator[0],[...currentFilledFieldsWithCurrentOperator[1].filter(x=>x!=="chars")]])
+
+        }}>
         </FormInput>
       </>
       }
@@ -445,8 +526,14 @@ export const AddCompositeField = ({
        {(operator!=="add text") &&  
         <select 
         style={{border:"none",borderBottom:"1px solid grey",marginBottom:"3px",outline:"none"}}
+        value={field}
         onChange={(e)=>{
           setField(e.target.value)
+          if(e.target.value.trim()!=="" && !currentFilledFieldsWithCurrentOperator[1].includes("field"))
+            setCurrentFilledFieldsWithCurrentOperator([currentFilledFieldsWithCurrentOperator[0],[...currentFilledFieldsWithCurrentOperator[1],"field"]])
+          else if(e.target.value.trim()=="" && currentFilledFieldsWithCurrentOperator[1].includes("field"))
+            setCurrentFilledFieldsWithCurrentOperator([currentFilledFieldsWithCurrentOperator[0],[...currentFilledFieldsWithCurrentOperator[1].filter(x=>x!=="field")]])
+
         }}>
        
        <option value="">Select field</option>
@@ -475,10 +562,12 @@ export const AddCompositeField = ({
           }else
             setIsString(false)
           if(primero==true){
+            
             updateNumberOperatorsforConcat([operator,field],sf)
             //setCompositeField(e=>([field]))
             //setPrimero(false)
           }else{
+            
             updateNumberOperatorsforConcat([...compositeField,operator,field],sf)
             //setCompositeField(e=>([...e,operator,field]))
           }
@@ -486,6 +575,7 @@ export const AddCompositeField = ({
         }else if(operator=="concat"){
           sf=[...stringFields,field]
           //setStringFields(sf)
+          
           updateNumberOperatorsforConcat([...compositeField,operator,field],sf)
         
         }else if(operator=="add text"){
@@ -493,18 +583,24 @@ export const AddCompositeField = ({
             sf=[...stringFields,addText]
             //console.log("alarm",[...compositeField,operator,{op:"add text",type:addTextNumber?"number":"string",value:addTextNumber?parseInt(addText):addText,field:`${addText}`}])
           //setStringFields(sf)
+          
           updateNumberOperatorsforConcat([...compositeField,operator,{op:"add text",type:addTextNumber?"number":"string",value:addTextNumber?parseFloat(addText):addText,field:`${addText}`}],sf)
         }else if(operator=="substring"){
           sf=[...stringFields,field]
           //setStringFields(sf)
+          
           updateNumberOperatorsforConcat([...compositeField,operator,{op:"substring",start,chars,field}],sf)
         } else{
+          
           updateNumberOperatorsforConcat([...compositeField,operator,field,pr],sf)
         }
 
       }}
-      style={{marginBottom:"3px",marginTop:"5px"}}>Add</FormButton>
-      <FormButton onClick={()=>{
+      style={{marginBottom:"3px",marginTop:"5px",opacity:validateRuleValues()?1:0.7}}
+      disabled={!validateRuleValues()}>Add</FormButton>
+      <FormButton 
+      
+      onClick={()=>{
         /*console.log("structure",{
           ...otmChoices,
           [specificOtmName]:
@@ -541,6 +637,9 @@ export const AddCompositeField = ({
             compositeField:true,
             type:checkIsNumber()?"number":"string"
           }]}))
+          setCompositeField([])
+          setCompositeFieldName("")
+          setOperator("")
           /*{...e[specificOtmName],
           compositeFields:{
             ...e[specificOtmName]["compositeFields"],
@@ -552,7 +651,9 @@ export const AddCompositeField = ({
           
           }}
         }))*/
-      }}>
+      }}
+      style={{opacity:checkIsDisabledAddCompositeField()?0.7:1}}
+      disabled={checkIsDisabledAddCompositeField()}>
         Add CompositeField
       </FormButton>
 
