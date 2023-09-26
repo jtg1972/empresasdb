@@ -6,52 +6,68 @@ import './styles.scss'
 
 const DisplayList=({compositeField,setCompositeField,
 updateNumberOperatorsforConcat})=>{
-  return <div style={{display:"flex",flexDirection:"row",
-  justifyContent:"space-between",flex:1,flexGrow:0}}>
+
+  const displayHeader=()=><div style={{backgroundColor:"black",color:"white",width:"100%",marginTop:"5px",marginBottom:"0px",
+  display:"flex"}}>
+    <div style={{width:"100px"}}>
+      Logical Op
+    </div>
+    <div style={{flex:1}}>
+      Params
+    </div>
+    <div style={{width:"10px"}}>
+      -
+    </div>
     
-    <div style={{width:"60px",display:"flex",flexDirection:"column"}}>
+  </div>
+  return <div style={{width:"100%",display:"flex",flexDirection:"column"}}>
+  {compositeField.length!==0 && displayHeader()}
+  <div style={{display:"flex",flexDirection:"row",
+  width:"100%"}}>
+    
+    <div style={{width:"100px",display:"flex",flexDirection:"column",backgroundColor:"white"}}>
     {compositeField.map((x,index)=>{
     if(index%2==0){
       return <div style={{display:"flex",
-      justifyContent:"space-between",flex:"1 0 0"}}>
-        <p style={{color:"black",flex:"1 0 0",overflow:"hidden",whiteSpace:"nowrap"}}>{x}</p>
+      flex:1}}>
+        <p style={{color:"black",flex:1,overflow:"hidden",whiteSpace:"nowrap"}}>{x}</p>
             
       </div>
     }
     
     })}
     </div>
-    <div style={{flex:1,flexGrow:0/*flex:"1 0 0",display:"flex",flexDirection:"column"*/}}>
+    <div style={{flex:1,display:"flex",backgroundColor:"white",flexDirection:"column",overflowX:"hidden",whiteSpace:"nowrap",paddingRight:"3px"/*flex:"1 0 0",display:"flex",flexDirection:"column"*/}}>
       {compositeField.map((x,index)=>{
       
-      if(index%2!=0){
+      if(index%2==1){
         if(typeof compositeField[index]!=="object")
-          return <div style={{display:"flex",flexDirection:"row",
-          justifyContent:"space-between",flex:1,flexGrow:0} }>
+          return <div style={{display:"flex",flexDirection:"column",
+          flex:1,whiteSpace:"nowrap",overflowX:"hidden"} }>
          
           
-            <p style={{color:"black",width:"275px",marginLeft:"5px"/*flex:1,flexGrow:0,overflow:"hidden"*/}}>{compositeField[index]}</p>
+            <p style={{color:"black",marginLeft:"0px",flex:1,overflowX:"hidden",whiteSpace:"nowrap"/*flex:1,flexGrow:0,overflow:"hidden"*/}}>{compositeField[index]}</p>
           
           </div>
         else
           return <div style={{display:"flex",flexDirection:"row",
-          justifyContent:"space-between",flex:1,flexGrow:1}}>
+          flex:1,whiteSpacing:"nowrap",overflowX:"hidden"}}>
          
           {compositeField[index]["op"]=="substring" &&
-            <p className="ofx">{compositeField[index]["field"]} chars:{compositeField[index]["chars"]} from:{compositeField[index]["start"]}</p>
+            <p style={{color:"black",marginLeft:"0px",flex:1,overflowX:"hidden",whiteSpace:"nowrap"}}>{compositeField[index]["field"]} chars: {compositeField[index]["chars"]} from: {compositeField[index]["start"]}</p>
           }
           {compositeField[index]["op"]=="add text" &&
-            <p className="ofx">{compositeField[index]["value"]}</p>
+            <p style={{color:"black",marginLeft:"0px",flex:1,overflowX:"hidden",whiteSpace:"nowrap"}}>{compositeField[index]["value"]}</p>
           }
           </div> 
       }
       })}
       </div>
-      <div style={{width:"10px",marginLeft:"5px",marginRight:"5px"/*,display:"flex",flexDirection:"column"*/}}>
+      <div style={{width:"10px",backgroundColor:"white",marginLeft:"0px",marginRight:"0px",flexDirection:"column",display:"flex"/*,display:"flex",flexDirection:"column"*/}}>
       {compositeField.map((x,index)=>{
     if(index%2==0){
       return <div style={{display:"flex",flexDirection:"column",
-      justifyContent:"space-between",flex:"1 0 0"}}>
+      flex:1}}>
         
         <p style={{color:"red",flex:1}}
         onClick={()=>{
@@ -93,6 +109,7 @@ updateNumberOperatorsforConcat})=>{
       
 
 
+  </div>
   </div>
 }
 
@@ -231,7 +248,7 @@ export const AddCompositeField = ({
       return true
     if(compositeFieldName.trim()=="")
       return true
-    if(compFieldsArray[specificOtmName].filter(x=>x.name1==compositeFieldName).length>0)
+    if(compFieldsArray?.[specificOtmName]?.filter(x=>x.name1==compositeFieldName).length>0)
       return true
     return false
 
@@ -598,8 +615,11 @@ export const AddCompositeField = ({
       }}
       style={{marginBottom:"3px",marginTop:"5px",opacity:validateRuleValues()?1:0.7}}
       disabled={!validateRuleValues()}>Add</FormButton>
-      <FormButton 
       
+      <DisplayList compositeField={compositeField}
+      setCompositeField={setCompositeField}
+      updateNumberOperatorsforConcat={updateNumberOperatorsforConcat}></DisplayList>
+      <FormButton       
       onClick={()=>{
         /*console.log("structure",{
           ...otmChoices,
@@ -652,14 +672,11 @@ export const AddCompositeField = ({
           }}
         }))*/
       }}
-      style={{opacity:checkIsDisabledAddCompositeField()?0.7:1}}
+      style={{opacity:checkIsDisabledAddCompositeField()?0.7:1,marginTop:"5px"}}
       disabled={checkIsDisabledAddCompositeField()}>
         Add CompositeField
       </FormButton>
 
-      <DisplayList compositeField={compositeField}
-      setCompositeField={setCompositeField}
-      updateNumberOperatorsforConcat={updateNumberOperatorsforConcat}></DisplayList>
     </Dialog>
   )
 }

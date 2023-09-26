@@ -16,6 +16,7 @@ import { ViewWhereStatementNumberDialog } from '../../components/ViewWhereStatem
 import { ViewWhereStatementStringDialog } from '../../components/ViewWhereStatementStringDialog'
 import { ViewWhereStatementHybridDialog } from '../../components/VIewWhereStatementHybridDialog'
 import { ViewMainWhereCondition } from '../../components/ViewMainWhereCondition'
+import { ViewCompositeFieldDialog } from '../../components/ViewCompositeFieldDialog'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categories:categories.categories,
@@ -111,7 +112,12 @@ const Reports=()=>{
     setOpenViewMainWhereConditionDialog(!openViewMainWhereConditionDialog)
 
   }
+  const [openViewCompositeFieldDialog,setOpenViewCompositeFieldDialog]=useState(false)
+  const toggleOpenViewCompositeFieldDialog=(vars)=>{
+    setVarsHeadWhereStatement(vars)
+    setOpenViewCompositeFieldDialog(!openViewCompositeFieldDialog)
 
+  }
   let subTotals={}
   const [grandTotalsSt,setGrandTotalsSt]=useState({})
   const [comboDataSt,setComboDataSt]=useState({})
@@ -421,7 +427,10 @@ const Reports=()=>{
               checkReview(e,d.name1,false,"",name,false,true,"",true,d)
             }}
             />
-            <a style={{color:"yellow", marginRight:"10px"}}>{d.name1}Number</a>
+            <a style={{color:"yellow", marginRight:"10px"}}
+            onClick={()=>{
+              toggleOpenViewCompositeFieldDialog({specificOtmName:name,compositeFieldName:d.name1})
+            }}>{d.name1}Number</a>
             {isReadyToWhere(name,d.name1,true) && <a  
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
@@ -452,7 +461,10 @@ const Reports=()=>{
             checkReview(e,d.name1,false,"",name,false,true,"",true,d)
           }}
           />
-          <a style={{color:"yellow",marginRight:"10px"}}>{d.name1}String</a>
+          <a style={{color:"yellow",marginRight:"10px"}}
+             onClick={()=>{
+               toggleOpenViewCompositeFieldDialog({specificOtmName:name,compositeFieldName:d.name1})
+          }}>{d.name1}String</a>
           {isReadyToWhere(name,d.name1,true) && <a  
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
@@ -772,7 +784,11 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             }}
             />
             
-            <span style={{marginRight:"10px"}}>{d.name1}Number</span>
+            <span style={{marginRight:"10px"}}
+            onClick={()=>{
+              toggleOpenViewCompositeFieldDialog({specificOtmName:`getData${currentCategory.name}`,compositeFieldName:d.name1})
+
+            }}>{d.name1}Number</span>
             {isReadyToWhereFirst(`getData${currentCategory.name}`,d.name1,true) &&
             <>
             <a  
@@ -803,7 +819,10 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
               checkReview(e,d.name1,false,cat.name,"",true,false,"",true,d)
             }}
             />
-            <a style={{color:"yellow"}}>{d.name1}</a>
+            <a style={{color:"yellow"}}
+            onClick={()=>{
+              toggleOpenViewCompositeFieldDialog({specificOtmName:`getData${currentCategory.name}`,compositeFieldName:d.name1})
+            }}>{d.name1}</a>
             {/*<span style={{marginRight:"10px"}}>{d.name1}String22</span>*/}
             {isReadyToWhereFirst(`getData${currentCategory.name}`,d.name1,true) && <>
             &nbsp;
@@ -2603,6 +2622,15 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       conditionsWhere={conditionsWhere}
       {...varsHeadWhereStatement}
 
+    />}
+
+    {openViewCompositeFieldDialog && <ViewCompositeFieldDialog
+      open={openViewCompositeFieldDialog}
+      toggleDialog={toggleOpenViewCompositeFieldDialog}
+      specificOtmName={specificOtmName}
+      compositeField={compFieldsArray}
+      {...varsHeadWhereStatement}
+      
     />}
 
 
