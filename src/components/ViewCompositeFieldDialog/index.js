@@ -28,7 +28,7 @@ export const ViewCompositeFieldDialog=({compositeField,compositeFieldName,
     return <Dialog
     open={open}
     closeDialog={toggleDialog}
-    headline="View composite Field">
+    headline={`View composite field ${compositeFieldName}`}>
     <div style={{width:"100%",display:"flex",flexDirection:"column"}}>
     {compositeField[specificOtmName].filter(x=>x.name1==compositeFieldName)[0]["structure"].length!==0 && displayHeader()}
     <div style={{display:"flex",flexDirection:"row",

@@ -155,7 +155,8 @@ export const AddCompositeField = ({
     setCompositeField([])
     setStringFields([])
     setCompositeFieldName("")
-    setOperator("")/*()=>{
+    setOperator("")
+    setAddTextNumber(false)/*()=>{
       if(otmCategoryFields[0]?.type=="string")
         return stringOperators[0]
       else
@@ -192,6 +193,7 @@ export const AddCompositeField = ({
     setStart("")
     setChars("")
     setField("")
+    setAddTextNumber(false)
     setCurrentFilledFieldsWithCurrentOperator(["",[]])
   },[operator])
 
