@@ -1432,7 +1432,7 @@ const checkRule=(rulex,x,sameCategorySegment,field,type)=>{
     return evaluateRule(arrAnswers,ops)
 }
 
-const checkRuleHybrid=(rulex,x,datafield)=>{
+const checkRuleHybridFinal=(rulex,x)=>{
   let rule=rulex["rule"]
   let arrAnswers=[]
   let ops=[]
@@ -1448,7 +1448,33 @@ const checkRuleHybrid=(rulex,x,datafield)=>{
       if(type!=="hybrid")
         res=checkRule(specificRule,x,false,data["field"],type,data)
       else{
-        res=checkRuleHybrid(specificRule,x,false,data["field"],type)
+        res=checkRuleHybridFinal(specificRule,x,false,data["field"],type)
+      }
+      arrAnswers=[...arrAnswers,res]
+    }
+  }
+  return evaluateRule(arrAnswers,ops)
+
+}
+
+const checkRuleHybrid=(rulex,x,index)=>{
+  let rule=rulex["rule"]
+  let arrAnswers=[]
+  let ops=[]
+ // console.log("paramsxx",rule,x,sameCategorySegment,field,type)
+  for(let i in rule){
+    if(i%2==0){
+      let nk=parseInt(i)
+      ops=[...ops,rule[nk]]
+      let data=rule[nk+1]
+      let specificRule=conditionsWhere[data["category"]][data["segment"]][data["field"]][data["rule"]]
+      let type=conditionsWhere[data["category"]][data["segment"]][data["field"]]["type"]
+      let res
+      console.log("rulenk",rule[nk],conditionsWhere[data["category"]],x,x[data["segment"]][index])
+      if(data["segment"]!=="hybrid")
+        res=checkRule(specificRule,x[data["segment"]][index],false,data["field"],type,data)
+      else{
+        res=checkRuleHybrid(specificRule,x,index)
       }
       arrAnswers=[...arrAnswers,res]
     }
@@ -1469,7 +1495,7 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
       return true
     else{
       Object.keys(data[category]).forEach(y=>{
-        if(!checkRule(getMainRule,data[category][y],u["category"]==u["segment"],u["field"],type,u)){
+        if(!checkRule(getMainRule,data[u["segment"]],u["category"]==u["segment"],u["field"],type,u)){
           Object.keys(data).forEach(l=>{
             delete data[l][y]
           })
@@ -1483,14 +1509,23 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
     else{
     
       Object.keys(data[u["segment"]]).forEach(y=>{
-        if(!checkRule(getMainRule,data[u["segment"]][y],false,u["field"],type,u)){
+        if(!checkRule(getMainRule,data[category][u["segment"]][y],false,u["field"],type,u)){
           Object.keys(data).forEach(l=>{
             delete data[l][y]
           })
         }
       })
     }
+  }else if(u["segment"]=="hybrid"){
+    Object.keys(data[u["category"]]).forEach(y=>{
+      if(!checkRuleHybrid(getMainRule,data,y)){
+        Object.keys(data).forEach(l=>{
+          delete data[l][y]
+        })
+      }
+    })
   }
+    
 }
 }
 
@@ -1508,10 +1543,11 @@ const verifyMeetWithConditionsBySegmentBaseLeve1=(category,x)=>{
   }else{
     if(u["category"]==u["segment"]){//en este caso involucra datos de la misma categoria de un solo campo
       res=checkRule(getMainRule,x,u["category"]==u["segment"],u["field"],type,u)
+    
     }else if(u["segment"]=="hybrid"){ //en este caso involucra casos de diferentes variables de la misma categoria
       console.log("different to main segment")
 
-      res=checkRuleHybrid(getMainRule,x,datafield,u["rule"])
+      res=checkRuleHybridFinal(getMainRule,x,datafield,u["rule"])
     }else{//en este caso involucra variables de totales de las relaciones hijas
       res=checkRule(getMainRule,x,false,u["field"],type,u)
       
@@ -2912,6 +2948,10 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
   let trueKey
   let cats
   //console.log("order",order)
+  if(order.length==0){
+    let data=totalRoutes[`getData${currentCategory.name}`]["undefinedtotal"]
+    updateTerminalFinalObject(data,`getData${currentCategory.name}`)
+  }else{
   for(let i=0;i<order.length;i++){
     trueKey=Object.keys(order[i])[0]
     
@@ -2950,11 +2990,29 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
           }
         }
       })
-        
-
+      
       
       
     
+  }
+  for(let i=0;i<order.length;i++){
+    trueKey=Object.keys(order[i])[0]
+    cats=order[i][trueKey]
+    let cat
+    for(let j=0;j<cats.length;j+=2){
+      cat=cats[j]   
+      console.log("prob111",cat,finalObject[cat],finalObject)
+      Object.keys(finalObject[cat][cat]).forEach(y=>{
+        if(finalObject[cat][cat][y]["final"]==undefined){
+          Object.keys(finalObject[cat]).forEach(x=>{
+            delete finalObject[cat][x][y]
+          })
+        }else
+          delete finalObject[cat][cat][y]["final"]
+      })
+    }
+
+  }  
   }
   console.log("fobj44",finalObject)
 
