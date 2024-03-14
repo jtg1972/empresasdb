@@ -3521,7 +3521,9 @@ const getDataReport=(routes,finalRoutes)=>{
       getLevelData1(categoryProducts[root],routes[finalRoutes[i]],0,true)  
     }
     getInverseTraverseSonTotalsWithConditionsWhereRoutes1(routes,finalRoutes,y)
-
+    Object.keys(finalObject).forEach(y=>{
+      printFinalTableNew(y,finalObject[y])
+    })
     //console.log("totalRoutes",totalRoutes)
   /*for(let i=0;i<finalRoutes.length;i++){
   //getAccumulated(routes[finalRoutes[0]],routes[finalRoutes[0]][0],0,false,totalRoutes)
@@ -3591,6 +3593,46 @@ const getDataReport=(routes,finalRoutes)=>{
   //return printTable(finalObject['getDataclientes'],'getDataclientes',`${routes[finalRoutes[0]][1]}total`)
   //printTable(totalRoutesArray,routes,finalRoutes)
   bien termina*/
+
+
+}
+
+const printMainHeaders=(data)=>{
+  let subtitles={}
+  let head={}
+  Object.keys(data).forEach(a=>{
+    if(head[a]==undefined)
+      head[a]=[]
+    head[a].push(<th>{a}</th>)
+    let x=Object.keys(data[a])[0]
+    subtitles[a]=[]
+    Object.keys(x).forEach(y=>
+      
+      subtitles[a].push(<th>{y}</th>)
+    )  
+  })
+  return <table>
+    <thead>
+      <tr>
+        {Object.keys(head)
+
+      </tr>
+    </thead>
+  </table>
+}
+
+const printFinalTableNew=(category,data)=>{
+  let head=[]
+  let subFields=[]
+  
+  Object.keys(data[a])[0]
+    Obje
+  })
+  return <table>
+    <tr>
+    {head}
+    </tr>
+  </table>
 }
 
 const printFinalTable=(title,data,ui)=>{
