@@ -1509,7 +1509,7 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
     else{
     
       Object.keys(data[u["segment"]]).forEach(y=>{
-        if(!checkRule(getMainRule,data[category][u["segment"]][y],false,u["field"],type,u)){
+        if(!checkRule(getMainRule,data[u["segment"]][y],false,u["field"],type,u)){
           Object.keys(data).forEach(l=>{
             delete data[l][y]
           })
@@ -2585,6 +2585,7 @@ const getNumericFields=(cat)=>{
       if(x.type=="number")
         res["compositeFields"].push(x.name1)
     })
+
   }else{
     
     otmChoices?.[cat]?.["normal"].forEach(x=>{
@@ -2596,6 +2597,7 @@ const getNumericFields=(cat)=>{
       if(x.type=="number")
         res["compositeFields"].push(x.name1)
     })
+    
   }
   console.log("numericvalues",cat,res)
   return res
@@ -3488,6 +3490,51 @@ const getFinalRoutesArray=(finalRoutes,routes)=>{
   }
   return res
 }
+
+const buscaOrderJ=(tofind,order)=>{
+  let key
+  for(let j=0;j<order.length;j++){
+    key=Object.keys(order[j])[0]
+
+    if(key==tofind)
+      return order[j][key]
+  }
+  return -1    
+
+
+}
+
+const getSubOrderTables=(tables,key,sontables,segments={},order)=>{
+  if(segments[key]==undefined){
+    segments[key]=[key]
+  }
+  //segments[key].push(key)
+  for(let j=0;j<sontables.length;j+=2){
+    tables.push(sontables[j])
+    if(segments[key]==undefined)
+      segments[key]=[]
+    
+    if(buscaOrderJ(sontables[j],order)!==-1){
+      getSubOrderTables(tables,sontables[j],buscaOrderJ(sontables[j],order),segments,order)
+      segments[key]=[...segments[key],...segments[sontables[j]]]
+    }else{ 
+      segments[key].push(sontables[j])
+      segments[sontables[j]]=[sontables[j]]
+    }
+  }
+}
+const getOrderToPrintTables=(order)=>{
+  let key
+  let tables=[]
+  let segments={}
+  //for(let j=order.length-1;j>=0;j-=1){
+    key=Object.keys(order[order.length-1])[0]
+    tables.push(key)
+    getSubOrderTables(tables,key,order[order.length-1][key],segments,order)
+    console.log("ResultadoOrder",tables,segments)
+    return [tables,segments]
+  //}
+}
 const getDataReport=(routes,finalRoutes)=>{
   const root=`getData${currentCategory.name}`
   totalRoutes={}
@@ -3521,8 +3568,10 @@ const getDataReport=(routes,finalRoutes)=>{
       getLevelData1(categoryProducts[root],routes[finalRoutes[i]],0,true)  
     }
     getInverseTraverseSonTotalsWithConditionsWhereRoutes1(routes,finalRoutes,y)
-    Object.keys(finalObject).forEach(y=>{
-      printFinalTableNew(y,finalObject[y])
+
+    let order=getOrderToPrintTables(y)
+    order[0].forEach(y=>{
+      printFinalTableNew(y,finalObject[y],order[1][y])
     })
     //console.log("totalRoutes",totalRoutes)
   /*for(let i=0;i<finalRoutes.length;i++){
@@ -3597,42 +3646,295 @@ const getDataReport=(routes,finalRoutes)=>{
 
 }
 
-const printMainHeaders=(data)=>{
-  let subtitles={}
-  let head={}
-  Object.keys(data).forEach(a=>{
-    if(head[a]==undefined)
-      head[a]=[]
-    head[a].push(<th>{a}</th>)
-    let x=Object.keys(data[a])[0]
-    subtitles[a]=[]
-    Object.keys(x).forEach(y=>
-      
-      subtitles[a].push(<th>{y}</th>)
-    )  
-  })
-  return <table>
-    <thead>
-      <tr>
-        {Object.keys(head)
+const getFieldsSegment=(category,segment,realSegmentLast)=>{
+  let result=[]
+  let len=0
+  console.log("realsegmentlast111",realSegmentLast)
+  //let busca=realSegmentCount
+  if(category==segment){
+    let theresNormal 
+    let theresComposite
+    let theresOtmDestiny
+    if(category==`getData${currentCategory.name}`){
+      let normal=firstCatNormalFields[`getData${currentCategory.name}`].normal.length
+      let composite=firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.length
+    let otmdestiny=firstCatNormalFields[`getData${currentCategory.name}`].otmdestiny.length
+      theresNormal=normal>0
+      theresComposite=composite>0 
+      theresOtmDestiny=otmdestiny>0 
+      if(theresNormal)
+      result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].normal.map((q,index)=>
+        <th style={{borderRight:(realSegmentLast==category && normal-1==index && !theresComposite)?"none":"1px solid white"}}>{q.name1}</th>
+      )]
+      if(theresComposite)
+      result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.map((q,index)=>
+        <th style={{borderRight:(realSegmentLast==category && composite-1==index)?"none":"1px solid white"}}>{q.name1}</th>
+      )]
+      /*if(theresOtmDestiny)
+      result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].otmdestiny.map((q,index)=>
+        <th style={{borderRight:(realSegmentLast==category && composite-1==index)?"none":"1px solid white"}}>{q.name1}</th>
+      )]*/
 
+      
+    }else{
+      console.log("otmchoices22",otmChoices[segment])
+
+      let normal=otmChoices[category].normal.length
+      let composite=otmChoices[category].compositeFields.length
+      let otmdestiny=otmChoices[category].otmdestiny.length
+      theresNormal=normal>0
+      theresComposite=composite>0  
+      theresOtmDestiny=otmdestiny>0
+      if(theresNormal)   
+      result=[...result,...otmChoices[category].normal.map((q,index)=>
+        <th style={{borderRight:(realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny))?"none":"1px solid white"}}>{q.name1}</th>
+      )]
+      if(theresComposite)
+      result=[...result,...otmChoices[category].compositeFields.map((q,index)=>
+        <th style={{borderRight:(realSegmentLast==category && composite-1==index && !theresOtmDestiny)?"none":"1px solid white"}}>{q.name1}</th>
+      )]
+      if(theresOtmDestiny)
+      result=[...result,...otmChoices[category].otmdestiny.map((q,index)=>
+        <th style={{borderRight:(realSegmentLast==category && otmdestiny-1==index)?"none":"1px solid white"}}>{q}</th>
+      )]
+    }
+    result.unshift(<th style={{borderRight:realSegmentLast==category && !(theresNormal || theresComposite || !theresOtmDestiny)?"none":"1px solid white"}}>Id</th>)
+  }else{
+    let temp=[]
+    let normal=otmChoices[segment].normal.length
+    let composite=otmChoices[segment].compositeFields.length
+    let otmdestiny=otmChoices[segment].otmdestiny.length
+    let theresNormal=normal>0
+    let theresComposite=composite>0  
+    let theresOtmDestiny=otmdestiny>0
+    
+    let lastIndexNumberComposite=0
+    let lastIndexNumber=0
+    otmChoices[segment].normal.forEach((x,index)=>{
+      if(x.type=="number")
+        lastIndexNumber=index
+    })
+    otmChoices[segment].compositeFields.forEach((x,index)=>{
+      if(x.type=="number")
+        lastIndexNumberComposite=index
+    })
+    if(theresNormal)
+    otmChoices[segment].normal.forEach((q,index)=>{
+      
+      if(q.type=="number"){
+        console.log("qqq",q.name1,realSegmentLast,segment,normal-1,index)
+        temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumber==index && !theresComposite)?"none":"1px solid white"}}>{q.name1}</th>)
+      }
+    
+     
+    })
+    result=[...result,...temp]
+    temp=[]
+    if(theresComposite)
+    otmChoices[segment].compositeFields.forEach((q,index)=>{
+
+      if(q.type=="number"){
+        temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index)?"none":"1px solid white"}}>{q.name1}</th>)
+      }
+    }
+     
+    )
+    result=[...result,...temp]
+    /*if(theresOtmDestiny)
+    otmChoices[segment].otmdestiny.forEach((q,index)=>{
+      temp.push(<th style={{borderRight:realSegmentLast==segment && index==otmdestiny-1?"none":"1px solid white"}}>{q.name1}</th>)
+    })*/
+  }
+  
+  return result
+}
+
+const getFieldsDataSegment=(category,a,realSegmentLast)=>{
+  let result=[]
+  let total=[]
+  let data=finalObject[category][a]
+  Object.keys(data).forEach((y,index)=>{
+    result=[]
+    let ultimo=false
+    let len=0
+    if(category==a){
+      let theresNormal
+      let theresComposite
+      let theresOtmDestiny
+      if(category==`getData${currentCategory.name}`){
+        len=1+
+        firstCatNormalFields[`getData${currentCategory.name}`].normal.length+
+        firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.length
+        let normal=firstCatNormalFields[`getData${currentCategory.name}`].normal.length
+        let composite=firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.length
+        theresNormal=normal>0
+        theresComposite=composite>0 
+        //let otmdestiny=firstCatNormalFields[`getData${currentCategory.name}`].otmdestiny.length
+        //let theresOtmDestiny=otmdestiny>0
+ 
+        //let otmdestiny=otmChoices[`getData${currentCategory.name}`].otmdestiny.length
+        //theresOtmDestiny=otmdestiny>0
+
+        if(theresNormal) 
+        result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].normal.map((q,index)=>
+          <td style={{color:"black",background:"white",borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
+        )]
+        if(theresComposite)
+        result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.map((q,index)=>
+          <td style={{color:"black",background:"white",borderRight:realSegmentLast==category && index==composite-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
+        )]
+        /*if(theresOtmDestiny)
+        result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].otmdestiny.map((q,index)=>
+        <td style={{color:"black",background:"white",borderRight:realSegmentLast==category && index==otmdestiny-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
+      )]*/
+
+      }else{
+        len=1+otmChoices[category].normal.length+
+        otmChoices[category].compositeFields.length
+        let normal=otmChoices[category].normal.length
+        let composite=otmChoices[category].compositeFields.length
+        theresNormal=normal>0
+        theresComposite=composite>0 
+        let otmdestiny=otmChoices[category].otmdestiny.length
+        theresOtmDestiny=otmdestiny>0
+ 
+      
+
+        if(theresNormal)        
+        result=[...result,...otmChoices[category].normal.map((q,index)=>
+          <td style={{color:"black",background:"white",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
+        )]
+        if(theresComposite)
+        result=[...result,...otmChoices[category].compositeFields.map((q,index)=>
+          <td style={{color:"black",background:"white",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
+        )]
+      
+      
+      if(theresOtmDestiny)
+      result=[...result,...otmChoices[category].otmdestiny.map((q,index)=>
+          <td style={{color:"black",background:"white",borderRight:realSegmentLast==category && otmdestiny-1==index?"none":"1px solid black"}}>{finalObject[category][a][y][q]}</td>
+        )]
+
+      
+    }
+    result.unshift(<td style={{color:"black",background:"white",borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{finalObject[category][a][y]["id"]}</td>)
+  }else{
+      let lastIndexNumber=0
+      let lastIndexNumberComposite=0
+        otmChoices[a].normal.forEach((x,index)=>{
+          if(x.type=="number")
+            lastIndexNumber=index
+        })
+        otmChoices[a].compositeFields.forEach((x,index)=>{
+          if(x.type=="number")
+            lastIndexNumberComposite=index
+        })
+        let normal=otmChoices[a].normal.length
+        let composite=otmChoices[a].compositeFields.length
+        let theresNormal=normal>0
+        let theresComposite=composite>0  
+        let theresOtmDestiny
+      let temp=[]
+      len=1+otmChoices[a].normal.length+
+        otmChoices[a].compositeFields.length
+      if(theresNormal)
+      otmChoices[a].normal.forEach((q,index)=>{
+        if(q.type=="number"){
+          temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}total`]}</td>)
+        }
+        
+      }
+      
+      )
+      result=[...result,...temp]
+      temp=[]
+      if(theresComposite)
+      otmChoices[a].compositeFields.forEach((q,index)=>{
+        if(q.type=="number"){
+          temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumberComposite==index && realSegmentLast==a ?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}total`]}</td>)
+        }
+        return ""
+      }
+      
+      )
+      result=[...result,...temp]
+      
+      
+      
+    }
+    total.push(<tr>{result}</tr>)
+  })
+  return total
+  
+}
+
+
+
+const printMainHeaders=(data,category,segments)=>{
+  let subtitles={}
+  let head=[]
+  let subsection={}
+  let realSegmentsCount=[]
+
+ segments.forEach((a,index)=>{
+
+   
+    subtitles[a]=getFieldsSegment(category,a)
+    if(subtitles[a].length>0)
+      realSegmentsCount.push(a)
+    
+
+  })
+  
+  let realSegmentsLast=realSegmentsCount[realSegmentsCount.length-1]
+  console.log("getfieldssegment",realSegmentsCount,realSegmentsLast)
+  realSegmentsCount.forEach((a,index)=>{
+    if(head==undefined)
+      head=[]
+    
+    head.push(a)
+    let isLast=false
+    console.log("yyy",realSegmentsCount,category,a,segments,index,segments.length-1,index==segments.length-1)
+    
+    if(index==realSegmentsCount.length-1)
+      isLast=true
+    
+    subtitles[a]=getFieldsSegment(category,a,realSegmentsLast)
+    subsection[a]=getFieldsDataSegment(category,a,realSegmentsLast)
+      
+  })
+  console.log("subtitles",subtitles,head)
+  
+  return <table style={{width:"100%",background:"white",color:"black",padding:0,margin:0,marginBottom:"15px",marginRight:"10px"}}>
+    <thead>
+      <tr style={{verticalAlign:"top"}}>
+        {head.map((u,index)=>{
+          return subtitles[u].length>0 && <th style={{verticalAlign:"top",padding:0,margin:0}}>
+              <span style={{display:"block",background:"black",textAlign:"center",
+            color:"white",borderBottom:"1px solid white",borderRight:(index<head.length-1)?"1px solid white":"none",
+            padding:0,margin:0}}>{u}</span>
+              <table style={{background:"white",color:"black",padding:0,margin:0,width:"100%"}}>
+                <thead>
+                  <tr style={{background:"black",color:"white",padding:0,margin:0}}>{subtitles[u]}</tr>
+                </thead>
+                <tbody style={{background:"white",color:"black",padding:0,margin:0}}>
+                  {subsection[u]}
+                </tbody>
+              </table>
+              
+            </th>
+          
+        })}
+      
       </tr>
     </thead>
   </table>
 }
 
-const printFinalTableNew=(category,data)=>{
-  let head=[]
-  let subFields=[]
-  
-  Object.keys(data[a])[0]
-    Obje
-  })
-  return <table>
-    <tr>
-    {head}
-    </tr>
-  </table>
+const printFinalTableNew=(category,data,segments)=>{
+  console.log("iniciobegin",firstCatNormalFields,otmChoices)
+  totalTables.push(printMainHeaders(data,category,segments))
+ 
 }
 
 const printFinalTable=(title,data,ui)=>{
