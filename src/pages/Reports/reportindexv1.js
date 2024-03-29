@@ -1499,8 +1499,8 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
           Object.keys(data).forEach(l=>{
             delete data[l][y]
           })
-          
-      }})
+        } 
+      })
     }
     
   }else if(u["category"]!==u["segment"] && u["segment"]!=="hybrid"){
@@ -1526,7 +1526,12 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
     })
   }
     
-}
+}/*else{
+  Object.keys(data[category]).forEach(y=>{
+      data[category][y][`${category}TotalCount`]=
+      
+  })
+}*/
 }
 
 
@@ -2622,6 +2627,7 @@ const updateNumericFields=(key,cat,nf,obj,terminal,first)=>{
           for(let x=0;x<nf.compositeFields.length;x++){
             finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${nf.compositeFields[x]}total`]:0}
           }
+          finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${cat}TotalCount`]:0}
         //}
       }
     }
@@ -2670,6 +2676,8 @@ const initializeOtherFinalObjectVariables=(key,cat,obj,next,first)=>{
           for(let x=0;x<nf.compositeFields.length;x++){
             finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${nf.compositeFields[x]}total`]:0}
           }
+          finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${cat}TotalCount`]:0}
+
         //}
       }
 
@@ -2735,26 +2743,36 @@ const updateNumericFieldsRoot=(key,cat,obj,next,first)=>{
     console.log("objobser",obj,key,finalObject)
 }
 
+let accumulatedValues={}
+
+//getTotalsOfNumericVariables(finalObject[cat],finalObject[trueKey],cat)
 const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
   console.log("a1 a2",a1,a2)
+  /*if(accumulatedValues[trueKey]==undefined)
+    accumulatedValues[cat]={}*/
+
 //a1 es la categoria hija inmediata, y a2 es la categoria superior inmediata
   
   Object.keys(a1).forEach(p=>{
     
     //p son las claves de la categoria inferior
     let x=Object.keys(a1[p])
-
+    /*if(accumulatedValues[p]==undefined)
+      accumulatedValues[p]={}*/
     //x son los ids de la categoria inferior
     for(let m1=0;m1<x.length;m1++){
       
       Object.keys(a2[p]).forEach(o=>{
         ////console.log("m1",a2[o].keys,x[m1],a2[o].keys.includes(parseInt(x[m1])))
         if(a2[p][o].keys.includes(parseInt(x[m1]))){
+          /*if(accumulatedValues[p][o]==undefined)
+            accumulatedValues[p][o]={}*/
           let nf=getNumericFields(p)
           //console.log("m1",nf)
           //if(cat!=p){
             for(let j1=0;j1<nf.normal.length;j1++){
-              
+              /*if(accumulatedValues[p][o][nf["normal"][j1]]==undefined)
+                accumulated[cat][p][o][nf["normal"][j1]]=[]*/
               console.log("m1",a2,o,a2[p],a2[p][o],a1,p,x[m1],nf["normal"][j1],`${nf["normal"][j1]}total`,isLast(p),a1[p],a1[p][x[m1]],a1[p][x[m1]][nf["normal"]],a1[p][x[m1]][nf["normal"][j1]],a1[p][x[m1]][`${nf["normal"][j1]}total`],a2[p][o][`${nf["normal"][j1]}total`])
               if(isLast(cat) || p==cat){
                 let st=0
@@ -2763,14 +2781,29 @@ const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
                   st=a1[p][x[m1]][nf["normal"][j1]]
                 }
                 a2[p][o][`${nf["normal"][j1]}total`]+=st
-              
+                if(a2[p][o][`${nf["normal"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["normal"][j1]}Acummulated`]==null)
+                  a2[p][o][`${nf["normal"][j1]}Acummulated`]=[]
+                a2[p][o][`${nf["normal"][j1]}Acummulated`].push(st)
+                
               }else{
                 let st=0
                 console.log("prob",a1[p][x[m1]][`${nf["normal"][j1]}total`],nf["normal"][j1])
                 if(a1[p][x[m1]][`${nf["normal"][j1]}total`]!=null && a1[p][x[m1]][`${nf["normal"][j1]}total`]!=undefined)
                   st=a1[p][x[m1]][`${nf["normal"][j1]}total`]
                 a2[p][o][`${nf["normal"][j1]}total`]+=st
+                if(a2[p][o][`${nf["normal"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["normal"][j1]}Acummulated`]==null)
+                  a2[p][o][`${nf["normal"][j1]}Acummulated`]=[]
+                if(a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]==undefined || a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]==null)
+                  a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]=[]
+
+                
+                a2[p][o][`${nf["normal"][j1]}Acummulated`]=[
+                  ...a2[p][o][`${nf["normal"][j1]}Acummulated`],
+                  ...a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]
+                ]
+
               }
+
             } 
             for(let j1=0;j1<nf.compositeFields.length;j1++){
               
@@ -2783,6 +2816,10 @@ const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
                   st=a1[p][x[m1]][nf["compositeFields"][j1]]
                 }
                 a2[p][o][`${nf["compositeFields"][j1]}total`]+=st
+                if(a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]==null)
+                  a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]=[]
+                a2[p][o][`${nf["compositeFields"][j1]}Acummulated`].push(st)
+                
               
               }else{
                 let st=0
@@ -2790,9 +2827,26 @@ const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
                 if(a1[p][x[m1]][`${nf["compositeFields"][j1]}total`]!=null && a1[p][x[m1]][`${nf["compositeFields"][j1]}total`]!=undefined)
                   st=a1[p][x[m1]][`${nf["compositeFields"][j1]}total`]
                 a2[p][o][`${nf["compositeFields"][j1]}total`]+=st
+                if(a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]==null)
+                  a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]=[]
+
+                if(a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]==null)
+                  a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]=[]
+                
+                a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]=[
+                  ...a2[p][o][`${nf["compositeFields"][j1]}Acummulated`],
+                  ...a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]
+                ]
+
               }
             }
-          }/*else{
+            
+            if(isLast(cat) || p==cat){
+              a2[p][o][`${p}TotalCount`]++
+            }else
+              a2[p][o][`${p}TotalCount`]+=a1[p][x[m1]][`${p}TotalCount`]
+          }
+          /*else{
             for(let j1=0;j1<nf.normal.length;j1++){
               
               console.log("m1",a2,o,a2[p],a2[p][o],a1,p,x[m1],nf["normal"][j1],`${nf["normal"][j1]}total`,isLast(p),a1[p],a1[p][x[m1]],a1[p][x[m1]][nf["normal"]],a1[p][x[m1]][nf["normal"][j1]],a1[p][x[m1]][`${nf["normal"][j1]}total`],a2[p][o][`${nf["normal"][j1]}total`])
@@ -2823,7 +2877,9 @@ const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
   
   })
   nf=getNumericFields(cat)
-
+  
+  
+      
   /*Object.keys(a2).forEach(l=>{
     let m=Object.keys(a1)
     for(let n=0;n<m.length;n++){
@@ -2946,6 +3002,38 @@ const getSegmentsData=(key,cats,j)=>{
   }
 }
 
+const calculateMedia=(data,field)=>{
+
+  Object.keys(data).forEach(y=>{
+    let values=data[y]?.[`${field}Acummulated`]
+    let media=0
+    if(values!==undefined){
+      values.forEach(x=>media+=x)
+      media=media/values.length
+      if(data[y][`${field}Media`]==undefined)
+        data[y][`${field}Media`]=media
+    }
+    
+  })
+}
+
+const getStatistics=(data,cat)=>{
+  Object.keys(data).forEach(y=>{
+    if(y!==cat){
+      if(y!==`getData${currentCategory.name}`){
+        otmChoices[y].normal.forEach(x=>{
+          if(x.type=="number"){
+            console.log("tttt",data[y],x.name1)
+            calculateMedia(data[y],x.name1)
+          }
+        })
+      }
+    }
+  })
+  
+
+}
+
 const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,order)=>{
   let trueKey
   let cats
@@ -2969,8 +3057,12 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
       console.log("prob111",cat,finalObject[cat],finalObject)
       //if(isLast(cat))
         getTotalsOfNumericVariables(finalObject[cat],finalObject[trueKey],cat)
+        
+        
   
     }
+    getStatistics(finalObject[trueKey],trueKey)
+    
     verifyMeetWithConditionsBySegmentBaseLevel2(trueKey,finalObject[trueKey])
 
   }
@@ -3573,6 +3665,7 @@ const getDataReport=(routes,finalRoutes)=>{
     order[0].forEach(y=>{
       printFinalTableNew(y,finalObject[y],order[1][y])
     })
+    setReportShow(totalTables)
     //console.log("totalRoutes",totalRoutes)
   /*for(let i=0;i<finalRoutes.length;i++){
   //getAccumulated(routes[finalRoutes[0]],routes[finalRoutes[0]][0],0,false,totalRoutes)
@@ -3651,14 +3744,14 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
   let len=0
   console.log("realsegmentlast111",realSegmentLast)
   //let busca=realSegmentCount
+  let theresNormal
+  let theresComposite
+  let theresOtmDestiny
   if(category==segment){
-    let theresNormal 
-    let theresComposite
-    let theresOtmDestiny
     if(category==`getData${currentCategory.name}`){
       let normal=firstCatNormalFields[`getData${currentCategory.name}`].normal.length
       let composite=firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.length
-    let otmdestiny=firstCatNormalFields[`getData${currentCategory.name}`].otmdestiny.length
+      let otmdestiny=firstCatNormalFields[`getData${currentCategory.name}`].otmdestiny.length
       theresNormal=normal>0
       theresComposite=composite>0 
       theresOtmDestiny=otmdestiny>0 
@@ -3704,12 +3797,13 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     let normal=otmChoices[segment].normal.length
     let composite=otmChoices[segment].compositeFields.length
     let otmdestiny=otmChoices[segment].otmdestiny.length
-    let theresNormal=normal>0
-    let theresComposite=composite>0  
-    let theresOtmDestiny=otmdestiny>0
+    theresNormal=normal>0
+    theresComposite=composite>0  
+    theresOtmDestiny=otmdestiny>0
     
-    let lastIndexNumberComposite=0
-    let lastIndexNumber=0
+    
+    let lastIndexNumberComposite=-1
+    let lastIndexNumber=-1
     otmChoices[segment].normal.forEach((x,index)=>{
       if(x.type=="number")
         lastIndexNumber=index
@@ -3718,12 +3812,13 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
       if(x.type=="number")
         lastIndexNumberComposite=index
     })
+    console.log("theresnormal",segment,realSegmentLast,lastIndexNumber,lastIndexNumberComposite,realSegmentLast==segment && lastIndexNumber==-1 && lastIndexNumberComposite==-1)
     if(theresNormal)
     otmChoices[segment].normal.forEach((q,index)=>{
       
       if(q.type=="number"){
         console.log("qqq",q.name1,realSegmentLast,segment,normal-1,index)
-        temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumber==index && !theresComposite)?"none":"1px solid white"}}>{q.name1}</th>)
+        temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumber==index && lastIndexNumberComposite==-1)?"none":"1px solid white"}}>{q.name1}</th>)
       }
     
      
@@ -3738,8 +3833,19 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
       }
     }
      
-    )
-    result=[...result,...temp]
+  )
+  if(realSegmentLast!==segment){ 
+    if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1)
+      result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>,...result,...temp]
+    else{
+      result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>]
+    }
+  }else{
+    if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1)
+      result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>,...result,...temp]
+    else
+      result=[<th style={{borderRight:"none"}}>{`${segment}TotalCount`}</th>]
+  }
     /*if(theresOtmDestiny)
     otmChoices[segment].otmdestiny.forEach((q,index)=>{
       temp.push(<th style={{borderRight:realSegmentLast==segment && index==otmdestiny-1?"none":"1px solid white"}}>{q.name1}</th>)
@@ -3819,8 +3925,8 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
     }
     result.unshift(<td style={{color:"black",background:"white",borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{finalObject[category][a][y]["id"]}</td>)
   }else{
-      let lastIndexNumber=0
-      let lastIndexNumberComposite=0
+      let lastIndexNumber=-1
+      let lastIndexNumberComposite=-1
         otmChoices[a].normal.forEach((x,index)=>{
           if(x.type=="number")
             lastIndexNumber=index
@@ -3840,7 +3946,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
       if(theresNormal)
       otmChoices[a].normal.forEach((q,index)=>{
         if(q.type=="number"){
-          temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}total`]}</td>)
+          temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}total`]}</td>)
         }
         
       }
@@ -3857,7 +3963,19 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
       }
       
       )
-      result=[...result,...temp]
+      if(realSegmentLast!==a){ 
+        if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1)
+          result=[<th style={{borderRight:"1px solid black",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>,...result,...temp]
+        else{
+          result=[<th style={{borderRight:"1px solid black",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>]
+        }
+      }else{
+        if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1)
+          result=[<th style={{borderRight:"1px solid black",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>,...result,...temp]
+        else
+          result=[<th style={{borderRight:"none",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>]
+      }
+      
       
       
       
@@ -3876,7 +3994,7 @@ const printMainHeaders=(data,category,segments)=>{
   let subsection={}
   let realSegmentsCount=[]
 
- segments.forEach((a,index)=>{
+ /*segments.forEach((a,index)=>{
 
    
     subtitles[a]=getFieldsSegment(category,a)
@@ -3884,11 +4002,11 @@ const printMainHeaders=(data,category,segments)=>{
       realSegmentsCount.push(a)
     
 
-  })
+  })*/
   
-  let realSegmentsLast=realSegmentsCount[realSegmentsCount.length-1]
+  let realSegmentsLast=segments[segments.length-1]
   console.log("getfieldssegment",realSegmentsCount,realSegmentsLast)
-  realSegmentsCount.forEach((a,index)=>{
+  segments.forEach((a,index)=>{
     if(head==undefined)
       head=[]
     
@@ -4008,6 +4126,7 @@ const printFinalTable=(title,data,ui)=>{
   </table>
   totalTables.push(tableResult)
   totalTables.push(ui)
+  
 }
 
 const beginPrintFinalTables=(totalRoutesArray,ata)=>{
@@ -4015,6 +4134,7 @@ const beginPrintFinalTables=(totalRoutesArray,ata)=>{
     let ui=printGrandTotals(key,ata)
     printFinalTable(key,totalRoutesArray[key],ui)
   })
+  setReportShow(totalTables)
 }
 
 
@@ -4423,10 +4543,15 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
     && 
     displayCurCategory(currentCategory,true,true,"",true,[`getData${currentCategory.name}`])
     }
-    <FormButton onClick={()=>setReportShow(true)}>Show Report</FormButton>
+    <FormButton onClick={()=>{
+        
+        beginReport(true,"")
+        
+        
+    }}>Show Report</FormButton>
 
-    {reportShow && beginReport(true,"")}
-    {totalTables}
+    {/*reportShow && beginReport(true,"")*/}
+    {reportShow}
   </div>
 }
 
