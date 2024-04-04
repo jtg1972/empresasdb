@@ -19,6 +19,8 @@ import { ViewMainWhereCondition } from '../../components/ViewMainWhereCondition'
 import { ViewCompositeFieldDialog } from '../../components/ViewCompositeFieldDialog'
 import { FcAnswers } from 'react-icons/fc'
 import { updateLocale } from 'moment'
+import { VariablesAreInputTypesRule } from 'graphql'
+import { isInlineFragment } from '@apollo/client/utilities'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categories:categories.categories,
@@ -2800,7 +2802,15 @@ const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
                 a2[p][o][`${nf["normal"][j1]}Acummulated`]=[
                   ...a2[p][o][`${nf["normal"][j1]}Acummulated`],
                   ...a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]
+                
                 ]
+                if(a2[p][o][`${nf["normal"][j1]}AcummulatedSonBy${cat}`]==undefined || a2[p][o][`${nf["normal"][j1]}AcummulatedSonBy${cat}`]==null)
+                  a2[p][o][`${nf["normal"][j1]}AcummulatedSonBy${cat}`]=[]
+                if(a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]==undefined || a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]==null)
+                  a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]=[]
+                
+                a2[p][o][`${nf["normal"][j1]}AcummulatedSonBy${cat}`].push(st)
+
 
               }
 
@@ -3002,32 +3012,101 @@ const getSegmentsData=(key,cats,j)=>{
   }
 }
 
-const calculateMedia=(data,field)=>{
+const calculateMedia=(data,field,arrayName,variableName)=>{
 
   Object.keys(data).forEach(y=>{
-    let values=data[y]?.[`${field}Acummulated`]
+    let values=data[y]?.[arrayName]
+    console.log("arraynamemedia",arrayName,values)
     let media=0
-    if(values!==undefined){
+    if(values!=undefined){
       values.forEach(x=>media+=x)
       media=media/values.length
-      if(data[y][`${field}Media`]==undefined)
-        data[y][`${field}Media`]=media
+      if(data[y][variableName]==undefined)
+        data[y][variableName]=media
+    }
+    
+  })
+}
+const problem=(data,field,arrayName,variableName)=>{
+  let sortedValues
+  let median
+  Object.keys(data).forEach(y=>{
+    sortedValues=data[y]?.[arrayName]
+    console.log("arraynamemedia",arrayName,sortedValues)
+
+    median=0
+    if(sortedValues!=undefined){
+      sortedValues.sort((a,b)=>a-b)
+      console.log("sortedValues",sortedValues)
+      let length=sortedValues.length
+      if(length%2==1){
+        median=sortedValues[Math.floor(length/2)]
+      }else{
+        median=(sortedValues[(length/2)-1]+sortedValues[(length/2)])/2
+      }
+      if(data[y][variableName]==undefined)
+        data[y][variableName]=median
     }
     
   })
 }
 
-const getStatistics=(data,cat)=>{
+const findInOrderObject=(cat,order)=>{
+  for(let i=0;i<order.length;i++){
+    let key=Object.keys(order[i])[0]
+    if(key==cat)
+      return i
+    
+  }
+  return -1
+}
+
+const getStatistics=(data,cat,order)=>{
   Object.keys(data).forEach(y=>{
     if(y!==cat){
       if(y!==`getData${currentCategory.name}`){
         otmChoices[y].normal.forEach(x=>{
           if(x.type=="number"){
             console.log("tttt",data[y],x.name1)
-            calculateMedia(data[y],x.name1)
+            calculateMedia(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Media`)
+            problem(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Median`)
           }
         })
+        let k=findInOrderObject(cat,order)
+        console.log("kk",k)
+        if(k!==-1){
+          
+          
+          order[k]?.[cat].forEach((u,index)=>{
+          
+            if(index%2==0){
+              let i=findInOrderObject(u,order)
+              if(i!==-1){
+                console.log("kki",i,cat,u)
+                order[i]?.[u].forEach((g,index)=>{
+                  if(index%2==0){
+                    if(g!==`getData${currentCategory.name}`){
+                      console.log("ggg",g,otmChoices[g])
+                      otmChoices[g].normal.forEach(x=>{
+                        console.log("tttt",data[g],x.name1,`${x.name1}AcummulatedSonBy${y}`,`${x.name1}By${y}Media`,`${x.name1}AcummulatedSonBy${y}`,`${x.name1}By${y}Median`)
+        
+                        if(x.type=="number"){
+                          console.log("tttt",data[g],x.name1,`${x.name1}AcummulatedSonBy${y}`,`${x.name1}By${y}Media`,`${x.name1}AcummulatedSonBy${y}`,`${x.name1}By${y}Median`)
+                          calculateMedia(data[g],x.name1,`${x.name1}AcummulatedSonBy${y}`,`${x.name1}By${y}Media`)
+                          problem(data[g],x.name1,`${x.name1}AcummulatedSonBy${y}`,`${x.name1}By${y}Median`)
+                        }
+                      })
+                    }
+                  } 
+                })
+              }
+
+            }
+
+          })
+        }
       }
+  
     }
   })
   
@@ -3048,6 +3127,28 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
     cats=order[i][trueKey]
     getSegmentsData(trueKey,cats,i)
   }
+
+  /*aqui tengo que encontrar la forma de descubrir si tiene bloques secundarios
+  que no sea categorias finalesç
+  como le hago, bueno tengo order que es
+    otmclientesfacturas:otmdetallesfacturas
+    getdataclientes:otmclientesfacturas,otmclientestelefonos
+    cuando llegue a get datacleintes leo su arreglo que son dos hijos inmediatos
+    ,pero otmclientesfacturas tiene un hijo inmediatio que son otmdetallesfacturas,
+    donde se tienen que sacar los acumulados de un hijo no final (otmclientesfacturas)
+    para getdataclientes
+    cual debe ser el proceso, bueno me voy a las llaves de order
+    que son otmclientesfacturas y getdataclientes
+    el siguiente paso es analizar si otmclientesfacturas tiene un hijo no final,si es asi
+    consigo la variable bybloque y hago las estadisticas
+    en este caso otmclientesfacturas tiene solo un hijo final por lo que no se 
+    sacan estadisticas
+    pero en el caso de getdataclientes tiene dos hijos que son otmclientesfacturas
+    y otmclientestelefonos
+    me voy a otmclientesfacturas que es un hijo no final, por lo que saco sus estadisticas
+    por bloque
+    vamos a implantarlo
+  */
   for(let i=0;i<order.length;i++){
     trueKey=Object.keys(order[i])[0]
     cats=order[i][trueKey]
@@ -3061,7 +3162,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
         
   
     }
-    getStatistics(finalObject[trueKey],trueKey)
+    getStatistics(finalObject[trueKey],trueKey,order)
     
     verifyMeetWithConditionsBySegmentBaseLevel2(trueKey,finalObject[trueKey])
 
