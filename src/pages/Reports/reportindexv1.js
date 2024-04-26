@@ -1430,7 +1430,7 @@ const checkRule=(rulex,x,sameCategorySegment,field,type)=>{
   }else if(field!=="hybrid"){
     console.log("res segmentotherthatmain")
   }
-
+  console.log("evrule",evaluateRule(arrAnswers,ops),x,field)
     return evaluateRule(arrAnswers,ops)
 }
 
@@ -1497,7 +1497,7 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
       return true
     else{
       Object.keys(data[category]).forEach(y=>{
-        if(!checkRule(getMainRule,data[u["segment"]],u["category"]==u["segment"],u["field"],type,u)){
+        if(!checkRule(getMainRule,data[u["segment"]][y],u["category"]==u["segment"],u["field"],type,u,y)){
           Object.keys(data).forEach(l=>{
             delete data[l][y]
           })
@@ -2622,10 +2622,11 @@ const updateNumericFields=(key,cat,nf,obj,terminal,first)=>{
       
           finalObject[key][cat]={...finalObject[key][cat],[k[i]]:{...finalObject[key][cat][k[i]],/*...obj[k[i]].normalData,*/keys:obj[k[i]].keys/*[`${cat}keys`]:obj[k[i]].keys*/}}
       
-    
+          if(nf.normal.length>0)
           for(let x=0;x<nf.normal.length;x++){
             finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${nf.normal[x]}total`]:0}
            }
+           if(nf.compositeFields.length>0)
           for(let x=0;x<nf.compositeFields.length;x++){
             finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${nf.compositeFields[x]}total`]:0}
           }
@@ -2656,7 +2657,7 @@ const updateNumericFields=(key,cat,nf,obj,terminal,first)=>{
 }
 
 const initializeOtherFinalObjectVariables=(key,cat,obj,next,first)=>{
-  
+  console.log("iofobv",obj)
   if(finalObject[key]==undefined)
     finalObject={...finalObject,[key]:{}}
   if(finalObject[key][cat]==undefined)
@@ -2667,21 +2668,24 @@ const initializeOtherFinalObjectVariables=(key,cat,obj,next,first)=>{
 
   //if(!isLast(cat)){
     for(let i=0;i<k.length;i++){
-      if(finalObject[key][cat][k[i]]==undefined){
+      if(finalObject[key][cat][k[i]]==undefined)
         //if(verifyMeetWithConditionsBySegmentBaseLeve1(key,obj[k[i]].normalData)){
           finalObject[key][cat]={...finalObject[key][cat],[k[i]]:{...finalObject[key][cat][k[i]]/*,...obj[k[i]].normalData*/,keys:obj[k[i]].keys/*,[`keys${cat}`]:obj[k[i]].keys}*/}}
-      
-    
-          for(let x=0;x<nf.normal.length;x++){
-            finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${nf.normal[x]}total`]:0}
-           }
-          for(let x=0;x<nf.compositeFields.length;x++){
-            finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${nf.compositeFields[x]}total`]:0}
-          }
+        console.log("alyu",finalObject[key][cat])
+            if(nf.normal.length>0)
+            for(let x=0;x<nf.normal.length;x++){
+          
+                finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${nf.normal[x]}total`]:0}
+            }
+            if(nf.compositeFields.length>0)
+            for(let x=0;x<nf.compositeFields.length;x++){
+              
+              finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${nf.compositeFields[x]}total`]:0}
+            }
           finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${cat}TotalCount`]:0}
 
         //}
-      }
+      
 
     }
    //getTotalsOfNumericVariables(finalObject[cat],finalObject[key][cat],cat)
@@ -2728,7 +2732,7 @@ const updateNumericFieldsRoot=(key,cat,obj,next,first)=>{
     for(let i=0;i<k.length;i++){
       if(finalObject[key][key]?.[k[i]]==undefined){
         //if(verifyMeetWithConditionsBySegmentBaseLeve1(key,obj[k[i]].normalData)){
-          finalObject[key][key]={...finalObject[key][key],[k[i]]:{...finalObject[key][key][k[i]],...obj[k[i]].normalData/*keys:obj[k[i]].keys*/}}
+          finalObject[key][key]={...finalObject[key][key],[k[i]]:{...finalObject[key][key][k[i]],...obj[k[i]].normalData,keys:obj[k[i]].keys}}
       
     
          /*for(let x=0;x<nf.normal.length;x++){
@@ -2746,15 +2750,20 @@ const updateNumericFieldsRoot=(key,cat,obj,next,first)=>{
 }
 
 let accumulatedValues={}
+let realGrandTotals={}
 
 //getTotalsOfNumericVariables(finalObject[cat],finalObject[trueKey],cat)
-const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
+const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
+  if(realGrandTotals[mainKey]==undefined)
+    realGrandTotals[mainKey]={}
+  if(realGrandTotals[mainKey][cat]==undefined)
+    realGrandTotals[mainKey][cat]={}
   console.log("a1 a2",a1,a2)
   /*if(accumulatedValues[trueKey]==undefined)
     accumulatedValues[cat]={}*/
 
 //a1 es la categoria hija inmediata, y a2 es la categoria superior inmediata
-  
+  let doneMain=[]
   Object.keys(a1).forEach(p=>{
     
     //p son las claves de la categoria inferior
@@ -2762,6 +2771,8 @@ const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
     /*if(accumulatedValues[p]==undefined)
       accumulatedValues[p]={}*/
     //x son los ids de la categoria inferior
+    
+    
     for(let m1=0;m1<x.length;m1++){
       
       Object.keys(a2[p]).forEach(o=>{
@@ -2769,14 +2780,45 @@ const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
         if(a2[p][o].keys.includes(parseInt(x[m1]))){
           /*if(accumulatedValues[p][o]==undefined)
             accumulatedValues[p][o]={}*/
+          /*if(mainKey==`getData${currentCategory.name}` && ![...doneMain].includes(o)){
+            doneMain=[...doneMain,o]
+            if(realGrandTotals[mainKey]==undefined)
+              realGrandTotals={...realGrandTotals,[mainKey]:{}}
+            if(realGrandTotals[mainKey][mainKey]==undefined)
+              realGrandTotals[mainKey]={...realGrandTotals[mainKey],[mainKey]:{}}
+              let st
+            firstCatNormalFields[`getData${currentCategory.name}`].normal.forEach(x=>{
+              if(x.type=="number"){
+                if(realGrandTotals[mainKey][mainKey]?.[`${x.name1}total`]==undefined)
+                  realGrandTotals[mainKey][mainKey][`${x.name1}total`]=0
+                st=a2[`getData${currentCategory.name}`][o][x.name1]
+                realGrandTotals[mainKey][mainKey][`${x.name1}total`]+=st
+              }
+                
+            })
+            firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.forEach(x=>{
+              if(x.type=="number"){
+                if(realGrandTotals[mainKey][mainKey]?.[`${x.name1}total`]==undefined)
+                  realGrandTotals[mainKey][mainKey][`${x.name1}total`]=0
+                st=a2[`getData${currentCategory.name}`][o][x.name1]
+                console.log("st10000",st,a2,p,o,a2[p][o])
+                realGrandTotals[mainKey][mainKey][`${x.name1}total`]+=st
+              }  
+            })
+            
+          }*/
+
+          
           let nf=getNumericFields(p)
           //console.log("m1",nf)
           //if(cat!=p){
+            if(nf.normal.length>0){
             for(let j1=0;j1<nf.normal.length;j1++){
               /*if(accumulatedValues[p][o][nf["normal"][j1]]==undefined)
                 accumulated[cat][p][o][nf["normal"][j1]]=[]*/
               console.log("m1",a2,o,a2[p],a2[p][o],a1,p,x[m1],nf["normal"][j1],`${nf["normal"][j1]}total`,isLast(p),a1[p],a1[p][x[m1]],a1[p][x[m1]][nf["normal"]],a1[p][x[m1]][nf["normal"][j1]],a1[p][x[m1]][`${nf["normal"][j1]}total`],a2[p][o][`${nf["normal"][j1]}total`])
               if(isLast(cat) || p==cat){
+              
                 let st=0
                 console.log("prob",a1[p][x[m1]][nf["normal"][j1]],nf["normal"][j1])
                 if(a1[p][x[m1]][nf["normal"][j1]]!=null && a1[p][x[m1]][nf["normal"][j1]]!=undefined){
@@ -2786,7 +2828,23 @@ const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
                 if(a2[p][o][`${nf["normal"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["normal"][j1]}Acummulated`]==null)
                   a2[p][o][`${nf["normal"][j1]}Acummulated`]=[]
                 a2[p][o][`${nf["normal"][j1]}Acummulated`].push(st)
+                /*if(realGrandTotals[mainKey][p]==undefined)
+                  realGrandTotals[mainKey][p]={}
+                  if(realGrandTotals[p]==undefined)
+                  realGrandTotals={...realGrandTotals,[p]:{}}
                 
+                if(realGrandTotals[p][p]==undefined)
+                  realGrandTotals[p][p]={}
+                
+                
+                if(realGrandTotals[mainKey][p]?.[`${nf["normal"][j1]}total`]==undefined)
+                  realGrandTotals[mainKey][p][`${nf["normal"][j1]}total`]=0
+                if(realGrandTotals[p][p]?.[`${nf["normal"][j1]}total`]==undefined)
+                  realGrandTotals[p][p][`${nf["normal"][j1]}total`]=0
+                
+                realGrandTotals[mainKey][p]={...realGrandTotals[mainKey][p],[`${nf["normal"][j1]}total`]:realGrandTotals[mainKey][p][`${nf["normal"][j1]}total`]+st}
+                realGrandTotals[p][p]={...realGrandTotals[p][p],[`${nf["normal"][j1]}total`]:realGrandTotals[p][p][`${nf["normal"][j1]}total`]+st}*/
+              
               }else{
                 let st=0
                 console.log("prob",a1[p][x[m1]][`${nf["normal"][j1]}total`],nf["normal"][j1])
@@ -2797,7 +2855,12 @@ const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
                   a2[p][o][`${nf["normal"][j1]}Acummulated`]=[]
                 if(a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]==undefined || a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]==null)
                   a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]=[]
-
+                /*if(realGrandTotals[mainKey][p]==undefined)
+                  realGrandTotals[mainKey][p]={}
+               
+                if(realGrandTotals[mainKey][p]?.[`${nf["normal"][j1]}total`]==undefined)
+                  realGrandTotals[mainKey][p][`${nf["normal"][j1]}total`]=0
+                realGrandTotals[mainKey][p]={...realGrandTotals[mainKey][p],[`${nf["normal"][j1]}total`]:realGrandTotals[mainKey][p][`${nf["normal"][j1]}total`]+st}*/
                 
                 a2[p][o][`${nf["normal"][j1]}Acummulated`]=[
                   ...a2[p][o][`${nf["normal"][j1]}Acummulated`],
@@ -2814,12 +2877,15 @@ const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
 
               }
 
-            } 
+            }
+            }
+            if(nf.compositeFields.length>0){ 
             for(let j1=0;j1<nf.compositeFields.length;j1++){
               
               console.log("m1",a2,o,a2[p],a2[p][o],a1,p,x[m1],nf["compositeFields"][j1],`${nf["compositeFields"][j1]}total`,isLast(p),a1[p],a1[p][x[m1]],a1[p][x[m1]][nf["compositeFields"]],a1[p][x[m1]][nf["compositeFields"][j1]],a1[p][x[m1]][`${nf["compositeFields"][j1]}total`],a2[p][o][`${nf["compositeFields"][j1]}total`])
               
               if(isLast(cat) || cat==p){
+              
                 let st=0
                 console.log("prob",a1[p][x[m1]][nf["compositeFields"][j1]],nf["compositeFields"][j1])
                 if(a1[p][x[m1]][nf["compositeFields"][j1]]!=null && a1[p][x[m1]][nf["compositeFields"][j1]]!=undefined){
@@ -2829,14 +2895,34 @@ const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
                 if(a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]==null)
                   a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]=[]
                 a2[p][o][`${nf["compositeFields"][j1]}Acummulated`].push(st)
+                /*if(realGrandTotals[mainKey][p]==undefined)
+                  realGrandTotals[mainKey][p]={}
+                if(realGrandTotals[p]==undefined)
+                  realGrandTotals={...realGrandTotals,[p]:{}}
+                if(realGrandTotals[p][p]==undefined)
+                  realGrandTotals[p][p]={}
+            
+                if(realGrandTotals[mainKey][p]?.[`${nf["compositeFields"][j1]}total`]==undefined)
+                  realGrandTotals[mainKey][p][`${nf["compositeFields"][j1]}total`]=0
+                if(realGrandTotals[p][p]?.[`${nf["compositeFields"][j1]}total`]==undefined)
+                  realGrandTotals[p][p][`${nf["compositeFields"][j1]}total`]=0
                 
-              
+                realGrandTotals[mainKey][p]={...realGrandTotals[mainKey][p],[`${nf["compositeFields"][j1]}total`]:realGrandTotals[mainKey][p][`${nf["compositeFields"][j1]}total`]+st}
+                realGrandTotals[p][p]={...realGrandTotals[p][p],[`${nf["compositeFields"][j1]}total`]:realGrandTotals[p][p][`${nf["compositeFields"][j1]}total`]+st}*/
+
               }else{
                 let st=0
                 console.log("prob",a1[p][x[m1]][`${nf["compositeFields"][j1]}total`],nf["compositeFields"][j1])
                 if(a1[p][x[m1]][`${nf["compositeFields"][j1]}total`]!=null && a1[p][x[m1]][`${nf["compositeFields"][j1]}total`]!=undefined)
                   st=a1[p][x[m1]][`${nf["compositeFields"][j1]}total`]
                 a2[p][o][`${nf["compositeFields"][j1]}total`]+=st
+                /*if(realGrandTotals[mainKey][p]==undefined)
+                realGrandTotals[mainKey][p]={}
+             
+                if(realGrandTotals[mainKey][p]?.[`${nf["compositeFields"][j1]}total`]==undefined)
+                  realGrandTotals[mainKey][p][`${nf["compositeFields"][j1]}total`]=0
+                
+                realGrandTotals[mainKey][p]={...realGrandTotals[mainKey][p],[`${nf["compositeFields"][j1]}total`]:realGrandTotals[mainKey][p][`${nf["compositeFields"][j1]}total`]+st}*/
                 if(a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]==null)
                   a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]=[]
 
@@ -2848,9 +2934,17 @@ const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
                   ...a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]
                 ]
 
+                if(a2[p][o][`${nf["compositeFields"][j1]}AcummulatedSonBy${cat}`]==undefined || a2[p][o][`${nf["normal"][j1]}AcummulatedSonBy${cat}`]==null)
+                  a2[p][o][`${nf["compositeFields"][j1]}AcummulatedSonBy${cat}`]=[]
+                if(a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]==null)
+                  a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]=[]
+                
+                a2[p][o][`${nf["compositeFields"][j1]}AcummulatedSonBy${cat}`].push(st)
+
+
               }
             }
-            
+            }
             if(isLast(cat) || p==cat){
               a2[p][o][`${p}TotalCount`]++
             }else
@@ -2882,11 +2976,14 @@ const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
             }
           }*/ 
         //}
+        
       })
     }
+    //doneMain=[...doneMain,o]
+
   
   })
-  nf=getNumericFields(cat)
+  let nf=getNumericFields(cat)
   
   
       
@@ -2907,6 +3004,47 @@ const getTotalsOfNumericVariables=(a1,a2,cat,nf)=>{
   
 
 }
+let realGrandTotals1={}
+const getCategoriesGrandTotals=(category)=>{
+
+  if(realGrandTotals1[category]==undefined)
+    realGrandTotals1[category]={}
+
+  Object.keys(finalObject[category]).forEach(y=>{
+    let nf=getNumericFields(y)
+
+  
+
+    if(realGrandTotals1[category]?.[y]==undefined)
+      realGrandTotals1[category][y]={}
+
+                  
+    Object.keys(finalObject[category][y]).forEach(u=>{
+      for(let j1=0;j1<nf.normal.length;j1++){
+        if(realGrandTotals1[category][y]?.[`${nf["normal"][j1]}total`]==undefined)
+          realGrandTotals1[category][y][`${nf["normal"][j1]}total`]=0
+        let st=0
+        if(category==y)
+          st=finalObject[category][y][u][nf.normal[j1]]
+        else
+          st=finalObject[category][y][u][`${nf.normal[j1]}total`]
+
+        realGrandTotals1[category][y]={...realGrandTotals1[category][y],[`${nf["normal"][j1]}total`]:realGrandTotals1[category][y][`${nf["normal"][j1]}total`]+st}
+      }
+      for(let j1=0;j1<nf.compositeFields.length;j1++){
+        if(realGrandTotals1[category][y]?.[`${nf["compositeFields"][j1]}total`]==undefined)
+          realGrandTotals1[category][y][`${nf["compositeFields"][j1]}total`]=0
+        let st=0
+        if(category==y)
+          st=finalObject[category][y][u][nf.compositeFields[j1]]            
+        else
+          st=finalObject[category][y][u][`${nf.compositeFields[j1]}total`]
+        realGrandTotals1[category][y]={...realGrandTotals1[category][y],[`${nf["compositeFields"][j1]}total`]:realGrandTotals1[category][y][`${nf["compositeFields"][j1]}total`]+st}
+      }
+
+    })
+  })
+}
 
 const initializeFinalObjectVariables=(key,cat,next,first)=>{
 
@@ -2919,7 +3057,7 @@ const initializeFinalObjectVariables=(key,cat,next,first)=>{
   
   
     let others=Object.keys(finalObject?.[cat]).forEach(l=>{
-      //console.log("comprob",totalRoutes,l,totalRoutes[cat][l],totalRoutes[key][`${cat}total`])
+      console.log("comprob",totalRoutes,l,totalRoutes[cat][l],totalRoutes[key][`${cat}total`])
       initializeOtherFinalObjectVariables(key,l,totalRoutes[key][`${cat}total`],cat,first)
       /*Object.keys(totalRoutes[cat].[l]).forEach(i=>{
       for(let u=0;u<i.length;u++){
@@ -2952,7 +3090,7 @@ const updateFinalObject=(data,key,cat,terminal,next,first)=>{
   if(!isLast(key)){
     //k=Object.keys(totalRoutes[key])[0]
     data1=totalRoutes[key][`${cat}total`]
-    //console.log("keynotterminal",cat,next,data1,key,next,first)
+    console.log("keynotterminal",cat,next,data1,key,next,first)
     updateNumericFieldsRoot(key,cat,data1,next,first)
     updateNumericFields(key,cat,nf,data1,terminal,first)
 
@@ -2962,16 +3100,19 @@ const updateFinalObject=(data,key,cat,terminal,next,first)=>{
 
 const updateTerminalFinalObject=(data,cat)=>{
   let res={}
-  //console.log("alert1",data)
-  if(finalObject[cat]==undefined){
+  console.log("alert1",data)
+  if(finalObject[cat]==undefined)
     finalObject={...finalObject,[cat]:{[cat]:{}}}
-    Object.keys(data).forEach(u=>{
-      if(verifyMeetWithConditionsBySegmentBaseLeve1(cat,data[u].normalData))
-        res={...res,[cat]:{...res[cat],[data[u].normalData.id]:{...data[u].normalData}}}
-    })
-    finalObject={...finalObject,[cat]:res}
-    //console.log("fobjnew",finalObject)
-  }
+  Object.keys(data).forEach(u=>{
+    console.log("alert22",verifyMeetWithConditionsBySegmentBaseLeve1(cat,data[u].normalData))
+    if(verifyMeetWithConditionsBySegmentBaseLeve1(cat,data[u].normalData)){
+      res={[cat]:{...res[cat],[data[u].normalData.id]:{...data[u].normalData}}}
+      console.log("res444",res)
+    }
+  })
+  finalObject={...finalObject,[cat]:res}
+  console.log("fobjnew",finalObject)
+  
 
 }
 
@@ -3013,7 +3154,12 @@ const getSegmentsData=(key,cats,j)=>{
 }
 
 const calculateMedia=(data,field,arrayName,variableName)=>{
-
+  let cero=0
+  Object.keys(data).forEach(y=>{
+    if(data[y]?.[variableName]==undefined)
+      data[y][variableName]=cero.toFixed(2)
+    }
+  )
   Object.keys(data).forEach(y=>{
     let values=data[y]?.[arrayName]
     console.log("arraynamemedia",arrayName,values)
@@ -3021,15 +3167,22 @@ const calculateMedia=(data,field,arrayName,variableName)=>{
     if(values!=undefined){
       values.forEach(x=>media+=x)
       media=media/values.length
-      if(data[y][variableName]==undefined)
+      //if(data[y][variableName]==undefined)
         data[y][variableName]=media
     }
     
   })
+ 
 }
 const problem=(data,field,arrayName,variableName)=>{
   let sortedValues
   let median
+  let cero=0
+  Object.keys(data).forEach(y=>{
+    if(data[y]?.[variableName]==undefined)
+      data[y][variableName]=cero.toFixed(2)
+    }
+  )
   Object.keys(data).forEach(y=>{
     sortedValues=data[y]?.[arrayName]
     console.log("arraynamemedia",arrayName,sortedValues)
@@ -3044,11 +3197,12 @@ const problem=(data,field,arrayName,variableName)=>{
       }else{
         median=(sortedValues[(length/2)-1]+sortedValues[(length/2)])/2
       }
-      if(data[y][variableName]==undefined)
+      //if(data[y][variableName]==undefined)
         data[y][variableName]=median
     }
     
   })
+  
 }
 
 const findInOrderObject=(cat,order)=>{
@@ -3059,6 +3213,58 @@ const findInOrderObject=(cat,order)=>{
     
   }
   return -1
+}
+
+const getStatisticsRecursive=(data,cat,order,pp)=>{
+  console.log("recursive",pp)
+  let catInInf
+  let k=findInOrderObject(cat,order)
+        console.log("kk",k)
+        if(k!==-1){
+          
+          for(let index=0;index<order[k]?.[cat].length;index++){
+            let u=order[k]?.[cat]?.[index]
+          
+         
+          
+            if(index%2==0){
+              //catInInf=u
+              //let i=findInOrderObject(catInInf,order)
+              //if(i!==-1){
+                //console.log("kki",i,cat,catInInf)
+                //order[i]?.[catInInf].forEach((g,ind)=>{
+                  //if(ind%2==0){
+                    //if(g!==`getData${currentCategory.name}`){
+                      //console.log("ggg",g,otmChoices[g])
+                      otmChoices[u].normal.forEach(x=>{
+                        console.log("tttt",data[u],x.name1,`${x.name1}AcummulatedSonBy${pp}`,`${x.name1}By${pp}Media`,`${x.name1}AcummulatedSonBy${pp}`,`${x.name1}By${pp}Median`)
+        
+                        if(x.type=="number"){
+                          console.log("tttt",data[u],x.name1,`${x.name1}AcummulatedSonBy${pp}`,`${x.name1}By${pp}Media`,`${x.name1}AcummulatedSonBy${pp}`,`${x.name1}By${pp}Median`)
+                          calculateMedia(data[u],x.name1,`${x.name1}AcummulatedSonBy${pp}`,`${x.name1}By${pp}Media`)
+                          problem(data[u],x.name1,`${x.name1}AcummulatedSonBy${pp}`,`${x.name1}By${pp}Median`)
+                        }
+                      })
+                      otmChoices[u].compositeFields.forEach(x=>{
+                        console.log("tttt",data[u],x.name1,`${x.name1}AcummulatedSonBy${pp}`,`${x.name1}By${pp}Media`,`${x.name1}AcummulatedSonBy${pp}`,`${x.name1}By${pp}Median`)
+        
+                        if(x.type=="number"){
+                          console.log("tttt",data[u],x.name1,`${x.name1}AcummulatedSonBy${pp}`,`${x.name1}By${pp}Media`,`${x.name1}AcummulatedSonBy${pp}`,`${x.name1}By${pp}Median`)
+                          calculateMedia(data[u],x.name1,`${x.name1}AcummulatedSonBy${pp}`,`${x.name1}By${pp}Media`)
+                          problem(data[u],x.name1,`${x.name1}AcummulatedSonBy${pp}`,`${x.name1}By${pp}Median`)
+                        }
+                      })
+                      getStatisticsRecursive(data,u,order,pp)
+                    //}
+
+                  //} 
+                //})
+              }
+
+            
+
+          }
+        }
 }
 
 const getStatistics=(data,cat,order)=>{
@@ -3072,45 +3278,339 @@ const getStatistics=(data,cat,order)=>{
             problem(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Median`)
           }
         })
+        otmChoices[y].compositeFields.forEach(x=>{
+          if(x.type=="number"){
+            console.log("tttt",data[y],x.name1)
+            calculateMedia(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Media`)
+            problem(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Median`)
+          }
+        })
+      }
+    }
+  })
         let k=findInOrderObject(cat,order)
-        console.log("kk",k)
+        console.log("kk",k,order)
         if(k!==-1){
           
+          /*
+          aqui order es
+          [
+            {otmfacturasdetallesfacturas:[otmdetallesfacturadetprod]},
+            {otmclientesfacturas:[otmfacturasdetallesfacturas]},
+            {getdataclientes:[otmclientesfacturas,otmclientestelefonos]}
+          ]
+          */
+          let catInInf
+          for(let ind=0;ind<order[k]?.[cat].length;ind++){
+            let u=order[k]?.[cat]?.[ind]
           
-          order[k]?.[cat].forEach((u,index)=>{
           
-            if(index%2==0){
+          
+            if(ind%2==0){
               let i=findInOrderObject(u,order)
               if(i!==-1){
                 console.log("kki",i,cat,u)
-                order[i]?.[u].forEach((g,index)=>{
+                catInInf=u
+                order[i]?.[catInInf].forEach((g,index)=>{
                   if(index%2==0){
                     if(g!==`getData${currentCategory.name}`){
                       console.log("ggg",g,otmChoices[g])
                       otmChoices[g].normal.forEach(x=>{
-                        console.log("tttt",data[g],x.name1,`${x.name1}AcummulatedSonBy${y}`,`${x.name1}By${y}Media`,`${x.name1}AcummulatedSonBy${y}`,`${x.name1}By${y}Median`)
+                        console.log("tttt",catInInf,data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
         
                         if(x.type=="number"){
-                          console.log("tttt",data[g],x.name1,`${x.name1}AcummulatedSonBy${y}`,`${x.name1}By${y}Media`,`${x.name1}AcummulatedSonBy${y}`,`${x.name1}By${y}Median`)
-                          calculateMedia(data[g],x.name1,`${x.name1}AcummulatedSonBy${y}`,`${x.name1}By${y}Media`)
-                          problem(data[g],x.name1,`${x.name1}AcummulatedSonBy${y}`,`${x.name1}By${y}Median`)
+                          console.log("tttt",catInInf,data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
+                          calculateMedia(data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`)
+                          problem(data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
                         }
                       })
+                      otmChoices[g].compositeFields.forEach(x=>{
+                        console.log("tttt",catInInf,data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
+        
+                        if(x.type=="number"){
+                          console.log("tttt",catInInf,data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
+                          calculateMedia(data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`)
+                          problem(data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
+                        }
+                      })
+                      getStatisticsRecursive(data,g,order,catInInf)
                     }
+
                   } 
                 })
               }
 
             }
 
+          }
+        }
+      
+  
+
+}
+
+
+const calculateMediaAndMediansOfRecords=(category)=>{
+  Object.keys(realGrandTotals1[category]).forEach(y=>{
+    Object.keys(finalObject[category][y]).forEach(u=>{
+      if(category==`getData${currentCategory.name}`){
+        if(y==`getData${currentCategory.name}`){
+          
+          firstCatNormalFields[y].normal.forEach(i=>{
+            let total=0
+            let sortedValues
+            let median=0
+            if(i.type=="number"){
+              total=0
+              sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
+              
+              sortedValues.forEach(i=>total=total+i)
+              realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
+              
+
+              if(sortedValues.length%2==1){
+                median=(sortedValues[Math.floor(sortedValues.length/2)])
+              }else{
+                median=((sortedValues[(sortedValues.length/2)-1]+sortedValues[(sortedValues.length/2)])/2)
+              }
+              realGrandTotals1[category][y][`${i.name1}Median`]=median
+
+            }    
+          })
+          firstCatNormalFields[y].compositeFields.forEach(i=>{
+            let total=0
+            let sortedValues
+            let median=0
+            
+            if(i.type=="number"){
+              total=0
+              sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
+              
+              sortedValues.forEach(i=>total=total+i)
+              realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
+              
+
+              if(sortedValues.length%2==1){
+                median=(sortedValues[Math.floor(sortedValues.length/2)])
+              }else{
+                median=((sortedValues[(sortedValues.length/2)-1]+sortedValues[(sortedValues.length/2)])/2)
+              }
+              realGrandTotals1[category][y][`${i.name1}Median`]=median
+
+            }
+          })
+            
+        }else{
+          let total=0
+          
+          let median=0
+            
+          otmChoices[y].normal.forEach(i=>{
+            if(i.type=="number"){
+              total=0
+              let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
+              
+              sortedValues.forEach(i=>total=total+i)
+              realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
+              
+
+              if(sortedValues.length%2==1){
+                median=(sortedValues[Math.floor(sortedValues.length/2)])
+              }else{
+                median=((sortedValues[(sortedValues.length/2)-1]+sortedValues[(sortedValues.length/2)])/2)
+              }
+              realGrandTotals1[category][y][`${i.name1}Median`]=median
+
+            }
+          })
+          otmChoices[y].compositeFields.forEach(i=>{
+            if(i.type=="number"){
+            
+              let total=0
+              let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
+              let median=0
+              sortedValues.forEach(i=>total=total+i)
+              realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
+              
+
+              if(sortedValues.length%2==1){
+                median=(sortedValues[Math.floor(sortedValues.length/2)])
+              }else{
+                median=((sortedValues[(sortedValues.length/2)-1]+sortedValues[(sortedValues.length/2)])/2)
+              }
+              realGrandTotals1[category][y][`${i.name1}Median`]=median
+
+            }
+            
+          })
+        }
+      }else{
+        if(category==y){
+          otmChoices[y].normal.forEach(i=>{
+            if(i.type=="number"){
+              let total=0
+              let median=0
+              let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
+              
+              sortedValues.forEach(i=>total=total+i)
+              realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
+              
+
+              if(sortedValues.length%2==1){
+                median=(sortedValues[Math.floor(sortedValues.length/2)])
+              }else{
+                median=((sortedValues[(sortedValues.length/2)-1]+sortedValues[(sortedValues.length/2)])/2)
+              }
+              realGrandTotals1[category][y][`${i.name1}Median`]=median
+
+            }
+          })
+          otmChoices[y].compositeFields.forEach(i=>{
+            if(i.type=="number"){
+              let total=0
+              let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
+              let median=0
+              sortedValues.forEach(i=>total=total+i)
+              realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
+              
+
+              if(sortedValues.length%2==1){
+                median=(sortedValues[Math.floor(sortedValues.length/2)])
+              }else{
+                median=((sortedValues[(sortedValues.length/2)-1]+sortedValues[(sortedValues.length/2)])/2)
+              }
+              realGrandTotals1[category][y][`${i.name1}Median`]=median
+
+            }
+          })
+        }else{
+          otmChoices[y].normal.forEach(i=>{
+            if(i.type=="number"){
+              let total=0
+              let median=0
+              let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
+              
+              sortedValues.forEach(i=>total=total+i)
+              realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
+              
+
+              if(sortedValues.length%2==1){
+                median=(sortedValues[Math.floor(sortedValues.length/2)])
+              }else{
+                median=((sortedValues[(sortedValues.length/2)-1]+sortedValues[(sortedValues.length/2)])/2)
+              }
+              realGrandTotals1[category][y][`${i.name1}Median`]=median
+
+            }
+          })
+          otmChoices[y].compositeFields.forEach(i=>{
+            if(i.type=="number"){
+              let total=0
+              let median=0
+              let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
+              
+              sortedValues.forEach(i=>total=total+i)
+              realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
+              
+
+              if(sortedValues.length%2==1){
+                median=(sortedValues[Math.floor(sortedValues.length/2)])
+              }else{
+                median=((sortedValues[(sortedValues.length/2)-1]+sortedValues[(sortedValues.length/2)])/2)
+              }
+              realGrandTotals1[category][y][`${i.name1}Median`]=median
+
+            }
           })
         }
       }
-  
-    }
+    })
+  })
+}
+
+const calculatePercentageOverGrandTotal=(category)=>{
+  Object.keys(realGrandTotals1[category]).forEach(y=>{
+    Object.keys(finalObject[category][y]).forEach(u=>{
+      if(category==`getData${currentCategory.name}`){
+        if(y==`getData${currentCategory.name}`){
+          
+          firstCatNormalFields[y].normal.forEach(i=>{
+            if(i.type=="number"){
+              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
+                realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
+              realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][i.name1])
+            }    
+          })
+          firstCatNormalFields[y].compositeFields.forEach(i=>{
+            if(i.type=="number"){
+              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
+                realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
+              realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][i.name1])
+            }
+          })
+        }else{
+          otmChoices[y].normal.forEach(i=>{
+            if(i.type=="number"){
+              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
+                realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
+              realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
+            }
+          })
+          otmChoices[y].compositeFields.forEach(i=>{
+            if(i.type=="number"){
+              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
+                realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
+              realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
+            }
+          })
+        }
+      }else{
+        if(category==y){
+          otmChoices[y].normal.forEach(i=>{
+            if(i.type=="number"){
+              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][`${i.name1}`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
+                realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
+              realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][i.name1])
+            }
+          })
+          otmChoices[y].compositeFields.forEach(i=>{
+            if(i.type=="number"){
+              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][`${i.name1}`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
+              realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
+            realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][i.name1])
+            }
+          })
+        }else{
+          otmChoices[y].normal.forEach(i=>{
+            if(i.type=="number"){
+              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
+                realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
+              realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
+            }
+          })
+          otmChoices[y].compositeFields.forEach(i=>{
+            if(i.type=="number"){
+              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
+                realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
+              realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
+            }
+          })
+        }
+        
+
+      }
+    })
+
   })
   
-
 }
 
 const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,order)=>{
@@ -3127,6 +3627,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
     cats=order[i][trueKey]
     getSegmentsData(trueKey,cats,i)
   }
+  console.log("parcial2222",finalObject)
 
   /*aqui tengo que encontrar la forma de descubrir si tiene bloques secundarios
   que no sea categorias finalesç
@@ -3149,20 +3650,24 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
     por bloque
     vamos a implantarlo
   */
+ realGrandTotals={}
+ realGrandTotals1={}
   for(let i=0;i<order.length;i++){
     trueKey=Object.keys(order[i])[0]
     cats=order[i][trueKey]
+    //getRootCategoriesGrandTotals(trueKey)
     let cat
     for(let j=0;j<cats.length;j+=2){
       cat=cats[j]   
       console.log("prob111",cat,finalObject[cat],finalObject)
       //if(isLast(cat))
-        getTotalsOfNumericVariables(finalObject[cat],finalObject[trueKey],cat)
-        
+        getTotalsOfNumericVariables(finalObject[cat],finalObject[trueKey],cat,trueKey)
+        //if(isLast(cat))
+          //getRootCategoriesGrandTotals(cat)
         
   
     }
-    getStatistics(finalObject[trueKey],trueKey,order)
+    //getStatistics(finalObject[trueKey],trueKey,order)
     
     verifyMeetWithConditionsBySegmentBaseLevel2(trueKey,finalObject[trueKey])
 
@@ -3181,6 +3686,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
               ...finalObject[cats[j]][cats[j]][keysEach[oo]],
               final:true
             }
+
 
           }
         }
@@ -3202,14 +3708,25 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
           Object.keys(finalObject[cat]).forEach(x=>{
             delete finalObject[cat][x][y]
           })
-        }else
+        }else{
+          
+        
           delete finalObject[cat][cat][y]["final"]
+        }
       })
     }
-
-  }  
+ 
   }
-  console.log("fobj44",finalObject)
+  
+   
+
+} 
+Object.keys(finalObject).forEach(y=>{
+  getCategoriesGrandTotals(y)
+  calculatePercentageOverGrandTotal(y)
+  calculateMediaAndMediansOfRecords(y)
+})
+  console.log("fobj44",finalObject,realGrandTotals1)
 
 
     
