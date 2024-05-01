@@ -125,6 +125,9 @@ const Reports=()=>{
   let subTotals={}
   const [grandTotalsSt,setGrandTotalsSt]=useState({})
   const [comboDataSt,setComboDataSt]=useState({})
+
+  const [otmChoicesStatistics,setOtmChoicesStatistics]=useState({})
+  let partialOtmChoicesStatistics={}
   //console.log("otmchoices",otmChoices)//,fieldsShown,firstCatNormalFields)
   useEffect(()=>{
     setShowFields(false)
@@ -266,16 +269,135 @@ const Reports=()=>{
     return false
   }
 
+  const initializeVariablesStatistics=()=>{
+    let pv={}
+    let values=["percentage","media","median","minimum","maximum"]
+    for(let v=0;v<values.length;v++){
+      if(pv[values[v]]==undefined){
+        pv[values[v]]=false
+      }
+    }
+    return pv
+  
+
+  }
+
+  const onCheckStatisticVariable=(ar,vari,stat,value,sp,p)=>{
+    let arr=[]
+    let spf={
+  
+    }
+    let sps={}
+    spf=otmChoicesStatistics
+    if(otmChoicesStatistics?.[sp]==undefined)
+      spf={...spf,[sp]:{}}
+    else
+      spf={...spf,[sp]:{...otmChoicesStatistics[sp]}}
+    if(otmChoicesStatistics?.[sp]?.[p]==undefined)
+      spf={...spf,[sp]:{...spf[sp],[p]:{}}}
+    else
+      spf={...spf,[sp]:{...spf[sp],[p]:{...otmChoicesStatistics[sp][p]}}}
+    if(otmChoicesStatistics[sp]?.[p]?.[vari]==undefined){
+      spf={...spf,[sp]:{...spf[sp],[p]:{...spf[sp][p],[vari]:{...initializeVariablesStatistics(),[stat]:value}}}}
+    }
+    else
+      spf={...spf,[sp]:{...spf[sp],[p]:{...spf[sp][p],[vari]:{...otmChoicesStatistics[sp][p][vari],[stat]:value}}}}
+     
+    let res=spf
+    console.log("resggg",res)
+
+    setOtmChoicesStatistics(spf)
+      /*let res=({
+        ...o,
+        ...sps,
+          [p]:{
+            ...sps,
+            [vari]:{
+              ...arr,
+              [stat]:value
+            }
+          }
+        }
+      })*/
+      return res
+    
+    
+    
+
+  }
+  
   const displayAncestorsCats=(trackCatPath,ntm="")=>{
     let output=[]
     
+
     for(let l in trackCatPath){
+
       if(l<trackCatPath.length-1){
+        if(partialOtmChoicesStatistics[trackCatPath[l]]==undefined)
+          partialOtmChoicesStatistics={...partialOtmChoicesStatistics,[trackCatPath[l]]:{}}
+        if(partialOtmChoicesStatistics[trackCatPath[l]][trackCatPath[trackCatPath.length-1]]==undefined)
+          partialOtmChoicesStatistics[trackCatPath[l]]={...partialOtmChoicesStatistics[trackCatPath[l]],[trackCatPath[trackCatPath.length-1]]:{}}  
+        let part=partialOtmChoicesStatistics[trackCatPath[l]][trackCatPath[trackCatPath.length-1]]
+        //nitializeVariablesStatistics(partialOtmChoicesStatistics[trackCatPath[l]][trackCatPath[trackCatPath.length-1]])
         output.push(<div>
           <p style={{color:"orange"}}>{trackCatPath[l]}</p>
           {otmChoices[trackCatPath[trackCatPath.length-1]]?.normal.map(x=>{
             if(x.type=="number")
-              return <p><span style={{marginRight:"10px"}}>{x.name1}total</span><a  
+              return <p><span style={{marginRight:"10px"}}>{x.name1}total</span>
+              <br/><input type="checkbox" 
+              onChange={e=>{
+                console.log("ever",e)
+                if(e.target.checked==true)
+                  onCheckStatisticVariable(part,x.name1,"percentage",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                else
+                  onCheckStatisticVariable(part,x.name1,"percentage",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                
+                console.log("everi",otmChoicesStatistics)
+
+              }}/> Percentage
+              <br/><input type="checkbox"
+              onChange={e=>{
+                console.log("ever",e)
+                if(e.target.checked==true)
+                  onCheckStatisticVariable(part,x.name1,"media",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                else
+                  onCheckStatisticVariable(part,x.name1,"media",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                
+                console.log("everi",otmChoicesStatistics) 
+               
+              }}/> Media
+              <br/><input type="checkbox"
+              onChange={e=>{
+                console.log("ever",e)
+                if(e.target.checked==true)
+                  onCheckStatisticVariable(part,x.name1,"median",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                else
+                  onCheckStatisticVariable(part,x.name1,"median",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                
+                console.log("everi",otmChoicesStatistics) 
+              }}/> Median
+              <br/><input type="checkbox"
+              onChange={e=>{
+                console.log("ever",e)
+                if(e.target.checked==true)
+                  onCheckStatisticVariable(part,x.name1,"minimum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                else
+                  onCheckStatisticVariable(part,x.name1,"minimum",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                
+                console.log("everi",otmChoicesStatistics) 
+              }}/> Minimum
+              <br/><input type="checkbox"
+              onChange={e=>{
+                console.log("ever",e)
+                if(e.target.checked==true)
+                  onCheckStatisticVariable(part,x.name1,"maximum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                else
+                  onCheckStatisticVariable(part,x.name1,"maximum",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                
+                console.log("everi",otmChoicesStatistics) 
+              }}/> Maximum
+            
+              <br/><a  
               style={{textDecoration:"underline"}} onClick={
                 (e)=>{
                   e.preventDefault()
@@ -294,7 +416,62 @@ const Reports=()=>{
           
           {otmChoices[trackCatPath[trackCatPath.length-1]]?.compositeFields.map(x=>{
             if(x.type=="number")
-            return <p><span style={{marginRight:"10px"}}>{x.name1}total</span><a  
+            return <p><span style={{marginRight:"10px"}}>{x.name1}total</span>
+            <br/><input type="checkbox"
+            onChange={e=>{
+              console.log("ever",e)
+              if(e.target.checked==true)
+                onCheckStatisticVariable(part,x.name1,"percentage",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+              else
+                onCheckStatisticVariable(part,x.name1,"percentage",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+              
+              console.log("everi",otmChoicesStatistics) 
+            }}
+            /> Percentage
+            
+            <br/><input type="checkbox"
+            onChange={e=>{
+              console.log("ever",e)
+              if(e.target.checked==true)
+                onCheckStatisticVariable(part,x.name1,"media",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+              else
+                onCheckStatisticVariable(part,x.name1,"media",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+              
+              console.log("everi",otmChoicesStatistics) 
+            }}/> Media
+            <br/><input type="checkbox"
+            onChange={e=>{
+              console.log("ever",e)
+              if(e.target.checked==true)
+                onCheckStatisticVariable(part,x.name1,"median",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+              else
+                onCheckStatisticVariable(part,x.name1,"median",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+              
+              console.log("everi",otmChoicesStatistics) 
+            }}/> Median
+            <br/><input type="checkbox"
+            onChange={e=>{
+              console.log("ever",e)
+              if(e.target.checked==true)
+                onCheckStatisticVariable(part,x.name1,"minimum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+              else
+                onCheckStatisticVariable(part,x.name1,"minimum",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+              
+              console.log("everi",otmChoicesStatistics) 
+            }}/> Minimum
+            <br/><input type="checkbox"
+            onChange={e=>{
+              console.log("ever",e)
+              if(e.target.checked==true)
+                onCheckStatisticVariable(part,x.name1,"maximum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+              else
+                onCheckStatisticVariable(part,x.name1,"maximum",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+              
+              console.log("everi",otmChoicesStatistics) 
+            }}
+            /> Maximum
+            
+            <br/><a  
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
                 e.preventDefault()
@@ -657,6 +834,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
           onChange={(e)=>checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)}/>
           
               <span style={{marginRight:"10px"}}>{c.name}Number</span>
+              
               {(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
               isReadyToWhere(nameOtm,c.name,false)) && <a  
             style={{textDecoration:"underline"}} onClick={
@@ -3667,7 +3845,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
         
   
     }
-    //getStatistics(finalObject[trueKey],trueKey,order)
+    getStatistics(finalObject[trueKey],trueKey,order)
     
     verifyMeetWithConditionsBySegmentBaseLevel2(trueKey,finalObject[trueKey])
 
