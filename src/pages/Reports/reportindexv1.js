@@ -281,6 +281,28 @@ const Reports=()=>{
   
 
   }
+  const onCheckStatisticGeneralVariable=(ar,vari,stat,value,sp,p)=>{
+    let spf={
+  
+    }
+    let sps={}
+    spf=otmChoicesStatistics
+    if(otmChoicesStatistics?.[sp]==undefined)
+      spf={...spf,[sp]:{}}
+    else
+      spf={...spf,[sp]:{...otmChoicesStatistics[sp]}}
+    if(otmChoicesStatistics?.[sp]?.[p]==undefined)
+      spf={...spf,[sp]:{...spf[sp],[p]:{}}}
+    else
+      spf={...spf,[sp]:{...spf[sp],[p]:{...otmChoicesStatistics[sp][p]}}}
+    
+    spf={...spf,[sp]:{...spf[sp],[p]:{...spf[sp][p],[vari]:{[`${p}TotalCount`]:value}}}}
+     
+    let res=spf
+    console.log("resggg",res)
+
+    setOtmChoicesStatistics(spf)
+  }
 
   const onCheckStatisticVariable=(ar,vari,stat,value,sp,p)=>{
     let arr=[]
@@ -341,9 +363,33 @@ const Reports=()=>{
         //nitializeVariablesStatistics(partialOtmChoicesStatistics[trackCatPath[l]][trackCatPath[trackCatPath.length-1]])
         output.push(<div>
           <p style={{color:"orange"}}>{trackCatPath[l]}</p>
+          <input type="checkbox" 
+              onChange={e=>{
+                console.log("ever",e)
+                if(e.target.checked==true)
+                  onCheckStatisticGeneralVariable(part,`general`,"totalCount",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                else
+                  onCheckStatisticGeneralVariable(part,`general`,"totalCount",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                
+                console.log("everi",otmChoicesStatistics)
+
+              }}/> Total Count <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  console.log("bit1",trackCatPath[l],ntm,`${ntm}TotalCount`)
+                  toggleOpenWhereStatementNumberDialog({
+                    categoryName:trackCatPath[l],
+                    fieldName:`${ntm}TotalCount`,
+                    segment:ntm
+                  })
+                }
+              }>xAdd where condition</a>
+              {displayWhereClauses(trackCatPath[l],`${ntm}TotalCount`,ntm)}
           {otmChoices[trackCatPath[trackCatPath.length-1]]?.normal.map(x=>{
             if(x.type=="number")
-              return <p><span style={{marginRight:"10px"}}>{x.name1}total</span>
+              return <div><span style={{marginRight:"10px"}}>{x.name1}total</span>
+              
               <br/><input type="checkbox" 
               onChange={e=>{
                 console.log("ever",e)
@@ -354,7 +400,7 @@ const Reports=()=>{
                 
                 console.log("everi",otmChoicesStatistics)
 
-              }}/> Percentage
+              }}/> Percentage 
               <br/><input type="checkbox"
               onChange={e=>{
                 console.log("ever",e)
@@ -365,8 +411,20 @@ const Reports=()=>{
                 
                 console.log("everi",otmChoicesStatistics) 
                
-              }}/> Media
-              <br/><input type="checkbox"
+              }}/> Media <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  console.log("bit1",trackCatPath[l],ntm,`${x.name1}Media`)
+                  toggleOpenWhereStatementNumberDialog({
+                    categoryName:trackCatPath[l],
+                    fieldName:`${x.name1}Media`,
+                    segment:ntm
+                  })
+                }
+              }>xAdd where condition</a>
+              <br/>{displayWhereClauses(trackCatPath[l],`${x.name1}Media`,ntm)}
+              <input type="checkbox"
               onChange={e=>{
                 console.log("ever",e)
                 if(e.target.checked==true)
@@ -375,8 +433,20 @@ const Reports=()=>{
                   onCheckStatisticVariable(part,x.name1,"median",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
                 
                 console.log("everi",otmChoicesStatistics) 
-              }}/> Median
-              <br/><input type="checkbox"
+              }}/> Median <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  console.log("bit1",trackCatPath[l],ntm,`${x.name1}Median`)
+                  toggleOpenWhereStatementNumberDialog({
+                    categoryName:trackCatPath[l],
+                    fieldName:`${x.name1}Median`,
+                    segment:ntm
+                  })
+                }
+              }>xAdd where condition</a>
+              <br/>{displayWhereClauses(trackCatPath[l],`${x.name1}Median`,ntm)}
+              <input type="checkbox"
               onChange={e=>{
                 console.log("ever",e)
                 if(e.target.checked==true)
@@ -385,7 +455,19 @@ const Reports=()=>{
                   onCheckStatisticVariable(part,x.name1,"minimum",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
                 
                 console.log("everi",otmChoicesStatistics) 
-              }}/> Minimum
+              }}/> Minimum <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  console.log("bit1",trackCatPath[l],ntm,`${x.name1}Minimum`)
+                  toggleOpenWhereStatementNumberDialog({
+                    categoryName:trackCatPath[l],
+                    fieldName:`${x.name1}Acummulatedminimum`,
+                    segment:ntm
+                  })
+                }
+              }>xAdd where condition</a>
+              {displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedminimum`,ntm)}
               <br/><input type="checkbox"
               onChange={e=>{
                 console.log("ever",e)
@@ -395,9 +477,21 @@ const Reports=()=>{
                   onCheckStatisticVariable(part,x.name1,"maximum",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
                 
                 console.log("everi",otmChoicesStatistics) 
-              }}/> Maximum
-            
-              <br/><a  
+              }}/> Maximum <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  console.log("bit1",trackCatPath[l],ntm,`${x.name1}Maximum`)
+                  toggleOpenWhereStatementNumberDialog({
+                    categoryName:trackCatPath[l],
+                    fieldName:`${x.name1}Acummulatedmaximum`,
+                    segment:ntm
+                  })
+                }
+              }>xAdd where condition</a><br/>
+              {displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedaximum`,ntm)}
+              
+              <a  
               style={{textDecoration:"underline"}} onClick={
                 (e)=>{
                   e.preventDefault()
@@ -409,14 +503,38 @@ const Reports=()=>{
                   })
                 }
               }>xAdd where condition</a>
-              <p>{displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}</p>
-              </p>
+              {displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}
+              </div>
           
           })}
           
           {otmChoices[trackCatPath[trackCatPath.length-1]]?.compositeFields.map(x=>{
             if(x.type=="number")
-            return <p><span style={{marginRight:"10px"}}>{x.name1}total</span>
+            return <div><span style={{marginRight:"10px"}}>{x.name1}total</span>
+              {/*<span style={{marginRight:"10px"}}>{x.name1}total</span>
+            <br/><input type="checkbox" 
+              onChange={e=>{
+                console.log("ever",e)
+                if(e.target.checked==true)
+                  onCheckStatisticVariable(part,x.name1,"totalCount",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                else
+                  onCheckStatisticVariable(part,x.name1,"totalCount",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                
+                console.log("everi",otmChoicesStatistics)
+
+              }}/> Total Count <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  console.log("bit1",trackCatPath[l],ntm,`${x.name1}Maximum`)
+                  toggleOpenWhereStatementNumberDialog({
+                    categoryName:trackCatPath[l],
+                    fieldName:`${x.name1}Maximum`,
+                    segment:ntm
+                  })
+                }
+              }>xAdd where condition</a>
+            <p>{displayWhereClauses(trackCatPath[l],`${x.name1}Maximum`,ntm)}</p>*/}    
             <br/><input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
@@ -427,8 +545,7 @@ const Reports=()=>{
               
               console.log("everi",otmChoicesStatistics) 
             }}
-            /> Percentage
-            
+            /> Percentage        
             <br/><input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
@@ -438,8 +555,20 @@ const Reports=()=>{
                 onCheckStatisticVariable(part,x.name1,"media",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
               
               console.log("everi",otmChoicesStatistics) 
-            }}/> Media
-            <br/><input type="checkbox"
+            }}/> Media <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                console.log("bit1",trackCatPath[l],ntm,`${x.name1}Media`)
+                toggleOpenWhereStatementNumberDialog({
+                  categoryName:trackCatPath[l],
+                  fieldName:`${x.name1}Media`,
+                  segment:ntm
+                })
+              }
+            }>xAdd where condition</a>
+            <br/>{displayWhereClauses(trackCatPath[l],`${x.name1}Media`,ntm)}
+            <input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
               if(e.target.checked==true)
@@ -448,7 +577,19 @@ const Reports=()=>{
                 onCheckStatisticVariable(part,x.name1,"median",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
               
               console.log("everi",otmChoicesStatistics) 
-            }}/> Median
+            }}/> Median <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                console.log("bit1",trackCatPath[l],ntm,`${x.name1}Median`)
+                toggleOpenWhereStatementNumberDialog({
+                  categoryName:trackCatPath[l],
+                  fieldName:`${x.name1}Median`,
+                  segment:ntm
+                })
+              }
+            }>xAdd where condition</a>
+            {displayWhereClauses(trackCatPath[l],`${x.name1}Median`,ntm)}
             <br/><input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
@@ -458,7 +599,19 @@ const Reports=()=>{
                 onCheckStatisticVariable(part,x.name1,"minimum",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
               
               console.log("everi",otmChoicesStatistics) 
-            }}/> Minimum
+            }}/> Minimum <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                console.log("bit1",trackCatPath[l],ntm,`${x.name1}Minimum`)
+                toggleOpenWhereStatementNumberDialog({
+                  categoryName:trackCatPath[l],
+                  fieldName:`${x.name1}Acummulatedminimum`,
+                  segment:ntm
+                })
+              }
+            }>xAdd where condition</a>
+            {displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedminimum`,ntm)}
             <br/><input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
@@ -469,8 +622,19 @@ const Reports=()=>{
               
               console.log("everi",otmChoicesStatistics) 
             }}
-            /> Maximum
-            
+            /> Maximum <br/><a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                console.log("bit1",trackCatPath[l],ntm,`${x.name1}Maximum`)
+                toggleOpenWhereStatementNumberDialog({
+                  categoryName:trackCatPath[l],
+                  fieldName:`${x.name1}Acummulatedmaximum`,
+                  segment:ntm
+                })
+              }
+            }>xAdd where condition</a>
+            {displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedmaximum`,ntm)}            
             <br/><a  
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
@@ -482,8 +646,8 @@ const Reports=()=>{
                 segment:ntm
               })
             }}>xAdd where condition</a>
-            <p>{displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}</p>
-            </p>
+            {displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}
+            </div>
             
           })}
           
@@ -573,7 +737,7 @@ const Reports=()=>{
         field:conditionsWhere[name]?.["main"]?.["field"]})}>{conditionsWhere[name]?.["main"]?.["rule"]}</p>
       }
      
-      <a style={{textDecoration:"underline",display:"block"}}
+      <a style={{textDecoration:"underline",display:"inline"}}
       onClick={e=>{
         e.preventDefault()
         toggleOpenWhereStatementHybridDialog({
@@ -752,7 +916,8 @@ const displayWhereClauses=(cat,field,seg="")=>{
       
       })
     }
-    return cls
+    
+    return cls.length>0?<p>{cls}</p>:<br/>
   }
   //if(cat!==""){
     if(conditionsWhere[nc]?.[ns]?.[field]!==undefined){
@@ -774,7 +939,7 @@ const displayWhereClauses=(cat,field,seg="")=>{
               })}>{x}</p>
         }
       })
-    return cls
+    return cls.length>0?<div>{cls}</div>:<br/>
     }
   /*}else{
     if(conditionsWhere[nc]?.[ns]?.[field]!==undefined)
@@ -938,8 +1103,9 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
           }
         }
         >Add multiple field where condition</a>
+        {displayWhereClauses(`getData${currentCategory.name}`,"hybrid","hybrid")}
+
       </div>}
-      {displayWhereClauses(`getData${currentCategory.name}`,"hybrid","hybrid")}
       {primero && fieldsSingle && (<><FormButton style={{
           textAlign:"left",
           textDecoration:"underline",
@@ -3335,19 +3501,20 @@ const calculateMedia=(data,field,arrayName,variableName)=>{
   let cero=0
   Object.keys(data).forEach(y=>{
     if(data[y]?.[variableName]==undefined)
-      data[y][variableName]=cero.toFixed(2)
+      data[y][variableName]=cero
     }
   )
   Object.keys(data).forEach(y=>{
     let values=data[y]?.[arrayName]
     console.log("arraynamemedia",arrayName,values)
     let media=0
-    if(values!=undefined){
+    if(values!=undefined && values?.length>0){
       values.forEach(x=>media+=x)
       media=media/values.length
       //if(data[y][variableName]==undefined)
         data[y][variableName]=media
-    }
+    }else
+      data[y][variableName]=0
     
   })
  
@@ -3366,7 +3533,7 @@ const problem=(data,field,arrayName,variableName)=>{
     console.log("arraynamemedia",arrayName,sortedValues)
 
     median=0
-    if(sortedValues!=undefined){
+    if(sortedValues!=undefined && sortedValues?.length>0){
       sortedValues.sort((a,b)=>a-b)
       console.log("sortedValues",sortedValues)
       let length=sortedValues.length
@@ -3377,9 +3544,16 @@ const problem=(data,field,arrayName,variableName)=>{
       }
       //if(data[y][variableName]==undefined)
         data[y][variableName]=median
+        data[y][`${arrayName}minimum`]=sortedValues[0]
+        data[y][`${arrayName}maximum`]=sortedValues[sortedValues.length-1]
+    }else{
+        data[y][variableName]=0
+        data[y][`${arrayName}minimum`]=0
+        data[y][`${arrayName}maximum`]=0
     }
     
   })
+  
   
 }
 
@@ -3794,7 +3968,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
 const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,order)=>{
   let trueKey
   let cats
-  //console.log("order",order)
+  console.log("order",order)
   if(order.length==0){
     let data=totalRoutes[`getData${currentCategory.name}`]["undefinedtotal"]
     updateTerminalFinalObject(data,`getData${currentCategory.name}`)
@@ -3854,12 +4028,15 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
   for(let i=order.length-1;i>=0;i--){
     trueKey=Object.keys(order[i])[0]
     cats=order[i][trueKey]
-    for(let j=0;j<cats.length;j+=2)
+    for(let j=0;j<cats.length;j+=2){
       Object.keys(finalObject[trueKey][cats[j]]).forEach(p=>{
-        let keysEach=finalObject[trueKey][cats[j]][p].keys
-        
+        let keysEach=finalObject[trueKey][cats[j]][p].keys//finalObject[trueKey][cats[j]][p].keys
+        console.log("truekey catsj p keys",trueKey,cats[j],p,finalObject[trueKey][cats[j]])
         for(let oo=0;oo<keysEach.length;oo++){
+          console.log("secondtruekey",finalObject[cats[j]][cats[j]][keysEach[oo]],finalObject[cats[j]][cats[j]],keysEach[oo])
+          console.log("enttroyy")
           if(finalObject[cats[j]][cats[j]][keysEach[oo]]!=undefined){
+            console.log("entroyy",keysEach[oo],finalObject[cats[j]][cats[j]][keysEach[oo]])
             finalObject[cats[j]][cats[j]][keysEach[oo]]={
               ...finalObject[cats[j]][cats[j]][keysEach[oo]],
               final:true
@@ -3869,12 +4046,26 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
           }
         }
       })
+      Object.keys(finalObject[cats[j]][cats[j]]).forEach(y=>{
+        if(finalObject[cats[j]][cats[j]][y]["final"]==undefined){
+          Object.keys(finalObject[cats[j]]).forEach(x=>{
+            delete finalObject[cats[j]][x][y]
+          })
+        }else{
+          
+        
+          delete finalObject[cats[j]][cats[j]][y]["final"]
+        }
+      })
+    }
+  }
       
       
       
     
-  }
-  for(let i=0;i<order.length;i++){
+  
+  console.log("finalobjectfinalui",finalObject)
+  /*for(let i=0;i<order.length;i++){
     trueKey=Object.keys(order[i])[0]
     cats=order[i][trueKey]
     let cat
@@ -3894,7 +4085,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
       })
     }
  
-  }
+  }*/
   
    
 
@@ -3911,10 +4102,6 @@ Object.keys(finalObject).forEach(y=>{
   
   //console.log("fobjectkey",finalObject)
 
-  /*key=Object.keys(order[0])[0]
-    cats=order[0][key]
-    getSegmentsData(key,cats,0)
-    //console.log("fobjectkey",finalObject)*/
 
 }
 
@@ -4608,13 +4795,33 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
       if(x.type=="number")
         lastIndexNumberComposite=index
     })
+    
     console.log("theresnormal",segment,realSegmentLast,lastIndexNumber,lastIndexNumberComposite,realSegmentLast==segment && lastIndexNumber==-1 && lastIndexNumberComposite==-1)
     if(theresNormal)
     otmChoices[segment].normal.forEach((q,index)=>{
-      
+        
       if(q.type=="number"){
+        console.log("uiiii",otmChoicesStatistics?.[category]?.[segment],q.name1)
+        let otmStatisticsArray=[]
+        for(let x in otmChoicesStatistics?.[category]?.[segment]?.[q.name1]){
+          console.log("o1111",otmChoicesStatistics?.[category]?.[segment]?.[q.name1]?.[x],x)
+          if(otmChoicesStatistics?.[category]?.[segment]?.[q.name1]?.[x]==true){
+            otmStatisticsArray.push(x)
+          }
+        }
+        console.log("otmstatisticsarray",otmStatisticsArray)
         console.log("qqq",q.name1,realSegmentLast,segment,normal-1,index)
-        temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumber==index && lastIndexNumberComposite==-1)?"none":"1px solid white"}}>{q.name1}</th>)
+        temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumber==index && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0)?"none":"1px solid white"}}>{q.name1}</th>)
+        //Object.keys(otmChoicesStatistics[category][segment]?.[q.name1])
+        otmStatisticsArray.forEach((ji,i44)=>{
+          
+          //if(otmChoicesStatistics[category][segment][q.name1][ji]==true){
+            
+            temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid white"}}>{ji}</th>)
+
+          //}
+        })
+
       }
     
      
@@ -4622,31 +4829,70 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     result=[...result,...temp]
     temp=[]
     if(theresComposite)
-    otmChoices[segment].compositeFields.forEach((q,index)=>{
+     otmChoices[segment].compositeFields.forEach((q,index)=>{
 
       if(q.type=="number"){
-        temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index)?"none":"1px solid white"}}>{q.name1}</th>)
+        console.log("compfields33",otmChoices[segment].compositeFields,otmChoicesStatistics[category][segment]?.[q.name1])
+
+        let otmStatisticsArray=[]
+        for(let x in otmChoicesStatistics?.[category]?.[segment]?.[q.name1]){
+          console.log("o2222",otmChoicesStatistics?.[category]?.[segment],category,segment,q.name1,x)
+
+          if(otmChoicesStatistics?.[category]?.[segment]?.[q.name1]?.[x]==true){
+            otmStatisticsArray.push(x)
+          }
+        }
+        console.log("otmsa",otmStatisticsArray)
+        temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && otmStatisticsArray.length==0)?"none":"1px solid white"}}>{q.name1}</th>)
+        //Object.keys(otmChoicesStatistics[category][segment]?.[q.name1]).
+        otmStatisticsArray.forEach((ji,i44)=>{
+          //if(otmChoicesStatistics[category][segment][q.name1][ji]==true){
+            //if(ji=="media")
+              console.log("mediainfo",q.name1,realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1),realSegmentLast,segment,lastIndexNumberComposite,index,i44,otmStatisticsArray.length-1)
+            temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1))===true?"none":"1px solid white"}}>{ji}</th>)
+
+          //}
+        })
       }
     }
      
   )
+  console.log("ppp888",`${segment}TotalCount`,otmChoicesStatistics[category][segment]?.["general"]?.[`${segment}TotalCount`])
+
+  
   if(realSegmentLast!==segment){ 
-    if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1)
-      result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>,...result,...temp]
+    if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
+      if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`${segment}TotalCount`]==true){
+
+        result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>,...result,...temp]
+      }else
+      result=[...result,...temp]
+    }
     else{
-      result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>]
+      if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`${segment}TotalCount`]==true){
+
+        result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>]
+      }
     }
   }else{
-    if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1)
-      result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>,...result,...temp]
-    else
-      result=[<th style={{borderRight:"none"}}>{`${segment}TotalCount`}</th>]
+    if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
+      if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`${segment}TotalCount`]==true){
+
+        result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>,...result,...temp]
+      }else
+        result=[...result,...temp]
+    }
+    else if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`${segment}TotalCount`]==true){
+    
+      result=[<th style={{/*borderRight:"none"*/borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>]
+    }
   }
     /*if(theresOtmDestiny)
     otmChoices[segment].otmdestiny.forEach((q,index)=>{
       temp.push(<th style={{borderRight:realSegmentLast==segment && index==otmdestiny-1?"none":"1px solid white"}}>{q.name1}</th>)
     })*/
-  }
+  
+}
   
   return result
 }
@@ -4742,7 +4988,34 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
       if(theresNormal)
       otmChoices[a].normal.forEach((q,index)=>{
         if(q.type=="number"){
-          temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}total`]}</td>)
+          let otmStatisticsArray=[]
+          for(let x in otmChoicesStatistics[category][a]?.[q.name1]){
+            console.log("o1111",otmChoicesStatistics[category][a]?.[q.name1]?.[x],x)
+            if(otmChoicesStatistics[category][a]?.[q.name1]?.[x]==true){
+              otmStatisticsArray.push(x)
+            }
+          }
+          temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}total`].toFixed(2)}</td>)
+          //Object.keys(otmChoicesStatistics[category][a][q.name1]).
+          otmStatisticsArray.forEach((ji,i44)=>{
+            console.log("www88",finalObject[category][a][y],finalObject[category][a][y]?.[`${q.name1}Acummulated`])
+
+            
+              let pmay=ji[0].toUpperCase()+ji.substring(1)
+              console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
+              if(ji=="percentage"){
+                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`%${q.name1}`].toFixed(2)}</td>)  
+
+              }else if(ji=="minimum"){
+                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
+              }else if(ji=="maximum"){
+                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
+              
+              }else
+                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`].toFixed(2)}</td>)
+
+            
+          })
         }
         
       }
@@ -4753,24 +5026,68 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
       if(theresComposite)
       otmChoices[a].compositeFields.forEach((q,index)=>{
         if(q.type=="number"){
-          temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumberComposite==index && realSegmentLast==a ?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}total`]}</td>)
+          let otmStatisticsArray=[]
+          for(let x in otmChoicesStatistics[category][a]?.[q.name1]){
+            console.log("o1111",otmChoicesStatistics[category][a]?.[q.name1]?.[x],x)
+            if(otmChoicesStatistics[category][a]?.[q.name1]?.[x]==true){
+              otmStatisticsArray.push(x)
+            }
+          }
+          temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumberComposite==index && realSegmentLast==a && otmStatisticsArray.length==0?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}total`].toFixed(2)}</td>)
+          //Object.keys(otmChoicesStatistics[category][a][q.name1])
+          otmStatisticsArray.forEach((ji,i44)=>{
+            //if(otmChoicesStatistics[category][a][q.name1][ji]==true){
+              let pmay=ji[0].toUpperCase()+ji.substring(1)
+              console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
+              //temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`]}</td>)
+              if(ji=="percentage"){
+                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`%${q.name1}`].toFixed(2)}</td>)  
+
+              }else if(ji=="minimum"){
+                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acumulatedminimum`].toFixed(2)}</td>)  
+              }else if(ji=="maximum"){
+                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
+              
+              }else
+                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`].toFixed(2)}</td>)
+
+            //}
+          })
         }
-        return ""
+        ///return ""
       }
       
       )
+
       if(realSegmentLast!==a){ 
-        if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1)
-          result=[<th style={{borderRight:"1px solid black",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>,...result,...temp]
+        if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
+          if(otmChoicesStatistics[category][a]?.["general"]?.[`${a}TotalCount`]==true){
+
+            result=[<th style={{borderRight:"1px solid black",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>,...result,...temp]
+          }else{
+            result=[...result,...temp]
+          }
+        }
         else{
-          result=[<th style={{borderRight:"1px solid black",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>]
+          if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
+
+            result=[<th style={{borderRight:"1px solid black",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>]
+          }
         }
       }else{
-        if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1)
-          result=[<th style={{borderRight:"1px solid black",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>,...result,...temp]
+        if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
+          if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
+
+            result=[<th style={{borderRight:"1px solid black",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>,...result,...temp]
+          }else
+            result=[...result,temp]
+        }
         else
-          result=[<th style={{borderRight:"none",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>]
+          if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
+
+            result=[<th style={{borderRight:"none",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>]
       }
+    }
       
       
       
