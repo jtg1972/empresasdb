@@ -3387,6 +3387,19 @@ const getCategoriesGrandTotals=(category)=>{
       }
 
     })
+    Object.keys(finalObject[category][y]).forEach(u=>{
+      if(realGrandTotals1[category][y]?.[`${y}TotalCount`]==undefined)
+        realGrandTotals1[category][y][`${y}TotalCount`]=0
+      if(realGrandTotals1[category][y]?.[`${y}TotalCountArray`]==undefined)
+        realGrandTotals1[category][y][`${y}TotalCountArray`]=[]
+      
+      realGrandTotals1[category][y][`${y}TotalCount`]=realGrandTotals1[category][y][`${y}TotalCount`]+finalObject[category][y][u][`${y}TotalCount`]
+      realGrandTotals1[category][y][`${y}TotalCountArray`].push(finalObject[category][y][u][`${y}TotalCount`])
+
+
+    })
+    realGrandTotals1[category][y][`${y}TotalCountArray`].sort((a,b)=>a-b)
+
   })
 }
 
@@ -3879,16 +3892,20 @@ const calculateMediaAndMediansOfRecords=(category)=>{
     })
   })
 }
-
+let tableTotalRecords={}
 const calculatePercentageOverGrandTotal=(category)=>{
-  Object.keys(realGrandTotals1[category]).forEach(y=>{
+  if(tableTotalRecords[category]==undefined)
+    tableTotalRecords[category]=0
+  Object.keys(realGrandTotals1[category]).forEach((y,p)=>{
+    if(p==0)
+      tableTotalRecords[category]=Object.keys(finalObject[category][y]).length
     Object.keys(finalObject[category][y]).forEach(u=>{
       if(category==`getData${currentCategory.name}`){
         if(y==`getData${currentCategory.name}`){
           
           firstCatNormalFields[y].normal.forEach(i=>{
             if(i.type=="number"){
-              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][i.name1])
@@ -3896,7 +3913,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
           })
           firstCatNormalFields[y].compositeFields.forEach(i=>{
             if(i.type=="number"){
-              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][i.name1])
@@ -3905,7 +3922,8 @@ const calculatePercentageOverGrandTotal=(category)=>{
         }else{
           otmChoices[y].normal.forEach(i=>{
             if(i.type=="number"){
-              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
+              //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
@@ -3913,7 +3931,8 @@ const calculatePercentageOverGrandTotal=(category)=>{
           })
           otmChoices[y].compositeFields.forEach(i=>{
             if(i.type=="number"){
-              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
+              //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
@@ -3924,7 +3943,8 @@ const calculatePercentageOverGrandTotal=(category)=>{
         if(category==y){
           otmChoices[y].normal.forEach(i=>{
             if(i.type=="number"){
-              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][`${i.name1}`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
+              //((finalObject[category][y][u][`${i.name1}`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][i.name1])
@@ -3932,7 +3952,8 @@ const calculatePercentageOverGrandTotal=(category)=>{
           })
           otmChoices[y].compositeFields.forEach(i=>{
             if(i.type=="number"){
-              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][`${i.name1}`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
+              //((finalObject[category][y][u][`${i.name1}`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
             realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][i.name1])
@@ -3941,7 +3962,8 @@ const calculatePercentageOverGrandTotal=(category)=>{
         }else{
           otmChoices[y].normal.forEach(i=>{
             if(i.type=="number"){
-              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
+              //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
@@ -3949,7 +3971,8 @@ const calculatePercentageOverGrandTotal=(category)=>{
           })
           otmChoices[y].compositeFields.forEach(i=>{
             if(i.type=="number"){
-              finalObject[category][y][u][`%${i.name1}`]=((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
+              finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
+              //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
@@ -4090,6 +4113,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
    
 
 } 
+tableTotalRecords={}
 Object.keys(finalObject).forEach(y=>{
   getCategoriesGrandTotals(y)
   calculatePercentageOverGrandTotal(y)
@@ -4647,6 +4671,7 @@ const getDataReport=(routes,finalRoutes)=>{
     let order=getOrderToPrintTables(y)
     order[0].forEach(y=>{
       printFinalTableNew(y,finalObject[y],order[1][y])
+      printGrandTotalsTrue(y,realGrandTotals1[y],order[1][y])
     })
     setReportShow(totalTables)
     //console.log("totalRoutes",totalRoutes)
@@ -4871,7 +4896,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     else{
       if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`${segment}TotalCount`]==true){
 
-        result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>]
+        result=[<th style={{borderRight:"none"}}>{`${segment}TotalCount`}</th>]
       }
     }
   }else{
@@ -4884,7 +4909,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     }
     else if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`${segment}TotalCount`]==true){
     
-      result=[<th style={{/*borderRight:"none"*/borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>]
+      result=[<th style={{/*borderRight:"none"*/borderRight:"none"}}>{`${segment}TotalCount`}</th>]
     }
   }
     /*if(theresOtmDestiny)
@@ -4901,6 +4926,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
   let result=[]
   let total=[]
   let data=finalObject[category][a]
+  let lastColor="lightgray"
   Object.keys(data).forEach((y,index)=>{
     result=[]
     let ultimo=false
@@ -4925,11 +4951,11 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
 
         if(theresNormal) 
         result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].normal.map((q,index)=>
-          <td style={{color:"black",background:"white",borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
+          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
         )]
         if(theresComposite)
         result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.map((q,index)=>
-          <td style={{color:"black",background:"white",borderRight:realSegmentLast==category && index==composite-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
+          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && index==composite-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
         )]
         /*if(theresOtmDestiny)
         result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].otmdestiny.map((q,index)=>
@@ -4950,22 +4976,22 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
 
         if(theresNormal)        
         result=[...result,...otmChoices[category].normal.map((q,index)=>
-          <td style={{color:"black",background:"white",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
+          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
         )]
         if(theresComposite)
         result=[...result,...otmChoices[category].compositeFields.map((q,index)=>
-          <td style={{color:"black",background:"white",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
+          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
         )]
       
       
       if(theresOtmDestiny)
       result=[...result,...otmChoices[category].otmdestiny.map((q,index)=>
-          <td style={{color:"black",background:"white",borderRight:realSegmentLast==category && otmdestiny-1==index?"none":"1px solid black"}}>{finalObject[category][a][y][q]}</td>
+          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && otmdestiny-1==index?"none":"1px solid black"}}>{finalObject[category][a][y][q]}</td>
         )]
 
       
     }
-    result.unshift(<td style={{color:"black",background:"white",borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{finalObject[category][a][y]["id"]}</td>)
+    result.unshift(<td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{finalObject[category][a][y]["id"]}</td>)
   }else{
       let lastIndexNumber=-1
       let lastIndexNumberComposite=-1
@@ -4995,7 +5021,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
               otmStatisticsArray.push(x)
             }
           }
-          temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}total`].toFixed(2)}</td>)
+          temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}total`].toFixed(2)}</td>)
           //Object.keys(otmChoicesStatistics[category][a][q.name1]).
           otmStatisticsArray.forEach((ji,i44)=>{
             console.log("www88",finalObject[category][a][y],finalObject[category][a][y]?.[`${q.name1}Acummulated`])
@@ -5004,15 +5030,15 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
               let pmay=ji[0].toUpperCase()+ji.substring(1)
               console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
               if(ji=="percentage"){
-                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`%${q.name1}`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`%${q.name1}`].toFixed(2)}</td>)  
 
               }else if(ji=="minimum"){
-                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
               }else if(ji=="maximum"){
-                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
               
               }else
-                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`].toFixed(2)}</td>)
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`].toFixed(2)}</td>)
 
             
           })
@@ -5033,7 +5059,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
               otmStatisticsArray.push(x)
             }
           }
-          temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumberComposite==index && realSegmentLast==a && otmStatisticsArray.length==0?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}total`].toFixed(2)}</td>)
+          temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumberComposite==index && realSegmentLast==a && otmStatisticsArray.length==0?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}total`].toFixed(2)}</td>)
           //Object.keys(otmChoicesStatistics[category][a][q.name1])
           otmStatisticsArray.forEach((ji,i44)=>{
             //if(otmChoicesStatistics[category][a][q.name1][ji]==true){
@@ -5041,15 +5067,15 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
               console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
               //temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`]}</td>)
               if(ji=="percentage"){
-                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`%${q.name1}`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`%${q.name1}`].toFixed(2)}</td>)  
 
               }else if(ji=="minimum"){
-                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acumulatedminimum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
               }else if(ji=="maximum"){
-                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
               
               }else
-                temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`].toFixed(2)}</td>)
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`].toFixed(2)}</td>)
 
             //}
           })
@@ -5063,7 +5089,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
         if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
           if(otmChoicesStatistics[category][a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<th style={{borderRight:"1px solid black",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>,...result,...temp]
+            result=[<td style={{borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{finalObject[category][a][y][`${a}TotalCount`]}</td>,...result,...temp]
           }else{
             result=[...result,...temp]
           }
@@ -5071,21 +5097,21 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
         else{
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<th style={{borderRight:"1px solid black",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>]
+            result=[<td style={{borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{finalObject[category][a][y][`${a}TotalCount`]}</td>]
           }
         }
       }else{
         if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<th style={{borderRight:"1px solid black",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>,...result,...temp]
+            result=[<td style={{borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{finalObject[category][a][y][`${a}TotalCount`]}</td>,...result,...temp]
           }else
             result=[...result,temp]
         }
         else
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<th style={{borderRight:"none",background:"white",color:"black"}}>{finalObject[category][a][y][`${a}TotalCount`]}</th>]
+            result=[<td style={{borderRight:"none"/*,background:"white",color:"black"*/}}>{finalObject[category][a][y][`${a}TotalCount`]}</td>]
       }
     }
       
@@ -5093,13 +5119,164 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
       
       
     }
-    total.push(<tr>{result}</tr>)
+    
+    lastColor=lastColor=="lightgray" && index%2==0?"white":"lightgray"
+    total.push(<tr style={{background:lastColor}}>{result}</tr>)
   })
   return total
   
 }
 
+const displayCategoryHeaders=()=>{
+    return <tr style={{background:"black",color:"white",borderBottom:"1px solid white",margin:0,padding:0}}>
+      <th style={{borderRight:"1px solid white"}}>Field</th>
+      <th style={{borderRight:"1px solid white"}}>Grand Total</th>
+      <th style={{borderRight:"1px solid white"}}>Minimum</th>
+      <th style={{borderRight:"1px solid white"}}>Maximum</th>
+      <th style={{borderRight:"1px solid white"}}>Media</th>
+      <th>Median</th>
+    </tr>
+  
+}
+const displayFirstCategoryFields=(data)=>{
+  const nf=getNumericFields(`getData${currentCategory.name}`)
+  let n=nf.normal.map((x,index)=>{
+    return <tr style={{background:"white",color:"black",margin:0,padding:0}}>
+      <td style={{borderRight:"1px solid black"}}>{x}</td> 
+      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`][`${x}total`].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[0]==undefined?0.00:(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[0].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1]==undefined?0.00:(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`][`${x}Media`].toFixed(2)}</td>
+      <td>{data[`getData${currentCategory.name}`][`${x}Median`].toFixed(2)}</td>
+    </tr>
+  })
+  let c=nf.compositeFields.map(x=>{
+    return <tr style={{background:"white",color:"black",margin:0,padding:0}}>
+      <td style={{borderRight:"1px solid black"}}>{x}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`][`${x}total`].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[0]==undefined?0.00:(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[0].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1]==undefined?0.00:(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`][`${x}Media`].toFixed(2)}</td>
+      <td>{data[`getData${currentCategory.name}`][`${x}Median`].toFixed(2)}</td>
+    </tr>
+  })
+  return [...n,...c]
 
+  
+}
+
+const calMedian=(arr)=>{
+  let median=0
+  let length=arr.length
+  if(length%2==1){
+    median=arr[Math.floor(length/2)]
+  }else{
+    median=(arr[(length/2)-1]+arr[(length/2)])/2
+  }
+  return median
+}
+
+const displayCategoryFields=(seg,data,cond)=>{
+  const nf=getNumericFields(seg)
+  let tcr=[]
+  let lastColor="lightgray"
+  if(cond){
+    lastColor="white"
+    tcr=[<tr style={{background:"white",color:"black",margin:0,padding:0,background:lastColor}}>
+      <td style={{borderRight:"1px solid black"}}>{`${seg}TotalCount`}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${seg}TotalCount`].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${seg}TotalCountArray`]?.[0]==undefined?0.00:data[seg]?.[`${seg}TotalCountArray`]?.[0].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${seg}TotalCountArray`]?.[data[seg]?.[`${seg}TotalCountArray`].length-1]==undefined?0.00:(data[seg]?.[`${seg}TotalCountArray`]?.[data[seg]?.[`${seg}TotalCountArray`].length-1].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{(data[seg]?.[`${seg}TotalCount`]/data[seg]?.[`${seg}TotalCountArray`].length).toFixed(2)}</td>
+      <td>{calMedian(data[seg]?.[`${seg}TotalCountArray`]).toFixed(2)}</td>
+    </tr>]
+  }
+  let n=nf.normal.map((x,index)=>{
+    lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
+    return <tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
+      <td style={{borderRight:"1px solid black"}}>{x}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}total`].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[0]==undefined?0.00:data[seg]?.[`${x}AccumulatedArray`]?.[0].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1]==undefined?0.00:(data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}Media`].toFixed(2)}</td>
+      <td>{data[seg]?.[`${x}Median`].toFixed(2)}</td>
+    </tr>
+  })
+  let c=nf.compositeFields.map((x,index)=>{
+    lastColor=lastColor=="white"/*&& index%2==0*/?"lightgray":"white"
+
+    return <tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
+      <td style={{borderRight:"1px solid black"}}>{x}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}total`].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[0]==undefined?0.00:data[seg]?.[`${x}AccumulatedArray`]?.[0].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1]==undefined?0.00:(data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}Media`].toFixed(2)}</td>
+      <td>{data[seg]?.[`${x}Median`].toFixed(2)}</td>
+    </tr>
+  })
+  return [...tcr,...n,...c]
+
+}
+
+const printGrandTotalsTrue=(category,data,segments)=>{
+  console.log("resumen",category,data,segments)
+  let trec=<p style={{background:"white",color:"black",marginBottom:"10px",display:"inline-block",paddingLeft:"5px",paddingRight:"5px"}}>Number of Records: {tableTotalRecords[category]}</p>
+  let res=segments.map(seg=>{
+  if(seg==`getData${currentCategory.name}`){
+    let dfcf=displayFirstCategoryFields(data)
+    if(dfcf.length>0){
+      return <table style={{margin:0,padding:0,marginBottom:"10px"}}>
+        <thead style={{margin:0,padding:0}}>
+          <tr style={{margin:0,padding:0}}>
+            <th style={{textAlign:"center",borderBottom:"1px solid white"}}>{seg}</th>
+          </tr>
+        </thead>
+        <tbody style={{margin:0,padding:0}}>
+          <tr style={{margin:0,padding:0}}>
+            <th style={{margin:0,padding:0}}>
+              <table style={{margin:0,padding:0}}>
+                <thead style={{margin:0,padding:0}}>{displayCategoryHeaders()}</thead>
+                <tbody style={{margin:0,padding:0}}>{displayFirstCategoryFields(data)}</tbody>
+              </table>
+            </th>
+          </tr>
+        </tbody>
+        
+      </table>
+    }else{
+      return ""
+    }
+      
+  }else{
+      let dcf=displayCategoryFields(seg,data,seg!=segments[0])
+      if(dcf.length>0)
+      return <table style={{margin:0,padding:0,marginBottom:"10px"}}>
+      <thead style={{margin:0,padding:0}}>
+        <tr style={{margin:0,padding:0}}>
+          <th style={{textAlign:"center",borderBottom:"1px solid white",margin:0,padding:0}}>{seg}</th>
+        </tr>
+      </thead>
+      <tbody style={{margin:0,padding:0}}>
+        <tr style={{margin:0,padding:0}}>
+          <th style={{margin:0,padding:0}}>
+            <table style={{margin:0,padding:0}}>
+              <thead style={{margin:0,padding:0}}>{displayCategoryHeaders()}</thead>
+              <tbody style={{margin:0,padding:0}}>{dcf}</tbody>
+            </table>
+          </th>
+        </tr>
+      </tbody>
+      
+    </table> 
+    else 
+      return ""
+      
+    }
+  })
+  res.unshift(trec)
+  totalTables.push(res)
+  
+}
 
 const printMainHeaders=(data,category,segments)=>{
   let subtitles={}
