@@ -17,10 +17,12 @@ import { ViewWhereStatementStringDialog } from '../../components/ViewWhereStatem
 import { ViewWhereStatementHybridDialog } from '../../components/VIewWhereStatementHybridDialog'
 import { ViewMainWhereCondition } from '../../components/ViewMainWhereCondition'
 import { ViewCompositeFieldDialog } from '../../components/ViewCompositeFieldDialog'
+import { SortCriteriaDialog } from '../../components/SortCriteriaDialog'
 import { FcAnswers } from 'react-icons/fc'
 import { updateLocale } from 'moment'
 import { VariablesAreInputTypesRule } from 'graphql'
 import { isInlineFragment } from '@apollo/client/utilities'
+import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from 'react-dom'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categories:categories.categories,
@@ -47,6 +49,7 @@ const Reports=()=>{
     setOpenCompositeFieldDialog(!openCompositeFieldDialog)
   }
   const [varsHeadWhereStatement,setVarsHeadWhereStatement]=useState({})
+  const [varOrderHeadCriteria,setVarOrderHeadCriteria]=useState({})
   const [openWhereStatementStringDialog,setOpenWhereStatementStringDialog]=useState(false)
   const toggleOpenWhereStatementStringDialog=(vars)=>{
     //console.log("vars22",vars)
@@ -122,12 +125,22 @@ const Reports=()=>{
     setOpenViewCompositeFieldDialog(!openViewCompositeFieldDialog)
 
   }
+
+  const [openSortCriteriaDialog,setOpenSortCriteriaDialog]=useState(false)
+  const [sortRules,setSortRules]=useState({})
+  
+  const toggleOpenSortCriteriaDialog=(vars)=>{
+    setVarOrderHeadCriteria(vars)
+    setOpenSortCriteriaDialog(!openSortCriteriaDialog)
+  }
   let subTotals={}
   const [grandTotalsSt,setGrandTotalsSt]=useState({})
   const [comboDataSt,setComboDataSt]=useState({})
 
   const [otmChoicesStatistics,setOtmChoicesStatistics]=useState({})
   let partialOtmChoicesStatistics={}
+
+  const [otmChoicesOrder,setOtmChoicesOrder]=useState({})
   //console.log("otmchoices",otmChoices)//,fieldsShown,firstCatNormalFields)
   useEffect(()=>{
     setShowFields(false)
@@ -347,11 +360,44 @@ const Reports=()=>{
     
 
   }
+
+  const doWorkSort=(val,name1,category,segment)=>{
+    let nOtmChoicesOrder=otmChoicesOrder
+    if(nOtmChoicesOrder?.[category]==undefined)
+      nOtmChoicesOrder[category]={}
+    if(nOtmChoicesOrder?.[category]?.[segment]==undefined)
+      nOtmChoicesOrder[category]={...nOtmChoicesOrder[category],[segment]:[]}
+    console.log("yuyu",val)
+    if(val==true){
+      nOtmChoicesOrder[category][segment]=[
+        ...nOtmChoicesOrder[category][segment],
+        name1
+      ]
+    }else if(val==false){
+      console.log("yaya",val,name1,nOtmChoicesOrder[category][segment],nOtmChoicesOrder[category][segment].filter(x=>x==name1?false:true))
+      nOtmChoicesOrder[category][segment]=nOtmChoicesOrder[category][segment].filter(x=>x==name1?false:true)
+    }
+      
+    console.log("choicesorder",nOtmChoicesOrder)
+    setOtmChoicesOrder(nOtmChoicesOrder)
+  }
+  
+  const displayOrderSelect=(name,category,segment)=>{
+    return <select 
+              style={{color:"white",backgroundColor:"transparent",border:"none",outline:"none",width:"150px",paddingLeft:0}} 
+              name={name}>
+                <option value="none"> No order</option>
+                <option value="asc" > Ascending Order</option>
+                <option value="desc"> Descending order</option>
+                
+            </select>
+  }
   
   const displayAncestorsCats=(trackCatPath,ntm="")=>{
     let output=[]
+    let ns=otmChoicesOrder
     
-
+    
     for(let l in trackCatPath){
 
       if(l<trackCatPath.length-1){
@@ -366,11 +412,14 @@ const Reports=()=>{
           <input type="checkbox" 
               onChange={e=>{
                 console.log("ever",e)
-                if(e.target.checked==true)
+                doWorkSort(e.target.checked,`${ntm}TotalCount`,trackCatPath[l],ntm)
+                if(e.target.checked==true){
                   onCheckStatisticGeneralVariable(part,`general`,"totalCount",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
-                else
+                  
+                }
+                else{
                   onCheckStatisticGeneralVariable(part,`general`,"totalCount",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
-                
+                }
                 console.log("everi",otmChoicesStatistics)
 
               }}/> Total Count <a  
@@ -386,13 +435,29 @@ const Reports=()=>{
                 }
               }>xAdd where condition</a>
               {displayWhereClauses(trackCatPath[l],`${ntm}TotalCount`,ntm)}
-          {otmChoices[trackCatPath[trackCatPath.length-1]]?.normal.map(x=>{
-            if(x.type=="number")
-              return <div><span style={{marginRight:"10px"}}>{x.name1}total</span>
               
+            
+              
+              
+          {otmChoices[trackCatPath[trackCatPath.length-1]]?.normal.map(x=>{
+
+            if(x.type=="number"){
+              
+              return <div><span style={{marginRight:"10px"}}>{x.name1}total</span>
+             
+             <br/><input type="checkbox" 
+              onChange={e=>{
+                console.log("ever",e)
+                doWorkSort(e.target.checked,`${x.name1}total`,trackCatPath[l],ntm)
+                
+                console.log("everi",otmChoicesStatistics)
+
+              }}/> {x.name1}total
+         
               <br/><input type="checkbox" 
               onChange={e=>{
                 console.log("ever",e)
+                doWorkSort(e.target.checked,`%${x.name1}`,trackCatPath[l],ntm)
                 if(e.target.checked==true)
                   onCheckStatisticVariable(part,x.name1,"percentage",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
                 else
@@ -401,9 +466,14 @@ const Reports=()=>{
                 console.log("everi",otmChoicesStatistics)
 
               }}/> Percentage 
+         
+
+
               <br/><input type="checkbox"
               onChange={e=>{
                 console.log("ever",e)
+                doWorkSort(e.target.checked,`${x.name1}Media`,trackCatPath[l],ntm)
+
                 if(e.target.checked==true)
                   onCheckStatisticVariable(part,x.name1,"media",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
                 else
@@ -424,9 +494,12 @@ const Reports=()=>{
                 }
               }>xAdd where condition</a>
               <br/>{displayWhereClauses(trackCatPath[l],`${x.name1}Media`,ntm)}
+              
               <input type="checkbox"
               onChange={e=>{
                 console.log("ever",e)
+                doWorkSort(e.target.checked,`${x.name1}Median`,trackCatPath[l],ntm)
+
                 if(e.target.checked==true)
                   onCheckStatisticVariable(part,x.name1,"median",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
                 else
@@ -449,6 +522,8 @@ const Reports=()=>{
               <input type="checkbox"
               onChange={e=>{
                 console.log("ever",e)
+                doWorkSort(e.target.checked,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm)
+
                 if(e.target.checked==true)
                   onCheckStatisticVariable(part,x.name1,"minimum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
                 else
@@ -459,18 +534,20 @@ const Reports=()=>{
               style={{textDecoration:"underline"}} onClick={
                 (e)=>{
                   e.preventDefault()
-                  console.log("bit1",trackCatPath[l],ntm,`${x.name1}Minimum`)
+                  console.log("bit1",trackCatPath[l],ntm,`${x.name1}Acummulatedminimum`)
                   toggleOpenWhereStatementNumberDialog({
                     categoryName:trackCatPath[l],
                     fieldName:`${x.name1}Acummulatedminimum`,
                     segment:ntm
                   })
                 }
-              }>xAdd where condition</a>
+              }>xAdd where condition</a> 
               {displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedminimum`,ntm)}
               <br/><input type="checkbox"
               onChange={e=>{
                 console.log("ever",e)
+                doWorkSort(e.target.checked,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm)
+
                 if(e.target.checked==true)
                   onCheckStatisticVariable(part,x.name1,"maximum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
                 else
@@ -502,14 +579,16 @@ const Reports=()=>{
                     segment:ntm
                   })
                 }
-              }>xAdd where condition</a>
+              }>xAdd where condition</a> 
               {displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}
               </div>
           
-          })}
+      }})}
           
           {otmChoices[trackCatPath[trackCatPath.length-1]]?.compositeFields.map(x=>{
-            if(x.type=="number")
+            if(x.type=="number"){
+              
+
             return <div><span style={{marginRight:"10px"}}>{x.name1}total</span>
               {/*<span style={{marginRight:"10px"}}>{x.name1}total</span>
             <br/><input type="checkbox" 
@@ -535,9 +614,20 @@ const Reports=()=>{
                 }
               }>xAdd where condition</a>
             <p>{displayWhereClauses(trackCatPath[l],`${x.name1}Maximum`,ntm)}</p>*/}    
+            <br/><input type="checkbox" 
+              onChange={e=>{
+                console.log("ever",e)
+                doWorkSort(e.target.checked,`${x.name1}total`,trackCatPath[l],ntm)
+                
+                console.log("everi",otmChoicesStatistics)
+
+              }}/> {x.name1}total
+         
             <br/><input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
+              doWorkSort(e.target.checked,`%${x.name1}`,trackCatPath[l],ntm)
+
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"percentage",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
               else
@@ -545,10 +635,12 @@ const Reports=()=>{
               
               console.log("everi",otmChoicesStatistics) 
             }}
-            /> Percentage        
+            /> Percentage 
             <br/><input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
+              doWorkSort(e.target.checked,`${x.name1}Media`,trackCatPath[l],ntm)
+
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"media",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
               else
@@ -571,6 +663,8 @@ const Reports=()=>{
             <input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
+              doWorkSort(e.target.checked,`${x.name1}Median`,trackCatPath[l],ntm)
+
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"median",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
               else
@@ -593,6 +687,8 @@ const Reports=()=>{
             <br/><input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
+              doWorkSort(e.target.checked,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm)
+
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"minimum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
               else
@@ -615,6 +711,8 @@ const Reports=()=>{
             <br/><input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
+              doWorkSort(e.target.checked,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm)
+
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"maximum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
               else
@@ -645,11 +743,11 @@ const Reports=()=>{
                 fieldName:`${x.name1}total`,
                 segment:ntm
               })
-            }}>xAdd where condition</a>
+            }}>xAdd where condition</a> 
             {displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}
             </div>
             
-          })}
+      }})}
           
         </div>)
 
@@ -748,6 +846,11 @@ const Reports=()=>{
       }
       }>Add multiple field where condition</a>
       {displayWhereClauses(name,"hybrid","hybrid")}
+      <a style={{textDecoration:"underline",display:"inline"}}
+        onClick={e=>{
+          e.preventDefault()
+          toggleOpenSortCriteriaDialog({categoryName:name,otmChoicesSort:otmChoicesOrder[name],sortRules:sortRules,setSortRules:setSortRules})
+        }}>Add Order Criteria</a>
       {displayCurCategory(catDestiny,false,false,name,false,trackCatPath)}
       <FormButton style={{
         textAlign:"left",
@@ -768,6 +871,7 @@ const Reports=()=>{
             style={{marginRight:"5px", color:"white"}}
             onChange={(e)=>{
               //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
+              doWorkSort(e.target.checked,d.name1,name,name)
 
               checkReview(e,d.name1,false,"",name,false,true,"",true,d)
             }}
@@ -802,6 +906,7 @@ const Reports=()=>{
           style={{marginRight:"5px", color:"white"}}
           onChange={(e)=>{
             //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
+            doWorkSort(e.target.checked,d.name1,name,name)
 
             checkReview(e,d.name1,false,"",name,false,true,"",true,d)
           }}
@@ -996,7 +1101,15 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             <p style={{marginBottom:"0px"}}>
               <input type="checkbox" 
           style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
-          onChange={(e)=>checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)}/>
+          onChange={(e)=>{
+            if(nameOtm=="")
+              doWorkSort(e.target.checked,c.name,`getData${currentCategory.name}`,`getData${currentCategory.name}`)
+            else 
+              doWorkSort(e.target.checked,c.name,nameOtm,nameOtm)
+
+
+            checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)
+          }}/>
           
               <span style={{marginRight:"10px"}}>{c.name}Number</span>
               
@@ -1029,7 +1142,13 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             <p style={{marginBottom:"0px"}}>
               <input type="checkbox" 
               style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
-               onChange={(e)=>checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)}/>
+               onChange={(e)=>{
+                if(nameOtm=="")
+                  doWorkSort(e.target.checked,c.name,`getData${currentCategory.name}`,`getData${currentCategory.name}`)
+                else
+                  doWorkSort(e.target.checked,c.name,nameOtm,nameOtm)
+                checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)
+                }}/>
           
               <span style={{marginRight:"10px"}}>{c.name}String</span>
               {(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
@@ -1106,6 +1225,11 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
         {displayWhereClauses(`getData${currentCategory.name}`,"hybrid","hybrid")}
 
       </div>}
+      <a style={{textDecoration:"underline",display:"inline"}}
+        onClick={e=>{
+          e.preventDefault()
+          toggleOpenSortCriteriaDialog({categoryName:`getData${currentCategory.name}`,otmChoicesSort:otmChoicesOrder[`getData${currentCategory.name}`],sortRules:sortRules,setSortRules:setSortRules})
+        }}>Add Order Criteria</a>
       {primero && fieldsSingle && (<><FormButton style={{
           textAlign:"left",
           textDecoration:"underline",
@@ -1127,7 +1251,8 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             onChange={(e)=>{
                 //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
 
-              
+              doWorkSort(e.target.checked,d.name1,`getData${currentCategory.name}`,`getData${currentCategory.name}`)
+
               checkReview(e,d.name1,false,cat.name,"",true,false,"",true,d)
             }}
             />
@@ -1163,7 +1288,8 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             onChange={(e)=>{
                 //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
 
-              
+                  doWorkSort(e.target.checked,d.name1,`getData${currentCategory.name}`,`getData${currentCategory.name}`)
+
               checkReview(e,d.name1,false,cat.name,"",true,false,"",true,d)
             }}
             />
@@ -1642,10 +1768,12 @@ const getNormalFieldsOfEachIndex=(object,step,x)=>{
             }
           }
         
-        }else if(l.type=="string"){
+        }/*else if(l.type=="string"){
           normalFields={...normalFields,[`${l["name1"]}`]:getCompFieldString(x,l.structure,compFieldsArray[step])}
-        }
+        }*/
       }
+    }else if(l.type=="string"){
+      normalFields={...normalFields,[`${l["name1"]}`]:getCompFieldString(x,l.structure,compFieldsArray[step])}
     }
   })
   //if(indice==(doneLd[r[eachIndex]].len-1))
@@ -4674,7 +4802,7 @@ const getDataReport=(routes,finalRoutes)=>{
       printGrandTotalsTrue(y,realGrandTotals1[y],order[1][y])
     })
     setReportShow(totalTables)
-    //console.log("totalRoutes",totalRoutes)
+    console.log("totalRoutes",totalRoutes)
   /*for(let i=0;i<finalRoutes.length;i++){
   //getAccumulated(routes[finalRoutes[0]],routes[finalRoutes[0]][0],0,false,totalRoutes)
     totalRoutes={}
@@ -5825,6 +5953,12 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       compositeField={compFieldsArray}
       {...varsHeadWhereStatement}
       
+    />}
+
+    {openSortCriteriaDialog && <SortCriteriaDialog
+      open={openSortCriteriaDialog}
+      toggleDialog={toggleOpenSortCriteriaDialog}
+      {...varOrderHeadCriteria}
     />}
 
 
