@@ -21,7 +21,7 @@ import { SortCriteriaDialog } from '../../components/SortCriteriaDialog'
 import { FcAnswers } from 'react-icons/fc'
 import { updateLocale } from 'moment'
 import { VariablesAreInputTypesRule } from 'graphql'
-import { isInlineFragment } from '@apollo/client/utilities'
+import { isInlineFragment, resultKeyNameFromField } from '@apollo/client/utilities'
 import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from 'react-dom'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
@@ -4762,6 +4762,335 @@ const getOrderToPrintTables=(order)=>{
     return [tables,segments]
   //}
 }
+
+const groupOrderBlock=(data,segment,field)=>{
+  let group=[]
+  let current
+  let indexGroup=0
+  data.forEach((r,index)=>{
+    if(index==0)
+      current=r[segment][field]
+    if(r[segment][field]==current){
+      if(group?.[indexGroup]==undefined)
+        group.push([])
+      group[indexGroup].push(r)
+    }else{
+      indexGroup++
+      current=r[segment][field]
+      if(group?.[indexGroup]==undefined)
+        group.push([])
+      group[indexGroup].push(r)
+    }
+      
+  })
+  console.log("resordergroup",group)
+  return group
+
+}
+
+const orderBlock=(data,criteria)=>{
+  let res
+  if(criteria!==undefined){
+  res=data.sort((a,b)=>{
+    if(criteria.typeOrder=="asc")
+      if(a[criteria.segment][criteria.field]>b[criteria.segment][criteria.field])
+        return 1
+      else
+        return -1
+    else  
+      if(a[criteria.segment][criteria.field]>b[criteria.segment][criteria.field])
+        return -1
+      else
+        return 1
+
+  })
+  console.log("resorderblock",res)
+  return res
+  }
+  else{
+    console.log("resorderblock",data)
+    return data
+  }
+  
+
+}
+let finalRecursive=[]
+
+const sortRecursive=(indiceCriteria,sortCriteria,groups)=>{
+  let u=[]
+  let g=[]
+
+  console.log("indicecriteria",groups,indiceCriteria,sortCriteria.length,sortCriteria[indiceCriteria])
+  if(indiceCriteria==sortCriteria.length){
+    groups.forEach(x=>{
+      x.forEach(y=>{
+        finalRecursive.push(y)
+      })
+    })
+    console.log("finalRescursive",finalRecursive)
+    return 
+  }
+  for(let ng=0;ng<groups.length;ng++){
+    
+    u=orderBlock(groups[ng],sortCriteria[indiceCriteria])
+    g=groupOrderBlock(u,sortCriteria[indiceCriteria].segment,sortCriteria[indiceCriteria].field)
+    //if(g.length>1)
+      sortRecursive(indiceCriteria+1,sortCriteria,g)
+    
+  }
+  
+}
+
+const sortToGetFinalTable=(data,sortCriteria)=>{
+  let res=[]
+  let par
+  let orderData
+  let cambio
+  console.log("datalength",data,data.length)
+  finalRecursive=[]
+
+  if(sortCriteria?.[0]!==undefined){
+    let u=orderBlock(data,sortCriteria[0])
+    let g=groupOrderBlock(u,sortCriteria[0].segment,sortCriteria[0].field)
+    let indiceCriteria=1
+   //if(g.length>2)
+    sortRecursive(indiceCriteria,sortCriteria,g)
+  }
+  else{
+    finalRecursive=data
+  }
+  return finalRecursive
+  
+
+}
+  /*orderData=data.sort((a,b)=>{
+    res=[]
+    //return a["getDataclientes"].name>b["getDataclientes"].name?1:-1
+    sortCriteria?.forEach(y=>{
+      console.log("paramssort",a[y.segment][y.field],b[y.segment][y.field])
+      if(y.typeOrder=="asc")
+        if(a[y.segment][y.field]>b[y.segment][y.field])
+          res.push(false)
+        else if(a[y.segment][y.field]<b[y.segment][y.field])
+          res.push(true)
+      else
+        if(a[y.segment][y.field]<b[y.segment][y.field])
+          res.push(false)
+        else 
+          res.push(true)
+
+    })
+    if(res.includes(true))
+      return -1
+    else return 1
+  })
+    console.log("datasort",orderData)
+    return orderData
+}*/
+    /*if(res.length>0){
+      par=res[0]
+      let r
+      //console.log("par",res)
+      if(res.length==1){
+        if(sortCriteria[0].typeOrder=="asc")
+          return res[0]==true?1:-1
+        else  
+          return res[0]==false?1:-1
+      }*/
+      
+      /*cambio=false
+      let iguales=[]
+      for(let i=0;i<res.length;i++){
+        console.log("paramssort1 iguales",i,iguales,r)
+        if(sortCriteria[i].typeOrder=="asc"){
+          if(res[i]==true)
+            return 1
+          else if(res[i]=="igual")
+            return 0
+          else
+            return -1
+        }else{  
+          if(res[i]==true)
+            return -1
+          else if(res[i]=="igual")
+            return 0
+          else
+            return 1
+        }
+        /*if(sortCriteria[i].typeOrder=="asc"){
+          if(res[i]==true){
+            if(iguales.length==i)
+              r=1
+            else
+              r=-1
+          }else if(res[i]=="igual"){
+            r=0
+            iguales.push("igual")
+          }else if(res[i]==false){
+            if(iguales.length==i)
+              r=-1
+            else
+              r=1
+
+          }
+        }else{
+          if(res[i]==true){
+            if(iguales.length==i)
+              r=-1
+            else
+              r=1
+          }else if(res[i]=="igual"){
+            r=0
+            iguales.push("igual")
+          }else if(res[i]==false){
+            if(iguales.length==i)
+              r=1
+            else
+              r=-1
+
+          }
+        }*/
+
+        /*if(sortCriteria[i-1].typeOrder=="asc"){
+          if(res[i-1]==true || res[i-1]=="igual" && (cambio==true || i-1==0)){
+            cambio=true
+            r=1
+            if(sortCriteria[i].typeOrder=="asc"){      
+              if(res[i]==true && (cambio==true || i-1==0)){
+                r=1 
+                cambio=true
+              }
+              else if(res[i]=="igual" && (cambio==true || i-1==0)){
+               
+                r=1
+                cambio=true
+              }
+              else{
+                r=-1
+                
+                //cambio=false
+              }
+            }else if(sortCriteria[i].typeOrder=="desc"){      
+              if(res[i]==true  || res[i]=="igual"){
+                r=-1 
+                break
+              }
+              else if(res[i]=="igual" && (cambio==true || i-1==0)){
+               
+                r=1
+                cambio=true
+              }
+              else if(cambio==true || i-1==0){
+                r=1
+                cambio=true
+                
+                
+                //cambio=false
+              }
+            }
+          }else{
+            break
+          } 
+        }else if(sortCriteria[i-1].typeOrder=="desc"){
+          if(res[i-1]==false || res[i-1]=="igual" && (cambio==true || i-1==0)){
+            cambio=true
+            if(sortCriteria[i].typeOrder=="asc"){      
+              if(res[i]==true && (cambio==true || i-1==0)){
+                r=1 
+                cambio=true
+              }
+              else if(res[i]=="igual" && (cambio==true || i-1==0)){
+               
+                r=1
+                cambio=true
+              }
+              else{
+                r=-1
+              
+                //cambio=false
+              }
+            }else if(sortCriteria[i].typeOrder=="desc"){      
+              if(res[i]==false  || res[i]=="igual" && (cambio==true || i-1==0)){
+                cambio=true
+              }
+              else if(res[i]=="igual" && (cambio==true || i-1==0)){
+               
+                r=1
+                cambio=true
+              }
+              else if(cambio==true || i-1==0){
+                console.log("")
+                
+                //cambio=false
+              }
+            }
+          }else{
+            break
+          }
+        }
+      }
+
+          
+           
+        
+      console.log("par",r)
+      return r
+      /*r=true
+      for(let oo=0;oo<cambio.length;oo++)
+        if(cambio[oo]==false)
+          r=false
+      return r
+      //return par==true?1:par==false?-1:0
+      //else 
+      //return b-a
+    }
+    return 0
+    
+  })*/
+
+const getTableToDisplay=(data,cat)=>{
+  let res={}
+  if(res[cat]==undefined)
+    res={[cat]:{}}
+  Object.keys(data).forEach((y,ind)=>{
+    Object.keys(data[y]).forEach((e,index)=>{
+      if(res[cat][e]==undefined)
+        res[cat]={...res[cat],[e]:[]}
+      if(ind==0)
+        for(let o=0;o<data.length;o++){
+          res[cat][e].push({})
+         }
+      res[cat][e][ind]=data[y][e]
+
+    })
+  })
+  console.log("display",res)
+  return res
+}
+
+const getTableToSort=(data)=>{
+  let newResult=[]
+  console.log("entrodatadata")
+  let ya=false
+  Object.keys(data)?.forEach(i=>{
+    Object.keys(data[i])?.forEach((u,index)=>{
+      if(index==0 && ya==false){
+        Object.keys(data[i])?.forEach((u,index)=>{
+          newResult.push({}) 
+        })
+        ya=true
+      }
+
+      if(newResult[index]?.[i]==undefined)
+        newResult[index][i]=data[i][u]
+
+    })
+  })
+  
+  console.log("newResult",newResult)
+  return newResult
+}
+
 const getDataReport=(routes,finalRoutes)=>{
   const root=`getData${currentCategory.name}`
   totalRoutes={}
@@ -4797,10 +5126,22 @@ const getDataReport=(routes,finalRoutes)=>{
     getInverseTraverseSonTotalsWithConditionsWhereRoutes1(routes,finalRoutes,y)
 
     let order=getOrderToPrintTables(y)
+    let tts
+    let table
     order[0].forEach(y=>{
-      printFinalTableNew(y,finalObject[y],order[1][y])
+      tts=[]
+      tts=getTableToSort(finalObject[y])
+      sortToGetFinalTable(tts,sortRules[y])
+      //if(y=="getDataclientes")
+      table=getTableToDisplay(sortToGetFinalTable(tts,sortRules[y]),y)
+      printFinalTableNew(y,table[y],order[1][y])
       printGrandTotalsTrue(y,realGrandTotals1[y],order[1][y])
     })
+
+    /*bienstart order[0].forEach(y=>{
+      printFinalTableNew(y,finalObject[y],order[1][y])
+      printGrandTotalsTrue(y,realGrandTotals1[y],order[1][y])
+    }) bienend*/
     setReportShow(totalTables)
     console.log("totalRoutes",totalRoutes)
   /*for(let i=0;i<finalRoutes.length;i++){
@@ -4985,7 +5326,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
      otmChoices[segment].compositeFields.forEach((q,index)=>{
 
       if(q.type=="number"){
-        console.log("compfields33",otmChoices[segment].compositeFields,otmChoicesStatistics[category][segment]?.[q.name1])
+        //console.log("compfields33",otmChoices[segment].compositeFields,otmChoicesStatistics[category][segment]?.[q.name1])
 
         let otmStatisticsArray=[]
         for(let x in otmChoicesStatistics?.[category]?.[segment]?.[q.name1]){
@@ -5010,7 +5351,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     }
      
   )
-  console.log("ppp888",`${segment}TotalCount`,otmChoicesStatistics[category][segment]?.["general"]?.[`${segment}TotalCount`])
+  //console.log("ppp888",`${segment}TotalCount`,otmChoicesStatistics[category][segment]?.["general"]?.[`${segment}TotalCount`])
 
   
   if(realSegmentLast!==segment){ 
@@ -5050,10 +5391,12 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
   return result
 }
 
-const getFieldsDataSegment=(category,a,realSegmentLast)=>{
+const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
   let result=[]
   let total=[]
-  let data=finalObject[category][a]
+  //let data=finalObject[category][a]
+  let data=data2[a]
+  console.log("dataverif",data)
   let lastColor="lightgray"
   Object.keys(data).forEach((y,index)=>{
     result=[]
@@ -5079,11 +5422,11 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
 
         if(theresNormal) 
         result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].normal.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
+          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
         )]
         if(theresComposite)
         result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && index==composite-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
+          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && index==composite-1?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
         )]
         /*if(theresOtmDestiny)
         result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].otmdestiny.map((q,index)=>
@@ -5104,22 +5447,22 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
 
         if(theresNormal)        
         result=[...result,...otmChoices[category].normal.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
+          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
         )]
         if(theresComposite)
         result=[...result,...otmChoices[category].compositeFields.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
+          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
         )]
       
       
       if(theresOtmDestiny)
       result=[...result,...otmChoices[category].otmdestiny.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && otmdestiny-1==index?"none":"1px solid black"}}>{finalObject[category][a][y][q]}</td>
+          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && otmdestiny-1==index?"none":"1px solid black"}}>{data[y][q]}</td>
         )]
 
       
     }
-    result.unshift(<td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{finalObject[category][a][y]["id"]}</td>)
+    result.unshift(<td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{data[y]["id"]}</td>)
   }else{
       let lastIndexNumber=-1
       let lastIndexNumberComposite=-1
@@ -5143,30 +5486,30 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
       otmChoices[a].normal.forEach((q,index)=>{
         if(q.type=="number"){
           let otmStatisticsArray=[]
-          for(let x in otmChoicesStatistics[category][a]?.[q.name1]){
-            console.log("o1111",otmChoicesStatistics[category][a]?.[q.name1]?.[x],x)
-            if(otmChoicesStatistics[category][a]?.[q.name1]?.[x]==true){
+          for(let x in otmChoicesStatistics?.[category]?.[a]?.[q.name1]){
+            console.log("o1111",otmChoicesStatistics?.[category]?.[a]?.[q.name1]?.[x],x)
+            if(otmChoicesStatistics?.[category]?.[a]?.[q.name1]?.[x]==true){
               otmStatisticsArray.push(x)
             }
           }
-          temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}total`].toFixed(2)}</td>)
+          temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data[y][`${q.name1}total`].toFixed(2)}</td>)
           //Object.keys(otmChoicesStatistics[category][a][q.name1]).
           otmStatisticsArray.forEach((ji,i44)=>{
-            console.log("www88",finalObject[category][a][y],finalObject[category][a][y]?.[`${q.name1}Acummulated`])
+            console.log("www88",finalObject[category][a][y],data[y]?.[`${q.name1}Acummulated`])
 
             
               let pmay=ji[0].toUpperCase()+ji.substring(1)
-              console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
+              //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
               if(ji=="percentage"){
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`%${q.name1}`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}</td>)  
 
               }else if(ji=="minimum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
               }else if(ji=="maximum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
               
               }else
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`].toFixed(2)}</td>)
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`${q.name1}${pmay}`].toFixed(2)}</td>)
 
             
           })
@@ -5181,29 +5524,29 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
       otmChoices[a].compositeFields.forEach((q,index)=>{
         if(q.type=="number"){
           let otmStatisticsArray=[]
-          for(let x in otmChoicesStatistics[category][a]?.[q.name1]){
-            console.log("o1111",otmChoicesStatistics[category][a]?.[q.name1]?.[x],x)
+          for(let x in otmChoicesStatistics?.[category]?.[a]?.[q.name1]){
+            console.log("o1111",otmChoicesStatistics?.[category]?.[a]?.[q.name1]?.[x],x)
             if(otmChoicesStatistics[category][a]?.[q.name1]?.[x]==true){
               otmStatisticsArray.push(x)
             }
           }
-          temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumberComposite==index && realSegmentLast==a && otmStatisticsArray.length==0?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}total`].toFixed(2)}</td>)
+          temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumberComposite==index && realSegmentLast==a && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data[y][`${q.name1}total`].toFixed(2)}</td>)
           //Object.keys(otmChoicesStatistics[category][a][q.name1])
           otmStatisticsArray.forEach((ji,i44)=>{
             //if(otmChoicesStatistics[category][a][q.name1][ji]==true){
               let pmay=ji[0].toUpperCase()+ji.substring(1)
-              console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
+              //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
               //temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`]}</td>)
               if(ji=="percentage"){
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`%${q.name1}`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}</td>)  
 
               }else if(ji=="minimum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
               }else if(ji=="maximum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
               
               }else
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`].toFixed(2)}</td>)
+                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`${q.name1}${pmay}`].toFixed(2)}</td>)
 
             //}
           })
@@ -5217,7 +5560,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
         if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
           if(otmChoicesStatistics[category][a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<td style={{borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{finalObject[category][a][y][`${a}TotalCount`]}</td>,...result,...temp]
+            result=[<td style={{borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>,...result,...temp]
           }else{
             result=[...result,...temp]
           }
@@ -5225,21 +5568,21 @@ const getFieldsDataSegment=(category,a,realSegmentLast)=>{
         else{
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<td style={{borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{finalObject[category][a][y][`${a}TotalCount`]}</td>]
+            result=[<td style={{borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>]
           }
         }
       }else{
         if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<td style={{borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{finalObject[category][a][y][`${a}TotalCount`]}</td>,...result,...temp]
+            result=[<td style={{borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>,...result,...temp]
           }else
             result=[...result,temp]
         }
         else
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<td style={{borderRight:"none"/*,background:"white",color:"black"*/}}>{finalObject[category][a][y][`${a}TotalCount`]}</td>]
+            result=[<td style={{borderRight:"none"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>]
       }
     }
       
@@ -5436,7 +5779,7 @@ const printMainHeaders=(data,category,segments)=>{
       isLast=true
     
     subtitles[a]=getFieldsSegment(category,a,realSegmentsLast)
-    subsection[a]=getFieldsDataSegment(category,a,realSegmentsLast)
+    subsection[a]=getFieldsDataSegment(category,a,realSegmentsLast,data)
       
   })
   console.log("subtitles",subtitles,head)
