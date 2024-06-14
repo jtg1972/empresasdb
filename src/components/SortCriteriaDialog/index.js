@@ -5,6 +5,7 @@ import FormButton from '../Forms/FormButton'
 import FormInput from '../Forms/FormInput'
 import './styles.scss'
 
+
 const DisplayList=({
   
   categoryName,
@@ -15,16 +16,16 @@ const DisplayList=({
   const [haveChanged,setHaveChanged]=useState(false)
 
   const printHeader=()=>{
-    return <div style={{display:"flex",flexDirection:"row",width:"100%",
+    return <div style={{display:"flex",flexDirection:"row",width:"100%",background:"black",paddingLeft:"2px"
     /*justifyContent:"space-between",*/}}>
      
-    <div style={{display:"flex",width:"220px",flexDirection:"column"}}>
+    <div style={{display:"flex",width:"240px",flexDirection:"column",paddingRight:"0px"}}>
       <div style={{display:"flex",
       justifyContent:"space-between",flex:"1 0 0"}}>
         <p style={{color:"white",background:"black",flex:"1 0 0",overflow:"hidden",whiteSpace:"nowrap"}}>Field</p>
       </div>
     </div>  
-    <div style={{display:"flex",width:"120px",flexGrow:0/*flex:"1 0 0",display:"flex"*/,flexDirection:"column"}}>
+    <div style={{display:"flex",width:"90px",flexGrow:0,paddingRight:"0px"/*flex:"1 0 0",display:"flex"*/,flexDirection:"column"}}>
       <div style={{display:"flex",flexDirection:"column",
           justifyContent:"space-between",flex:1,flexGrow:0} }>
          
@@ -33,8 +34,11 @@ const DisplayList=({
           
       </div>
     </div>
-    <div style={{display:"flex",flexDirection:"column",flex:1,marginLeft:"0px",marginRight:"0px"/*,display:"flex",flexDirection:"column"*/}}>
-    <p style={{color:"white",background:"black",flex:1}}>-</p>
+    <div style={{display:"flex",flexDirection:"column",flex:1,marginLeft:"0px",marginRight:"0px",paddingRight:"0px"/*,display:"flex",flexDirection:"column"*/}}>
+      <p style={{color:"white",background:"black",flex:1}}>Cs</p>
+    </div>
+    <div style={{display:"flex",flexDirection:"column",flex:1,paddingLeft:"5px",marginLeft:"0",marginRight:"0px"/*,display:"flex",flexDirection:"column"*/}}>
+    <p style={{color:"white",background:"black",flex:1,paddingRight:"2px"}}>-</p>
     </div>
     
     </div>
@@ -44,11 +48,11 @@ const DisplayList=({
   <div style={{display:"flex",flexDirection:"row",
   /*justifyContent:"space-between",*/flex:1,flexGrow:0}}>
     
-    <div style={{width:"220px",display:"flex",flexDirection:"column"}}>
+    <div style={{width:"245px",display:"flex",flexDirection:"column"}}>
     {sortRules?.[categoryName]?.map((x,index)=>{
     //if(index%2==0){
-      return <div style={{display:"flex",
-      justifyContent:"space-between",flex:"1 0 0",paddingRight:"5px",background:index%2==0?"white":"lightgrey"}}>
+      return <div style={{display:"flex",flexDirection:"column",
+      justifyContent:"space-between",flex:"1 0 0",marginLeft:0,marginRight:0,paddingRight:"0px",background:index%2==0?"white":"lightgrey"}}>
         <p style={{color:"black",background:index%2==0?"white":"lightgrey",flex:"1 0 0",overflow:"hidden",whiteSpace:"nowrap"}}>{x.field} ({x.segment})</p>
             
       </div>
@@ -56,16 +60,17 @@ const DisplayList=({
     
     })}
     </div>
-    <div style={{width:"120px",flexGrow:0/*flex:"1 0 0",display:"flex"*/,flexDirection:"column"}}>
+    <div style={{width:"90px",flexGrow:0,flexDirection:"column"}}>
       {sortRules?.[categoryName]?.map((x,index)=>{
       
       //if(index%2==1){
         
           return <div style={{display:"flex",flexDirection:"column",
-          justifyContent:"space-between",flex:1,flexGrow:0} }>
+          justifyContent:"space-between",flex:"1 0 0"} }>
          
           
-            <p style={{color:"black",background:index%2==0?"white":"lightgrey",width:"100%",marginLeft:"0px",flex:1/*,flexGrow:0,overflow:"hidden"*/}}>{x.typeOrder}</p>
+            <p style={{paddingRight:"0px",color:"black",background:index%2==0?"white":"lightgrey",width:"100%",marginLeft:"0px",flex:"1 0 0",textAlign:"left"
+            /*,flexGrow:0,overflow:"hidden"*/}}>{x.typeOrder}</p>
           
           </div>
         
@@ -73,12 +78,17 @@ const DisplayList=({
       }
       )}
       </div>
-     
+    <div style={{display:"flex",flexDirection:"column",width:"20px",marginLeft:"0",margin:"0px",paddingRight:"0px"/*,display:"flex",flexDirection:"column"*/}}>
+      {sortRules[categoryName]?.map((x,index)=>{ 
+        return <p style={{color:"black",background:index%2==0?"white":"lightgrey",flex:"1 0 0"}}>{x.caseSensitive}</p>
+      })}
+    </div>
+    
 
-    <div style={{flex:1,marginLeft:"0px",marginRight:"0px"/*,display:"flex",flexDirection:"column"*/}}>
+    <div style={{width:"10px"/*,display:"flex",flexDirection:"column"*/}}>
       {sortRules[categoryName]?.map((x,index)=>{ 
         
-        return <p style={{color:"red",background:index%2==0?"white":"lightgrey",flex:1}}
+        return <p style={{color:"red",paddingRight:"2px",background:index%2==0?"white":"lightgrey",flex:"1 0 0"}}
         onClick={()=>{
           console.log("click")
           let j=index
@@ -141,6 +151,8 @@ export const SortCriteriaDialog = ({
   const [typeOrder,setTypeOrder]=useState("asc")
   const [thereIsSortRule,setTheresIsSortRule]=useState("nosort")
   const [haveChange,setHaveChange]=useState(false)
+  const [fieldType,setFieldType]=useState("")
+  const [caseSensitive,setCaseSensitive]=useState("n")
   let type
   let displayAllCombo=""
   
@@ -152,7 +164,7 @@ export const SortCriteriaDialog = ({
 
     return ()=>{
       if(sortRules?.[categoryName]?.[0]!=="nosort")
-        if(sortRules?.[categoryName].length==0)
+        if(sortRules?.[categoryName]?.length==0)
           setSortRules(e=>({...e,[categoryName]:["nosort"]}))
     }
   },[])
@@ -164,6 +176,9 @@ export const SortCriteriaDialog = ({
   
 
   useEffect(()=>{
+    if(selectedSegment=="")
+      setListFields([])
+      
     displayFieldsCombo()
   },[selectedSegment])
 
@@ -175,7 +190,7 @@ export const SortCriteriaDialog = ({
     
       
       otmChoicesSort?.[selectedSegment].map(x=>{
-        res.push(x)
+        res.push(x.name)
       })
       setListFields(res)
     }
@@ -183,12 +198,15 @@ export const SortCriteriaDialog = ({
 
   const init=(i)=>{
     let ls=[]
+    setFieldType("")
     if(sortRules?.[categoryName]?.[0]!=="nosort")
+      
       if(i!==1)
         setTheresIsSortRule("sort")
       console.log("otmcsort",otmChoicesSort)
       if(otmChoicesSort!==undefined){
         ls=Object.keys(otmChoicesSort)
+        
         setListSegments(ls)
       }
       
@@ -206,11 +224,14 @@ export const SortCriteriaDialog = ({
       if(st[categoryName][0]=="nosort")
         st[categoryName].splice(0,1)
       console.log("verifgg",st[categoryName])
-      
+      let it=identifyType(selectedSegment,selectedField)
       st[categoryName].push({
         segment:selectedSegment,
         field:selectedField,
-        typeOrder:typeOrder
+        typeOrder:typeOrder,
+        caseSensitive:fieldType=="string"?caseSensitive:"na",
+        fieldType:fieldType
+        
       })
     }else if(thereIsSortRule=="nosort"){
       st[categoryName]=["nosort"]
@@ -218,6 +239,12 @@ export const SortCriteriaDialog = ({
     console.log("sortRules",st)
     setHaveChange(!haveChange)
     setSortRules(st)
+  }
+
+  const identifyType=(seg,name)=>{
+    console.log("aprob",seg,name,otmChoicesSort)
+    let res=otmChoicesSort[seg].filter(x=>x.name==name)?.[0]
+    setFieldType(res.type)
   }
 
   const checkDisabled=()=>{
@@ -254,7 +281,10 @@ export const SortCriteriaDialog = ({
         onChange={(e)=>{
           setSelectedSegment(e.target.value)
           setSelectedField("")
-          displayFieldsCombo(e.target.value)}
+          if(e.target.value=="")
+            setFieldType("")
+          displayFieldsCombo()
+          }
         }
         value={selectedSegment}
           style={{outline:"none",margin:0,padding:0,alignItems:"center",width:"100%",backgroundColor:"brown",color:"white",border:"none",height:"20px",lineHeight:"20px",
@@ -266,6 +296,12 @@ export const SortCriteriaDialog = ({
       <div style={{display:"flex",flex:1,backgroundColor:"brown",color:"white",height:"20px",padding:0,margin:0,marginRight:0,marginBottom:"5px"}}>
         <select  onChange={(e)=>{
           setSelectedField(e.target.value)
+          if(e.target.value!=="")
+            identifyType(selectedSegment,e.target.value)
+          else
+            setFieldType("")
+
+          
          
         }}
           value={selectedField}
@@ -280,6 +316,17 @@ export const SortCriteriaDialog = ({
           <option value="asc">Asc</option>
           <option value="desc">Desc</option>
         </select>
+        {fieldType=="string" && selectedField!=="" &&
+        (<><input type="checkbox" 
+        onChange={e=>{
+          console.log("ischecked",e.target.checked)
+          if(e.target.checked==true)
+            setCaseSensitive("y")
+          else  
+            setCaseSensitive("n")
+
+        }}/> <span style={{color:"black"}}>Case Sensitive</span></>)
+        }
       </div>}
         <FormButton style={{flex:1,height:"20px",margin:"0px",padding:"0px",
         opacity:checkDisabled()?0.7:1}} disabled={checkDisabled()}

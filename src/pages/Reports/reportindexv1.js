@@ -361,7 +361,7 @@ const Reports=()=>{
 
   }
 
-  const doWorkSort=(val,name1,category,segment)=>{
+  const doWorkSort=(val,name1,category,segment,type)=>{
     let nOtmChoicesOrder=otmChoicesOrder
     if(nOtmChoicesOrder?.[category]==undefined)
       nOtmChoicesOrder[category]={}
@@ -371,11 +371,11 @@ const Reports=()=>{
     if(val==true){
       nOtmChoicesOrder[category][segment]=[
         ...nOtmChoicesOrder[category][segment],
-        name1
+        {name:name1,type:type}
       ]
     }else if(val==false){
-      console.log("yaya",val,name1,nOtmChoicesOrder[category][segment],nOtmChoicesOrder[category][segment].filter(x=>x==name1?false:true))
-      nOtmChoicesOrder[category][segment]=nOtmChoicesOrder[category][segment].filter(x=>x==name1?false:true)
+      console.log("yaya",val,name1,nOtmChoicesOrder[category][segment],nOtmChoicesOrder[category][segment].filter(x=>x.name==name1?false:true))
+      nOtmChoicesOrder[category][segment]=nOtmChoicesOrder[category][segment].filter(x=>x.name==name1?false:true)
     }
       
     console.log("choicesorder",nOtmChoicesOrder)
@@ -412,7 +412,7 @@ const Reports=()=>{
           <input type="checkbox" 
               onChange={e=>{
                 console.log("ever",e)
-                doWorkSort(e.target.checked,`${ntm}TotalCount`,trackCatPath[l],ntm)
+                doWorkSort(e.target.checked,`${ntm}TotalCount`,trackCatPath[l],ntm,"number")
                 if(e.target.checked==true){
                   onCheckStatisticGeneralVariable(part,`general`,"totalCount",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
                   
@@ -448,7 +448,7 @@ const Reports=()=>{
              <br/><input type="checkbox" 
               onChange={e=>{
                 console.log("ever",e)
-                doWorkSort(e.target.checked,`${x.name1}total`,trackCatPath[l],ntm)
+                doWorkSort(e.target.checked,`${x.name1}total`,trackCatPath[l],ntm,"number")
                 
                 console.log("everi",otmChoicesStatistics)
 
@@ -459,9 +459,9 @@ const Reports=()=>{
                 console.log("ever",e)
                 doWorkSort(e.target.checked,`%${x.name1}`,trackCatPath[l],ntm)
                 if(e.target.checked==true)
-                  onCheckStatisticVariable(part,x.name1,"percentage",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                  onCheckStatisticVariable(part,x.name1,"percentage",true,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
                 else
-                  onCheckStatisticVariable(part,x.name1,"percentage",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                  onCheckStatisticVariable(part,x.name1,"percentage",false,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
                 
                 console.log("everi",otmChoicesStatistics)
 
@@ -472,12 +472,12 @@ const Reports=()=>{
               <br/><input type="checkbox"
               onChange={e=>{
                 console.log("ever",e)
-                doWorkSort(e.target.checked,`${x.name1}Media`,trackCatPath[l],ntm)
+                doWorkSort(e.target.checked,`${x.name1}Media`,trackCatPath[l],ntm,"number")
 
                 if(e.target.checked==true)
-                  onCheckStatisticVariable(part,x.name1,"media",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                  onCheckStatisticVariable(part,x.name1,"media",true,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
                 else
-                  onCheckStatisticVariable(part,x.name1,"media",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                  onCheckStatisticVariable(part,x.name1,"media",false,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
                 
                 console.log("everi",otmChoicesStatistics) 
                
@@ -493,24 +493,24 @@ const Reports=()=>{
                   })
                 }
               }>xAdd where condition</a>
-              <br/>{displayWhereClauses(trackCatPath[l],`${x.name1}Media`,ntm)}
+              <br/>{displayWhereClauses(trackCatPath[l],`${x.name1}Media`,ntm,"number")}
               
               <input type="checkbox"
               onChange={e=>{
                 console.log("ever",e)
-                doWorkSort(e.target.checked,`${x.name1}Median`,trackCatPath[l],ntm)
+                doWorkSort(e.target.checked,`${x.name1}Median`,trackCatPath[l],ntm,"number")
 
                 if(e.target.checked==true)
-                  onCheckStatisticVariable(part,x.name1,"median",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                  onCheckStatisticVariable(part,x.name1,"median",true,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
                 else
-                  onCheckStatisticVariable(part,x.name1,"median",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                  onCheckStatisticVariable(part,x.name1,"median",false,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
                 
                 console.log("everi",otmChoicesStatistics) 
               }}/> Median <a  
               style={{textDecoration:"underline"}} onClick={
                 (e)=>{
                   e.preventDefault()
-                  console.log("bit1",trackCatPath[l],ntm,`${x.name1}Median`)
+                  console.log("bit1",trackCatPath[l],ntm,`${x.name1}Median`,"number")
                   toggleOpenWhereStatementNumberDialog({
                     categoryName:trackCatPath[l],
                     fieldName:`${x.name1}Median`,
@@ -522,12 +522,12 @@ const Reports=()=>{
               <input type="checkbox"
               onChange={e=>{
                 console.log("ever",e)
-                doWorkSort(e.target.checked,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm)
+                doWorkSort(e.target.checked,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm,"number")
 
                 if(e.target.checked==true)
-                  onCheckStatisticVariable(part,x.name1,"minimum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                  onCheckStatisticVariable(part,x.name1,"minimum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
                 else
-                  onCheckStatisticVariable(part,x.name1,"minimum",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                  onCheckStatisticVariable(part,x.name1,"minimum",false,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
                 
                 console.log("everi",otmChoicesStatistics) 
               }}/> Minimum <a  
@@ -546,7 +546,7 @@ const Reports=()=>{
               <br/><input type="checkbox"
               onChange={e=>{
                 console.log("ever",e)
-                doWorkSort(e.target.checked,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm)
+                doWorkSort(e.target.checked,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
 
                 if(e.target.checked==true)
                   onCheckStatisticVariable(part,x.name1,"maximum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
@@ -617,7 +617,7 @@ const Reports=()=>{
             <br/><input type="checkbox" 
               onChange={e=>{
                 console.log("ever",e)
-                doWorkSort(e.target.checked,`${x.name1}total`,trackCatPath[l],ntm)
+                doWorkSort(e.target.checked,`${x.name1}total`,trackCatPath[l],ntm,"number")
                 
                 console.log("everi",otmChoicesStatistics)
 
@@ -626,7 +626,7 @@ const Reports=()=>{
             <br/><input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
-              doWorkSort(e.target.checked,`%${x.name1}`,trackCatPath[l],ntm)
+              doWorkSort(e.target.checked,`%${x.name1}`,trackCatPath[l],ntm,"number")
 
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"percentage",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
@@ -639,7 +639,7 @@ const Reports=()=>{
             <br/><input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
-              doWorkSort(e.target.checked,`${x.name1}Media`,trackCatPath[l],ntm)
+              doWorkSort(e.target.checked,`${x.name1}Media`,trackCatPath[l],ntm,"number")
 
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"media",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
@@ -663,7 +663,7 @@ const Reports=()=>{
             <input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
-              doWorkSort(e.target.checked,`${x.name1}Median`,trackCatPath[l],ntm)
+              doWorkSort(e.target.checked,`${x.name1}Median`,trackCatPath[l],ntm,"number")
 
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"median",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
@@ -687,7 +687,7 @@ const Reports=()=>{
             <br/><input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
-              doWorkSort(e.target.checked,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm)
+              doWorkSort(e.target.checked,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm,"number")
 
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"minimum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
@@ -711,7 +711,7 @@ const Reports=()=>{
             <br/><input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
-              doWorkSort(e.target.checked,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm)
+              doWorkSort(e.target.checked,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
 
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"maximum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
@@ -871,7 +871,7 @@ const Reports=()=>{
             style={{marginRight:"5px", color:"white"}}
             onChange={(e)=>{
               //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
-              doWorkSort(e.target.checked,d.name1,name,name)
+              doWorkSort(e.target.checked,d.name1,name,name,"number")
 
               checkReview(e,d.name1,false,"",name,false,true,"",true,d)
             }}
@@ -906,7 +906,7 @@ const Reports=()=>{
           style={{marginRight:"5px", color:"white"}}
           onChange={(e)=>{
             //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
-            doWorkSort(e.target.checked,d.name1,name,name)
+            doWorkSort(e.target.checked,d.name1,name,name,"string")
 
             checkReview(e,d.name1,false,"",name,false,true,"",true,d)
           }}
@@ -1103,9 +1103,9 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
           style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
           onChange={(e)=>{
             if(nameOtm=="")
-              doWorkSort(e.target.checked,c.name,`getData${currentCategory.name}`,`getData${currentCategory.name}`)
+              doWorkSort(e.target.checked,c.name,`getData${currentCategory.name}`,`getData${currentCategory.name}`,"number")
             else 
-              doWorkSort(e.target.checked,c.name,nameOtm,nameOtm)
+              doWorkSort(e.target.checked,c.name,nameOtm,nameOtm,"number")
 
 
             checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)
@@ -1144,9 +1144,9 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
               style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
                onChange={(e)=>{
                 if(nameOtm=="")
-                  doWorkSort(e.target.checked,c.name,`getData${currentCategory.name}`,`getData${currentCategory.name}`)
+                  doWorkSort(e.target.checked,c.name,`getData${currentCategory.name}`,`getData${currentCategory.name}`,"string")
                 else
-                  doWorkSort(e.target.checked,c.name,nameOtm,nameOtm)
+                  doWorkSort(e.target.checked,c.name,nameOtm,nameOtm,"string")
                 checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)
                 }}/>
           
@@ -1251,7 +1251,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             onChange={(e)=>{
                 //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
 
-              doWorkSort(e.target.checked,d.name1,`getData${currentCategory.name}`,`getData${currentCategory.name}`)
+              doWorkSort(e.target.checked,d.name1,`getData${currentCategory.name}`,`getData${currentCategory.name}`,"number")
 
               checkReview(e,d.name1,false,cat.name,"",true,false,"",true,d)
             }}
@@ -1288,7 +1288,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             onChange={(e)=>{
                 //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
 
-                  doWorkSort(e.target.checked,d.name1,`getData${currentCategory.name}`,`getData${currentCategory.name}`)
+                  doWorkSort(e.target.checked,d.name1,`getData${currentCategory.name}`,`getData${currentCategory.name}`,"string")
 
               checkReview(e,d.name1,false,cat.name,"",true,false,"",true,d)
             }}
@@ -4763,23 +4763,51 @@ const getOrderToPrintTables=(order)=>{
   //}
 }
 
-const groupOrderBlock=(data,segment,field)=>{
+const groupOrderBlock=(data,segment,field,cs,ft)=>{
   let group=[]
   let current
   let indexGroup=0
   data.forEach((r,index)=>{
-    if(index==0)
-      current=r[segment][field]
-    if(r[segment][field]==current){
-      if(group?.[indexGroup]==undefined)
-        group.push([])
-      group[indexGroup].push(r)
-    }else{
-      indexGroup++
-      current=r[segment][field]
-      if(group?.[indexGroup]==undefined)
-        group.push([])
-      group[indexGroup].push(r)
+    if(index==0){
+      if(ft=="number")
+        current=r[segment][field]
+      else if(ft=="string"){
+        if(cs=="y"){
+          current=r[segment][field]
+        
+        }else if(cs=="n"){
+          if(r[segment][field]!==null)
+            current=r[segment][field].toUpperCase
+        }
+      }
+    }
+    if(ft=="number" || cs=="y"){
+      if(r[segment][field]==current){
+        if(group?.[indexGroup]==undefined)
+          group.push([])
+        group[indexGroup].push(r)
+      }else{
+        indexGroup++
+        current=r[segment][field]
+        if(group?.[indexGroup]==undefined)
+          group.push([])
+        group[indexGroup].push(r)
+      }
+    }else if(cs=="n"){
+      if(r[segment][field]?.toUpperCase==current){
+        if(group?.[indexGroup]==undefined)
+          group.push([])
+        group[indexGroup].push(r)
+      }else{
+        indexGroup++
+        if(r[segment][field]!==null)
+          current=r[segment][field].toUpperCase
+
+
+        if(group?.[indexGroup]==undefined)
+          group.push([])
+        group[indexGroup].push(r)
+      }
     }
       
   })
@@ -4788,26 +4816,119 @@ const groupOrderBlock=(data,segment,field)=>{
 
 }
 
-const orderBlock=(data,criteria)=>{
-  let res
-  if(criteria!==undefined){
-  res=data.sort((a,b)=>{
-    if(criteria.typeOrder=="asc")
-      if(a[criteria.segment][criteria.field]>b[criteria.segment][criteria.field])
-        return 1
-      else
-        return -1
-    else  
-      if(a[criteria.segment][criteria.field]>b[criteria.segment][criteria.field])
-        return -1
-      else
-        return 1
+const getTypeOfCriteria=(category,segment,field)=>{
+  console.log("paramstype",category,segment,field)
+  if(category==segment){
+    if(category==`getData${currentCategory.name}`){
+      let res=firstCatNormalFields[`getData${currentCategory.name}`].normal.filter(x=>x.name1==field)
+      if(res.length>=1){
+        console.log("typecriteria",res[0].type)
+        return res[0].type
+      }
+      else{
+        res=firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.filter(x=>x.name1==field)
+        if(res.length>=1){
+          console.log("typecriteria",res[0].type)
+          return res[0].type
+        }
+      }
+    }else{
+      let res=otmChoices[category].normal.filter(x=>x.name1==field)
+      if(res.length>=1){
+        console.log("typecriteria",res[0].type)
+        return res[0].type
+      }
+      else{
+        res=otmChoices[category].compositeFields.filter(x=>x.name1==field)
+        if(res.length>=1){
+          console.log("typecriteria",res[0].type)
+          return res[0].type
+        }
+      }
+    }
 
-  })
-  console.log("resorderblock",res)
-  return res
+  }else{//different category and segment
+    let originalField=field.substring(0,field.length-5)
+    let res=otmChoices?.[segment]?.normal?.filter(x=>x.name1==originalField)
+      if(res.lenght>=1){
+        console.log("typecriteria",res[0].type)
+        return res[0].type
+      }
+      else{
+        res=otmChoices?.[segment]?.compositeFields.filter(x=>x.name1==originalField)
+        if(res.length>=1){
+          console.log("typecriteria",res[0].type)
+          return res[0].type
+        }
+      }
+
+
   }
-  else{
+  return "number"
+}
+const getAAndBValues=(value1,value2,criteria)=>{
+  if(criteria.fieldType=="number"){
+    return [value1,value2]
+    //console.log("valuesab",valueA,valueB)
+  }else if(criteria.fieldType=="string"){
+    if(criteria.caseSensitive=="y"){
+      if(value1!=null)
+        value1=value1
+      else
+        value1=""
+      if(value2!=null)
+        value2=value2
+      else
+        value2=""
+    }else if(criteria.caseSensitive=="n"){
+      if(value1!=null)
+        value1=value1.toUpperCase
+      else
+        value1=""
+      if(value2!=null)
+        value2=value2.toUpperCase
+      else
+        value2=""
+
+    }
+    console.log("valuesab",value1,value2)
+    return [value1,value2]
+      
+      
+    //valueB=b[criteria.segment][criteria.field].toUpperCase
+    
+  }
+}
+
+const orderBlock=(data,criteria,category)=>{
+  let res
+  //let type=getTypeOfCriteria(category,criteria.segment,criteria.field)
+  
+  if(criteria!==undefined){
+    res=data.sort((a,b)=>{
+      let valueA
+      let valueB
+      let values=getAAndBValues(a[criteria.segment][criteria.field],b[criteria.segment][criteria.field],criteria)
+      valueA=values[0]
+      valueB=values[1]
+      
+      if(criteria.typeOrder=="asc")
+        
+
+        if(valueA>valueB)
+          return 1
+        else
+          return -1
+      else  
+        if(valueA>valueB)
+          return -1
+        else
+          return 1
+
+    })
+    console.log("resorderblock",res)
+    return res
+  }else{
     console.log("resorderblock",data)
     return data
   }
@@ -4816,13 +4937,15 @@ const orderBlock=(data,criteria)=>{
 }
 let finalRecursive=[]
 
-const sortRecursive=(indiceCriteria,sortCriteria,groups)=>{
+const sortRecursive=(indiceCriteria,sortCriteria,groups,category)=>{
   let u=[]
   let g=[]
 
   console.log("indicecriteria",groups,indiceCriteria,sortCriteria.length,sortCriteria[indiceCriteria])
   if(indiceCriteria==sortCriteria.length){
+    console.log("comienza")
     groups.forEach(x=>{
+      console.log("comienzax",x)
       x.forEach(y=>{
         finalRecursive.push(y)
       })
@@ -4832,16 +4955,16 @@ const sortRecursive=(indiceCriteria,sortCriteria,groups)=>{
   }
   for(let ng=0;ng<groups.length;ng++){
     
-    u=orderBlock(groups[ng],sortCriteria[indiceCriteria])
-    g=groupOrderBlock(u,sortCriteria[indiceCriteria].segment,sortCriteria[indiceCriteria].field)
+    u=orderBlock(groups[ng],sortCriteria[indiceCriteria],category)
+    g=groupOrderBlock(u,sortCriteria[indiceCriteria].segment,sortCriteria[indiceCriteria].field,sortCriteria[indiceCriteria].caseSensitive,sortCriteria[indiceCriteria].fieldType)
     //if(g.length>1)
-      sortRecursive(indiceCriteria+1,sortCriteria,g)
+      sortRecursive(indiceCriteria+1,sortCriteria,g,category)
     
   }
   
 }
 
-const sortToGetFinalTable=(data,sortCriteria)=>{
+const sortToGetFinalTable=(data,sortCriteria,category)=>{
   let res=[]
   let par
   let orderData
@@ -4850,11 +4973,11 @@ const sortToGetFinalTable=(data,sortCriteria)=>{
   finalRecursive=[]
 
   if(sortCriteria?.[0]!==undefined){
-    let u=orderBlock(data,sortCriteria[0])
-    let g=groupOrderBlock(u,sortCriteria[0].segment,sortCriteria[0].field)
+    let u=orderBlock(data,sortCriteria[0],category)
+    let g=groupOrderBlock(u,sortCriteria[0].segment,sortCriteria[0].field,sortCriteria[0].caseSensitive,sortCriteria[0].fieldType)
     let indiceCriteria=1
    //if(g.length>2)
-    sortRecursive(indiceCriteria,sortCriteria,g)
+    sortRecursive(indiceCriteria,sortCriteria,g,category)
   }
   else{
     finalRecursive=data
@@ -5131,9 +5254,9 @@ const getDataReport=(routes,finalRoutes)=>{
     order[0].forEach(y=>{
       tts=[]
       tts=getTableToSort(finalObject[y])
-      sortToGetFinalTable(tts,sortRules[y])
+      //sortToGetFinalTable(tts,sortRules[y])
       //if(y=="getDataclientes")
-      table=getTableToDisplay(sortToGetFinalTable(tts,sortRules[y]),y)
+      table=getTableToDisplay(sortToGetFinalTable(tts,sortRules[y],y),y)
       printFinalTableNew(y,table[y],order[1][y])
       printGrandTotalsTrue(y,realGrandTotals1[y],order[1][y])
     })
@@ -5422,11 +5545,11 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
 
         if(theresNormal) 
         result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].normal.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
+          <td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
         )]
         if(theresComposite)
         result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && index==composite-1?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
+          <td style={{/*color:"black",background:"white",*/overflow:"normal",borderRight:realSegmentLast==category && index==composite-1?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
         )]
         /*if(theresOtmDestiny)
         result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].otmdestiny.map((q,index)=>
@@ -5447,22 +5570,22 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
 
         if(theresNormal)        
         result=[...result,...otmChoices[category].normal.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
+          <td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
         )]
         if(theresComposite)
         result=[...result,...otmChoices[category].compositeFields.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
+          <td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
         )]
       
       
       if(theresOtmDestiny)
       result=[...result,...otmChoices[category].otmdestiny.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && otmdestiny-1==index?"none":"1px solid black"}}>{data[y][q]}</td>
+          <td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:realSegmentLast==category && otmdestiny-1==index?"none":"1px solid black"}}>{data[y][q]}</td>
         )]
 
       
     }
-    result.unshift(<td style={{/*color:"black",background:"white",*/borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{data[y]["id"]}</td>)
+    result.unshift(<td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{data[y]["id"]}</td>)
   }else{
       let lastIndexNumber=-1
       let lastIndexNumberComposite=-1
@@ -5492,7 +5615,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
               otmStatisticsArray.push(x)
             }
           }
-          temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data[y][`${q.name1}total`].toFixed(2)}</td>)
+          temp.push(<td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data[y][`${q.name1}total`].toFixed(2)}</td>)
           //Object.keys(otmChoicesStatistics[category][a][q.name1]).
           otmStatisticsArray.forEach((ji,i44)=>{
             console.log("www88",finalObject[category][a][y],data[y]?.[`${q.name1}Acummulated`])
@@ -5501,15 +5624,15 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
               let pmay=ji[0].toUpperCase()+ji.substring(1)
               //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
               if(ji=="percentage"){
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}</td>)  
 
               }else if(ji=="minimum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
               }else if(ji=="maximum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
               
               }else
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`${q.name1}${pmay}`].toFixed(2)}</td>)
+                temp.push(<td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`${q.name1}${pmay}`].toFixed(2)}</td>)
 
             
           })
@@ -5538,15 +5661,15 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
               //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
               //temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`]}</td>)
               if(ji=="percentage"){
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}</td>)  
 
               }else if(ji=="minimum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
               }else if(ji=="maximum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
               
               }else
-                temp.push(<td style={{/*color:"black",background:"white",*/borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`${q.name1}${pmay}`].toFixed(2)}</td>)
+                temp.push(<td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`${q.name1}${pmay}`].toFixed(2)}</td>)
 
             //}
           })
@@ -5560,7 +5683,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
         if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
           if(otmChoicesStatistics[category][a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<td style={{borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>,...result,...temp]
+            result=[<td style={{wordSpacing:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>,...result,...temp]
           }else{
             result=[...result,...temp]
           }
@@ -5568,21 +5691,21 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
         else{
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<td style={{borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>]
+            result=[<td style={{wordSpacing:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>]
           }
         }
       }else{
         if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<td style={{borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>,...result,...temp]
+            result=[<td style={{wordSpacing:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>,...result,...temp]
           }else
             result=[...result,temp]
         }
         else
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<td style={{borderRight:"none"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>]
+            result=[<td style={{wordSpacing:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>]
       }
     }
       
