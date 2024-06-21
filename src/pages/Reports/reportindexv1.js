@@ -23,6 +23,7 @@ import { updateLocale } from 'moment'
 import { VariablesAreInputTypesRule } from 'graphql'
 import { isInlineFragment, resultKeyNameFromField } from '@apollo/client/utilities'
 import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from 'react-dom'
+import e from 'cors'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categories:categories.categories,
@@ -73,8 +74,12 @@ const Reports=()=>{
     setVarsHeadWhereStatement(vars)
     setOpenWhereSelectMain(!openWhereSelectMain)
   }
+  const [identifierCategoryName,setIdentifierCategoryName]=useState("")
   const [openOtmIdFieldsDialog,setOpenOtmIdFields]=useState(false)
-  const toggleOtmIdFieldsDialog=()=>setOpenOtmIdFields(!openOtmIdFieldsDialog)
+  const toggleOtmIdFieldsDialog=(categoryName)=>{
+    setIdentifierCategoryName(categoryName)
+    setOpenOtmIdFields(!openOtmIdFieldsDialog)
+  }
   const [otmCategoryFields,setOtmCategoryFields]=useState([])
   const [allFieldsByOtm,setAllFieldsByOtm]=useState({})
   const [compFieldsArray,setCompFieldsArray]=useState([])
@@ -142,6 +147,9 @@ const Reports=()=>{
 
   const [otmChoicesOrder,setOtmChoicesOrder]=useState({})
   //console.log("otmchoices",otmChoices)//,fieldsShown,firstCatNormalFields)
+  const [parentIdentifiers,setParentIdentifiers]=useState({})
+  let parentCategories={}
+  //const [parentCategories,setParentCategories]=useState({})
   useEffect(()=>{
     setShowFields(false)
     setFieldsShown([])
@@ -938,9 +946,9 @@ const Reports=()=>{
         paddingLeft:0
       }} onClick={()=>{
         ////console.log("click")
-        setOtmCategoryFields(pivote[name])
+        //setOtmCategoryFields(pivote[name])
 
-        toggleOtmIdFieldsDialog()
+        toggleOtmIdFieldsDialog(name)
       }}>Add field to identify parent in child relationships</FormButton>
     </div>
     )
@@ -1333,8 +1341,8 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
           paddingLeft:0
         }} onClick={()=>{
             ////console.log("click")
-            setOtmCategoryFields(pivote[`getData${currentCategory.name}`])
-            toggleOtmIdFieldsDialog()
+            //setOtmCategoryFields(pivote[`getData${currentCategory.name}`])
+            toggleOtmIdFieldsDialog(`getData${currentCategory.name}`)
         }}>Add field to identify parent in child relationships</FormButton>
           </>)
       
@@ -2069,10 +2077,22 @@ const verifyMeetWithConditionsBySegmentBaseLevel=(r,eachIndex,x)=>{
 }
 
 const getLevelData1=(eachStopData,r,eachIndex)=>{
-  console.log("r eachindexgl",r, eachIndex,conditionsWhere)
+  console.log("r eachindexgl BIEN",r, eachIndex,conditionsWhere)
   let current=initializeVarsGld(r,eachIndex)
-  
+  let fieldId=""
   let newData=[]
+  let parentIdField=parentIdentifiers?.[r[eachIndex-1]]?.["field"]
+  console.log("parentidfield",parentIdField,r[eachIndex])
+  const parentIdNormalOrCompositeType=parentIdentifiers?.[r[eachIndex]]?.["fieldCompOrNormalType"]
+  if(eachIndex>0){
+    if(parentCategories[r[eachIndex]]==undefined){
+      console.log("parentCategories",{...parentCategories,[r[eachIndex]]:r[eachIndex-1]})
+
+      parentCategories={...parentCategories,[r[eachIndex]]:r[eachIndex-1]}
+    }
+  
+  }
+
   eachStopData.map((x,indice)=>{
     //console.log("xxxx",x)
     //if(verifyMeetWithConditionsBySegmentBaseLevel(r,eachIndex,x)==true || verifyMeetWithConditionsBySegmentBaseLevel(r,eachIndex,x)=="pending"){
@@ -2095,45 +2115,94 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
       /*else 
         otherAccVars=[{},[]]*/
       console.log("ot,oav",otherAccVars)
-      totalRoutes={
-        ...totalRoutes,
-        [r[eachIndex]]:{
-          ...totalRoutes[r[eachIndex]],
-          [current]:{
-            ...totalRoutes[r[eachIndex]][current],
-            [x.id]:{
-              normalData:{},
-              total:0,
-              keys:[],
-              ...otherAccVars[0]
+      if(eachIndex==0){
+        totalRoutes={
+          ...totalRoutes,
+          [r[eachIndex]]:{
+            ...totalRoutes[r[eachIndex]],
+            [current]:{
+              ...totalRoutes[r[eachIndex]][current],
+              [x.id]:{
+                normalData:{},
+                total:0,
+                keys:[],
+                
+                ...otherAccVars[0]
+              }
+            }
+          }
+        }
+      }else{
+        totalRoutes={
+          ...totalRoutes,
+          [r[eachIndex]]:{
+            ...totalRoutes[r[eachIndex]],
+            [current]:{
+              ...totalRoutes[r[eachIndex]][current],
+              [x.id]:{
+                normalData:{},
+                total:0,
+                keys:[],
+                parentIdentifier:"",
+                parentCategory:"",
+                ...otherAccVars[0]
+              }
             }
           }
         }
       }
+      
       let normalFields
       if(r[eachIndex]==`getData${currentCategory.name}`)
         normalFields=getNormalFieldsOfEachIndex(firstCatNormalFields[r[eachIndex]],r[eachIndex],x)
       else
         normalFields=getNormalFieldsOfEachIndex(otmChoices[r[eachIndex]],r[eachIndex],x)
-    
-      totalRoutes={
-        ...totalRoutes,
-        [r[eachIndex]]:{
-          ...totalRoutes[r[eachIndex]],
-          [current]:{
-            ...totalRoutes[r[eachIndex]][current],
-            [x.id]:{
-              ...totalRoutes[r[eachIndex]][current][x.id],
-              normalData:{...normalFields},
-              total:otherAccVars[1].length,
-                /*?[...Object.keys(otherAccVars[0])].length:
-                totalRoutes[r[eachIndex]][current][x.id]["total"]+[...Object.keys(otherAccVars[0])].length,*/
-              keys:otherAccVars[1].length!==0?otherAccVars[1]:[],
+      if(eachIndex==0){
+        totalRoutes={
+          ...totalRoutes,
+          [r[eachIndex]]:{
+            ...totalRoutes[r[eachIndex]],
+            [current]:{
+              ...totalRoutes[r[eachIndex]][current],
+              [x.id]:{
+                ...totalRoutes[r[eachIndex]][current][x.id],
+                normalData:{...normalFields},
+                total:otherAccVars[1].length,
+                  /*?[...Object.keys(otherAccVars[0])].length:
+                  totalRoutes[r[eachIndex]][current][x.id]["total"]+[...Object.keys(otherAccVars[0])].length,*/
+                keys:otherAccVars[1].length!==0?otherAccVars[1]:[],
                 
-              ...otherAccVars[0]
+                ...otherAccVars[0]
+              }
             }
+              
           }
-            
+        }
+      }else{
+        fieldId=normalFields[`${r[eachIndex]}Id`]
+        console.log("checkver",r[eachIndex-1],r[eachIndex],fieldId,parentIdField,totalRoutes)
+        totalRoutes={
+          ...totalRoutes,
+          [r[eachIndex]]:{
+            ...totalRoutes[r[eachIndex]],
+            [current]:{
+              ...totalRoutes[r[eachIndex]][current],
+              [x.id]:{
+                ...totalRoutes[r[eachIndex]][current][x.id],
+                normalData:{...normalFields,
+                  parentIdentifier:totalRoutes[r[eachIndex-1]][`${r[eachIndex]}total`]?.[fieldId]?.["normalData"]?.[parentIdField],
+                  //parentCategory:r[eachIndex-1]
+                },
+                total:otherAccVars[1].length,
+                  /*?[...Object.keys(otherAccVars[0])].length:
+                  totalRoutes[r[eachIndex]][current][x.id]["total"]+[...Object.keys(otherAccVars[0])].length,*/
+                keys:otherAccVars[1].length!==0?otherAccVars[1]:[],
+                //parentIdentifier:totalRoutes[r[eachIndex-1]][`${r[eachIndex]}total`]?.[fieldId]?.["normalData"]?.[parentIdField],
+                ...otherAccVars[0]
+              }
+            }
+              
+          }
         }
       }
       console.log("xxx",totalRoutes)
@@ -5244,11 +5313,12 @@ const getDataReport=(routes,finalRoutes)=>{
     //console.log("definitive",routes,y)
 
     for(let i=0;i<finalRoutes.length;i++){
-      getLevelData1(categoryProducts[root],routes[finalRoutes[i]],0,true)  
+           getLevelData1(categoryProducts[root],routes[finalRoutes[i]],0,true)  
     }
     getInverseTraverseSonTotalsWithConditionsWhereRoutes1(routes,finalRoutes,y)
 
     let order=getOrderToPrintTables(y)
+    console.log("ordertoprinttables",order)
     let tts
     let table
     order[0].forEach(y=>{
@@ -5257,7 +5327,7 @@ const getDataReport=(routes,finalRoutes)=>{
       //sortToGetFinalTable(tts,sortRules[y])
       //if(y=="getDataclientes")
       table=getTableToDisplay(sortToGetFinalTable(tts,sortRules[y],y),y)
-      printFinalTableNew(y,table[y],order[1][y])
+      printFinalTableNew(y,table[y],order[1][y])//,order[0])
       printGrandTotalsTrue(y,realGrandTotals1[y],order[1][y])
     })
 
@@ -5390,6 +5460,12 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
       result=[...result,...otmChoices[category].otmdestiny.map((q,index)=>
         <th style={{borderRight:(realSegmentLast==category && otmdestiny-1==index)?"none":"1px solid white"}}>{q}</th>
       )]
+      let parentCat=parentCategories[category]
+
+      if(parentIdentifiers?.[parentCat]?.["fieldCompOrNormalType"]=="normal" || 
+      parentIdentifiers?.[parentCat]?.["fieldCompOrNormalType"]=="composite")
+        result.unshift(<th style={{borderRight:realSegmentLast==category && !(theresNormal || theresComposite || !theresOtmDestiny)?"none":"1px solid white"}}>Parent Id</th>)  
+      
     }
     result.unshift(<th style={{borderRight:realSegmentLast==category && !(theresNormal || theresComposite || !theresOtmDestiny)?"none":"1px solid white"}}>Id</th>)
   }else{
@@ -5582,7 +5658,12 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
       result=[...result,...otmChoices[category].otmdestiny.map((q,index)=>
           <td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:realSegmentLast==category && otmdestiny-1==index?"none":"1px solid black"}}>{data[y][q]}</td>
         )]
-
+      let parentCat=parentCategories[category]
+      if(parentIdentifiers?.[parentCat]?.["fieldCompOrNormalType"]=="normal" || 
+      parentIdentifiers?.[parentCat]?.["fieldCompOrNormalType"]=="composite")
+      
+        result.unshift(<td style={{borderRight:realSegmentLast==category && !(theresNormal || theresComposite || !theresOtmDestiny)?"none":"1px solid black"}}>{data[y]["parentIdentifier"]}</td>)  
+      
       
     }
     result.unshift(<td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{data[y]["id"]}</td>)
@@ -5681,7 +5762,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
 
       if(realSegmentLast!==a){ 
         if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
-          if(otmChoicesStatistics[category][a]?.["general"]?.[`${a}TotalCount`]==true){
+          if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
 
             result=[<td style={{wordSpacing:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>,...result,...temp]
           }else{
@@ -5933,8 +6014,9 @@ const printMainHeaders=(data,category,segments)=>{
   </table>
 }
 
-const printFinalTableNew=(category,data,segments)=>{
+const printFinalTableNew=(category,data,segments)=>{//,order)=>{
   console.log("iniciobegin",firstCatNormalFields,otmChoices)
+  
   totalTables.push(printMainHeaders(data,category,segments))
  
 }
@@ -6341,11 +6423,17 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       compFieldsArray={compFieldsArray}
       setCompFieldsArray={setCompFieldsArray}
     />
-    <AddOtmIdFields
+    {identifierCategoryName!=="" && <AddOtmIdFields
       open={openOtmIdFieldsDialog}
       toggleDialog={toggleOtmIdFieldsDialog}
-      otmCategoryFields={otmCategoryFields}
-    />
+      category={identifierCategoryName}
+      fields={identifierCategoryName==`getData${currentCategory.name}`?firstCatNormalFields[`getData${currentCategory.name}`]:
+      otmChoices[identifierCategoryName]}
+      parentIdentifiers={parentIdentifiers}
+      setParentIdentifiers={setParentIdentifiers}
+    
+      //otmCategoryFields={otmCategoryFields}
+    />}
     <WhereStatementStringDialog
       open={openWhereStatementStringDialog}
       toggleDialog={toggleOpenWhereStatementStringDialog}

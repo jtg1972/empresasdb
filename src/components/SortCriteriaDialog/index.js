@@ -48,12 +48,12 @@ const DisplayList=({
   <div style={{display:"flex",flexDirection:"row",
   /*justifyContent:"space-between",*/flex:1,flexGrow:0}}>
     
-    <div style={{width:"245px",display:"flex",flexDirection:"column"}}>
+    <div style={{width:"235px",display:"flex",flexDirection:"column",paddingRight:"0px"}}>
     {sortRules?.[categoryName]?.map((x,index)=>{
     //if(index%2==0){
       return <div style={{display:"flex",flexDirection:"column",
-      justifyContent:"space-between",flex:"1 0 0",marginLeft:0,marginRight:0,paddingRight:"0px",background:index%2==0?"white":"lightgrey"}}>
-        <p style={{color:"black",background:index%2==0?"white":"lightgrey",flex:"1 0 0",overflow:"hidden",whiteSpace:"nowrap"}}>{x.field} ({x.segment})</p>
+      justifyContent:"space-between",flex:"1 0 0",marginLeft:0,marginRight:0,paddingRight:"5px",background:index%2==0?"white":"lightgrey"}}>
+        <p style={{color:"black",background:index%2==0?"white":"lightgrey",flex:"1 0 0",overflow:"hidden",whiteSpace:"nowrap",paddingRight:"0px"}}>{x.field} ({x.segment})</p>
             
       </div>
     //}
