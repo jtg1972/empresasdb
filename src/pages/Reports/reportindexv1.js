@@ -181,6 +181,12 @@ const Reports=()=>{
   }
 
   const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false,dcf={})=>{
+    let pc=parentCategories[name1]
+    if(parentIdentifiers?.[pc]?.["fieldCompOrNormalType"]=="normal" ||
+    parentIdentifiers?.[pc]?.["fieldCompOrNormalType"]=="composite")
+      console.log("parentresult",parentIdentifiers?.[pc]?.["fieldCompOrNormalType"],
+      parentIdentifiers?.[pc]?.["field"],
+      parentIdentifiers?.[pc]?.["type"])
     if(otm && !e.target.checked){
       //clearOtmChoicesSons(name,padre)
       sonOtmChoices=otmChoices
@@ -371,6 +377,12 @@ const Reports=()=>{
 
   const doWorkSort=(val,name1,category,segment,type)=>{
     let nOtmChoicesOrder=otmChoicesOrder
+    if(val==true)
+      if(nOtmChoicesOrder?.[category]?.[segment].filter(x=>x.name==name1).length>0)
+        return
+    if(val==false)
+      if(nOtmChoicesOrder?.[category]?.[segment].filter(x=>x.name==name1).length==0)
+        return
     if(nOtmChoicesOrder?.[category]==undefined)
       nOtmChoicesOrder[category]={}
     if(nOtmChoicesOrder?.[category]?.[segment]==undefined)
@@ -765,6 +777,58 @@ const Reports=()=>{
     return output
   }
 
+  const displayParentIdentifier=(category,segment,field,type)=>{
+    console.log("category,segment",field,type,segment,category)
+    doWorkSort(true,field,category,segment,type)
+    return <>
+      <p>{field}</p>
+      
+      {type=="string" &&
+        <a style={{textDecoration:"underline"}} 
+          onClick={
+            (e)=>{
+              e.preventDefault()
+              console.log("verver",{categoryName:category,
+                fieldName:field,
+                segment:segment
+              })  
+              toggleOpenWhereStatementStringDialog({categoryName:category,
+                fieldName:field,
+                segment:segment
+              })
+            }
+          }>Add where condition
+        </a>
+      }
+      {type=="number" &&
+        <a style={{textDecoration:"underline"}} 
+          onClick={
+            (e)=>{
+              e.preventDefault()
+              console.log("verver",{categoryName:category,
+                fieldName:field,
+                segment:segment
+              })
+              toggleOpenWhereStatementNumberDialog({
+                fieldName:field,
+                categoryName:category,
+                segment:segment
+              })
+            }
+          }>Add where condition
+        </a>
+      }
+      {displayWhereClauses(segment,field)}
+        
+    </>
+  }
+  const displayParentIdentifierNull=(category,segment,field,type)=>{
+    doWorkSort(false,"parentIdentifier",segment,segment,type) 
+    return null
+
+  }
+
+
   const displayMenu=(name,padre,trackCatPath)=>{
     ////console.log("name",name)
     const partialName=`otm${padre}`
@@ -907,6 +971,7 @@ const Reports=()=>{
             
             
         }
+        
         {d.type=="string" && <p>
 
           
@@ -939,6 +1004,14 @@ const Reports=()=>{
           </p>
           
 }</>})}
+{(parentIdentifiers?.[parentCategories?.[name]]?.["fieldCompOrNormalType"]=="normal" || 
+        parentIdentifiers?.[parentCategories?.[name]]?.["fieldCompOrNormalType"]=="composite") &&
+      displayParentIdentifier(name,name,"parentIdentifier",
+parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
+{parentIdentifiers?.[parentCategories?.[name]]?.["fieldCompOrNormalType"]=="none" &&
+displayParentIdentifierNull(name,name,"parentIdentifier",
+parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
+  
       <FormButton style={{
         textAlign:"left",
         textDecoration:"underline",
@@ -1068,18 +1141,27 @@ const displayWhereClauses=(cat,field,seg="")=>{
 
 const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackCatPath)=>{
   let fieldsSingle=[]
+  let pc=""
   
+  if(nameOtm==""){
+    pc=`getData${currentCategory.name}`
+  }else{
+    pc=nameOtm
+  }
   if(pivote[`getData${currentCategory.name}`]==undefined)
     pivote={...pivote,[`getData${currentCategory.name}`]:[]}
   if(pivote[nameOtm]==undefined)
      pivote={...pivote,[nameOtm]:[]}
-  
+  console.log("Catmessage",cat.name,nameOtm,mainCat,parentCategories,parentCategories?.[nameOtm])
   if(cat && showFields){  
     return (
     <div style={{marginLeft:space?"10px":"0px",width:primero?"50%":"100%"}}>
       <p>HOla</p>
       {fieldsSingle=cat?.fields?.map(c=>{
         if(c.relationship=="onetomany"){
+          if(parentCategories[c.name]==undefined)
+            parentCategories={...parentCategories,[`${c.name}`]:pc}
+          console.log("pc22",parentCategories)
           return <>
             <input type="checkbox" 
             style={{marginRight:"5px", color:"white"}}
@@ -4837,6 +4919,7 @@ const groupOrderBlock=(data,segment,field,cs,ft)=>{
   let current
   let indexGroup=0
   data.forEach((r,index)=>{
+    console.log("rrver",r,segment,field)
     if(index==0){
       if(ft=="number")
         current=r[segment][field]
@@ -4845,36 +4928,39 @@ const groupOrderBlock=(data,segment,field,cs,ft)=>{
           current=r[segment][field]
         
         }else if(cs=="n"){
-          if(r[segment][field]!==null)
-            current=r[segment][field].toUpperCase
+          if(r?.[segment]?.[field]!==null)
+            current=`${r[segment][field]}`.toUpperCase()
         }
       }
     }
     if(ft=="number" || cs=="y"){
-      if(r[segment][field]==current){
+      if(r?.[segment]?.[field]==current){
         if(group?.[indexGroup]==undefined)
           group.push([])
         group[indexGroup].push(r)
       }else{
         indexGroup++
-        current=r[segment][field]
+        current=r?.[segment]?.[field]
         if(group?.[indexGroup]==undefined)
           group.push([])
         group[indexGroup].push(r)
       }
     }else if(cs=="n"){
-      if(r[segment][field]?.toUpperCase==current){
+      let ui=r[segment][field]
+      
+      if((r?.[segment]?.[field])?.toUpperCase()==current){
         if(group?.[indexGroup]==undefined)
           group.push([])
         group[indexGroup].push(r)
       }else{
         indexGroup++
-        if(r[segment][field]!==null)
-          current=r[segment][field].toUpperCase
+        if(r?.[segment]?.[field]!==null)
+          current=`${r[segment][field]}`.toUpperCase()
 
 
         if(group?.[indexGroup]==undefined)
           group.push([])
+        console.log("groupindex",group,indexGroup,current)
         group[indexGroup].push(r)
       }
     }
@@ -4936,6 +5022,7 @@ const getTypeOfCriteria=(category,segment,field)=>{
   return "number"
 }
 const getAAndBValues=(value1,value2,criteria)=>{
+  console.log("valuesoriginal",value1,value2)
   if(criteria.fieldType=="number"){
     return [value1,value2]
     //console.log("valuesab",valueA,valueB)
@@ -4951,11 +5038,11 @@ const getAAndBValues=(value1,value2,criteria)=>{
         value2=""
     }else if(criteria.caseSensitive=="n"){
       if(value1!=null)
-        value1=value1.toUpperCase
+        value1=value1.toUpperCase()
       else
         value1=""
       if(value2!=null)
-        value2=value2.toUpperCase
+        value2=value2.toUpperCase()
       else
         value2=""
 

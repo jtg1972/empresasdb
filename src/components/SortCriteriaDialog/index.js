@@ -157,6 +157,7 @@ export const SortCriteriaDialog = ({
   let displayAllCombo=""
   
   useEffect(()=>{
+    //setSortRules([])
     init(0)
   },[])
 
@@ -170,6 +171,7 @@ export const SortCriteriaDialog = ({
   },[])
   
   useEffect(()=>{
+    //setSortRules([])
     init(1)
   },[thereIsSortRule])
 
