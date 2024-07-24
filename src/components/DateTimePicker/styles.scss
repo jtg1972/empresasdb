@@ -1,0 +1,74 @@
+.rdt{
+  width:250px !important;
+}
+.rdtDay{
+  color:black !important;
+}
+.rdtSwitch{
+  color:black !important;
+  background:lightgray !important;
+  text-align:center !important;
+}
+.rdtCount{
+  color:black !important;
+}
+.rdtActive{
+  background:brown !important;
+  color:white !important;
+}
+th.rdtPrev{
+  background:lightgray !important;
+}
+th.rdtNext{
+  background:lightgray !important;
+}
+.rdtPrev span{
+  color:black !important;
+  background:lightgray !important;
+  border:none !important;
+  padding:0 !important;
+  margin:0 !important;
+  width:100% !important;
+  height:100% !important; 
+  text-align:left !important;
+}
+.rdtNext span,.rdtNext span.hover{
+  color:black !important;
+  background:lightgray !important;
+  border:none !important;
+  padding:0 !important;
+  text-align:right !important;
+}
+
+.rdtTimeToggle{
+  color:black !important;
+}
+.rdtDays thead{
+  background:lightgrey !important;
+}
+.rdtMonths{
+  color:black !important;
+}
+.rdtYears{
+  color:black !important;
+}
+.dow{
+  color:black !important;
+  background:lightgray !important;
+}
+.rdtBtn{
+  color:black !important;
+}
+
+.rdt input.white::placeholder{
+    
+      color:white !important;
+      opacity:1 !important;
+    
+  
+
+}
+.rdt input.black::placeholder{
+  color:black !important;
+  opacity:1 !important;
+}

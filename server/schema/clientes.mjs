@@ -1,13 +1,15 @@
 
           import {gql} from 'apollo-server-express'
-
+//otmclientesfacturas:[facturas]
           export default gql`
 
             
             type clientes{
               
               id:Int
-otmclientesfacturas:[facturas]otmclientestelefonos:[telefonos]name:String
+otmclientestelefonos:[telefonos]
+name:String
+otmclientesfacturas:[facturas]
 domicilio:String
 telefono:String
 

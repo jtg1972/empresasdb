@@ -27,23 +27,32 @@ const {ApolloServer}=pkg
 const types=[]
 const res=[]
 const fileNames1=fs.readdirSync('./schema')
-
+//let imp2=`./schema/field.mjs`
+//let obj2=await import(imp2)
+//types.push(obj2.default)
 for(let i in fileNames1){
   let file=fileNames1[i]
   let name1=file.split(".")[0]
+  if(fileNames1[i]!=="XXfacturas.mjs"){
     let imptx=`./schema/${fileNames1[i]}`
     let obj=await import(imptx)
     types.push(obj.default)
+  }
    
 }
 const fileNames2=fs.readdirSync('./resolvers')
 
+//let imp3=`./resolvers/facturas.mjs`
+//let obj3=await import(imp3)
+//res.push(obj3.default)
 for(let i in fileNames2){
   let file=fileNames2[i]
   let name1=file.split(".")[0]
+  if(fileNames2[i]!="XXfacturas.mjs"){
     let imptx=`./resolvers/${fileNames2[i]}`
     let obj=await import(imptx)
     res.push(obj.default)
+  }
    
 }
 import {mergeTypeDefs,mergeResolvers} from '@graphql-tools/merge'

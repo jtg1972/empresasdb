@@ -397,6 +397,22 @@ const DisplaySingleTable = ({
     
 }
 */
+
+const formatHour=(h,m)=>{
+  if(h.toString().length==1)
+    h="0"+h
+  if(m.toString().length==1)
+    m="0"+m
+  return h+":"+m
+}
+
+const formatDate=(d,m,y)=>{
+  if(d.toString().length==1)
+    d="0"+d
+  if(m.toString().length==1)
+    m="0"+m
+  return d+"/"+m+"/"+y
+}
   const hasSons=(indTable)=>{
     console.log("respcatresp",respCat)
     const fws=respCat.fields.filter(x=>
@@ -555,11 +571,11 @@ const DisplaySingleTable = ({
     }
   }
   const transformProduct=({...p})=>{
-    for(let f in p){
+    /*for(let f in p){
       if(isFDate(f)){
         p[f]=trDateDB(p[f])
       }
-    }
+    }*/
     return p
   }
   const isSonAndHasParent=()=>{
@@ -733,10 +749,16 @@ const DisplaySingleTable = ({
                 //if(producto[c]!==""){
               
                 //console.log("prodc",products[p][camp[c]])  
-                let nf=trDateMex(products[p][camp[c]])
+                //let nf=trDateMex(products[p][camp[c]])
                 //console.log("nf",nf)
                 //producto[c]=nf
-                data.push(<td>{nf}</td>)
+                let d=new Date(parseInt(products[p][camp[c]]))
+                let disp=""
+                if(d!="Invalid Date")
+                  disp=formatDate(d.getDate(),(d.getMonth()+1),d.getFullYear())+" at "+formatHour(d.getHours(),d.getMinutes())
+                console.log("datespec",d)
+
+                data.push(<td>{disp}</td>)
                 //}
               }else if(fs[0].dataType=="queryCategory" && fs[0].declaredType=="number"){
                 data.push(<td>{products[p][camp[c]]}</td>)

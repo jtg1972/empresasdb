@@ -1,14 +1,13 @@
 
           import {gql} from 'apollo-server-express'
 
-          export default gql`
-
-            
-            type facturas{
+          export default gql`type facturas{
               
               id:Int
 otmclientesfacturasId:Int
-otmfacturasdetallesFacturas:[detallesFacturas]clave:String
+otmfacturasdetallesFacturas:[detallesFacturas]
+clave:String
+invoiceDate:String
 
             }
 
@@ -18,18 +17,24 @@ otmfacturasdetallesFacturas:[detallesFacturas]clave:String
               
             }
             type Mutation{
+            
               createfacturas(
                 id:Int,
 otmclientesfacturasId:Int,
 clave:String,
+invoiceDate:String,
 
                 ):facturas
+              
+              
               getDatafacturas:[facturas]
-              removefacturas(id:Int):Boolean!
-              editfacturas(id:Int,
+removefacturas(id:Int):Boolean!
+editfacturas(id:Int,
 otmclientesfacturasId:Int,
 clave:String,
+invoiceDate:String,
 ):facturas
+              getfacturas(id:Int):facturas
               
             }`
           

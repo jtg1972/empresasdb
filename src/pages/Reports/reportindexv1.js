@@ -9,10 +9,12 @@ import FormButton from '../../components/Forms/FormButton'
 import SearchSubcategories from '../../components/SearchSubcategories'
 import { WhereStatementStringDialog } from '../../components/WhereStatementStringDialog'
 import { WhereStatementNumberDialog } from '../../components/WhereStatementNumberDialog'
+import { WhereStatementDateDialog } from '../../components/WhereStatementDateDialog'
 import './styles.scss'
 import { WhereStatementHybridDialog } from '../../components/WhereStatementHybridDialog'
 import { WhereSelectMainDialog } from '../../components/WhereSelectMainDialog'
 import { ViewWhereStatementNumberDialog } from '../../components/ViewWhereStatementNumberDialog'
+import { ViewWhereStatementDateDialog } from '../../components/ViewWhereStatementDateDialog'
 import { ViewWhereStatementStringDialog } from '../../components/ViewWhereStatementStringDialog'
 import { ViewWhereStatementHybridDialog } from '../../components/VIewWhereStatementHybridDialog'
 import { ViewMainWhereCondition } from '../../components/ViewMainWhereCondition'
@@ -63,6 +65,13 @@ const Reports=()=>{
     setVarsHeadWhereStatement(vars)
     setOpenWhereStatementNumberDialog(!openWhereStatementNumberDialog)
   }
+
+  const [openWhereStatementDateDialog,setOpenWhereStatementDateDialog]=useState(false)
+  const toggleOpenWhereStatementDateDialog=(vars)=>{
+    setVarsHeadWhereStatement(vars)
+    setOpenWhereStatementDateDialog(!openWhereStatementDateDialog)
+
+  }
   const [openWhereStatementHybridDialog,setOpenWhereStatementHybridDialog]=useState(false)
   const toggleOpenWhereStatementHybridDialog=(vars)=>{
     //console.log("vars22",vars)
@@ -94,6 +103,15 @@ const Reports=()=>{
     setVarsHeadWhereStatement(vars)
 
     setOpenViewWhereStatementNumberDialog(!openViewWhereStatementNumberDialog)
+
+  }
+
+  const[openViewWhereStatementDateDialog,setOpenViewWhereStatementDateDialog]=useState(false)
+  const toggleOpenViewWhereStatementDateDialog=(values,vars)=>{
+    setListOfViewConditions(values)
+    setVarsHeadWhereStatement(vars)
+
+    setOpenViewWhereStatementDateDialog(!openViewWhereStatementDateDialog)
 
   }
 
@@ -936,6 +954,11 @@ const Reports=()=>{
       }}>Add composite field</FormButton>
       {compFieldsArray[name]?.map(d=>{
           return <>
+          {d.type=="date" && <p>
+              <input type="checkbox"/> {d.name1}
+            </p>
+          }
+
           {d.type=="number" && <p>
 
           
@@ -1123,6 +1146,14 @@ const displayWhereClauses=(cat,field,seg="")=>{
                 categoryName:nc,
                 segment:ns
               })}>{x}</p>
+          else if(conditionsWhere[nc]?.[ns]?.[field]?.["type"]=="date")
+            return <p style={{color:"yellow"}}
+              onClick={()=>toggleOpenViewWhereStatementDateDialog(conditionsWhere[nc]?.[ns]?.[field]?.[x]?.["rule"],{
+                fieldName:field,
+                categoryName:nc,
+                segment:ns
+                })}>{x}</p>
+
         }
       })
     return cls.length>0?<div>{cls}</div>:<br/>
@@ -1186,7 +1217,49 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
         //setAllFieldsByOtm(pivote)
 
           return <>
+            {c.declaredType=="date" &&
+              <p>
+                <input type="checkbox" 
+                style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
+                onChange={(e)=>{
+                  if(nameOtm=="")
+                    doWorkSort(e.target.checked,c.name,`getData${currentCategory.name}`,`getData${currentCategory.name}`,"number")
+                  else 
+                    doWorkSort(e.target.checked,c.name,nameOtm,nameOtm,"number")
+
+
+                  checkReview(e,c.name,false,cat.name,nameOtm,mainCat,c.declaredType,c.relationship)
+                }}/>
           
+                <span style={{marginRight:"10px"}}>{c.name}Date</span>
+              
+                {(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
+                isReadyToWhere(nameOtm,c.name,false)) && 
+                <a  
+                style={{textDecoration:"underline"}} 
+                onClick={(e)=>{
+                  e.preventDefault()
+                  if(nameOtm==""){
+                    toggleOpenWhereStatementDateDialog({
+                      categoryName:`getData${currentCategory.name}`,
+                      fieldName:c.name,
+                      segment:`getData${currentCategory.name}`,
+                    })
+              
+                  }else{
+                    toggleOpenWhereStatementDateDialog({
+                      categoryName:nameOtm,
+                      fieldName:c.name,
+                      segment:nameOtm
+                    })
+                  }
+                }}>Add where condition
+                </a>
+                }
+
+                {c.name!==`${nameOtm}Id` && displayWhereClauses(nameOtm,c.name)} 
+              </p>
+            }
             {c.declaredType=="number" &&
             <p style={{marginBottom:"0px"}}>
               <input type="checkbox" 
@@ -1984,6 +2057,54 @@ const checkRule=(rulex,x,sameCategorySegment,field,type)=>{
                 arrAnswers=[...arrAnswers,true]
               else 
                 arrAnswers=[...arrAnswers,false]
+            }
+          }
+        }
+      }else if(type=="date"){
+        for(let i in rule){
+          if(i%3==0){
+            let nk=parseInt(i)
+            ops=[...ops,rule[nk]]
+          
+            let v1=""
+            if(x[field]!==null)
+              v1=new Date(parseInt(x[field]))
+            let r1=rule[nk+2]
+            if(v1==""){
+              arrAnswers=[...arrAnswers,false]
+            }else{
+              console.log("dateprev",v1,r1)
+              if(rule[nk+1]==">"){
+                if(v1>r1)
+                  arrAnswers=[...arrAnswers,true]
+                else 
+                  arrAnswers=[...arrAnswers,false]
+              }else if(rule[nk+1]==">="){
+                if(v1>=r1)
+                  arrAnswers=[...arrAnswers,true]
+                else 
+                  arrAnswers=[...arrAnswers,false]
+              }else if(rule[nk+1]=="<"){
+                if(v1<r1)
+                  arrAnswers=[...arrAnswers,true]
+                else 
+                  arrAnswers=[...arrAnswers,false]
+              }else if(rule[nk+1]=="<="){
+                if(v1<=r1)
+                  arrAnswers=[...arrAnswers,true]
+                else 
+                  arrAnswers=[...arrAnswers,false]
+              }else if(rule[nk+1]=="="){
+                if(v1==r1)
+                  arrAnswers=[...arrAnswers,true]
+                else 
+                  arrAnswers=[...arrAnswers,false]
+              }else if(rule[nk+1]=="!="){
+                if(v1!=r1)
+                  arrAnswers=[...arrAnswers,true]
+                else 
+                  arrAnswers=[...arrAnswers,false]
+              }
             }
           }
         }
@@ -3677,7 +3798,7 @@ const getCategoriesGrandTotals=(category)=>{
 
 
     })
-    realGrandTotals1[category][y][`${y}TotalCountArray`].sort((a,b)=>a-b)
+    realGrandTotals1?.[category]?.[y]?.[`${y}TotalCountArray`]?.sort((a,b)=>a-b)
 
   })
 }
@@ -4335,10 +4456,10 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
         let keysEach=finalObject[trueKey][cats[j]][p].keys//finalObject[trueKey][cats[j]][p].keys
         console.log("truekey catsj p keys",trueKey,cats[j],p,finalObject[trueKey][cats[j]])
         for(let oo=0;oo<keysEach.length;oo++){
-          console.log("secondtruekey",finalObject[cats[j]][cats[j]][keysEach[oo]],finalObject[cats[j]][cats[j]],keysEach[oo])
+          //console.log("secondtruekey",finalObject[cats[j]][cats[j]][keysEach[oo]],finalObject[cats[j]][cats[j]],keysEach[oo])
           console.log("enttroyy")
-          if(finalObject[cats[j]][cats[j]][keysEach[oo]]!=undefined){
-            console.log("entroyy",keysEach[oo],finalObject[cats[j]][cats[j]][keysEach[oo]])
+          if(finalObject?.[cats[j]]?.[cats[j]]?.[keysEach[oo]]!=undefined){
+            //console.log("entroyy",keysEach[oo],finalObject[cats[j]][cats[j]][keysEach[oo]])
             finalObject[cats[j]][cats[j]][keysEach[oo]]={
               ...finalObject[cats[j]][cats[j]][keysEach[oo]],
               final:true
@@ -4348,6 +4469,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
           }
         }
       })
+      if(finalObject?.[cats[j]]?.[cats[j]]!==undefined){
       Object.keys(finalObject[cats[j]][cats[j]]).forEach(y=>{
         if(finalObject[cats[j]][cats[j]][y]["final"]==undefined){
           Object.keys(finalObject[cats[j]]).forEach(x=>{
@@ -4359,6 +4481,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
           delete finalObject[cats[j]][cats[j]][y]["final"]
         }
       })
+      }
     }
   }
       
@@ -5053,6 +5176,18 @@ const getAAndBValues=(value1,value2,criteria)=>{
       
     //valueB=b[criteria.segment][criteria.field].toUpperCase
     
+  }else if(criteria.fieldType=="date"){
+    if(value1==null){
+      value1=null
+    }else{
+      value1=new Date(parseInt(value1))
+    }
+    if(value2==null){
+      value2=null
+    }else{
+      value2=new Date(parseInt(value2))
+    }
+    return [value1,value2]
   }
 }
 
@@ -5677,6 +5812,40 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
   return result
 }
 
+const displayDate=(date)=>{
+  if(date!==null){
+  let nd=new Date(parseInt(date))
+  console.log("ddf",nd)
+  let m=nd.getMonth()+1
+  let d=nd.getDate()
+  let y=nd.getFullYear()
+  let h=nd.getHours()
+  let min=nd.getMinutes()
+  let res=""
+  if(m.toString().length==1)
+    res="0"+m+"/"
+  else  
+    res=m+"/"
+  if(d.toString().length==1)
+    res+="0"+d+"/"
+  else  
+    res+=d+"/"
+  res+=y
+  res+=" at "
+  if(h.toString().length==1)
+    res+="0"+h+":"
+  else  
+    res+=h+":"
+  if(min.toString().length==1)
+    res+="0"+min
+  else  
+    res+=min
+
+  return res
+  }else 
+  return ""
+}
+
 const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
   let result=[]
   let total=[]
@@ -5684,7 +5853,9 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
   let data=data2[a]
   console.log("dataverif",data)
   let lastColor="lightgray"
-  Object.keys(data).forEach((y,index)=>{
+  console.log("data56",data)
+  if(data!=null){
+  Object.keys(data)?.forEach((y,index)=>{
     result=[]
     let ultimo=false
     let len=0
@@ -5706,10 +5877,20 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
         //let otmdestiny=otmChoices[`getData${currentCategory.name}`].otmdestiny.length
         //theresOtmDestiny=otmdestiny>0
 
-        if(theresNormal) 
-        result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].normal.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
-        )]
+        if(theresNormal){
+        result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].normal.map((q,index)=>{
+          let disp=""
+          
+          if(q.type=="date"){
+            console.log("datadate",data[y][q.name1])
+            disp=displayDate(data[y][q.name1])
+            
+          
+          }else
+            disp=data[y][q.name1]
+          return <td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "none":"1px solid black"}}>{disp}</td>
+        })]
+      }
         if(theresComposite)
         result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.map((q,index)=>
           <td style={{/*color:"black",background:"white",*/overflow:"normal",borderRight:realSegmentLast==category && index==composite-1?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
@@ -5732,8 +5913,18 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
       
 
         if(theresNormal)        
-        result=[...result,...otmChoices[category].normal.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
+        result=[...result,...otmChoices[category].normal.map((q,index)=>{
+          let disp=""
+          
+          if(q.type=="date"){
+            console.log("datadate",data[y][q.name1])
+            disp=displayDate(data[y][q.name1])
+            
+          
+          }else
+            disp=data[y][q.name1]
+          return <td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{disp}</td>
+        }
         )]
         if(theresComposite)
         result=[...result,...otmChoices[category].compositeFields.map((q,index)=>
@@ -5754,6 +5945,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
       
     }
     result.unshift(<td style={{/*color:"black",background:"white",*/wordSpacing:"nowrap",borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{data[y]["id"]}</td>)
+  
   }else{
       let lastIndexNumber=-1
       let lastIndexNumberComposite=-1
@@ -5885,6 +6077,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
     lastColor=lastColor=="lightgray" && index%2==0?"white":"lightgray"
     total.push(<tr style={{background:lastColor}}>{result}</tr>)
   })
+ }
   return total
   
 }
@@ -6539,6 +6732,17 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       setComboDataSt={setComboDataSt}
       {...varsHeadWhereStatement}
     />
+
+    {openWhereStatementDateDialog && <WhereStatementDateDialog
+      open={openWhereStatementDateDialog}
+      toggleDialog={toggleOpenWhereStatementDateDialog}
+      conditionsWhere={conditionsWhere}
+      setConditionsWhere={setConditionsWhere}
+      comboDataSt={comboDataSt}
+      setComboDataSt={setComboDataSt}
+      {...varsHeadWhereStatement}
+
+    />}
     <WhereStatementHybridDialog
       open={openWhereStatementHybridDialog}
       toggleDialog={toggleOpenWhereStatementHybridDialog}
@@ -6564,6 +6768,17 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       {...varsHeadWhereStatement}
 
     />}
+
+    {openViewWhereStatementDateDialog && <ViewWhereStatementDateDialog
+      open={openViewWhereStatementDateDialog}
+      toggleDialog={toggleOpenViewWhereStatementDateDialog}
+      addConditionWhereArray={listOfViewConditions}
+      {...varsHeadWhereStatement}
+
+    />}
+
+    
+
     {openViewWhereStatementStringDialog && <ViewWhereStatementStringDialog
       open={openViewWhereStatementStringDialog}
       toggleDialog={toggleOpenViewWhereStatementStringDialog}

@@ -270,16 +270,25 @@ export default{
           for(let f in fields){
             if(fields[f].declaredType=="string"){
           
-              fields1.push(`\t\t\ ${fields[f].name}:DataTypes.STRING`)
+              fields1.push(`\t\t\ ${fields[f].name}:{
+                type:DataTypes.STRING,
+                defaultValue:""
+              }`)
             }else if(fields[f].declaredType=="number"){
-              fields1.push(`\t\t\ ${fields[f].name}:DataTypes.INTEGER`)
+              fields1.push(`\t\t\ ${fields[f].name}:{
+                type:DataTypes.INTEGER,
+                defaultValue:0
+              }`)
               if(fields[f].dataType=="queryCategory"){
               fields1.push(`\t\t ${fields[f].name}GlobalCatQuery:DataTypes.INTEGER`)
               fields1.push(`\t\t ${fields[f].name}FinalCatQuery:DataTypes.INTEGER`)
               fields1.push(`\t\t ${fields[f].name}ProductQuery:DataTypes.INTEGER`)  
               }
             }else if(fields[f].declaredType=="date"){
-              fields1.push(`\t\t ${fields[f].name}:DataTypes.DATEONLY`)
+              fields1.push(`\t\t ${fields[f].name}:{
+                type:DataTypes.DATE,
+                
+              }`)
 
             }else if(fields[f].dataType=="queryCategory"){
               fields1.push(`\t\t ${fields[f].name}GlobalCatQuery:DataTypes.INTEGER`)
@@ -488,6 +497,7 @@ export default{
                       where:{otm${name}${respCat.name}Id:parent.id},
                       raw:true
                     })
+                    
                     return x
                   },`
                 }else if(relations[r].relationship=="manytomany"){
@@ -806,8 +816,17 @@ export default{
 
               content3+=`Mutation:{
                 ${helperFunctionsResolvers}
-                create${name}:async(parent,args,{db})=>{
-                  const product=await db.${name}.create(args)
+                create${name}:async(parent,args,{db})=>{`
+                Object.keys(fields).forEach(k=>{
+                  if(fields[k].declaredType=="date"){
+                    content3+=`if(new Date(args.${fields[k].name})=="Invalid Date")\n
+                      args.${fields[k].name}=null
+                    `
+                  }
+                   
+                })
+
+                content3+=`const product=await db.${name}.create(args)
                   return product
                   
                 },
@@ -839,16 +858,36 @@ export default{
                 },
                 edit${name}:async(parent,args,{db})=>{
               `
-              if(cats1[category].manyToMany==false){    
-                let change=Object.keys(fields).map(k=>{
-                  if(fields[k].declaredType=="date")
-                    return `${fields[k].name}:new Date(args.${fields[k].name})`
-                  return `${fields[k].name}:args.${fields[k].name}`
+              if(cats1[category].manyToMany==false){ 
+                let noProcess=[]   
+                content3+="let camposDate=[]\n"
+                Object.keys(fields).forEach(k=>{
+                  if(fields[k].declaredType=="date"){
+                    content3+=`if(new Date(args.${fields[k].name})!=="Invalid Date")\n
+                      camposDate={...camposDate,[${fields[k].name}]:args.${fields[k].name}}
+                    else
+                      camposDate={...camposDate,[${fields[k].name}]:null}`
+
+
+                  }
+
                 })
+                let change=Object.keys(fields).map(k=>{
+                  
+                  //console.log("fieldskk",fields[k].name)
+                  if(fields[k].declaredType!="date"){
+
+                  
+                    return `${fields[k].name}:args.${fields[k].name}`
+                  }
+                })
+                
+                console.log("change",change)
                 change.unshift(`id:args["id"]`)
                 change=change.join(",")
                 content3+=`await db.${name}.update({
-                        ${change}
+                        ${change},
+                        ...camposDate
                       },
                       {
                       where:{id:args.id}

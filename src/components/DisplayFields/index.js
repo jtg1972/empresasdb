@@ -6,6 +6,7 @@ import FormInput from '../Forms/FormInput';
 import moment from 'moment'
 import DisplayQuerySearch from './DisplayQuerySearch';
 import { useSelector } from 'react-redux';
+import DateTimePicker from '../DateTimePicker';
 /*import { registerLocale, setDefaultLocale } from  "react-datepicker";
 import en from 'date-fns/locale/en-GB'
 registerLocale('en',en)
@@ -166,9 +167,18 @@ const DisplayFields = ({
           //console.log("cat, fields, fcn",cat,fields,fields[cat.name])
           return (
             <div>
-              <p>{cat.name}:</p>
-              <p>fcn {fields[cat.name]} {typeof fields[cat.name]} {new Date().toDateString()}</p>
-              <ReactDatePicker
+              {/*<p>{cat.name}:</p>*/}
+              {/*<p>fcn {fields[cat.name]} {typeof fields[cat.name]} {new Date().toDateString()}</p>*/}
+              <DateTimePicker 
+              placeholder={cat.name}
+              letterColor="black"
+              cd={fields[cat.name]}
+              setFields={setFields}
+              fields={fields}
+              name={cat.name}
+              style={{marginBottom:"5px",border:"none !important",borderTop:"none",borderLeft:"none",borderRight:"none",borderBottom:"1px solid black !important",padding:"5px",outline:"none"}}
+              />
+              {/*<ReactDatePicker
               placeholder={cat.name}
               selected={//trDate(fields[cat.name])
                 //new Date(`"${trDate(fields[cat.name])}"`)
@@ -185,7 +195,7 @@ const DisplayFields = ({
                 dateChange(cat,e)
               
               }}
-            />
+            />*/}
 
             </div>
           )

@@ -1,7 +1,7 @@
 
             export default{
           clientes:{
-              otmclientesfacturas:async(parent,args,{db})=>{
+             otmclientesfacturas:async(parent,args,{db})=>{
                     const x=await db.facturas.findAll({
                       where:{otmclientesfacturasId:parent.id},
                       raw:true
@@ -14,7 +14,7 @@
                     })
                     return x
                   },
-            },
+                },
             Query:{
 
                 clientes:async(parent,args,{db})=>{
