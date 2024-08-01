@@ -19,6 +19,7 @@ import { ViewWhereStatementStringDialog } from '../../components/ViewWhereStatem
 import { ViewWhereStatementHybridDialog } from '../../components/VIewWhereStatementHybridDialog'
 import { ViewMainWhereCondition } from '../../components/ViewMainWhereCondition'
 import { ViewCompositeFieldDialog } from '../../components/ViewCompositeFieldDialog'
+import { SubsetDialog } from '../../components/SubsetDialog'
 import { SortCriteriaDialog } from '../../components/SortCriteriaDialog'
 import { FcAnswers } from 'react-icons/fc'
 import { updateLocale } from 'moment'
@@ -156,6 +157,15 @@ const Reports=()=>{
     setVarOrderHeadCriteria(vars)
     setOpenSortCriteriaDialog(!openSortCriteriaDialog)
   }
+
+  const [openSubsetDialog,setOpenSubsetDialog]=useState(false)
+  const toggleOpenSubsetDialog=(values,vars)=>{
+    setListOfViewConditions(values)
+    setVarsHeadWhereStatement(vars)
+    setOpenSubsetDialog(!openSubsetDialog)
+  }
+
+  const [subsets,setSubsets]=useState({})
   let subTotals={}
   const [grandTotalsSt,setGrandTotalsSt]=useState({})
   const [comboDataSt,setComboDataSt]=useState({})
@@ -396,10 +406,10 @@ const Reports=()=>{
   const doWorkSort=(val,name1,category,segment,type)=>{
     let nOtmChoicesOrder=otmChoicesOrder
     if(val==true)
-      if(nOtmChoicesOrder?.[category]?.[segment].filter(x=>x.name==name1).length>0)
+      if(nOtmChoicesOrder?.[category]?.[segment]?.filter(x=>x.name==name1).length>0)
         return
     if(val==false)
-      if(nOtmChoicesOrder?.[category]?.[segment].filter(x=>x.name==name1).length==0)
+      if(nOtmChoicesOrder?.[category]?.[segment]?.filter(x=>x.name==name1).length==0)
         return
     if(nOtmChoicesOrder?.[category]==undefined)
       nOtmChoicesOrder[category]={}
@@ -1100,6 +1110,23 @@ const isReadyToWhereFirst=(otm,busca,comp=false)=>{
   }
 }
 
+const getSubsetColor=(whereHeader)=>{
+  let ssvar=subsets
+  if(ssvar?.[whereHeader["categoryName"]]!==undefined){
+  let p=Object.keys(ssvar?.[whereHeader["categoryName"]])
+  for(let o=0;o<p.length;o++){
+    let c=ssvar?.[whereHeader["categoryName"]][p[o]]
+    if(c["categoryName"]==whereHeader["categoryName"] &&
+      c["segment"]==whereHeader["segment"] &&
+      c["fieldName"]==whereHeader["fieldName"] &&
+      c["ruleName"]==whereHeader["rule"]){
+      return c["color"]
+    }
+  }
+  }
+  return null
+}
+
 const displayWhereClauses=(cat,field,seg="")=>{
   
   let nc
@@ -1112,15 +1139,36 @@ const displayWhereClauses=(cat,field,seg="")=>{
     if(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]!==undefined){
       cls=Object.keys(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]).map(x=>{
         if(x!=="categoryName" && x!=="fieldName" && x!=="segment" && x!=="type"){
-          if(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]?.["type"]=="hybrid")
-            return <p style={{color:"yellow"}}
+          
+          if(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]?.["type"]=="hybrid"){
+            let ssColor=getSubsetColor({
+              fieldName:"hybrid",
+              categoryName:nc,
+              segment:"hybrid",
+              rule:x
+            })
+            return <p><p style={{color:"yellow",display:"inline-block"}}
             onClick={()=>toggleOpenViewWhereStatementHybridDialog(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]?.[x]?.["rule"],
             {
               fieldName:"hybrid",
               categoryName:nc,
-              segment:"hybrid"
+              segment:"hybrid",
+              
             })}>{x}</p>
-          
+            <span>&nbsp;</span>
+            <span 
+            onClick={()=>toggleOpenSubsetDialog(conditionsWhere[nc]?.["hybrid"]?.["hybrid"]?.[x]?.["rule"],
+            {
+              fieldName:"hybrid",
+              categoryName:nc,
+              segment:"hybrid",
+              rule:x
+            })}
+            style={{textDecoration:"underline"}}>
+              {ssColor==null?"Create subset":"Editar subset"}</span>
+              {ssColor!==null && <span style={{display:"inline-block",marginLeft:"5px",verticalAlign:"middle",width:"50px",height:"10px",background:ssColor,color:ssColor,border:"1px solid white"}}>&nbsp;</span>}
+            </p>
+          }
         }
       
       })
@@ -1132,28 +1180,82 @@ const displayWhereClauses=(cat,field,seg="")=>{
     if(conditionsWhere[nc]?.[ns]?.[field]!==undefined){
       cls=Object.keys(conditionsWhere[nc]?.[ns]?.[field]).map(x=>{
         if(x!=="categoryName" && x!=="fieldName" && x!=="segment" && x!=="type"){
-          if(conditionsWhere[nc]?.[ns]?.[field]?.["type"]=="number")
-            return <p style={{color:"yellow"}}
+          if(conditionsWhere[nc]?.[ns]?.[field]?.["type"]=="number"){
+            let ssColor=getSubsetColor({
+              fieldName:field,
+              categoryName:nc,
+              segment:ns,
+              rule:x
+            })
+            return <p><p style={{color:"yellow",display:"inline-block"}}
             onClick={()=>toggleOpenViewWhereStatementNumberDialog(conditionsWhere[nc]?.[ns]?.[field]?.[x]?.["rule"],{
               fieldName:field,
               categoryName:nc,
               segment:ns
             })}>{x}</p>
-          else if(conditionsWhere[nc]?.[ns]?.[field]?.["type"]=="string")
-            return <p style={{color:"yellow"}}
+            <span>&nbsp;</span>
+            <span 
+            onClick={()=>toggleOpenSubsetDialog(conditionsWhere[nc]?.[ns]?.[field]?.[x]?.["rule"],{
+              fieldName:field,
+              categoryName:nc,
+              segment:ns,
+              rule:x
+            })}
+            style={{textDecoration:"underline"}}>
+            {ssColor==null?"Create subset":"Editar subset"}</span>
+            {ssColor!==null && <span style={{display:"inline-block",marginLeft:"5px",verticalAlign:"middle",width:"50px",height:"10px",background:ssColor,color:ssColor,border:"1px solid white"}}>&nbsp;</span>}
+           </p>
+          }else if(conditionsWhere[nc]?.[ns]?.[field]?.["type"]=="string"){
+            let ssColor=getSubsetColor({
+              fieldName:field,
+              categoryName:nc,
+              segment:ns,
+              rule:x
+            })
+            return <p><p style={{color:"yellow",display:"inline-block"}}
               onClick={()=>toggleOpenViewWhereStatementStringDialog(conditionsWhere[nc]?.[ns]?.[field]?.[x]?.["rule"],{
                 fieldName:field,
                 categoryName:nc,
                 segment:ns
               })}>{x}</p>
-          else if(conditionsWhere[nc]?.[ns]?.[field]?.["type"]=="date")
-            return <p style={{color:"yellow"}}
+              <span>&nbsp;</span>
+              <span 
+              onClick={()=>toggleOpenSubsetDialog(conditionsWhere[nc]?.[ns]?.[field]?.[x]?.["rule"],{
+                fieldName:field,
+                categoryName:nc,
+                segment:ns,
+                rule:x
+              })}
+              style={{textDecoration:"underline"}}>{
+                ssColor==null?"Create subset":"Editar subset"}</span>
+              {ssColor!==null && <span style={{display:"inline-block",marginLeft:"5px",verticalAlign:"middle",width:"50px",height:"10px",background:ssColor,color:ssColor,border:"1px solid white"}}>&nbsp;</span>}
+              </p>
+          }else if(conditionsWhere[nc]?.[ns]?.[field]?.["type"]=="date"){
+            let ssColor=getSubsetColor({
+              fieldName:field,
+              categoryName:nc,
+              segment:ns,
+              rule:x
+            })
+            return <p><p style={{color:"yellow",display:"inline-block"}}
               onClick={()=>toggleOpenViewWhereStatementDateDialog(conditionsWhere[nc]?.[ns]?.[field]?.[x]?.["rule"],{
                 fieldName:field,
                 categoryName:nc,
                 segment:ns
                 })}>{x}</p>
-
+                <span>&nbsp;</span>
+                <span
+                style={{textDecoration:"underline"}}
+                onClick={()=>toggleOpenSubsetDialog(conditionsWhere[nc]?.[ns]?.[field]?.[x]?.["rule"],{
+                  fieldName:field,
+                  categoryName:nc,
+                  segment:ns,
+                  rule:x
+                })}
+                >{ssColor==null?"Create subset":"Editar subset"}</span>
+                {ssColor!==null && <span style={{display:"inline-block",marginLeft:"5px",verticalAlign:"middle",width:"50px",height:"10px",background:ssColor,color:ssColor,border:"1px solid white"}}>&nbsp;</span>}
+              </p>
+          }
         }
       })
     return cls.length>0?<div>{cls}</div>:<br/>
@@ -6815,6 +6917,14 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       open={openSortCriteriaDialog}
       toggleDialog={toggleOpenSortCriteriaDialog}
       {...varOrderHeadCriteria}
+    />}
+    {openSubsetDialog && <SubsetDialog
+      open={openSubsetDialog}
+      toggleDialog={toggleOpenSubsetDialog}
+      whereHeader={varsHeadWhereStatement}
+      conditions={listOfViewConditions}
+      subsets={subsets}
+      setSubsets={setSubsets}
     />}
 
 
