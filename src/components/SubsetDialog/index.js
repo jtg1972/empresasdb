@@ -144,6 +144,7 @@ setSubsets})=>{
                     }
                   }
                 }
+                console.log("pretenduu",ssvar)
                 setColor(pretendColor)
                 setSubsets(ssvar)
               }}}>Add Color</button>

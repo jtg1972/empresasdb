@@ -27,6 +27,7 @@ import { VariablesAreInputTypesRule } from 'graphql'
 import { isInlineFragment, resultKeyNameFromField } from '@apollo/client/utilities'
 import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from 'react-dom'
 import e from 'cors'
+import { GetSubsetsAllTables } from '../../components/GetSubSetsAllTables'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categories:categories.categories,
@@ -176,7 +177,10 @@ const Reports=()=>{
   const [otmChoicesOrder,setOtmChoicesOrder]=useState({})
   //console.log("otmchoices",otmChoices)//,fieldsShown,firstCatNormalFields)
   const [parentIdentifiers,setParentIdentifiers]=useState({})
+  const [finalObjectToSubsets,setFinalObjectToSubsets]=useState({})
+  const [subsetsData,setSubsetsData]=useState({})
   let parentCategories={}
+
   //const [parentCategories,setParentCategories]=useState({})
   useEffect(()=>{
     setShowFields(false)
@@ -5606,6 +5610,22 @@ const getTableToSort=(data)=>{
   console.log("newResult",newResult)
   return newResult
 }
+let llorder=null
+const getSubsetsBlock=(order)=>{
+  return <GetSubsetsAllTables
+  finalObject={finalObject}
+  subsets={subsets}
+  conditionsWhere={conditionsWhere}
+  subsetsData={subsetsData}
+  setSubsetsData={setSubsetsData}
+  order={order}
+  firstCatNormalFields={firstCatNormalFields}
+  otmChoices={otmChoices}
+  parentCategories={parentCategories}
+  parentIdentifiers={parentIdentifiers}
+  otmChoicesStatistics={otmChoicesStatistics}
+  />
+}
 
 const getDataReport=(routes,finalRoutes)=>{
   const root=`getData${currentCategory.name}`
@@ -5630,7 +5650,7 @@ const getDataReport=(routes,finalRoutes)=>{
   //console.log("alltablesarray",allTablesArray)
   let newSubSet=[]
   let nr={}
-    
+    totalTables=[]
     nr=shallowCopy(routes)
     //console.log("aprop",getFinalRoutesArray(finalRoutes,routes))
     let y=findTheLowerLevelCategory1(getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])),[],getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])))
@@ -5645,6 +5665,10 @@ const getDataReport=(routes,finalRoutes)=>{
     console.log("ordertoprinttables",order)
     let tts
     let table
+    //setFinalObjectToSubsets(finalObject)
+    //empieza bloque para obtener datos de subsets
+    
+    //termina bloque para obtener datos de subsets
     order[0].forEach(y=>{
       tts=[]
       tts=getTableToSort(finalObject[y])
@@ -5659,6 +5683,9 @@ const getDataReport=(routes,finalRoutes)=>{
       printFinalTableNew(y,finalObject[y],order[1][y])
       printGrandTotalsTrue(y,realGrandTotals1[y],order[1][y])
     }) bienend*/
+    setSubsetsData({})
+    
+    totalTables.push(getSubsetsBlock(order))
     setReportShow(totalTables)
     console.log("totalRoutes",totalRoutes)
   /*for(let i=0;i<finalRoutes.length;i++){
@@ -6926,7 +6953,7 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       subsets={subsets}
       setSubsets={setSubsets}
     />}
-
+    
 
     
     {showFields 
@@ -6942,6 +6969,7 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
 
     {/*reportShow && beginReport(true,"")*/}
     {reportShow}
+    
   </div>
 }
 
