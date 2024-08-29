@@ -28,6 +28,9 @@ import { isInlineFragment, resultKeyNameFromField } from '@apollo/client/utiliti
 import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from 'react-dom'
 import e from 'cors'
 import { GetSubsetsAllTables } from '../../components/GetSubSetsAllTables'
+import { GetSubsetsContribution } from '../../components/GetSubsetsContributions'
+import { getSubsetsData } from '../../components/GetSubSetsAllTables/getSubsetsData'
+import { getSubsetsCont } from '../../components/GetSubsetsContributions/getSubsetsCont'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categories:categories.categories,
@@ -5611,12 +5614,13 @@ const getTableToSort=(data)=>{
   return newResult
 }
 let llorder=null
-const getSubsetsBlock=(order)=>{
+const getSubsetsBlock=(order,y)=>{
+  
   return <GetSubsetsAllTables
   finalObject={finalObject}
   subsets={subsets}
   conditionsWhere={conditionsWhere}
-  subsetsData={subsetsData}
+  subsetsData={y}
   setSubsetsData={setSubsetsData}
   order={order}
   firstCatNormalFields={firstCatNormalFields}
@@ -5683,9 +5687,52 @@ const getDataReport=(routes,finalRoutes)=>{
       printFinalTableNew(y,finalObject[y],order[1][y])
       printGrandTotalsTrue(y,realGrandTotals1[y],order[1][y])
     }) bienend*/
-    setSubsetsData({})
+    //setSubsetsData({})
+    let ssd={}
+    y=getSubsetsData({
+      data:finalObject,
+      subsets:subsets,
+     
+     
+      
+      conditionsWhere:conditionsWhere,
+      order:order,
+      firstCatNormalFields:firstCatNormalFields,
+      otmChoices:otmChoices,
+      parentCategories:parentCategories,
+      parentIdentifiers:parentIdentifiers,
+      otmChoicesStatistics:otmChoicesStatistics,
+  })
+
+let z=getSubsetsCont({
+    data:finalObject,
+    subsets:subsets,
+    subsetsData:y,
+   
     
-    totalTables.push(getSubsetsBlock(order))
+    conditionsWhere:conditionsWhere,
+    order:order,
+    firstCatNormalFields:firstCatNormalFields,
+    otmChoices:otmChoices,
+    parentCategories:parentCategories,
+    parentIdentifiers:parentIdentifiers,
+    otmChoicesStatistics:otmChoicesStatistics,
+})
+    totalTables.push(getSubsetsBlock(order,y))
+    
+    totalTables.push(<GetSubsetsContribution
+      finalObject={finalObject}
+      subsets={subsets}
+      conditionsWhere={conditionsWhere}
+      subsetsData={y}
+      setSubsetsData={setSubsetsData}
+      order={order}
+      firstCatNormalFields={firstCatNormalFields}
+      otmChoices={otmChoices}
+      parentCategories={parentCategories}
+      parentIdentifiers={parentIdentifiers}
+      otmChoicesStatistics={otmChoicesStatistics}
+    ></GetSubsetsContribution>)
     setReportShow(totalTables)
     console.log("totalRoutes",totalRoutes)
   /*for(let i=0;i<finalRoutes.length;i++){

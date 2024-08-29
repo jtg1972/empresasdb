@@ -21,104 +21,39 @@ parentIdentifiers,otmChoicesStatistics})=>{
   }=useSelector(mapToState)
   let realGrandTotals1={}
   let twoTables=[]
+  let ssd1
   useEffect(()=>{
-    console.log("subset",subset,subsetsData)
+    console.log("subset9090",subset,subsetsData)
     console.log("conditionswhere1",conditionsWhere,data)
-
-    let ssd=subsetsData
-    if(ssd?.[category]==undefined)
-      ssd={...ssd,[category]:{}}
-    if(data!=undefined){
-      console.log("ntro66")
-      if(ssd?.[category]?.[subset]==undefined)
-        ssd={...ssd,
-          [category]:{
-            ...ssd[category],
-            [subset]:{}
-          }}
-      
-      verifyMeetWithConditionsBySegmentBaseLevel2(category,data,ssd)
+    if(subsetsData!=undefined){
+      //verifyMeetWithConditionsBySegmentBaseLevel2(category,data,ssd1)
+      getCategoriesGrandTotals(category,subsetsData)
+      calculatePercentageOverGrandTotal(subsetsData[category][subset])
+      console.log("ssdata77",subsetsData,data)
+      calculateMediaAndMediansOfRecords(category,subsetsData[category][subset])
+      /*bloque que obtiene la participacion de los subsets a la tabla category*/
+      console.log("orderanswers",category,order,data,otmChoices,firstCatNormalFields,subsets[category])
+      //calculateSubsetContributions(ssd)
+      //termina bloque
+  
+      printFinalTableNew(category,subsetsData,order[1][category])//,order[0])
+      printGrandTotalsTrue(category,realGrandTotals1[category][subset],order[1][category])
+      setPrintedTable(twoTables)
     }
-  },[subsets])
+    
+    //setSubsetsData(ssd)
+  },[subsetsData])
 
   
 
   
-  const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data1,ssd)=>{
-    console.log("datadetail",data1,category)
-    let segment=subsets[category][subset]["segment"]
-    let fieldName=subsets[category][subset]["fieldName"]
-    let rule=subsets[category][subset]["rule"]
-    let u=subsets[category][subset]
-    let ruleName=subsets[category][subset]["ruleName"]
-    //console.log("veri222",category,x)
-    
-    let getMainRule=conditionsWhere[category][segment][fieldName][ruleName]
-    let type=conditionsWhere[category][segment][fieldName]["type"]
-    let datafield=conditionsWhere[category][segment][fieldName]
-    let res
-    
-    console.log("ssd22",ssd,"entro aqui")
-    if(category==segment){
-      
-      let newRecord={}
-      Object.keys(data1[category]).forEach(y=>{
-        if(checkRule(getMainRule,data1[segment][y],category==segment,fieldName,type,u,y)){
-          Object.keys(data1).forEach(k=>{
-            //if(ssd?.[category]?.[subset]?.[k]==undefined)
-              ssd[category][subset]={...ssd[category][subset],[k]:{...ssd[category][subset][k],[y]:data1[k][y]}}
-          })
-        
-          
-          /*Object.keys(data).forEach(l=>{
-              delete data[l][y]
-            })
-          } */
-        } 
-      })
-    
-      
-    }else if(category!==segment && segment!=="hybrid"){
-       
-      Object.keys(data1[segment]).forEach(y=>{
-        if(checkRule(getMainRule,data1[segment][y],false,fieldName,type,u)){
-          
-          Object.keys(data1).forEach(k=>{
-            //if(ssd[category]?.[subset]?.[k]==undefined)
-              ssd[category][subset]={...ssd[category][subset],[k]:{...ssd[category][subset][k],[y]:data1[k][y]}}
-          })
-        
-        
-        }
-      })
-    }else if(segment=="hybrid"){
-      Object.keys(data1[category]).forEach(y=>{
-        if(checkRuleHybrid(getMainRule,data1,y)){
-          
-          Object.keys(data1).forEach(k=>{
-            //if(ssd?.[category]?.[subset]?.[k]==undefined)
-              ssd[category][subset]={...ssd[category][subset],[k]:{...ssd[category][subset][k],[y]:data1[k][y]}}
-          })
-          
-        }
-      })
-    }
-    console.log("ssdata",ssd)
-    getCategoriesGrandTotals(category,ssd)
-    calculatePercentageOverGrandTotal(ssd[category][subset])
-    calculateMediaAndMediansOfRecords(category,ssd[category][subset])
-    printFinalTableNew(category,ssd,order[1][category])//,order[0])
-    printGrandTotalsTrue(category,realGrandTotals1[category][subset],order[1][category])
-    setPrintedTable(twoTables)
-
-    
-  }
-
+  
+  
   const printFinalTableNew=(category,data2,segments)=>{//,order)=>{
     console.log("iniciobegin",firstCatNormalFields,otmChoices)
     
-  twoTables.push(printMainHeaders(data2[category][subset],category,segments))
-  setSubsetsData(data2)  
+  twoTables.push(printMainHeaders(subsetsData[category][subset],category,segments))
+  //setSubsetsData(data2)  
   }
   const printMainHeaders=(data,category,segments)=>{
     let subtitles={}
@@ -275,7 +210,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
             
             //if(otmChoicesStatistics[category][segment][q.name1][ji]==true){
               
-              temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid white"}}>{ji}</th>)
+              temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid white"}}>{ji!="percentage"?ji:`${ji} (set-subset)`}</th>)
   
             //}
           })
@@ -307,7 +242,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
             //if(otmChoicesStatistics[category][segment][q.name1][ji]==true){
               //if(ji=="media")
                 console.log("mediainfo",q.name1,realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1),realSegmentLast,segment,lastIndexNumberComposite,index,i44,otmStatisticsArray.length-1)
-              temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1))===true?"none":"1px solid white"}}>{ji}</th>)
+              temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1))===true?"none":"1px solid white"}}>{ji!="percentage"?ji:`${ji} (set-subset)`}</th>)
   
             //}
           })
@@ -450,24 +385,24 @@ parentIdentifiers,otmChoicesStatistics})=>{
             
             firstCatNormalFields[y].normal.forEach(i=>{
               if(i.type=="number"){
-                ssd[y][u][`%${i.name1}`]=(ssd?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][i.name1]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
+                subsetsData[y][u][`%${i.name1}Subset`]=(subsetsData?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][i.name1]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
                 if(realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]==undefined)
                   realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]=[]
-                realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`].push(ssd[y][u][i.name1])
+                realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`].push(subsetsData[y][u][i.name1])
               }    
             })
             firstCatNormalFields[y].compositeFields.forEach(i=>{
               if(i.type=="number"){
-                ssd[y][u][`%${i.name1}`]=(ssd?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(ssd[y][u][i.name1]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
+                ssd[y][u][`%${i.name1}Subset`]=(ssd?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(ssd[y][u][i.name1]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
                 if(realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]==undefined)
                   realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]=[]
-                realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`].push(ssd[y][u][i.name1])
+                realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`].push(subsetsData[y][u][i.name1])
               }
             })
           }else{
             otmChoices[y].normal.forEach(i=>{
               if(i.type=="number"){
-                ssd[y][u][`%${i.name1}`]=(ssd?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][`${i.name1}total`]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
+                ssd[y][u][`%${i.name1}Subset`]=(ssd?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][`${i.name1}total`]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
                 //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
                 if(realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]==undefined)
                   realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]=[]
@@ -476,7 +411,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
             })
             otmChoices[y].compositeFields.forEach(i=>{
               if(i.type=="number"){
-                ssd[y][u][`%${i.name1}`]=(ssd?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][`${i.name1}total`]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
+                ssd[y][u][`%${i.name1}Subset`]=(ssd?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][`${i.name1}total`]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
                 //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
                 if(realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]==undefined)
                   realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]=[]
@@ -488,7 +423,8 @@ parentIdentifiers,otmChoicesStatistics})=>{
           if(category==y){
             otmChoices[y].normal.forEach(i=>{
               if(i.type=="number"){
-                ssd[y][u][`%${i.name1}`]=(ssd?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][i.name1]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
+                console.log("supervision",realGrandTotals1[category][subset],y,`${i.name1}total`,realGrandTotals1[category][subset][y][`${i.name1}total`])
+                ssd[y][u][`%${i.name1}Subset`]=(ssd?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][`${i.name1}total`]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
                 //((finalObject[category][y][u][`${i.name1}`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
                 if(realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]==undefined)
                   realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]=[]
@@ -497,7 +433,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
             })
             otmChoices[y].compositeFields.forEach(i=>{
               if(i.type=="number"){
-                ssd[y][u][`%${i.name1}`]=(ssd?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][i.name1]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
+                ssd[y][u][`%${i.name1}Subset`]=(ssd?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][i.name1]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
                 //((finalObject[category][y][u][`${i.name1}`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
                 if(realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]=[]
@@ -507,7 +443,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
           }else{
             otmChoices[y].normal.forEach(i=>{
               if(i.type=="number"){
-                ssd[y][u][`%${i.name1}`]=(ssd?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][`${i.name1}total`]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
+                ssd[y][u][`%${i.name1}Subset`]=(ssd?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][`${i.name1}total`]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
                 //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
                 if(realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]==undefined)
                   realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]=[]
@@ -516,7 +452,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
             })
             otmChoices[y].compositeFields.forEach(i=>{
               if(i.type=="number"){
-                ssd[y][u][`%${i.name1}`]=(ssd?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][`${i.name1}total`]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
+                ssd[y][u][`%${i.name1}Subset`]=(ssd?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][`${i.name1}total`]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
                 //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
                 if(realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]==undefined)
                   realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]=[]
@@ -760,7 +696,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
                 let pmay=ji[0].toUpperCase()+ji.substring(1)
                 //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
                 if(ji=="percentage"){
-                  temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}</td>)  
+                  temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}%-{data[y][`%${q.name1}Subset`].toFixed(2)}%</td>)  
   
                 }else if(ji=="minimum"){
                   temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
@@ -797,7 +733,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
                 //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
                 //temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`]}</td>)
                 if(ji=="percentage"){
-                  temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}</td>)  
+                  temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}%-{data[y][`%${q.name1}Subset`].toFixed(2)}%</td>)  
   
                 }else if(ji=="minimum"){
                   temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
@@ -818,23 +754,25 @@ parentIdentifiers,otmChoicesStatistics})=>{
         if(realSegmentLast!==a){ 
           if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
             if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
-  
-              result=[<td style={{wordSpacing:"nowrap",borderRight:"1px solid black"}}>{data[y][`${a}TotalCount`]}</td>,...result,...temp]
+              let val=data[y][`${a}TotalCount`]/realGrandTotals1[category][subset][a][`${a}TotalCount`]
+              result=[<td style={{wordSpacing:"nowrap",borderRight:"1px solid black"}}>{data[y][`${a}TotalCount`]} ({(val*100).toFixed(2)}%)</td>,...result,...temp]
             }else{
               result=[...result,...temp]
             }
           }
           else{
             if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
-  
-              result=[<td style={{wordSpacing:"nowrap",borderRight:"1px solid black"}}>{data[y][`${a}TotalCount`]}</td>]
+              let val=data[y][`${a}TotalCount`]/realGrandTotals1[category][subset][a][`${a}TotalCount`]
+              result=[<td style={{wordSpacing:"nowrap",borderRight:"1px solid black"}}>{data[y][`${a}TotalCount`]} ({(val*100).toFixed(2)}%)</td>]
             }
           }
         }else{
           if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
+            let val=0
             if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
-  
-              result=[<td style={{wordSpacing:"nowrap",borderRight:"1px solid black"}}>{data[y][`${a}TotalCount`]}</td>,...result,...temp]
+              console.log("track1",data[y][`${a}TotalCount`]/realGrandTotals1[category][subset][a][`${a}TotalCount`])
+              val=data[y][`${a}TotalCount`]/realGrandTotals1[category][subset][a][`${a}TotalCount`]
+              result=[<td style={{wordSpacing:"nowrap",borderRight:"1px solid black"}}>{data[y][`${a}TotalCount`]} ({(val*100).toFixed(2)}%)</td>,...result,...temp]
             }else
               result=[...result,temp]
           }
@@ -1241,7 +1179,7 @@ const calculateMediaAndMediansOfRecords=(category,ssd)=>{
               }else{
                 median=((sortedValues[(sortedValues.length/2)-1]+sortedValues[(sortedValues.length/2)])/2)
               }
-              realGrandTotals1[category][y][`${i.name1}Median`]=median
+              realGrandTotals1[category][subset][y][`${i.name1}Median`]=median
 
             }
             

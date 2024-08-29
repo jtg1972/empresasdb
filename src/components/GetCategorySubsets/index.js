@@ -9,14 +9,17 @@ parentCategories,parentIdentifiers,otmChoicesStatistics})=>{
   const [subsets1,setSubsets1]=useState(subsets)
   console.log("problema",subsets)
   let tableTotalRecords
-  useEffect(()=>{
+ /*useEffect(()=>{
 
-    let ssd=subsetsData
-    console.log("ssd111",ssd,subsets)
-    //setSubsetsData(ssd)
-  },[])
+    //let ssd=subsetsData
+    //ssd={...ssd,[category]:{}}
+    //console.log("ssd111",ssd,subsets)
+    setSubsetsData(ssd=>{
+      console.log("ssd111",{...ssd,[category]:{}})
+      return {...ssd,[category]:{}}
   
- 
+    })
+  },[])*/
     return <div>
       {subsets?.[category]!=undefined ? Object.keys(subsets[category])?.map(subset=>{
       return <GetCategorySubset
@@ -33,10 +36,12 @@ parentCategories,parentIdentifiers,otmChoicesStatistics})=>{
       parentCategories={parentCategories}
       parentIdentifiers={parentIdentifiers}
       otmChoicesStatistics={otmChoicesStatistics}
-    />}):
-    <div>jorge
-    </div>}
-    </div>
-  
-  
+      />}):
+      
+    <div>
+ 
+      jorge
+    
+     </div>}
+  </div>
 }

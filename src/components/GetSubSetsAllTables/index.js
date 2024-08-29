@@ -1,6 +1,7 @@
 import { valueToObjectRepresentation } from '@apollo/client/utilities'
 import {useState,useEffect} from 'react'
 import { GetCategorySubsets } from '../GetCategorySubsets'
+import { getSubsetsData } from './getSubsetsData'
 export const GetSubsetsAllTables=({
   finalObject,subsets,conditionsWhere,
   subsetsData,setSubsetsData,order,
@@ -12,16 +13,29 @@ export const GetSubsetsAllTables=({
 
   const [keys,setKeys]=useState(Object.keys(finalObject))
   const [keys1,setKeys1]=useState(Object.keys(subsets))
-  
-  
+  let y
   useEffect(()=>{
-    setKeys(Object.keys(finalObject))
-    setKeys1(Object.keys(subsets))
-  },[finalObject,subsets])
-
+    /*y=getSubsetsData({
+        data:finalObject,
+        subsets:subsets,
+       
+       
+        
+        conditionsWhere:conditionsWhere,
+        order:order,
+        firstCatNormalFields:firstCatNormalFields,
+        otmChoices:otmChoices,
+        parentCategories:parentCategories,
+        parentIdentifiers:parentIdentifiers,
+        otmChoicesStatistics:otmChoicesStatistics,
+    })*/
+    //setSubsetsData(y)
+  },[subsets,finalObject])
+  
 
   console.log("varsglobal",finalObject,subsets)
   return <div>
+    
     {subsets!=undefined ? Object.keys(subsets).map(cat=>
     <>
       <p>{cat}</p>
