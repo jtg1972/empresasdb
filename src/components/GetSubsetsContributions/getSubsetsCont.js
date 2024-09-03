@@ -16,19 +16,43 @@ export const getSubsetsCont=({
       if(data[cat]!=undefined){
         if(cat.startsWith("getData")){
           firstCatNormalFields[cat].otm.forEach((x)=>{
+            console.log("subsetsfijo",subsets,x)
             if(subsets[x]!=undefined){
-              
+              console.log("ssfijo",subsets[x])
               Object.keys(subsetsData[x]).forEach(ss=>{
+                console.log("ssfijo",subsets[x],subsetsData[x],ss,subsetsData[x][ss])
+
                 let ssData=subsetsData[x][ss]
                 Object.keys(ssData).forEach(seg=>{
                   
-                  if(dataResult?.[cat]?.[seg]==undefined)
-                    dataResult={...dataResult,[cat]:{
-                      ...dataResult[cat],[seg]:{}
-                    }}
-                  Object.keys(ssData[seg]).forEach(rs=>{
+                  if(dataResult?.[cat]?.[seg]==undefined){
+                    dataResult={
+                      ...dataResult,
+                      [cat]:{
+                        ...dataResult[cat],[seg]:{}
+                      }
+                    }
+                  }
+                
+                  Object.keys(data[cat][seg]).forEach(gi=>{
+                    if(dataResult?.[cat]?.[seg]?.[gi]==undefined){
+                      dataResult={
+                        ...dataResult,
+                        [cat]:{
+                          ...dataResult[cat],
+                          [seg]:{
+                            ...dataResult[cat][seg],
+                            [gi]:{}
+                          } 
+
+                        }
+                      }
+                    }
+                  })
+                  Object.keys(ssData[seg]).forEach((rs,ind1)=>{
+                    console.log("counteree",cat,seg,Object.keys(ssData[seg]).length,ind1)
                     Object.keys(data[cat][seg]).forEach(gi=>{
-                      if(dataResult?.[cat]?.[seg]?.[gi]==undefined)
+                      if(dataResult?.[cat]?.[seg]?.[gi]==undefined){
                         dataResult={...dataResult,
                           [cat]:{
                             ...dataResult[cat],
@@ -39,196 +63,220 @@ export const getSubsetsCont=({
 
                           }
                         }
-                      if(data[cat][seg][gi]["keys"].includes(ssData[seg][rs]["id"])){
-                        console.log("ssdataverif",cat,x,ssData,seg,otmChoices[seg]["normal"],x,ss,subsetsData[x][ss])
-                        console.log("otmverfirstcat",otmChoices[seg]["normal"])
-                        Object.keys(subsetsData[x][ss]).forEach(seg1=>{
+                      }
+                      //if(data[cat][seg][gi]["keys"].includes(ssData[seg][rs]["id"])){
+                      console.log("ssdataverif",cat,x,ssData,seg,otmChoices[seg]["normal"],x,ss,subsetsData[x][ss])
+                      console.log("otmverfirstcat",otmChoices[seg]["normal"])
+                      //Object.keys(subsetsData[x][ss]).forEach(seg1=>{
 
-                          console.log("checarseg",seg1,otmChoices[seg1].normal) 
-                          otmChoices[seg1].normal.forEach(n=>{
-                            if(n.type=="number"){
-                              if(dataResult?.[cat]?.[seg1]?.[gi]?.[`${n.name1}total`]==undefined){
-                                dataResult={...dataResult,
-                                  [cat]:{
-                                    ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
-                                      [gi]:{
-                                        ...dataResult[cat][seg1][gi],
-                                        [`${n.name1}total`]:{}
-                                      }
-                                    } 
-        
-                                  }
-                                }
-                              }
-                              if(dataResult?.[cat]?.[seg1]?.[gi]?.[`${n.name1}total`]?.[ss]==undefined){
-                                
-                                dataResult={...dataResult,
-                                  [cat]:{
-                                    ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
-                                      [gi]:{
-                                        ...dataResult[cat][seg1][gi],
-                                        [`${n.name1}total`]:{
-                                          ...dataResult[cat][seg1][gi][`${n.name1}total`],
-                                          [ss]:{value:0,arr:[]}
-          
-                                        }
-                                      }
-                                    } 
-        
-                                  }
-                                }
-                                console.log("kerker12",cat,seg1,gi,`${n.name1}total`,dataResult[cat][seg1][gi][`${n.name1}total`])
+                        console.log("checarseg",seg,otmChoices[seg].normal) 
+                        otmChoices[seg].normal.forEach(n=>{
+                          if(n.type=="number"){
 
-                              }
-                              if(x==seg1){
-                                
-
-                                dataResult={...dataResult,
-                                  [cat]:{
-                                    ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
-                                      [gi]:{
-                                        ...dataResult[cat][seg1][gi],
-                                        [`${n.name1}total`]:{
-                                          ...dataResult[cat][seg1][gi][`${n.name1}total`],
-                                          [ss]:{
-                                            value:dataResult[cat][seg1][gi][`${n.name1}total`][ss]["value"]+ssData[seg1][rs][`${n.name1}`],
-                                            arr:[...dataResult[cat][seg1][gi][`${n.name1}total`][ss]["arr"],ssData[seg1][rs][`${n.name1}`]]
-                                          }
-          
-                                        }
-                                      }
-                                    } 
-        
-                                  }
-                                }
-                              }else{
-                                dataResult={...dataResult,
-                                  [cat]:{
-                                    ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
-                                      [gi]:{
-                                        ...dataResult[cat][seg1][gi],
-                                        [`${n.name1}total`]:{
-                                          ...dataResult[cat][seg1][gi][`${n.name1}total`],
-                                          [ss]:{
-                                            value:dataResult[cat][seg1][gi][`${n.name1}total`][ss]["value"]+ssData[seg1][rs][`${n.name1}total`],
-                                            arr:[...dataResult[cat][seg1][gi][`${n.name1}total`][ss]["arr"],ssData[seg1][rs][`${n.name1}total`]]
-                                          
-                                          }
-          
-                                        }
-                                      }
-                                    } 
-        
-                                  }
-                                }
-                              }
-                            }
-                          })
-                          otmChoices[seg1].compositeFields.forEach(n=>{
-                            if(n.type=="number"){
-                              if(dataResult?.[cat]?.[seg1]?.[gi]?.[`${n.name1}total`]==undefined){
-                                dataResult={...dataResult,
-                                  [cat]:{
-                                    ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
-                                      [gi]:{
-                                        ...dataResult[cat][seg1][gi],
-                                        [`${n.name1}total`]:{}
-                                      }
-                                    } 
-        
-                                  }
-                                }
-                              }
-                              if(dataResult?.[cat]?.[seg1]?.[gi]?.[`${n.name1}total`]?.[ss]==undefined){
-                                
-                                dataResult={...dataResult,
-                                  [cat]:{
-                                    ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
-                                      [gi]:{
-                                        ...dataResult[cat][seg1][gi],
-                                        [`${n.name1}total`]:{
-                                          ...dataResult[cat][seg1][gi][`${n.name1}total`],
-                                          [ss]:{value:0,arr:[]}
-          
-                                        }
-                                      }
-                                    } 
-        
-                                  }
-                                }
-                                console.log("kerker",cat,seg1,gi,`${n.name1}total`,dataResult[cat][seg1][gi][`${n.name1}total`])
-                              }
-                              if(x==seg1){
-                                
-
-                                dataResult={...dataResult,
-                                  [cat]:{
-                                    ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
-                                      [gi]:{
-                                        ...dataResult[cat][seg1][gi],
-                                        [`${n.name1}total`]:{
-                                          ...dataResult[cat][seg1][gi][`${n.name1}total`],
-                                          [ss]:{
-                                            value:dataResult[cat][seg1][gi][`${n.name1}total`][ss]["value"]+ssData[seg1][rs][`${n.name1}`],
-                                            arr:[...dataResult[cat][seg1][gi][`${n.name1}total`][ss]["arr"],ssData[seg1][rs][`${n.name1}`]]
-                                          }
-          
-                                        }
-                                      }
-                                    } 
-        
-                                  }
-                                }
-                              }else{
-                                dataResult={...dataResult,
-                                  [cat]:{
-                                    ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
-                                      [gi]:{
-                                        ...dataResult[cat][seg1][gi],
-                                        [`${n.name1}total`]:{
-                                          ...dataResult[cat][seg1][gi][`${n.name1}total`],
-                                          [ss]:{
-                                            value:dataResult[cat][seg1][gi][`${n.name1}total`][ss]["value"]+ssData[seg1][rs][`${n.name1}total`],
-                                            arr:[...dataResult[cat][seg1][gi][`${n.name1}total`][ss]["arr"],ssData[seg1][rs][`${n.name1}total`]]
-                                          
-                                          }
-          
-                                        }
-                                      }
-                                    } 
-        
-                                  }
-                                }
-                              }
-                            }
-
+                            if(dataResult?.[cat]?.[seg]?.[gi]?.[`${n.name1}total`]==undefined){
                               
+                              dataResult={...dataResult,
+                                [cat]:{
+                                  ...dataResult[cat],
+                                  [seg]:{
+                                    ...dataResult[cat][seg],
+                                    [gi]:{
+                                      ...dataResult[cat][seg][gi],
+                                      [`${n.name1}total`]:{}
+                                    }
+                                  } 
+      
+                                }
+                              }
+                            }
+                            
+                            if(dataResult?.[cat]?.[seg]?.[gi]?.[`${n.name1}total`]?.[ss]==undefined){
+                              
+                              dataResult={...dataResult,
+                                [cat]:{
+                                  ...dataResult[cat],
+                                  [seg]:{
+                                    ...dataResult[cat][seg],
+                                    [gi]:{
+                                      ...dataResult[cat][seg][gi],
+                                      [`${n.name1}total`]:{
+                                        ...dataResult[cat][seg][gi][`${n.name1}total`],
+                                        [ss]:{value:0,arr:[]}
+        
+                                      }
+                                    }
+                                  } 
+      
+                                }
+                              }
+
+                            }
+                            console.log("kerker1234",cat,seg,gi,`${n.name1}total`,dataResult[cat][seg][gi][`${n.name1}total`],rs,ssData[seg])
+
+                            if(data[cat][seg][gi]["keys"].includes(ssData[x][rs]["id"])){
+                              if(x==seg){
+                                console.log("checarque",cat,seg,gi,`${n.name1}total`,ssData[seg][rs][`${n.name1}`])                              
+
+                                console.log("uiruir",cat,seg,gi,data[cat][seg][gi]["keys"],`${n.name1}total`,ssData[seg][rs][`${n.name1}`])
+                                dataResult={...dataResult,
+                                  [cat]:{
+                                    ...dataResult[cat],
+                                    [seg]:{
+                                      ...dataResult[cat][seg],
+                                      [gi]:{
+                                        ...dataResult[cat][seg][gi],
+                                        [`${n.name1}total`]:{
+                                          ...dataResult[cat][seg][gi][`${n.name1}total`],
+                                          [ss]:{
+                                            value:dataResult[cat][seg][gi][`${n.name1}total`][ss]["value"]+ssData[seg][rs][`${n.name1}`],
+                                            arr:[...dataResult[cat][seg][gi][`${n.name1}total`][ss]["arr"],ssData[seg][rs][`${n.name1}`]]
+                                          }
+          
+                                        }
+                                      }
+                                    } 
+        
+                                  }
+                                }
+                              }else{
+                                console.log("uiruir",cat,seg,gi,data[cat][seg][gi]["keys"])
+                                console.log("checarque",cat,seg,gi,`${n.name1}total`,ssData[seg][rs][`${n.name1}total`])                             
+                                
+
+                                dataResult={...dataResult,
+                                  [cat]:{
+                                    ...dataResult[cat],
+                                    [seg]:{
+                                      ...dataResult[cat][seg],
+                                      [gi]:{
+                                        ...dataResult[cat][seg][gi],
+                                        [`${n.name1}total`]:{
+                                          ...dataResult[cat][seg][gi][`${n.name1}total`],
+                                          [ss]:{
+                                            value:dataResult[cat][seg][gi][`${n.name1}total`][ss]["value"]+ssData[seg][rs][`${n.name1}total`],
+                                            arr:[...dataResult[cat][seg][gi][`${n.name1}total`][ss]["arr"],ssData[seg][rs][`${n.name1}total`]]
+                                          
+                                          }
+          
+                                        }
+                                      }
+                                    } 
+        
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        })
+                        otmChoices[seg].compositeFields.forEach(n=>{
+                          if(n.type=="number"){
+                            if(dataResult?.[cat]?.[seg]?.[gi]==undefined){
+                              dataResult[cat][seg]={...dataResult[cat][seg],[gi]:{}}
+                            }
+                            if(dataResult?.[cat]?.[seg]?.[gi]?.[`${n.name1}total`]==undefined){
+                              dataResult={...dataResult,
+                                [cat]:{
+                                  ...dataResult[cat],
+                                  [seg]:{
+                                    ...dataResult[cat][seg],
+                                    [gi]:{
+                                      ...dataResult[cat][seg][gi],
+                                      [`${n.name1}total`]:{}
+                                    }
+                                  } 
+      
+                                }
+                              }
+                            }
+                            if(dataResult?.[cat]?.[seg]?.[gi]?.[`${n.name1}total`]?.[ss]==undefined){
+                              
+                              dataResult={...dataResult,
+                                [cat]:{
+                                  ...dataResult[cat],
+                                  [seg]:{
+                                    ...dataResult[cat][seg],
+                                    [gi]:{
+                                      ...dataResult[cat][seg][gi],
+                                      [`${n.name1}total`]:{
+                                        ...dataResult[cat][seg][gi][`${n.name1}total`],
+                                        [ss]:{value:0,arr:[]}
+        
+                                      }
+                                    }
+                                  } 
+      
+                                }
+                              }
+                            }
+
+                            console.log("cheq22",cat,seg,data[cat][seg][gi]["keys"],rs,ssData)
+                            console.log("kerker1234",cat,seg,gi,`${n.name1}total`,dataResult[cat][seg][gi][`${n.name1}total`],rs,ssData[cat])
+
+                              if(data[cat][seg][gi]["keys"].includes(ssData[x][rs]["id"])){
+                              if(x==seg){
+                                console.log("uiruirc",cat,seg,gi,data[cat][seg][gi]["keys"],`${n.name1}total`)
+                                console.log("checarque",cat,seg,gi,`${n.name1}total`,ssData[seg][rs][`${n.name1}`])
+
+                                dataResult={...dataResult,
+                                  [cat]:{
+                                    ...dataResult[cat],
+                                    [seg]:{
+                                      ...dataResult[cat][seg],
+                                      [gi]:{
+                                        ...dataResult[cat][seg][gi],
+                                        [`${n.name1}total`]:{
+                                          ...dataResult[cat][seg][gi][`${n.name1}total`],
+                                          [ss]:{
+                                            value:dataResult[cat][seg][gi][`${n.name1}total`][ss]["value"]+ssData[seg][rs][`${n.name1}`],
+                                            arr:[...dataResult[cat][seg][gi][`${n.name1}total`][ss]["arr"],ssData[seg][rs][`${n.name1}`]]
+                                          }
+          
+                                        }
+                                      }
+                                    } 
+        
+                                  }
+                                }
+                              }else{
+                                console.log("checarque",cat,seg,gi,`${n.name1}total`,ssData[seg][rs][`${n.name1}total`])
+
+                                console.log("uiruirbien",cat,seg,gi,data[cat][seg][gi]["keys"],ssData[seg][rs]["id"],`${n.name1}total`)
+                                dataResult={...dataResult,
+                                  [cat]:{
+                                    ...dataResult[cat],
+                                    [seg]:{
+                                      ...dataResult[cat][seg],
+                                      [gi]:{
+                                        ...dataResult[cat][seg][gi],
+                                        [`${n.name1}total`]:{
+                                          ...dataResult[cat][seg][gi][`${n.name1}total`],
+                                          [ss]:{
+                                            value:dataResult[cat][seg][gi][`${n.name1}total`][ss]["value"]+ssData[seg][rs][`${n.name1}total`],
+                                            arr:[...dataResult[cat][seg][gi][`${n.name1}total`][ss]["arr"],ssData[seg][rs][`${n.name1}total`]]
+                                          
+                                          }
+          
+                                        }
+                                      }
+                                    } 
+        
+                                  }
+                                }
+                              }
+                            }
+                          }
 
                             
-                            
 
-                          })
+                          
                           
 
                         })
-                        console.log("foundmain",gi,rs)
-                      }
+                        
+
+                      //})
+                      console.log("foundmain",gi,rs)
+                      
                     
                     })
                     console.log("rstyu",ssData[seg][rs],dataResult)
@@ -243,39 +291,46 @@ export const getSubsetsCont=({
           otmChoices[cat].otm.forEach((x)=>{
             if(subsets[x]!=undefined){
               
-              Object.keys(subsets[x]).forEach(ss=>{
+              Object.keys(subsetsData[x]).forEach(ss=>{
                 let ssData=subsetsData[x][ss]
                 Object.keys(ssData).forEach(seg=>{
                   if(dataResult?.[cat]?.[seg]==undefined)
                     dataResult={...dataResult,[cat]:{
                       ...dataResult[cat],[seg]:{}
                     }}
-                  Object.keys(ssData[seg]).forEach(rs=>{
-                    Object.keys(data[cat][seg]).forEach(gi=>{
-                      if(dataResult?.[cat]?.[seg]?.[gi]==undefined)
-                        dataResult={...dataResult,
-                          [cat]:{
-                            ...dataResult[cat],
-                            [seg]:{
-                              ...dataResult[cat][seg],
-                              [gi]:{}
-                            } 
-
+                    Object.keys(ssData[seg]).forEach((rs,ind1)=>{
+                      console.log("counteree",cat,seg,Object.keys(ssData[seg]).length,ind1)
+                      Object.keys(data[cat][seg]).forEach(gi=>{
+                        if(dataResult?.[cat]?.[seg]?.[gi]==undefined){
+                          dataResult={...dataResult,
+                            [cat]:{
+                              ...dataResult[cat],
+                              [seg]:{
+                                ...dataResult[cat][seg],
+                                [gi]:{}
+                              } 
+  
+                            }
                           }
                         }
-                      if(data[cat][seg][gi]["keys"].includes(ssData[seg][rs]["id"])){
-                        console.log("otmver",otmChoices[seg]["normal"])
-                        Object.keys(subsetsData[x][ss]).forEach(seg1=>{
-                          otmChoices[seg1].normal.forEach(n=>{
+                        //if(data[cat][seg][gi]["keys"].includes(ssData[seg][rs]["id"])){
+                        console.log("ssdataverif",cat,x,ssData,seg,otmChoices[seg]["normal"],x,ss,subsetsData[x][ss])
+                        console.log("otmverfirstcat",otmChoices[seg]["normal"])
+                        //Object.keys(subsetsData[x][ss]).forEach(seg1=>{
+  
+                          console.log("checarseg",seg,otmChoices[seg].normal) 
+                          otmChoices[seg].normal.forEach(n=>{
                             if(n.type=="number"){
-                              if(dataResult?.[cat]?.[seg1]?.[gi]?.[`${n.name1}total`]==undefined){
+  
+                              if(dataResult?.[cat]?.[seg]?.[gi]?.[`${n.name1}total`]==undefined){
+                                
                                 dataResult={...dataResult,
                                   [cat]:{
                                     ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
+                                    [seg]:{
+                                      ...dataResult[cat][seg],
                                       [gi]:{
-                                        ...dataResult[cat][seg1][gi],
+                                        ...dataResult[cat][seg][gi],
                                         [`${n.name1}total`]:{}
                                       }
                                     } 
@@ -283,17 +338,18 @@ export const getSubsetsCont=({
                                   }
                                 }
                               }
-                              if(dataResult?.[cat]?.[seg1]?.[gi]?.[`${n.name1}total`]?.[ss]==undefined){
+                              
+                              if(dataResult?.[cat]?.[seg]?.[gi]?.[`${n.name1}total`]?.[ss]==undefined){
                                 
                                 dataResult={...dataResult,
                                   [cat]:{
                                     ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
+                                    [seg]:{
+                                      ...dataResult[cat][seg],
                                       [gi]:{
-                                        ...dataResult[cat][seg1][gi],
+                                        ...dataResult[cat][seg][gi],
                                         [`${n.name1}total`]:{
-                                          ...dataResult[cat][seg1][gi][`${n.name1}total`],
+                                          ...dataResult[cat][seg][gi][`${n.name1}total`],
                                           [ss]:{value:0,arr:[]}
           
                                         }
@@ -302,68 +358,78 @@ export const getSubsetsCont=({
         
                                   }
                                 }
+  
                               }
-                              if(x==seg1){
-                                dataResult={...dataResult,
-                                  [cat]:{
-                                    ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
-                                      [gi]:{
-                                        ...dataResult[cat][seg1][gi],
-                                        [`${n.name1}total`]:{
-                                          ...dataResult[cat][seg1][gi][`${n.name1}total`],
-                                          [ss]:{
-                                            value:dataResult[cat][seg1][gi][`${n.name1}total`][ss]["value"]+ssData[seg1][rs][`${n.name1}`],
-                                            arr:[...dataResult[cat][seg1][gi][`${n.name1}total`][ss]["arr"],ssData[seg1][rs][`${n.name1}`]]
+                              console.log("kerker1234",cat,seg,gi,`${n.name1}total`,dataResult[cat][seg][gi][`${n.name1}total`],rs,ssData)
+
+                              if(data[cat][seg][gi]["keys"].includes(ssData[x][rs]["id"])){
+                                if(x==seg){
+                                  console.log("checarque",cat,seg,gi,`${n.name1}total`,ssData[seg][rs][`${n.name1}`])                              
+  
+                                  console.log("uiruir",cat,seg,gi,data[cat][seg][gi]["keys"],`${n.name1}total`,ssData[seg][rs][`${n.name1}`])
+                                  dataResult={...dataResult,
+                                    [cat]:{
+                                      ...dataResult[cat],
+                                      [seg]:{
+                                        ...dataResult[cat][seg],
+                                        [gi]:{
+                                          ...dataResult[cat][seg][gi],
+                                          [`${n.name1}total`]:{
+                                            ...dataResult[cat][seg][gi][`${n.name1}total`],
+                                            [ss]:{
+                                              value:dataResult[cat][seg][gi][`${n.name1}total`][ss]["value"]+ssData[seg][rs][`${n.name1}`],
+                                              arr:[...dataResult[cat][seg][gi][`${n.name1}total`][ss]["arr"],ssData[seg][rs][`${n.name1}`]]
+                                            }
+            
                                           }
-          
                                         }
-                                      }
-                                    } 
-        
+                                      } 
+          
+                                    }
                                   }
-                                }
-                              }else{
-                                dataResult={...dataResult,
-                                  [cat]:{
-                                    ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
-                                      [gi]:{
-                                        ...dataResult[cat][seg1][gi],
-                                        [`${n.name1}total`]:{
-                                          ...dataResult[cat][seg1][gi][`${n.name1}total`],
-                                          [ss]:{
-                                            value:dataResult[cat][seg1][gi][`${n.name1}total`][ss]["value"]+ssData[seg1][rs][`${n.name1}total`],
-                                            arr:[...dataResult[cat][seg1][gi][`${n.name1}total`][ss]["arr"],ssData[seg1][rs][`${n.name1}total`]]
+                                }else{
+                                  console.log("uiruir",cat,seg,gi,data[cat][seg][gi]["keys"],ssData[seg][rs]["id"])
+                                  console.log("checarque",cat,seg,gi,`${n.name1}total`,ssData[seg][rs][`${n.name1}total`])                             
+                                  
+  
+                                  dataResult={...dataResult,
+                                    [cat]:{
+                                      ...dataResult[cat],
+                                      [seg]:{
+                                        ...dataResult[cat][seg],
+                                        [gi]:{
+                                          ...dataResult[cat][seg][gi],
+                                          [`${n.name1}total`]:{
+                                            ...dataResult[cat][seg][gi][`${n.name1}total`],
+                                            [ss]:{
+                                              value:dataResult[cat][seg][gi][`${n.name1}total`][ss]["value"]+ssData[seg][rs][`${n.name1}total`],
+                                              arr:[...dataResult[cat][seg][gi][`${n.name1}total`][ss]["arr"],ssData[seg][rs][`${n.name1}total`]]
+                                            
+                                            }
+            
                                           }
-          
                                         }
-                                      }
-                                    } 
-        
+                                      } 
+          
+                                    }
                                   }
                                 }
                               }
                             }
-
-                              
-
-                            
-                            
-
                           })
-                          otmChoices[seg1].compositeFields.forEach(n=>{
+                          otmChoices[seg].compositeFields.forEach(n=>{
                             if(n.type=="number"){
+                              if(dataResult?.[cat]?.[seg]?.[gi]==undefined){
+                                dataResult[cat][seg]={...dataResult[cat][seg],[gi]:{}}
+                              }
                               if(dataResult?.[cat]?.[seg]?.[gi]?.[`${n.name1}total`]==undefined){
                                 dataResult={...dataResult,
                                   [cat]:{
                                     ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
+                                    [seg]:{
+                                      ...dataResult[cat][seg],
                                       [gi]:{
-                                        ...dataResult[cat][seg1][gi],
+                                        ...dataResult[cat][seg][gi],
                                         [`${n.name1}total`]:{}
                                       }
                                     } 
@@ -371,17 +437,17 @@ export const getSubsetsCont=({
                                   }
                                 }
                               }
-                              if(dataResult?.[cat]?.[seg1]?.[gi]?.[`${n.name1}total`]?.[ss]==undefined){
+                              if(dataResult?.[cat]?.[seg]?.[gi]?.[`${n.name1}total`]?.[ss]==undefined){
                                 
                                 dataResult={...dataResult,
                                   [cat]:{
                                     ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
+                                    [seg]:{
+                                      ...dataResult[cat][seg],
                                       [gi]:{
-                                        ...dataResult[cat][seg1][gi],
+                                        ...dataResult[cat][seg][gi],
                                         [`${n.name1}total`]:{
-                                          ...dataResult[cat][seg1][gi][`${n.name1}total`],
+                                          ...dataResult[cat][seg][gi][`${n.name1}total`],
                                           [ss]:{value:0,arr:[]}
           
                                         }
@@ -391,65 +457,77 @@ export const getSubsetsCont=({
                                   }
                                 }
                               }
-                              if(x==seg1){
-                                dataResult={...dataResult,
-                                  [cat]:{
-                                    ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
-                                      [gi]:{
-                                        ...dataResult[cat][seg1][gi],
-                                        [`${n.name1}total`]:{
-                                          ...dataResult[cat][seg1][gi][`${n.name1}total`],
-                                          [ss]:{
-                                            value:dataResult[cat][seg1][gi][`${n.name1}total`][ss]["value"]+ssData[seg1][rs][`${n.name1}`],
-                                            arr:[...dataResult[cat][seg1][gi][`${n.name1}total`][ss]["arr"],ssData[seg1][rs][`${n.name1}`]]
+                              console.log("kerker1234",cat,seg,gi,`${n.name1}total`,dataResult[cat][seg][gi][`${n.name1}total`],rs,ssData[cat])
+
+                              if(data[cat][seg][gi]["keys"].includes(ssData[x][rs]["id"])){
+                                if(x==seg){
+                                  console.log("uiruirc",cat,seg,gi,data[cat][seg][gi]["keys"],`${n.name1}total`)
+                                  console.log("checarque",cat,seg,gi,`${n.name1}total`,ssData[seg][rs][`${n.name1}`])
+  
+                                  dataResult={...dataResult,
+                                    [cat]:{
+                                      ...dataResult[cat],
+                                      [seg]:{
+                                        ...dataResult[cat][seg],
+                                        [gi]:{
+                                          ...dataResult[cat][seg][gi],
+                                          [`${n.name1}total`]:{
+                                            ...dataResult[cat][seg][gi][`${n.name1}total`],
+                                            [ss]:{
+                                              value:dataResult[cat][seg][gi][`${n.name1}total`][ss]["value"]+ssData[seg][rs][`${n.name1}`],
+                                              arr:[...dataResult[cat][seg][gi][`${n.name1}total`][ss]["arr"],ssData[seg][rs][`${n.name1}`]]
+                                            }
+            
                                           }
-          
                                         }
-                                      }
-                                    } 
-        
+                                      } 
+          
+                                    }
                                   }
-                                }
-                              }else{
-                                dataResult={...dataResult,
-                                  [cat]:{
-                                    ...dataResult[cat],
-                                    [seg1]:{
-                                      ...dataResult[cat][seg1],
-                                      [gi]:{
-                                        ...dataResult[cat][seg1][gi],
-                                        [`${n.name1}total`]:{
-                                          ...dataResult[cat][seg1][gi][`${n.name1}total`],
-                                          [ss]:{
-                                            value:dataResult[cat][seg1][gi][`${n.name1}total`][ss]["value"]+ssData[seg1][rs][`${n.name1}total`],
-                                            arr:[...dataResult[cat][seg1][gi][`${n.name1}total`][ss]["arr"],ssData[seg1][rs][`${n.name1}total`]]
+                                }else{
+                                  console.log("checarque",cat,seg,gi,`${n.name1}total`,ssData[seg][rs][`${n.name1}total`])
+  
+                                  console.log("uiruir",cat,seg,gi,data[cat][seg][gi]["keys"],ssData[cat][rs]["id"],`${n.name1}total`)
+                                  dataResult={...dataResult,
+                                    [cat]:{
+                                      ...dataResult[cat],
+                                      [seg]:{
+                                        ...dataResult[cat][seg],
+                                        [gi]:{
+                                          ...dataResult[cat][seg][gi],
+                                          [`${n.name1}total`]:{
+                                            ...dataResult[cat][seg][gi][`${n.name1}total`],
+                                            [ss]:{
+                                              value:dataResult[cat][seg][gi][`${n.name1}total`][ss]["value"]+ssData[seg][rs][`${n.name1}total`],
+                                              arr:[...dataResult[cat][seg][gi][`${n.name1}total`][ss]["arr"],ssData[seg][rs][`${n.name1}total`]]
+                                            
+                                            }
+            
+                                          }
                                         }
+                                      } 
           
-                                        }
-                                      }
-                                    } 
-        
+                                    }
                                   }
                                 }
                               }
                             }
-
+  
                               
-
+  
                             
                             
-
+  
                           })
-                        })
-                        console.log("found",gi,rs)
-                      }
-                    
+                          
+  
+                        //})
+                        console.log("foundmain",gi,rs)
+                        
+                      
+                      })
+                      console.log("rstyu",ssData[seg][rs],dataResult)
                     })
-                    
-                    console.log("rstyu",ssData[seg][rs],dataResult)
-                  })
                 })
               })
             } 
@@ -471,6 +549,7 @@ const initiateStatistics=(dataResult,otmChoices)=>{
           let arr=[]
           console.log("checarpipo",dataResult[cat][seg],ind)
           if(dataResult[cat][seg][ind]!=undefined){
+            
             otmChoices[seg].normal.forEach(field=>{
               if(field.type=="number"){
                 if(dataResult[cat][seg][ind][`${field.name1}total`]!=undefined){
@@ -480,6 +559,14 @@ const initiateStatistics=(dataResult,otmChoices)=>{
                       ...dataResult[cat][seg][ind][`${field.name1}total`][sg],
                       
                       ...calculateStatistics(dataResult[cat][seg][ind][`${field.name1}total`][sg]["arr"],dataResult[cat][seg][ind][`${field.name1}total`][sg])
+                    }
+                    
+                    if(dataResult[cat][seg][ind][`${field.name1}total`]?.["totalRow"]==undefined)
+                      dataResult[cat][seg][ind][`${field.name1}total`]["totalRow"]=0
+                    let val
+                    if(dataResult[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.[sg]?.["value"]!=undefined){  
+                      val=dataResult[cat][seg][ind][`${field.name1}total`][sg]["value"]
+                      dataResult[cat][seg][ind][`${field.name1}total`]["totalRow"]+=val
                     }
                   })
                 }
@@ -497,6 +584,13 @@ const initiateStatistics=(dataResult,otmChoices)=>{
                       ...dataResult[cat][seg][ind][`${field.name1}total`][sg],
                       
                       ...calculateStatistics(dataResult[cat][seg][ind][`${field.name1}total`][sg]["arr"],dataResult[cat][seg][ind][`${field.name1}total`][sg])
+                    }
+                    if(dataResult[cat][seg][ind][`${field.name1}total`]?.["totalRow"]==undefined)
+                      dataResult[cat][seg][ind][`${field.name1}total`]["totalRow"]=0
+                    let val=0
+                    if(dataResult[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.[sg]?.["value"]!=undefined){  
+                      val=dataResult[cat][seg][ind][`${field.name1}total`][sg]["value"]
+                      dataResult[cat][seg][ind][`${field.name1}total`]["totalRow"]+=val
                     }
                   })
                 }
@@ -532,6 +626,7 @@ const calculateStatistics=(arr,ivar)=>{
       median=(arr[(length/2)-1]+arr[(length/2)])/2
     }
     res["median"]=median
+    res["totalCount"]=arr.length
     return res
   }
 }
