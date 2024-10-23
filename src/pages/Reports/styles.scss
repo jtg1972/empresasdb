@@ -45,7 +45,6 @@ p,div{
     th{
       background-color: black;
       color:white;
-
     }
   }
 }
@@ -72,5 +71,35 @@ p,div{
   th{
       border-right:1px solid white;
       
+  }
+}
+
+div{
+  &.cont{
+    table,thead,tbody,tr,td,th{
+      
+      border-collapse:collapse;
+      background-color:black;
+      color:white;
+      border-spacing: 0px;
+      padding-left:0px;
+      padding-right:0px;
+      padding-top:0px;
+      padding-bottom:0px;
+      
+    }
+    th.bord,tr.bord table.bord{
+      border:1px solid white;
+      padding-left:10px;
+      padding-right:10px;
+      padding-bottom:5px;
+      padding-top:5px;
+      margin:0;
+      text-indent: 0px;
+    
+    }
+    table{
+      margin-bottom:5px;
+    }
   }
 }

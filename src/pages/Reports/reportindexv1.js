@@ -31,6 +31,7 @@ import { GetSubsetsAllTables } from '../../components/GetSubSetsAllTables'
 import { GetSubsetsContribution } from '../../components/GetSubsetsContributions'
 import { getSubsetsData } from '../../components/GetSubSetsAllTables/getSubsetsData'
 import { getSubsetsCont } from '../../components/GetSubsetsContributions/getSubsetsCont'
+import { SubsetContributionsTable } from '../../components/SubsetsContributionsTable'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categories:categories.categories,
@@ -5733,6 +5734,14 @@ let z=getSubsetsCont({
       parentIdentifiers={parentIdentifiers}
       otmChoicesStatistics={otmChoicesStatistics}
     ></GetSubsetsContribution>)
+
+  totalTables.push(<SubsetContributionsTable
+      order={order}
+      data={z}
+      firstCatNormalFields={firstCatNormalFields}
+      otmChoices={otmChoices}
+      subsets={subsets}
+    />)
     setReportShow(totalTables)
     console.log("totalRoutes",totalRoutes)
   /*for(let i=0;i<finalRoutes.length;i++){
@@ -6326,11 +6335,11 @@ const displayCategoryFields=(seg,data,cond)=>{
     lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
     return <tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
       <td style={{borderRight:"1px solid black"}}>{x}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}total`].toFixed(2)}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[0]==undefined?0.00:data[seg]?.[`${x}AccumulatedArray`]?.[0].toFixed(2)}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1]==undefined?0.00:(data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1].toFixed(2))}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}Media`].toFixed(2)}</td>
-      <td>{data[seg]?.[`${x}Median`].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}total`]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[0]==undefined?0.00:data[seg]?.[`${x}AccumulatedArray`]?.[0]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`]?.length-1]==undefined?0.00:(data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1]?.toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}Media`]?.toFixed(2)}</td>
+      <td>{data[seg]?.[`${x}Median`]?.toFixed(2)}</td>
     </tr>
   })
   let c=nf.compositeFields.map((x,index)=>{
@@ -6338,11 +6347,11 @@ const displayCategoryFields=(seg,data,cond)=>{
 
     return <tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
       <td style={{borderRight:"1px solid black"}}>{x}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}total`].toFixed(2)}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[0]==undefined?0.00:data[seg]?.[`${x}AccumulatedArray`]?.[0].toFixed(2)}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1]==undefined?0.00:(data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1].toFixed(2))}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}Media`].toFixed(2)}</td>
-      <td>{data[seg]?.[`${x}Median`].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}total`]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[0]==undefined?0.00:data[seg]?.[`${x}AccumulatedArray`]?.[0]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1]==undefined?0.00:(data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1]?.toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}Media`]?.toFixed(2)}</td>
+      <td>{data[seg]?.[`${x}Median`]?.toFixed(2)}</td>
     </tr>
   })
   return [...tcr,...n,...c]

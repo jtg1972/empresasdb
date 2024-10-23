@@ -1,14 +1,27 @@
 import { valueToObjectRepresentation } from "@apollo/client/utilities"
 
 let dataResult={}
+let grandTotals={}
 const calculateContributions=(vars)=>{
   let {cat,ssData,seg,data,otmChoices,gi,rs,field,x,ss}=vars
+  if(dataResult?.[cat]?.[seg]?.[gi]?.[`${field}total`]?.[ss]?.[`${field}RawArray`]==undefined)
+      dataResult[cat][seg][gi][`${field}total`][ss][`${field}RawArray`]=[]
+       
+      
+  console.log("alarma",data,cat,seg,gi,ssData,x,rs)
   if(data[cat][seg][gi]["keys"].includes(ssData[x][rs]["id"])){
     let contTotal=0
-    if(x==seg)
+    let rep=[]
+    if(x==seg){
+
+      rep=[...rep,ssData[seg][rs][field]]
       contTotal=ssData[seg][rs][field]
-    else
+    
+    }else{
       contTotal=ssData[seg][rs][`${field}total`]
+      rep=[...rep,...ssData[seg][rs][`${field}Acummulated`]]
+    }
+    console.log("perios",ssData[seg][rs])
 
       //console.log("checarque",cat,seg,gi,`${n.name1}total`,ssData[seg][rs][`${n.name1}`])                              
 
@@ -24,7 +37,8 @@ const calculateContributions=(vars)=>{
               ...dataResult[cat][seg][gi][`${field}total`],
               [ss]:{
                 value:dataResult[cat][seg][gi][`${field}total`][ss]["value"]+contTotal,
-                arr:[...dataResult[cat][seg][gi][`${field}total`][ss]["arr"],contTotal]
+                arr:[...dataResult[cat][seg][gi][`${field}total`][ss]["arr"],contTotal],
+                [`${field}RawArray`]:[...dataResult[cat][seg][gi][`${field}total`][ss][`${field}RawArray`],...rep]
               }
 
             }
@@ -43,23 +57,37 @@ const createVars=(vars1)=>{
   vars.forEach(n=>{
     if(n.type=="number"){
 
-      if(dataResult?.[cat]?.[seg]?.[gi]?.[`${n.name1}total`]==undefined){
-        
-        dataResult={...dataResult,
-          [cat]:{
-            ...dataResult[cat],
-            [seg]:{
-              ...dataResult[cat][seg],
-              [gi]:{
-                ...dataResult[cat][seg][gi],
-                [`${n.name1}total`]:{}
-              }
-            } 
+      
 
-          }
+
+      if(dataResult?.[cat]?.[seg]?.[gi]?.[`${n.name1}total`]==undefined)
+        dataResult[cat][seg][gi][`${n.name1}total`]={}
+        
+      dataResult={...dataResult,
+        [cat]:{
+          ...dataResult[cat],
+          [seg]:{
+            ...dataResult[cat][seg],
+            [gi]:{
+              ...dataResult[cat][seg][gi],
+              [`${n.name1}total`]:{
+                ...dataResult[cat][seg][gi][`${n.name1}total`],
+                [`${n.name1}total`]:data[cat][seg][gi][`${n.name1}total`],
+                [`${n.name1}Maximum`]:data[cat][seg][gi][`${n.name1}Acummulatedmaximum`],
+                [`${n.name1}Minimum`]:data[cat][seg][gi][`${n.name1}Acummulatedminimum`],
+                [`${n.name1}Media`]:data[cat][seg][gi][`${n.name1}Media`],
+                [`${n.name1}Median`]:data[cat][seg][gi][`${n.name1}Median`],
+                [`%${n.name1}`]:data[cat][seg][gi][`%${n.name1}`],
+                //[`${n.name1}RawArray`]:[...dataResult[cat][seg][gi][`${n.name1}total`][`${n.name1}RawArray`],...data?.[cat]?.[seg]?.[gi]?.[`${n.name1}Acummulated`]]
+              }
+            }
+          } 
+
         }
-        console.log("dataResult4",dataResult)
       }
+        
+      console.log("dataResult4",dataResult)
+      
       
       if(dataResult?.[cat]?.[seg]?.[gi]?.[`${n.name1}total`]?.[ss]==undefined){
         
@@ -88,6 +116,9 @@ const createVars=(vars1)=>{
   })
 
 }
+
+/*133 140 165 166 169 170
+/*171 173 174 175 176 177 178 179*/
 
 const initializeVarsAndSubsets=(vars)=>{
   let {cat,ssData,seg,data,otmChoices,x,ss}=vars
@@ -196,9 +227,12 @@ export const getSubsetsCont=({
         }
       }
     })
-    initiateStatistics(dataResult,otmChoices)
+    initiateStatistics(otmChoices)
+    calculateGrandTotals(otmChoices)
+    calculatePercentageByGrandTotalsAndInRow(otmChoices,data)
   }
-  console.log("dataResult",dataResult)
+  console.log("dataResult",dataResult)/*,subsetsData,data)*/
+  return dataResult
 }
 
 /*original export const getSubsetsCont=({
@@ -741,26 +775,33 @@ export const getSubsetsCont=({
   }
 }*/
 
-const initiateStatistics=(dataResult,otmChoices)=>{
+const initiateStatistics=(otmChoices)=>{
   console.log("dresult",dataResult)
   Object.keys(dataResult).forEach(cat=>{
     Object.keys(dataResult[cat]).forEach(seg=>{
-      if(cat!=seg){
+      if(cat!==seg){
         Object.keys(dataResult[cat][seg]).forEach(ind=>{
           //if(cat!=seg){
-            let arr=[]
-            console.log("checarpipo",dataResult[cat][seg],ind)
-            if(dataResult[cat][seg][ind]!=undefined){
-              
-              otmChoices[seg].normal.forEach(field=>{
-                if(field.type=="number"){
-                  if(dataResult[cat][seg][ind][`${field.name1}total`]!=undefined){
-                    Object.keys(dataResult[cat][seg][ind][`${field.name1}total`]).forEach(sg=>{
-                      
+          let arr=[]
+          console.log("checarpipo",dataResult[cat][seg],ind)
+          if(dataResult[cat][seg][ind]!=undefined){
+            
+            otmChoices[seg].normal.forEach(field=>{
+              if(field.type=="number"){
+                if(dataResult[cat][seg][ind][`${field.name1}total`]!=undefined){
+                  Object.keys(dataResult[cat][seg][ind][`${field.name1}total`]).forEach(sg=>{
+                    if(sg!==`${field.name1}total` && 
+                    sg!==`${field.name1}Media`
+                    && sg!==`${field.name1}Median`
+                    && sg!==`${field.name1}Maximum`
+                    && sg!==`${field.name1}Minimum`
+                    && sg!==`%${field.name1}`){
                       dataResult[cat][seg][ind][`${field.name1}total`][sg]={
                         ...dataResult[cat][seg][ind][`${field.name1}total`][sg],
                         
-                        ...calculateStatistics(dataResult[cat][seg][ind][`${field.name1}total`][sg]["arr"],dataResult[cat][seg][ind][`${field.name1}total`][sg])
+                        ...calculateStatistics(dataResult[cat][seg][ind][`${field.name1}total`][sg]["arr"],dataResult[cat][seg][ind][`${field.name1}total`][sg]),
+                        ...calculateStatisticsRaw(dataResult[cat][seg][ind][`${field.name1}total`][sg][`${field.name1}RawArray`])
+
                       }
                       
                       if(dataResult[cat][seg][ind][`${field.name1}total`]?.["totalRow"]==undefined)
@@ -774,27 +815,34 @@ const initiateStatistics=(dataResult,otmChoices)=>{
                         dataResult[cat][seg][ind][`${field.name1}total`]["totalRow"]+=val
                         dataResult[cat][seg][ind][`${field.name1}total`]["arrRow"]=[...dataResult[cat][seg][ind][`${field.name1}total`]["arrRow"],val]
                       }
-                    })
-                  }
+                    }
+                  })
                 }
-                
-                
-                
-              })
-              otmChoices[seg].normal.forEach(field=>{
-                if(field.type=="number"){
-                  dataResult[cat][seg][ind][`${field.name1}total`]={
-                    ...dataResult[cat][seg][ind][`${field.name1}total`],
-                    
-                    ...calculateStatistics(dataResult[cat][seg][ind][`${field.name1}total`]["arrRow"])//,dataResult[cat][seg][ind][`${field.name1}total`][sg])
-                  }
+              }
+              
+              
+              
+            })
+            otmChoices[seg].normal.forEach(field=>{
+              
+              if(field.type=="number"){
+                dataResult[cat][seg][ind][`${field.name1}total`]={
+                  ...dataResult[cat][seg][ind][`${field.name1}total`],
+                  
+                  ...calculateStatistics(dataResult[cat][seg][ind][`${field.name1}total`]["arrRow"])//,dataResult[cat][seg][ind][`${field.name1}total`][sg])
                 }
-              })
-              otmChoices[seg].compositeFields.forEach(field=>{
-                if(field.type=="number"){
-                  if(dataResult[cat][seg][ind][`${field.name1}total`]!=undefined){
-                    Object.keys(dataResult[cat][seg][ind][`${field.name1}total`]).forEach(sg=>{
-                      
+              }
+            })
+            otmChoices[seg].compositeFields.forEach(field=>{
+              if(field.type=="number"){
+                if(dataResult[cat][seg][ind][`${field.name1}total`]!=undefined){
+                  Object.keys(dataResult[cat][seg][ind][`${field.name1}total`]).forEach(sg=>{
+                    if(sg!==`${field.name1}total` && 
+                    sg!==`${field.name1}Media`
+                    && sg!==`${field.name1}Median`
+                    && sg!==`${field.name1}Maximum`
+                    && sg!==`${field.name1}Minimum`
+                    && sg!==`%${field.name1}`){
                       dataResult[cat][seg][ind][`${field.name1}total`][sg]={
                         ...dataResult[cat][seg][ind][`${field.name1}total`][sg],
                         
@@ -810,29 +858,200 @@ const initiateStatistics=(dataResult,otmChoices)=>{
                         dataResult[cat][seg][ind][`${field.name1}total`]["totalRow"]+=val
                         dataResult[cat][seg][ind][`${field.name1}total`]["arrRow"]=[...dataResult[cat][seg][ind][`${field.name1}total`]["arrRow"],val]
                       }
-                    })
-                  }
+                    }
+                  })
                 }
-                
-                
-                
-              })
-              otmChoices[seg].compositeFields.forEach(field=>{
-                if(field.type=="number"){
-                  dataResult[cat][seg][ind][`${field.name1}total`]={
-                    ...dataResult[cat][seg][ind][`${field.name1}total`],
-                    
-                    ...calculateStatistics(dataResult[cat][seg][ind][`${field.name1}total`]["arrRow"])//,dataResult[cat][seg][ind][`${field.name1}total`][sg])
-                  }
+              }
+              
+              
+              
+            })
+            otmChoices[seg].compositeFields.forEach(field=>{
+              if(field.type=="number"){
+                dataResult[cat][seg][ind][`${field.name1}total`]={
+                  ...dataResult[cat][seg][ind][`${field.name1}total`],
+                  
+                  ...calculateStatistics(dataResult[cat][seg][ind][`${field.name1}total`]["arrRow"])//,dataResult[cat][seg][ind][`${field.name1}total`][sg])
                 }
-              })
-            }
-          //}
+              }
+            })
+          }
+          
         })
       }
     })
   })
   console.log("datareswithstats",dataResult)
+}
+
+const calculatePercentageByGrandTotalsAndInRow=(otmChoices,data)=>{
+  Object.keys(dataResult).forEach(mainCat=>{
+    Object.keys(dataResult[mainCat]).forEach(seg=>{
+      if(mainCat!==seg){
+        Object.keys(dataResult[mainCat][seg]).forEach(reg=>{
+          otmChoices[seg].normal.forEach(field=>{
+            if(field.type=="number"){
+              Object.keys(dataResult[mainCat][seg][reg][`${field.name1}total`]).forEach(sg=>{
+                if(typeof dataResult[mainCat][seg][reg][`${field.name1}total`][sg]=="object" &&
+                sg!=="arrRow"){
+                  console.log("punto",dataResult[mainCat][seg][reg][`${field.name1}total`][sg],dataResult[mainCat][seg][reg][`${field.name1}total`][sg][`%of${field.name1}GrandTotal`])
+                  if(dataResult[mainCat][seg][reg][`${field.name1}total`][sg][`%of${field.name1}GrandTotal`]==undefined){
+                    dataResult={
+                      ...dataResult,
+                      [mainCat]:{
+                        ...dataResult[mainCat],
+                        [seg]:{
+                          ...dataResult[mainCat][seg],
+                          [reg]:{
+                            ...dataResult[mainCat][seg][reg],
+                            [`${field.name1}total`]:{
+                              ...dataResult[mainCat][seg][reg][`${field.name1}total`],
+                              [sg]:{
+                                ...dataResult[mainCat][seg][reg][`${field.name1}total`][sg],
+                                [`%of${field.name1}Grandtotal`]:dataResult[mainCat][seg][reg][`${field.name1}total`][sg]["value"]/grandTotals[mainCat][seg][`${field.name1}total`][sg]
+                              }
+                            }
+                          }
+                            
+                        }
+                        
+                      }
+                    
+                    }
+                    console.log("punto1",dataResult[mainCat][seg][reg][`${field.name1}total`][sg],dataResult[mainCat][seg][reg][`${field.name1}total`][sg][`%of${field.name1}total`])
+                  }
+                  if(dataResult[mainCat][seg][reg][`${field.name1}total`][sg][`%of${field.name1}Total`]==undefined){
+                    dataResult={
+                      ...dataResult,
+                      [mainCat]:{
+                        ...dataResult[mainCat],
+                        [seg]:{
+                          ...dataResult[mainCat][seg],
+                          [reg]:{
+                            ...dataResult[mainCat][seg][reg],
+                            [`${field.name1}total`]:{
+                              ...dataResult[mainCat][seg][reg][`${field.name1}total`],
+                              [sg]:{
+                                ...dataResult[mainCat][seg][reg][`${field.name1}total`][sg],
+                                [`%of${field.name1}Total`]:dataResult[mainCat][seg][reg][`${field.name1}total`][sg]["value"]/data[mainCat][seg][reg][`${field.name1}total`]
+                              }
+                            }
+                          }
+                            
+                        }
+                        
+                      }
+                    
+                    }
+                    console.log("punto1",dataResult[mainCat][seg][reg][`${field.name1}total`][sg],dataResult[mainCat][seg][reg][`${field.name1}total`][sg][`%of${field.name1}total`])
+                  }
+                  if(dataResult[mainCat][seg][reg][`${field.name1}total`][sg][`%of${field.name1}SubgroupsTotal`]==undefined){
+                    dataResult={
+                      ...dataResult,
+                      [mainCat]:{
+                        ...dataResult[mainCat],
+                        [seg]:{
+                          ...dataResult[mainCat][seg],
+                          [reg]:{
+                            ...dataResult[mainCat][seg][reg],
+                            [`${field.name1}total`]:{
+                              ...dataResult[mainCat][seg][reg][`${field.name1}total`],
+                              [sg]:{
+                                ...dataResult[mainCat][seg][reg][`${field.name1}total`][sg],
+                                [`%of${field.name1}SubgroupsTotal`]:dataResult[mainCat][seg][reg][`${field.name1}total`][sg]["value"]/dataResult[mainCat][seg][reg][`${field.name1}total`]["totalRow"]
+                              }
+                            }
+                          }
+                            
+                        }
+                        
+                      }
+                    
+                    }
+                    console.log("punto1",dataResult[mainCat][seg][reg][`${field.name1}total`][sg],dataResult[mainCat][seg][reg][`${field.name1}total`][sg][`%of${field.name1}total`])
+                  }
+                }
+              })
+            }
+          })
+        })
+      }
+    })
+    
+  })
+}
+
+const calculateGrandTotals=(otmChoices)=>{
+  grandTotals={}
+  Object.keys(dataResult).forEach(mainCat=>{
+    if(grandTotals[mainCat]==undefined)
+      grandTotals={...grandTotals,[mainCat]:{}}
+    
+    Object.keys(dataResult[mainCat]).forEach(seg=>{
+      if(mainCat!==seg){
+        if(grandTotals[mainCat][seg]==undefined)
+          grandTotals={
+            ...grandTotals,
+            [mainCat]:{
+              ...grandTotals[mainCat],
+              [seg]:{}
+            }
+          }
+        Object.keys(dataResult[mainCat][seg]).forEach(reg=>{
+          otmChoices[seg].normal.forEach(field=>{
+            if(field.type=="number"){
+              if(grandTotals[mainCat][seg][`${field.name1}total`]==undefined)
+                grandTotals={
+                  ...grandTotals,
+                  [mainCat]:{
+                    ...grandTotals[mainCat],
+                    [seg]:{
+                      ...grandTotals[mainCat][seg],
+                      [`${field.name1}total`]:{}
+                    }
+                  }
+                } 
+                     
+              Object.keys(dataResult[mainCat][seg][reg][`${field.name1}total`]).forEach(sg=>{
+                if(typeof dataResult[mainCat][seg][reg][`${field.name1}total`][sg]=="object" &&
+                sg!=="arrRow"){
+                  if(grandTotals[mainCat][seg][`${field.name1}total`][sg]==undefined)
+                    grandTotals={
+                      ...grandTotals,
+                      [mainCat]:{
+                        ...grandTotals[mainCat],
+                        [seg]:{
+                          ...grandTotals[mainCat][seg],
+                          [`${field.name1}total`]:{
+                            ...grandTotals[mainCat][seg][`${field.name1}total`],
+                            [sg]:0
+                          }
+                        }
+                      }
+                    }
+                  grandTotals={
+                    ...grandTotals,
+                    [mainCat]:{
+                      ...grandTotals[mainCat],
+                      [seg]:{
+                        ...grandTotals[mainCat][seg],
+                        [`${field.name1}total`]:{
+                          ...grandTotals[mainCat][seg][`${field.name1}total`],
+                          [sg]:grandTotals[mainCat][seg][`${field.name1}total`][sg]+dataResult[mainCat][seg][reg][`${field.name1}total`][sg]["value"]
+                        }
+                      }
+                    }
+                  }
+                }
+              })
+            }
+          })
+        })
+      }
+    })
+    
+  })
+  console.log("gtotalsacum",grandTotals)
 }
   
  
@@ -855,6 +1074,27 @@ const calculateStatistics=(arr,ivar)=>{
     }
     res["median"]=median
     res["totalCount"]=arr.length
+    return res
+  }
+}
+const calculateStatisticsRaw=(arr,ivar)=>{
+  let res={}
+  if(arr.length>0){
+    arr=arr.sort((x,y)=>x>y?1:-1)
+    res["minRaw"]=arr[0]==null?0:arr[0]
+    res["maxRaw"]=arr[arr.length-1]==null?0:arr[arr.length-1]
+    let suma=0
+    arr.forEach(y=>suma+=y)
+    res["mediaRaw"]=suma/arr.length
+    let length=arr.length
+    let median=0
+    if(length%2==1){
+      median=arr[Math.floor(length/2)]
+    }else{
+      median=(arr[(length/2)-1]+arr[(length/2)])/2
+    }
+    res["medianRaw"]=median
+    res["totalCountRaw"]=arr.length
     return res
   }
 }
