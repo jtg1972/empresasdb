@@ -54,6 +54,7 @@ const calculateContributions=(vars)=>{
 
 const createVars=(vars1)=>{
   let {vars,cat,seg,gi,rs,x,ss,ssData,data}=vars1
+  console.log("datamain77",data)
   vars.forEach(n=>{
     if(n.type=="number"){
 
@@ -78,6 +79,7 @@ const createVars=(vars1)=>{
                 [`${n.name1}Media`]:data[cat][seg][gi][`${n.name1}Media`],
                 [`${n.name1}Median`]:data[cat][seg][gi][`${n.name1}Median`],
                 [`%${n.name1}`]:data[cat][seg][gi][`%${n.name1}`],
+                [`${n.name1}Count`]:data[cat][seg][gi]?.[`${n.name1}Acummulated`]?.length,
                 //[`${n.name1}RawArray`]:[...dataResult[cat][seg][gi][`${n.name1}total`][`${n.name1}RawArray`],...data?.[cat]?.[seg]?.[gi]?.[`${n.name1}Acummulated`]]
               }
             }
@@ -186,6 +188,7 @@ const loadNormalFields=(vars)=>{
   })
 }
 
+
 export const getSubsetsCont=({
   data,
   subsetsData,
@@ -193,6 +196,7 @@ export const getSubsetsCont=({
   otmChoices,
   firstCatNormalFields
 })=>{
+  console.log("datamain",data)
   dataResult={}
   if(data!=undefined){
     
@@ -795,12 +799,13 @@ const initiateStatistics=(otmChoices)=>{
                     && sg!==`${field.name1}Median`
                     && sg!==`${field.name1}Maximum`
                     && sg!==`${field.name1}Minimum`
-                    && sg!==`%${field.name1}`){
+                    && sg!==`%${field.name1}`
+                    && sg!==`${field.name1}Count`){
                       dataResult[cat][seg][ind][`${field.name1}total`][sg]={
                         ...dataResult[cat][seg][ind][`${field.name1}total`][sg],
                         
-                        ...calculateStatistics(dataResult[cat][seg][ind][`${field.name1}total`][sg]["arr"],dataResult[cat][seg][ind][`${field.name1}total`][sg]),
-                        ...calculateStatisticsRaw(dataResult[cat][seg][ind][`${field.name1}total`][sg][`${field.name1}RawArray`])
+                        ...calculateStatistics(dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.[sg]?.["arr"],dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.[sg]),
+                        ...calculateStatisticsRaw(dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.[sg]?.[`${field.name1}RawArray`])
 
                       }
                       
@@ -829,7 +834,7 @@ const initiateStatistics=(otmChoices)=>{
                 dataResult[cat][seg][ind][`${field.name1}total`]={
                   ...dataResult[cat][seg][ind][`${field.name1}total`],
                   
-                  ...calculateStatistics(dataResult[cat][seg][ind][`${field.name1}total`]["arrRow"])//,dataResult[cat][seg][ind][`${field.name1}total`][sg])
+                  ...calculateStatistics(dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.["arrRow"])//,dataResult[cat][seg][ind][`${field.name1}total`][sg])
                 }
               }
             })
@@ -842,11 +847,12 @@ const initiateStatistics=(otmChoices)=>{
                     && sg!==`${field.name1}Median`
                     && sg!==`${field.name1}Maximum`
                     && sg!==`${field.name1}Minimum`
-                    && sg!==`%${field.name1}`){
+                    && sg!==`%${field.name1}`
+                    && sg!==`${field.name1}Count`){
                       dataResult[cat][seg][ind][`${field.name1}total`][sg]={
                         ...dataResult[cat][seg][ind][`${field.name1}total`][sg],
                         
-                        ...calculateStatistics(dataResult[cat][seg][ind][`${field.name1}total`][sg]["arr"],dataResult[cat][seg][ind][`${field.name1}total`][sg])
+                        ...calculateStatistics(dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.[sg]?.["arr"],dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.[sg])
                       }
                       if(dataResult[cat][seg][ind][`${field.name1}total`]?.["totalRow"]==undefined)
                         dataResult[cat][seg][ind][`${field.name1}total`]["totalRow"]=0
@@ -871,7 +877,7 @@ const initiateStatistics=(otmChoices)=>{
                 dataResult[cat][seg][ind][`${field.name1}total`]={
                   ...dataResult[cat][seg][ind][`${field.name1}total`],
                   
-                  ...calculateStatistics(dataResult[cat][seg][ind][`${field.name1}total`]["arrRow"])//,dataResult[cat][seg][ind][`${field.name1}total`][sg])
+                  ...calculateStatistics(dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.["arrRow"])//,dataResult[cat][seg][ind][`${field.name1}total`][sg])
                 }
               }
             })
@@ -1058,7 +1064,12 @@ const calculateGrandTotals=(otmChoices)=>{
 
 const calculateStatistics=(arr,ivar)=>{
   let res={}
-  if(arr.length>0){
+  res["min"]=0
+  res["max"]=0
+  res["media"]=0
+  res["median"]=0
+  res["totalCount"]=0
+  if(arr?.length>0){
     arr=arr.sort((x,y)=>x>y?1:-1)
     res["min"]=arr[0]==null?0:arr[0]
     res["max"]=arr[arr.length-1]==null?0:arr[arr.length-1]
@@ -1076,10 +1087,16 @@ const calculateStatistics=(arr,ivar)=>{
     res["totalCount"]=arr.length
     return res
   }
+  return res
 }
 const calculateStatisticsRaw=(arr,ivar)=>{
   let res={}
-  if(arr.length>0){
+  res["minRaw"]=0
+  res["maxRaw"]=0
+  res["mediaRaw"]=0
+  res["medianRaw"]=0
+  res["totalCountRaw"]=0
+  if(arr?.length>0){
     arr=arr.sort((x,y)=>x>y?1:-1)
     res["minRaw"]=arr[0]==null?0:arr[0]
     res["maxRaw"]=arr[arr.length-1]==null?0:arr[arr.length-1]
@@ -1097,4 +1114,5 @@ const calculateStatisticsRaw=(arr,ivar)=>{
     res["totalCountRaw"]=arr.length
     return res
   }
+  return res
 }

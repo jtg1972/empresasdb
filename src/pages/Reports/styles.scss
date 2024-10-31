@@ -76,8 +76,10 @@ p,div{
 
 div{
   &.cont{
+    margin:0;
+    padding:0;
     table,thead,tbody,tr,td,th{
-      
+      border-spacing:collapse;
       border-collapse:collapse;
       background-color:black;
       color:white;
@@ -86,9 +88,48 @@ div{
       padding-right:0px;
       padding-top:0px;
       padding-bottom:0px;
+      margin:0;
+      height:auto;
+      border:none;
       
     }
-    th.bord,tr.bord table.bord{
+    /*th.bord{
+      background:green;
+    }*/
+    
+    td{
+      //background-color:white;
+      color:black;
+      padding-left:10px;
+      padding-right:10px;
+      padding-bottom:5px;
+      padding-top:5px;
+      text-align:right;
+      border-right:1px solid black;
+      
+    }
+    .gray{
+      background-color:lightgray;
+    }
+    .white{
+      background-color:white;
+    }
+    tr.left{
+      td{
+        text-align:left;
+      }
+      
+    }
+    tbody{
+      height:0px;
+    }
+    tbody.tbh{
+      height:auto;
+    }
+    th{
+      height:auto;
+    }
+    th.bord{
       border:1px solid white;
       padding-left:10px;
       padding-right:10px;
@@ -98,8 +139,9 @@ div{
       text-indent: 0px;
     
     }
-    table{
+    table.main{
       margin-bottom:5px;
+      
     }
   }
 }
