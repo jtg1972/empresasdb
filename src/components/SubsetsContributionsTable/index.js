@@ -6,7 +6,9 @@ export const SubsetContributionsTable=({
   order,
   firstCatNormalFields,
   otmChoices,
-  subsets
+  subsets,
+  displayRaw,
+  grandTotals
 })=>{
   const [table,setTable]=useState("")
   useEffect(()=>{
@@ -20,8 +22,8 @@ export const SubsetContributionsTable=({
         dataRes=Object.keys(data[table][seg]).map((d,index)=>{
           
             
-              let rec=data[table][seg][d][`${field}total`][subset]
-              console.log("typeofff",rec[`%of${field}SubgroupsTotal`])
+              let rec=data[table][seg][parseInt(d)][`${field}total`][subset]
+              console.log("typeofff",rec)
               return <tr>
                 <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{(rec[`%of${field}Grandtotal`]==undefined || isNaN(rec[`%of${field}Grandtotal`]))?"0.00":(rec[`%of${field}Grandtotal`]*100).toFixed(2)}</td>
                 <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{(rec[`%of${field}Total`]==undefined || isNaN(rec[`%of${field}Total`]))?"0.00":(rec[`%of${field}Total`]*100).toFixed(2)}</td>
@@ -34,6 +36,13 @@ export const SubsetContributionsTable=({
                 <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec["media"].toFixed(2)}</td>
                 <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec["median"].toFixed(2)}</td>
                 <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec["max"].toFixed(2)}</td>
+
+                {(type=="secondary" && displayRaw[table][seg]) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec["totalCountRaw"]==undefined?"0.00":rec["totalCountRaw"].toFixed(2)}</td>}
+                {(type=="secondary" && displayRaw[table][seg]) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec["value"].toFixed(2)}</td>}
+                {(type=="secondary" && displayRaw[table][seg]) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec["minRaw"].toFixed(2)}</td>}
+                {(type=="secondary" && displayRaw[table][seg]) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec["mediaRaw"].toFixed(2)}</td>}
+                {(type=="secondary" && displayRaw[table][seg]) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec["medianRaw"].toFixed(2)}</td>}
+                {(type=="secondary" && displayRaw[table][seg]) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec["maxRaw"].toFixed(2)}</td>}
               </tr> 
             
           
@@ -42,6 +51,7 @@ export const SubsetContributionsTable=({
         })
       }
         else if(type=="superset"){
+          if(data?.[table]?.[seg]!=undefined){
           dataRes=Object.keys(data[table][seg]).map((d,index)=>{
           
             
@@ -62,6 +72,7 @@ export const SubsetContributionsTable=({
         
             
       })
+    }
     }else if(type=="subsetsStats"){
       dataRes=Object.keys(data[table][seg]).map((d,index)=>{
           
@@ -99,6 +110,12 @@ export const SubsetContributionsTable=({
                 <th className="bord">media</th>
                 <th className="bord">median</th>
                 <th className="bord">maximum</th>
+                {(type=="secondary" && displayRaw[table][seg]) && <th className="bord">countRaw</th>}
+                {(type=="secondary" && displayRaw[table][seg]) && <th className="bord">valueRaw</th>}
+                {(type=="secondary" && displayRaw[table][seg]) && <th className="bord">minimumRaw</th>}
+                {(type=="secondary" && displayRaw[table][seg]) && <th className="bord">mediaRaw</th>}
+                {(type=="secondary" && displayRaw[table][seg]) && <th className="bord">medianRaw</th>}
+                {(type=="secondary" && displayRaw[table][seg]) && <th className="bord">maximumRaw</th>}
               </tr>
             </thead>
             <tbody className="tbh">
@@ -202,7 +219,7 @@ export const SubsetContributionsTable=({
   }
 
   const printSecondLevelHeaders=(fields,first,table,seg,ssName)=>{
-    console.log("fields555",fields)
+    console.log("fields555",fields,table,seg)
     let fds=fields.map((f,index)=>{
       return <th style={{height:"auto"}}>
           <table>
@@ -269,10 +286,24 @@ export const SubsetContributionsTable=({
     let piv2
      let pivote=order[0].map((table,index)=>{
        piv2=""
+      let firstTables=[]
+      let tablePiv
+      if(table.startsWith("getData"))
+        firstTables=firstCatNormalFields[table].otm
+      else
+        firstTables=otmChoices[table].otm
+      
       
       if(table!==order[1][table][order[1][table].length-1]){
         
         piv2=order[1][table].map((seg,ind2)=>{
+          firstTables.forEach(tab=>{
+            if(order[1][tab].includes(seg))
+              tablePiv=tab
+          
+          })
+          
+
 
           console.log("tablereg",order,table,seg)
            
@@ -284,7 +315,7 @@ export const SubsetContributionsTable=({
               
          
                <tr><th className="bord" style={{height:"31px"}}>{seg}</th></tr></thead>
-             <tbody className="tbh"><tr><th>{printSecondLevelHeaders([...firstCatNormalFields?.[seg]?.normal,...firstCatNormalFields?.[seg]?.compositeFields],true,table,seg,order[1][table][1])}</th></tr></tbody></table></th>
+             <tbody className="tbh"><tr><th>{printSecondLevelHeaders([...firstCatNormalFields?.[seg]?.normal,...firstCatNormalFields?.[seg]?.compositeFields],true,table,seg,tablePiv/*order[1][table][1]*/)}</th></tr></tbody></table></th>
              
             else if(table==seg && !table.startsWith('getData'))
              return <th style={{verticalAlign:"top",heigth:"auto"}}><table><thead>
@@ -294,7 +325,7 @@ export const SubsetContributionsTable=({
                 <tr><th className="bord" style={{height:"31px"}}>&nbsp;</th></tr>
                   <tr><th className="bord" style={{height:"31px"}}>{seg}</th></tr></thead> 
 
-             <tbody className="tbh"><tr><th>{printSecondLevelHeaders([...otmChoices?.[seg]?.normal,...otmChoices?.[seg]?.compositeFields],true,table,seg,order[1][table][1])}</th></tr>
+             <tbody className="tbh"><tr><th>{printSecondLevelHeaders([...otmChoices?.[seg]?.normal,...otmChoices?.[seg]?.compositeFields],true,table,seg,tablePiv/*order[1][table][1]*/)}</th></tr>
              </tbody></table></th>
             
             
@@ -303,7 +334,7 @@ export const SubsetContributionsTable=({
                 
                 <tr><th className="bord">{seg}</th></tr></thead>
               <tbody className="tbh"><tr><th>{printSecondLevelHeaders([...otmChoices?.[seg]?.normal.filter(x=>x.type=="number"),
-            ...otmChoices?.[seg]?.compositeFields.filter(x=>x.type=="number")],false,table,seg,order[1][table][1])}</th></tr></tbody></table></th>
+            ...otmChoices?.[seg]?.compositeFields.filter(x=>x.type=="number")],false,table,seg,tablePiv/*order[1][table][1]*/)}</th></tr></tbody></table></th>
             
             else
             return ""

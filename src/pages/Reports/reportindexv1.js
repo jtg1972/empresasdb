@@ -5737,7 +5737,9 @@ let z=getSubsetsCont({
 
   totalTables.push(<SubsetContributionsTable
       order={order}
-      data={z}
+      data={z[0]}
+      displayRaw={z[1]}
+      grandTotals={z[2]}
       firstCatNormalFields={firstCatNormalFields}
       otmChoices={otmChoices}
       subsets={subsets}
