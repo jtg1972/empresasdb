@@ -210,7 +210,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
             
             //if(otmChoicesStatistics[category][segment][q.name1][ji]==true){
               
-              temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid white"}}>{ji!="percentage"?ji:`${ji} (set-subset)`}</th>)
+              temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid white"}}>{ji!="percentage"?ji:`${ji}SetAndSubset`}</th>)
   
             //}
           })
@@ -242,7 +242,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
             //if(otmChoicesStatistics[category][segment][q.name1][ji]==true){
               //if(ji=="media")
                 console.log("mediainfo",q.name1,realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1),realSegmentLast,segment,lastIndexNumberComposite,index,i44,otmStatisticsArray.length-1)
-              temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1))===true?"none":"1px solid white"}}>{ji!="percentage"?ji:`${ji} (set-subset)`}</th>)
+              temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1))===true?"none":"1px solid white"}}>{ji!="percentage"?ji:`${ji}SetAndSubset`}</th>)
   
             //}
           })
@@ -609,7 +609,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
         }
           if(theresComposite)
           result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.map((q,index)=>
-            <td style={{overflow:"normal",borderRight:realSegmentLast==category && index==composite-1?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
+            <td style={{whiteSpace:"nowrap",overflow:"normal",borderRight:realSegmentLast==category && index==composite-1?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
           )]
           
         }else{
@@ -635,18 +635,18 @@ parentIdentifiers,otmChoicesStatistics})=>{
             
             }else
               disp=data[y][q.name1]
-            return <td style={{wordSpacing:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{disp}</td>
+            return <td style={{whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{disp}</td>
           }
           )]
           if(theresComposite)
           result=[...result,...otmChoices[category].compositeFields.map((q,index)=>
-            <td style={{wordSpacing:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
+            <td style={{whiteSpace:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
           )]
         
         
         if(theresOtmDestiny)
         result=[...result,...otmChoices[category].otmdestiny.map((q,index)=>
-            <td style={{wordSpacing:"nowrap",borderRight:realSegmentLast==category && otmdestiny-1==index?"none":"1px solid black"}}>{data[y][q]}</td>
+            <td style={{whiteSpace:"nowrap",borderRight:realSegmentLast==category && otmdestiny-1==index?"none":"1px solid black"}}>{data[y][q]}</td>
           )]
         let parentCat=parentCategories[category]
         if(parentIdentifiers?.[parentCat]?.["fieldCompOrNormalType"]=="normal" || 
@@ -656,7 +656,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
         
         
       }
-      result.unshift(<td style={{wordSpacing:"nowrap",borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{data[y]["id"]}</td>)
+      result.unshift(<td style={{whiteSpace:"nowrap",borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{data[y]["id"]}</td>)
     
     }else{
         let lastIndexNumber=-1
@@ -687,7 +687,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
                 otmStatisticsArray.push(x)
               }
             }
-            temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data[y][`${q.name1}total`].toFixed(2)}</td>)
+            temp.push(<td style={{whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data[y][`${q.name1}total`].toFixed(2)}</td>)
             //Object.keys(otmChoicesStatistics[category][a][q.name1]).
             otmStatisticsArray.forEach((ji,i44)=>{
               //console.log("www88",finalObject[category][a][y],data[y]?.[`${q.name1}Acummulated`])
@@ -696,15 +696,15 @@ parentIdentifiers,otmChoicesStatistics})=>{
                 let pmay=ji[0].toUpperCase()+ji.substring(1)
                 //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
                 if(ji=="percentage"){
-                  temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}%-{data[y][`%${q.name1}Subset`].toFixed(2)}%</td>)  
+                  temp.push(<td style={{whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}%-{data[y][`%${q.name1}Subset`].toFixed(2)}%</td>)  
   
                 }else if(ji=="minimum"){
-                  temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
+                  temp.push(<td style={{whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
                 }else if(ji=="maximum"){
-                  temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
+                  temp.push(<td style={{whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
                 
                 }else
-                  temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`${q.name1}${pmay}`].toFixed(2)}</td>)
+                  temp.push(<td style={{whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`${q.name1}${pmay}`].toFixed(2)}</td>)
   
               
             })
@@ -733,15 +733,15 @@ parentIdentifiers,otmChoicesStatistics})=>{
                 //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
                 //temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`]}</td>)
                 if(ji=="percentage"){
-                  temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}%-{data[y][`%${q.name1}Subset`].toFixed(2)}%</td>)  
+                  temp.push(<td style={{whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}%-{data[y][`%${q.name1}Subset`].toFixed(2)}%</td>)  
   
                 }else if(ji=="minimum"){
-                  temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
+                  temp.push(<td style={{whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
                 }else if(ji=="maximum"){
-                  temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
+                  temp.push(<td style={{whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
                 
                 }else
-                  temp.push(<td style={{wordSpacing:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`${q.name1}${pmay}`].toFixed(2)}</td>)
+                  temp.push(<td style={{whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`${q.name1}${pmay}`].toFixed(2)}</td>)
   
               //}
             })
@@ -755,7 +755,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
           if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
             if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
               let val=data[y][`${a}TotalCount`]/realGrandTotals1[category][subset][a][`${a}TotalCount`]
-              result=[<td style={{wordSpacing:"nowrap",borderRight:"1px solid black"}}>{data[y][`${a}TotalCount`]} ({(val*100).toFixed(2)}%)</td>,...result,...temp]
+              result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"}}>{data[y][`${a}TotalCount`]} ({(val*100).toFixed(2)}%)</td>,...result,...temp]
             }else{
               result=[...result,...temp]
             }
@@ -763,7 +763,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
           else{
             if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
               let val=data[y][`${a}TotalCount`]/realGrandTotals1[category][subset][a][`${a}TotalCount`]
-              result=[<td style={{wordSpacing:"nowrap",borderRight:"1px solid black"}}>{data[y][`${a}TotalCount`]} ({(val*100).toFixed(2)}%)</td>]
+              result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"}}>{data[y][`${a}TotalCount`]} ({(val*100).toFixed(2)}%)</td>]
             }
           }
         }else{
@@ -772,14 +772,14 @@ parentIdentifiers,otmChoicesStatistics})=>{
             if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
               console.log("track1",data[y][`${a}TotalCount`]/realGrandTotals1[category][subset][a][`${a}TotalCount`])
               val=data[y][`${a}TotalCount`]/realGrandTotals1[category][subset][a][`${a}TotalCount`]
-              result=[<td style={{wordSpacing:"nowrap",borderRight:"1px solid black"}}>{data[y][`${a}TotalCount`]} ({(val*100).toFixed(2)}%)</td>,...result,...temp]
+              result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"}}>{data[y][`${a}TotalCount`]} ({(val*100).toFixed(2)}%)</td>,...result,...temp]
             }else
               result=[...result,temp]
           }
           else
             if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
   
-              result=[<td style={{wordSpacing:"nowrap",borderRight:"none"}}>{data[y][`${a}TotalCount`]}</td>]
+              result=[<td style={{whiteSpace:"nowrap",borderRight:"none"}}>{data[y][`${a}TotalCount`]}</td>]
         }
       }
         

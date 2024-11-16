@@ -28,6 +28,8 @@ export const getSubsetsData=(vars)=>{
               [ss]:{}}}
               verifyMeetWithConditionsBySegmentBaseLevel2(vars,cat,vars.data[cat],ss,ss)
           })
+        
+
       })
     }
   
@@ -61,13 +63,21 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(vars,category,data1,ssd,ss)=>
           subsetsData={...subsetsData,[category]:{...subsetsData[category],[ss]:{...subsetsData[category][ss],[k]:{...subsetsData[category][ss][k],[y]:data1[k][y]}}}}
             console.log("ssd99",ssd)
         })
+      }else{
+        Object.keys(data1).forEach(k=>{
+          if(subsetsData?.[category]?.[ss]?.[k]==undefined)
+            subsetsData={...subsetsData,[category]:{...subsetsData[category],[ss]:{...subsetsData[category][ss],[k]:{}}}}
+        
+        })
+      }
+
       
         
         /*Object.keys(data).forEach(l=>{
             delete data[l][y]
           })
         } */
-      } 
+       
     })
   
     
@@ -82,6 +92,12 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(vars,category,data1,ssd,ss)=>
         })
       
       
+      }else{
+        Object.keys(data1).forEach(k=>{
+          if(subsetsData?.[category]?.[ss]?.[k]==undefined)
+            subsetsData={...subsetsData,[category]:{...subsetsData[category],[ss]:{...subsetsData[category][ss],[k]:{}}}}
+        
+        })
       }
     })
   }else if(segment=="hybrid"){
@@ -93,6 +109,12 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(vars,category,data1,ssd,ss)=>
           subsetsData={...subsetsData,[category]:{...subsetsData[category],[ss]:{...subsetsData[category][ss],[k]:{...subsetsData[category][ss][k],[y]:data1[k][y]}}}}
         })
         
+      }else{
+        Object.keys(data1).forEach(k=>{
+          if(subsetsData?.[category]?.[ss]?.[k]==undefined)
+            subsetsData={...subsetsData,[category]:{...subsetsData[category],[ss]:{...subsetsData[category][ss],[k]:{}}}}
+        
+        })
       }
     })
   }

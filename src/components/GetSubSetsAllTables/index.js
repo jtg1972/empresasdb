@@ -36,7 +36,7 @@ export const GetSubsetsAllTables=({
   console.log("varsglobal",finalObject,subsets)
   return <div>
     
-    {subsets!=undefined ? Object.keys(subsets).map(cat=>
+    {subsets!=undefined ? order[0].map(cat=>
     <>
       <p>{cat}</p>
       

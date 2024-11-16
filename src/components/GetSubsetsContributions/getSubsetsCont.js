@@ -54,6 +54,56 @@ const calculateContributions=(vars)=>{
   }
 }
 
+const calculateContributionsNull=(vars)=>{
+  let {cat,ssData,seg,data,otmChoices,gi,rs,field,x,ss}=vars
+  if(dataResult?.[cat]?.[seg]?.[gi]?.[`${field}total`]?.[ss]?.[`${field}RawArray`]==undefined)
+      dataResult[cat][seg][gi][`${field}total`][ss][`${field}RawArray`]=[]
+       
+      
+  console.log("alarma",data,cat,seg,gi,ssData,x,rs)
+  
+    let contTotal=0
+    let rep=[]
+    /*if(x==seg){
+
+      rep=[...rep,ssData[seg][rs][field]]
+      contTotal=ssData[seg][rs][field]
+    
+    }else{
+      contTotal=ssData[seg][rs][`${field}total`]
+      rep=[...rep,...ssData[seg][rs][`${field}Acummulated`]]
+    }*/
+    console.log("perios",ssData[seg][rs])
+
+      //console.log("checarque",cat,seg,gi,`${n.name1}total`,ssData[seg][rs][`${n.name1}`])                              
+
+      //console.log("uiruir",cat,seg,gi,data[cat][seg][gi]["keys"],`${n.name1}total`,ssData[seg][rs][`${n.name1}`])
+    dataResult={...dataResult,
+      [cat]:{
+        ...dataResult[cat],
+        [seg]:{
+          ...dataResult[cat][seg],
+          [gi]:{
+            ...dataResult[cat][seg][gi],
+            [`${field}total`]:{
+              ...dataResult[cat][seg][gi][`${field}total`],
+              [ss]:{
+                value:0,
+                arr:[],
+                [`${field}RawArray`]:[]
+              }
+
+            }
+          }
+        } 
+
+      }
+      
+    }
+    console.log("dataResult6",dataResult)
+  
+}
+
 const createVars=(vars1)=>{
   let {vars,cat,seg,gi,rs,x,ss,ssData,data,order,otmChoices,firstCatNormalFields}=vars1
   console.log("datamain77",data)
@@ -124,6 +174,76 @@ const createVars=(vars1)=>{
   })
 
 }
+const createVarsNull=(vars1)=>{
+  let {vars,cat,seg,gi,rs,x,ss,ssData,data,order,otmChoices,firstCatNormalFields}=vars1
+  console.log("datamain77",data)
+  
+  
+  
+  vars.forEach(n=>{
+    if(n.type=="number"){
+
+      
+
+
+      if(dataResult?.[cat]?.[seg]?.[gi]?.[`${n.name1}total`]==undefined)
+        dataResult[cat][seg][gi][`${n.name1}total`]={}
+        
+      dataResult={...dataResult,
+        [cat]:{
+          ...dataResult[cat],
+          [seg]:{
+            ...dataResult[cat][seg],
+            
+            [gi]:{
+              ...dataResult[cat][seg][gi],
+              [`${n.name1}total`]:{
+                ...dataResult[cat][seg][gi][`${n.name1}total`],
+                [`${n.name1}total`]:data[cat][seg][gi][`${n.name1}total`],
+                [`${n.name1}Maximum`]:data[cat][seg][gi][`${n.name1}Acummulatedmaximum`],
+                [`${n.name1}Minimum`]:data[cat][seg][gi][`${n.name1}Acummulatedminimum`],
+                [`${n.name1}Media`]:data[cat][seg][gi][`${n.name1}Media`],
+                [`${n.name1}Median`]:data[cat][seg][gi][`${n.name1}Median`],
+                [`%${n.name1}`]:data[cat][seg][gi][`%${n.name1}`],
+                [`${n.name1}Count`]:data[cat][seg][gi]?.[`${n.name1}Acummulated`]?.length,
+                //[`${n.name1}RawArray`]:[...dataResult[cat][seg][gi][`${n.name1}total`][`${n.name1}RawArray`],...data?.[cat]?.[seg]?.[gi]?.[`${n.name1}Acummulated`]]
+              }
+            }
+          } 
+
+        }
+      }
+        
+      console.log("dataResult4",dataResult)
+      
+      
+      if(dataResult?.[cat]?.[seg]?.[gi]?.[`${n.name1}total`]?.[ss]==undefined){
+        
+        dataResult={...dataResult,
+          [cat]:{
+            ...dataResult[cat],
+            [seg]:{
+              ...dataResult[cat][seg],
+              [gi]:{
+                ...dataResult[cat][seg][gi],
+                [`${n.name1}total`]:{
+                  ...dataResult[cat][seg][gi][`${n.name1}total`],
+                  [ss]:{value:0,arr:[]}
+
+                }
+              }
+            } 
+
+          }
+        }
+        console.log("dataResult5",dataResult)
+      }
+      let field=n.name1
+      calculateContributionsNull({cat,ssData,seg,dataResult,data,gi,rs,field,x,ss,order,firstCatNormalFields,otmChoices})
+    }
+  })
+
+}
 
 /*133 140 165 166 169 170
 /*171 173 174 175 176 177 178 179*/
@@ -152,13 +272,21 @@ const initializeVarsAndSubsets=(vars)=>{
   if(printRaw[cat][seg]==undefined)
     printRaw={...printRaw,[cat]:{...printRaw[cat],[seg]:getIfPrintRaws({otmChoices,firstCatNormalFields,cat,seg})}}
   
-  Object.keys(ssData[seg]).forEach((rs,ind1)=>{
+  if(Object.keys(ssData[seg]).length>0){
+    Object.keys(ssData[seg]).forEach((rs,ind1)=>{
 
-    Object.keys(data[cat][seg]).forEach(gi=>{
-        createVars({vars:otmChoices[seg].normal,cat,seg,gi,rs,x,ss,ssData,data,order,otmChoices,firstCatNormalFields}) 
-        createVars({vars:otmChoices[seg].compositeFields,cat,seg,gi,rs,x,ss,ssData,data,order,otmChoices,firstCatNormalFields})
+      Object.keys(data[cat][seg]).forEach(gi=>{
+          createVars({vars:otmChoices[seg].normal,cat,seg,gi,rs,x,ss,ssData,data,order,otmChoices,firstCatNormalFields}) 
+          createVars({vars:otmChoices[seg].compositeFields,cat,seg,gi,rs,x,ss,ssData,data,order,otmChoices,firstCatNormalFields})
+      })
     })
-  })
+  }else{
+    Object.keys(data[cat][seg]).forEach(gi=>{
+      createVarsNull({vars:otmChoices[seg].normal,cat,seg,gi,x,ss,ssData,data,order,otmChoices,firstCatNormalFields}) 
+      createVarsNull({vars:otmChoices[seg].compositeFields,cat,seg,gi,x,ss,ssData,data,order,otmChoices,firstCatNormalFields})
+    })
+  }
+  
 }
 
 const initializeSegAndInd=(vars)=>{
@@ -215,7 +343,7 @@ export const doImmediateSonsMath=(vars)=>{
 const loadNormalFields=(vars)=>{
   const {cat,data,order}=vars
   Object.keys(data[cat][cat]).forEach(l=>{
-    dataResult[cat][cat][data[cat][cat][l]["id"]]=data[cat][cat][l]
+    dataResult[cat][cat][l]=data[cat][cat][l]
   })
 }
 
@@ -226,7 +354,8 @@ export const getSubsetsCont=({
   subsets,
   otmChoices,
   firstCatNormalFields,
-  order
+  order,
+  getTableToSort
 })=>{
   printRaw={}
 
@@ -257,7 +386,7 @@ export const getSubsetsCont=({
         }else{
           doImmediateSonsMath({
             categories:otmChoices[cat].otm,
-            data,
+            data:data,
             subsetsData,
             subsets,
             dataResult,
@@ -271,6 +400,7 @@ export const getSubsetsCont=({
     })
     initiateStatistics(otmChoices)
     calculateGrandTotals(otmChoices)
+    calculateGrandTotalsStatistics(otmChoices,order,subsets,firstCatNormalFields)
     calculatePercentageByGrandTotalsAndInRow(otmChoices,data)
   }
   console.log("dataResult",dataResult,printRaw,grandTotals)/*,subsetsData,data)*/
@@ -873,7 +1003,8 @@ const initiateStatistics=(otmChoices)=>{
                 dataResult[cat][seg][ind][`${field.name1}total`]={
                   ...dataResult[cat][seg][ind][`${field.name1}total`],
                   
-                  ...calculateStatistics(dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.["arrRow"])//,dataResult[cat][seg][ind][`${field.name1}total`][sg])
+                  ...calculateStatistics(dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.["arrRow"]),//,dataResult[cat][seg][ind][`${field.name1}total`][sg])
+                  
                 }
               }
             })
@@ -891,7 +1022,8 @@ const initiateStatistics=(otmChoices)=>{
                       dataResult[cat][seg][ind][`${field.name1}total`][sg]={
                         ...dataResult[cat][seg][ind][`${field.name1}total`][sg],
                         
-                        ...calculateStatistics(dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.[sg]?.["arr"],dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.[sg])
+                        ...calculateStatistics(dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.[sg]?.["arr"],dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.[sg]),
+                        ...calculateStatisticsRaw(dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.[sg]?.[`${field.name1}RawArray`])
                       }
                       if(dataResult[cat][seg][ind][`${field.name1}total`]?.["totalRow"]==undefined)
                         dataResult[cat][seg][ind][`${field.name1}total`]["totalRow"]=0
@@ -916,7 +1048,7 @@ const initiateStatistics=(otmChoices)=>{
                 dataResult[cat][seg][ind][`${field.name1}total`]={
                   ...dataResult[cat][seg][ind][`${field.name1}total`],
                   
-                  ...calculateStatistics(dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.["arrRow"])//,dataResult[cat][seg][ind][`${field.name1}total`][sg])
+                  ...calculateStatistics(dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.["arrRow"]),
                 }
               }
             })
@@ -1138,10 +1270,32 @@ const calculateGrandTotals=(otmChoices)=>{
                     ...grandTotals[mainCat],
                     [seg]:{
                       ...grandTotals[mainCat][seg],
-                      [`${field.name1}total`]:{}
+                      [`${field.name1}total`]:{
+                        ["superSetArray"]:[],
+                        ["superSetCountArray"]:[],
+                        ["subsetsArray"]:[],
+                        ["subsetsCountArray"]:[]
+                      }
                     }
                   }
                 } 
+                grandTotals={
+                  ...grandTotals,
+                  [mainCat]:{
+                    ...grandTotals[mainCat],
+                    [seg]:{
+                      ...grandTotals[mainCat][seg],
+                      [`${field.name1}total`]:{
+
+                        ...grandTotals[mainCat][seg][`${field.name1}total`],
+                        [`superSetArray`]:[...grandTotals[mainCat][seg][`${field.name1}total`][`superSetArray`],dataResult[mainCat][seg][reg][`${field.name1}total`][`${field.name1}total`]],
+                          superSetCountArray:[...grandTotals[mainCat][seg][`${field.name1}total`][`superSetCountArray`],dataResult[mainCat][seg][reg][`${field.name1}total`][`${field.name1}Count`]],
+                          subsetsArray:[...grandTotals[mainCat][seg][`${field.name1}total`][`subsetsArray`],dataResult[mainCat][seg][reg][`${field.name1}total`][`totalRow`]],
+                          subsetsCountArray:[...grandTotals[mainCat][seg][`${field.name1}total`][`subsetsCountArray`],dataResult[mainCat][seg][reg][`${field.name1}total`][`totalCount`]],
+                      }
+                    }
+                  }
+                }
                      
               Object.keys(dataResult[mainCat][seg][reg][`${field.name1}total`]).forEach(sg=>{
                 if(typeof dataResult[mainCat][seg][reg][`${field.name1}total`][sg]=="object" &&
@@ -1155,11 +1309,22 @@ const calculateGrandTotals=(otmChoices)=>{
                           ...grandTotals[mainCat][seg],
                           [`${field.name1}total`]:{
                             ...grandTotals[mainCat][seg][`${field.name1}total`],
-                            [sg]:0
+                            [sg]:0,
+                            [`${sg}Array`]:[],
+                            [`${sg}CountArray`]:[],
+                            [`${sg}RawArray`]:[],
+                            [`${sg}RawCountArray`]:[]
+                            
                           }
                         }
                       }
                     }
+                    let sumTotalRaw=0
+                    let sumCountRaw=0
+                    dataResult[mainCat][seg][reg][`${field.name1}total`][sg][`${field.name1}RawArray`].forEach(p=>{
+                      sumTotalRaw+=p
+                      sumCountRaw=dataResult[mainCat][seg][reg][`${field.name1}total`][sg][`${field.name1}RawArray`].length
+                    })
                   grandTotals={
                     ...grandTotals,
                     [mainCat]:{
@@ -1168,7 +1333,11 @@ const calculateGrandTotals=(otmChoices)=>{
                         ...grandTotals[mainCat][seg],
                         [`${field.name1}total`]:{
                           ...grandTotals[mainCat][seg][`${field.name1}total`],
-                          [sg]:grandTotals[mainCat][seg][`${field.name1}total`][sg]+dataResult[mainCat][seg][reg][`${field.name1}total`][sg]["value"]
+                          [sg]:grandTotals[mainCat][seg][`${field.name1}total`][sg]+dataResult[mainCat][seg][reg][`${field.name1}total`][sg]["value"],
+                          [`${sg}CountArray`]:[...grandTotals[mainCat][seg][`${field.name1}total`][`${sg}CountArray`],dataResult[mainCat][seg][reg][`${field.name1}total`][sg]["totalCount"]],
+                          [`${sg}Array`]:[...grandTotals[mainCat][seg][`${field.name1}total`][`${sg}Array`],dataResult[mainCat][seg][reg][`${field.name1}total`][sg]["value"]],
+                          [`${sg}RawArray`]:[...grandTotals[mainCat][seg][`${field.name1}total`][`${sg}RawArray`],sumTotalRaw],
+                          [`${sg}RawCountArray`]:[...grandTotals[mainCat][seg][`${field.name1}total`][`${sg}RawCountArray`],sumCountRaw],
                         }
                       }
                     }
@@ -1186,10 +1355,32 @@ const calculateGrandTotals=(otmChoices)=>{
                     ...grandTotals[mainCat],
                     [seg]:{
                       ...grandTotals[mainCat][seg],
-                      [`${field.name1}total`]:{}
+                      [`${field.name1}total`]:{
+                        ["superSetArray"]:[],
+                        ["superSetCountArray"]:[],
+                        ["subsetsArray"]:[],
+                        subsetsCountArray:[]
+                      }
                     }
                   }
-                } 
+                }
+                grandTotals={
+                  ...grandTotals,
+                  [mainCat]:{
+                    ...grandTotals[mainCat],
+                    [seg]:{
+                      ...grandTotals[mainCat][seg],
+                      [`${field.name1}total`]:{
+                        ...grandTotals[mainCat][seg][`${field.name1}total`],
+                        [`superSetArray`]:[...grandTotals[mainCat][seg][`${field.name1}total`][`superSetArray`],dataResult[mainCat][seg][reg][`${field.name1}total`][`${field.name1}total`]],
+                          superSetCountArray:[...grandTotals[mainCat][seg][`${field.name1}total`][`superSetCountArray`],dataResult[mainCat][seg][reg][`${field.name1}total`][`${field.name1}Count`]],
+                          subsetsArray:[...grandTotals[mainCat][seg][`${field.name1}total`][`subsetsArray`],dataResult[mainCat][seg][reg][`${field.name1}total`][`totalRow`]],
+                          subsetsCountArray:[...grandTotals[mainCat][seg][`${field.name1}total`][`subsetsCountArray`],dataResult[mainCat][seg][reg][`${field.name1}total`][`totalCount`]],
+                      }
+                    }
+                  }
+                }
+
                      
               Object.keys(dataResult[mainCat][seg][reg][`${field.name1}total`]).forEach(sg=>{
                 if(typeof dataResult[mainCat][seg][reg][`${field.name1}total`][sg]=="object" &&
@@ -1203,11 +1394,22 @@ const calculateGrandTotals=(otmChoices)=>{
                           ...grandTotals[mainCat][seg],
                           [`${field.name1}total`]:{
                             ...grandTotals[mainCat][seg][`${field.name1}total`],
-                            [sg]:0
+                            [sg]:0,
+                            [`${sg}Array`]:[],
+                            [`${sg}CountArray`]:[],
+                            [`${sg}RawArray`]:[],
+                            [`${sg}RawCountArray`]:[]
+                           
                           }
                         }
                       }
                     }
+                    let sumTotalRaw=0
+                    let sumCountRaw=0
+                    dataResult[mainCat][seg][reg][`${field.name1}total`][sg][`${field.name1}RawArray`].forEach(p=>{
+                      sumTotalRaw+=p
+                      sumCountRaw=dataResult[mainCat][seg][reg][`${field.name1}total`][sg][`${field.name1}RawArray`].length
+                    })
                   grandTotals={
                     ...grandTotals,
                     [mainCat]:{
@@ -1216,7 +1418,12 @@ const calculateGrandTotals=(otmChoices)=>{
                         ...grandTotals[mainCat][seg],
                         [`${field.name1}total`]:{
                           ...grandTotals[mainCat][seg][`${field.name1}total`],
-                          [sg]:grandTotals[mainCat][seg][`${field.name1}total`][sg]+dataResult[mainCat][seg][reg][`${field.name1}total`][sg]["value"]
+                          [sg]:grandTotals[mainCat][seg][`${field.name1}total`][sg]+dataResult[mainCat][seg][reg][`${field.name1}total`][sg]["value"],
+                          
+                          [`${sg}Array`]:[...grandTotals[mainCat][seg][`${field.name1}total`][`${sg}Array`],dataResult[mainCat][seg][reg][`${field.name1}total`][sg]["value"]],
+                          [`${sg}CountArray`]:[...grandTotals[mainCat][seg][`${field.name1}total`][`${sg}CountArray`],dataResult[mainCat][seg][reg][`${field.name1}total`][sg]["totalCount"]],
+                          [`${sg}RawArray`]:[...grandTotals[mainCat][seg][`${field.name1}total`][`${sg}RawArray`],sumTotalRaw],
+                          [`${sg}RawCountArray`]:[...grandTotals[mainCat][seg][`${field.name1}total`][`${sg}RawCountArray`],sumCountRaw],
                         }
                       }
                     }
@@ -1230,7 +1437,77 @@ const calculateGrandTotals=(otmChoices)=>{
     })
     
   })
+
   console.log("gtotalsacum",grandTotals)
+}
+
+const calculateGrandTotalsStatistics=(otmChoices,order,subsets,firstCatNormalFields)=>{
+  let firstCats
+  let pivote
+  
+  Object.keys(grandTotals).forEach(mainCat=>{
+  
+    Object.keys(grandTotals[mainCat]).forEach(seg=>{
+
+      if(mainCat.startsWith("getData"))
+        firstCats=firstCatNormalFields[mainCat].otm
+      else
+        firstCats=otmChoices[mainCat].otm
+      firstCats.forEach(x=>{
+        if(order[1][x].includes(seg))
+          pivote=x
+      })
+      console.log("ssio",subsets,pivote,mainCat,seg)
+
+      otmChoices[seg].normal.forEach(field=>{
+        if(field.type=="number"){
+          grandTotals[mainCat][seg][`${field.name1}total`]={
+            ...grandTotals[mainCat][seg][`${field.name1}total`],
+            [`statSuperSetArray`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`superSetArray`])},
+            [`statSuperSetArrayCount`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`superSetCountArray`])},
+            [`statSubsetsArray`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`subsetsArray`])},
+            [`statSubsetsArrayCount`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`subsetsCountArray`])}
+            
+          }
+       
+  Object.keys(subsets[pivote]).forEach(sg=>{
+            console.log("ssio",mainCat,seg,field.name1,grandTotals[mainCat][seg][`${field.name1}total`][`${sg}Array`],grandTotals[mainCat][seg][`${field.name1}total`][`${sg}CountArray`])
+            grandTotals[mainCat][seg][`${field.name1}total`]={
+              ...grandTotals[mainCat][seg][`${field.name1}total`],
+              [`statArray${sg}`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`${sg}Array`])},
+              [`statArrayCount${sg}`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`${sg}CountArray`])},
+              [`statArrayRaw${sg}`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`${sg}RawArray`])},
+              [`statArrayCountRaw${sg}`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`${sg}RawCountArray`])}
+            }
+
+          
+        })
+        }
+      })
+      otmChoices[seg].compositeFields.forEach(field=>{
+        if(field.type=="number"){
+          grandTotals[mainCat][seg][`${field.name1}total`]={
+            ...grandTotals[mainCat][seg][`${field.name1}total`],
+            [`statSuperSetArray`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`superSetArray`])},
+            [`statSuperSetArrayCount`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`superSetCountArray`])},
+            [`statSubsetsArray`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`subsetsArray`])},
+            [`statSubsetsArrayCount`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`subsetsCountArray`])}
+          }
+          Object.keys(subsets[pivote]).forEach(sg=>{
+            grandTotals[mainCat][seg][`${field.name1}total`]={
+              ...grandTotals[mainCat][seg][`${field.name1}total`],
+              [`statArray${sg}`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`${sg}Array`])},
+              [`statArrayCount${sg}`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`${sg}CountArray`])},
+              [`statArrayRaw${sg}`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`${sg}RawArray`])},
+              [`statArrayCountRaw${sg}`]:{...calculateStatistics(grandTotals[mainCat][seg][`${field.name1}total`][`${sg}RawCountArray`])}
+            }
+          
+          })
+        }
+      })
+    })
+  })
+  console.log("grandTotalStats",grandTotals)
 }
   
  
@@ -1242,22 +1519,45 @@ const calculateStatistics=(arr,ivar)=>{
   res["media"]=0
   res["median"]=0
   res["totalCount"]=0
+  res["total"]=0
   if(arr?.length>0){
+    arr=arr.map(x=>{
+      if(x==undefined || x==null)
+        return 0
+      return x
+    })
     arr=arr.sort((x,y)=>x>y?1:-1)
     res["min"]=arr[0]==null?0:arr[0]
     res["max"]=arr[arr.length-1]==null?0:arr[arr.length-1]
     let suma=0
-    arr.forEach(y=>suma+=y)
+    arr.forEach(y=>{
+      if(y!=undefined)
+        suma+=y
+    })
     res["media"]=suma/arr.length
     let length=arr.length
     let median=0
     if(length%2==1){
       median=arr[Math.floor(length/2)]
+      if(median==undefined || median==null)
+        median=0
     }else{
-      median=(arr[(length/2)-1]+arr[(length/2)])/2
+      let op1,op2
+      if(arr[(length/2)-1]==undefined)
+        op1=0
+      else
+        op1=arr[(length/2)-1]
+      if(arr[(length/2)]==undefined)
+        op2=0
+      else
+        op2=arr[(length/2)]
+      median=(op1+op2)/2
+      if(isNaN(median))
+        median=0
     }
     res["median"]=median
     res["totalCount"]=arr.length
+    res["total"]=suma
     return res
   }
   return res
@@ -1271,6 +1571,7 @@ const calculateStatisticsRaw=(arr,ivar)=>{
   res["totalCountRaw"]=0
   if(arr?.length>0){
     arr=arr.sort((x,y)=>x>y?1:-1)
+    arr=arr.map(x=>(x==undefined || x==null)?0:x)
     res["minRaw"]=arr[0]==null?0:arr[0]
     res["maxRaw"]=arr[arr.length-1]==null?0:arr[arr.length-1]
     let suma=0
@@ -1279,9 +1580,23 @@ const calculateStatisticsRaw=(arr,ivar)=>{
     let length=arr.length
     let median=0
     if(length%2==1){
-      median=arr[Math.floor(length/2)]
+      if(arr[Math.floor(length/2)]==undefined ||
+        arr[Math.floor(length/2)]==null)
+        median=0
+      else{
+        median=arr[Math.floor(length/2)]
+      }
     }else{
+      if(arr[Math.floor(length/2)-1]==undefined ||
+        arr[Math.floor(length/2)-1]==null)
+        arr[Math.floor(length/2)-1]=0
+      if(arr[Math.floor(length/2)]==undefined ||
+        arr[Math.floor(length/2)]==null)
+        arr[Math.floor(length/2)]=0
+      
       median=(arr[(length/2)-1]+arr[(length/2)])/2
+      if(isNaN(median))
+        median=0
     }
     res["medianRaw"]=median
     res["totalCountRaw"]=arr.length
