@@ -292,14 +292,13 @@ export const SubsetContributionsTable=({
     if(table==seg)
       fds.unshift(<th className="bord">id</th>)
               
-
-              let body=[]
-                if(table==seg)
-                body.push(printMainSegOfTableData(table,seg))
-                if(table!==seg)
-                fields.forEach((f,index)=>{
-                body.push(<th>{printThirdLevelHeaders(table,seg,f.name1,ssName)}</th>)
-                })
+    let body=[]
+      if(table==seg)
+      body.push(printMainSegOfTableData(table,seg))
+      if(table!==seg)
+      fields.forEach((f,index)=>{
+      body.push(<th>{printThirdLevelHeaders(table,seg,f.name1,ssName)}</th>)
+      })
               
         
             
@@ -320,6 +319,17 @@ export const SubsetContributionsTable=({
         </tbody>
       </table>
     
+  }
+
+  const checkHasSegmentsToDisplay=table=>{
+    let res=false
+    order[1][table].forEach(seg=>{
+      if(seg!=table){
+        if(checkHasFieldToDisplay(seg))
+          res=true
+      }
+    })
+    return res
   }
 
   const checkHasFieldToDisplay=(seg)=>{
@@ -346,20 +356,20 @@ const displayTotalOrCount=(seg,piv,table,field,type,x)=>{
   let statsCountRaw
   let statsTotalRaw
   if(type=="superset"){
-    statsTotal=grandTotals[table][seg][`${field}total`]["statSuperSetArray"]
-    statsCount=grandTotals[table][seg][`${field}total`]["statSuperSetArrayCount"]
+    statsTotal=grandTotals?.[table]?.[seg]?.[`${field}total`]?.["statSuperSetArray"]
+    statsCount=grandTotals?.[table]?.[seg]?.[`${field}total`]?.["statSuperSetArrayCount"]
   }else if(type=="subset"){
-    statsTotal=grandTotals[table][seg][`${field}total`][`statArray${x}`]
-    statsCount=grandTotals[table][seg][`${field}total`][`statArrayCount${x}`]
-    statsTotalRaw=grandTotals[table][seg][`${field}total`][`statArrayRaw${x}`]
-    statsCountRaw=grandTotals[table][seg][`${field}total`][`statArrayCountRaw${x}`]
+    statsTotal=grandTotals?.[table]?.[seg]?.[`${field}total`]?.[`statArray${x}`]
+    statsCount=grandTotals?.[table]?.[seg]?.[`${field}total`]?.[`statArrayCount${x}`]
+    statsTotalRaw=grandTotals?.[table]?.[seg]?.[`${field}total`]?.[`statArrayRaw${x}`]
+    statsCountRaw=grandTotals?.[table]?.[seg]?.[`${field}total`]?.[`statArrayCountRaw${x}`]
   }else if(type=="subsets"){
     
-    statsTotal=grandTotals[table][seg][`${field}total`]["statSubsetsArray"]
-    statsCount=grandTotals[table][seg][`${field}total`]["statSubsetsArrayCount"]
+    statsTotal=grandTotals?.[table]?.[seg]?.[`${field}total`]?.["statSubsetsArray"]
+    statsCount=grandTotals?.[table]?.[seg]?.[`${field}total`]?.["statSubsetsArrayCount"]
     
   }
-
+  console.log("statstot",statsTotal,statsCount)
   return <table><thead>
       <tr>
         <th className="bord">total</th>
@@ -368,7 +378,7 @@ const displayTotalOrCount=(seg,piv,table,field,type,x)=>{
         {seg!=piv && type=="subset" && <th className="bord">countRaw</th>}
       </tr>
     </thead>
-    {(type=="superset" || type=="subset" || type=="subsets") &&<tbody>
+    {((statsTotal!=undefined || statsCount!=undefined) && (type=="superset" || type=="subset" || type=="subsets")) &&<tbody>
       <tr>
         <td className="bord" style={{
           backgroundColor:"white",
@@ -613,6 +623,7 @@ const grandTotalsDisplay=(table)=>{
     let subTitles=[]
     let dummyt=[]
     let dummyst=[]
+    if(data[table][table]!=undefined && Object.keys(data[table][table]).length>0){
     if(table.startsWith("getData"))
       firstTables=firstCatNormalFields[table].otm
     else
@@ -620,12 +631,13 @@ const grandTotalsDisplay=(table)=>{
     if(table!==order[1][table][order[1][table].length-1]){
         
       piv2=order[1][table].forEach((seg,ind2)=>{
+        //console.log("pivfijo",data[])
         firstTables.forEach(tab=>{
           if(order[1][tab].includes(seg))
             tablePiv=tab
           
         })
-        if(seg!==table){
+        if(seg!==table && checkHasFieldToDisplay(seg) && data?.[tablePiv]?.[tablePiv]!=undefined && Object.keys(data[tablePiv][tablePiv]).length>0){
           mainTitles.push(<th className="bord">
                   {seg}
                 </th>)
@@ -643,7 +655,7 @@ const grandTotalsDisplay=(table)=>{
       mainTitles.unshift(<th className="bord">
         &nbsp;</th>)
      subTitles.unshift(<th>{displayFieldsGrandTotals(null,null,true)}</th>)
-      return <table>
+      return data?.[tablePiv]?.[tablePiv]!=undefined && Object.keys(data[tablePiv][tablePiv]).length>0 && <table>
               <thead>
                 <tr>
                   {mainTitles}
@@ -678,14 +690,22 @@ const grandTotalsDisplay=(table)=>{
         </tbody>
       </table>*/
       
-    }      
+    }
+  }else
+  return null     
  
 }
   
 
   const initializeTablesLoop=()=>{
     let piv2
-     let pivote=order[0].map((table,index)=>{
+    let pivote=""
+   
+    
+     pivote=order[0].map((table,index)=>{
+       console.log("datatable",data[table][table])
+      if(data?.[table]?.[table]!=undefined){
+    
        piv2=""
       let firstTables=[]
       let tablePiv
@@ -703,10 +723,11 @@ const grandTotalsDisplay=(table)=>{
               tablePiv=tab
           
           })
+          console.log("tablereg",order,table,seg,data?.[tablePiv]?.[tablePiv])
+
           
 
-
-          console.log("tablereg",order,table,seg)
+          //console.log("tablereg",order,table,seg,data[tablePiv][tablePiv])
            
             if(Object.keys(data[table]).length>1 && table==seg && table.startsWith('getData'))
              return <th style={{verticalAlign:"top",height:"auto"}}><table /*style={{border:"1px solid red"}}*/><thead>
@@ -729,8 +750,8 @@ const grandTotalsDisplay=(table)=>{
              <tbody className="tbh"><tr><th>{printSecondLevelHeaders([...otmChoices?.[seg]?.normal,...otmChoices?.[seg]?.compositeFields],true,table,seg,tablePiv/*order[1][table][1]*/)}</th></tr>
              </tbody></table></th>
             
-            
-            else if(data[table][seg]!==undefined && table!==seg && checkHasFieldToDisplay(seg))
+            //if(data?.[tablePiv]?.[tablePiv]!=undefined && Object.keys(data[tablePiv][tablePiv]).length>0){
+            else if(data?.[tablePiv]?.[tablePiv]!=undefined && Object.keys(data[tablePiv][tablePiv]).length>0 && data[table][seg]!==undefined && table!==seg && checkHasFieldToDisplay(seg))
               return  <th style={{verticalAlign:"top",height:"auto"}}><table><thead>
                 
                 <tr><th className="bord">{seg}</th></tr></thead>
@@ -739,7 +760,8 @@ const grandTotalsDisplay=(table)=>{
             
             else
             return ""
-       
+          
+          //return ""
             /*!seg.startsWith('getData') && seg==table &&
             printSecondLevelHeaders([...otmChoices?.[seg]?.normal,...otmChoices?.[seg]?.compositeFields],true,table,seg,order[1][table][1])
             
@@ -755,7 +777,7 @@ const grandTotalsDisplay=(table)=>{
           
         })
       }
-      if(piv2!="")
+      if(piv2!="" && checkHasSegmentsToDisplay(table)){
       return <div className="cont">
       <table className="main">
         <tbody>
@@ -765,7 +787,7 @@ const grandTotalsDisplay=(table)=>{
         </tbody>
         
       </table>
-      <table>
+     <table className="main">
         <tbody>
           <tr>
           {grandTotalsDisplay(table)}
@@ -773,15 +795,20 @@ const grandTotalsDisplay=(table)=>{
         </tbody>
         
       </table>
-      </div>
+      
+      
+      </div>}
+      }
       else
         return null
     })
     setTable(pivote)
-  }
+  
+}
 
   return <div className="cont">
     {table}
     
   </div>
+  
 }

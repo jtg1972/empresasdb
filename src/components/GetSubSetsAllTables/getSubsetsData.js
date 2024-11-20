@@ -53,6 +53,7 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(vars,category,data1,ssd,ss)=>
   
   //console.log("ssd22",ssd1,data1,"entro aqui")
   console.log("pero ", data1[segment],segment,datafield,getMainRule)
+  if(data1[category]!=undefined){
   if(category==segment){
     
     let newRecord={}
@@ -118,7 +119,7 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(vars,category,data1,ssd,ss)=>
       }
     })
   }
-  
+  }
   /*getCategoriesGrandTotals(category,ssd)
   calculatePercentageOverGrandTotal(ssd[category][subset])
   console.log("ssdata77",ssd,data1)

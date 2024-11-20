@@ -4238,7 +4238,11 @@ const calculateMediaAndMediansOfRecords=(category)=>{
             if(i.type=="number"){
               total=0
               sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
-              
+              sortedValues=sortedValues.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
               sortedValues.forEach(i=>total=total+i)
               realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
               
@@ -4260,7 +4264,11 @@ const calculateMediaAndMediansOfRecords=(category)=>{
             if(i.type=="number"){
               total=0
               sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
-              
+              sortedValues=sortedValues.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
               sortedValues.forEach(i=>total=total+i)
               realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
               
@@ -4284,7 +4292,11 @@ const calculateMediaAndMediansOfRecords=(category)=>{
             if(i.type=="number"){
               total=0
               let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
-              
+              sortedValues=sortedValues.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              }) 
               sortedValues.forEach(i=>total=total+i)
               realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
               
@@ -4303,6 +4315,11 @@ const calculateMediaAndMediansOfRecords=(category)=>{
             
               let total=0
               let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
+              sortedValues=sortedValues.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
               let median=0
               sortedValues.forEach(i=>total=total+i)
               realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
@@ -4326,7 +4343,11 @@ const calculateMediaAndMediansOfRecords=(category)=>{
               let total=0
               let median=0
               let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
-              
+              sortedValues=sortedValues.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
               sortedValues.forEach(i=>total=total+i)
               realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
               
@@ -4345,6 +4366,11 @@ const calculateMediaAndMediansOfRecords=(category)=>{
               let total=0
               let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
               let median=0
+              sortedValues=sortedValues.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
               sortedValues.forEach(i=>total=total+i)
               realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
               
@@ -4364,7 +4390,11 @@ const calculateMediaAndMediansOfRecords=(category)=>{
               let total=0
               let median=0
               let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
-              
+              sortedValues=sortedValues.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
               sortedValues.forEach(i=>total=total+i)
               realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
               
@@ -4383,7 +4413,11 @@ const calculateMediaAndMediansOfRecords=(category)=>{
               let total=0
               let median=0
               let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
-              
+              sortedValues=sortedValues.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
               sortedValues.forEach(i=>total=total+i)
               realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
               
@@ -6084,7 +6118,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
       }
         if(theresComposite)
         result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",overflow:"normal",borderRight:realSegmentLast==category && index==composite-1?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
+          <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",overflow:"normal",borderRight:realSegmentLast==category && index==composite-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}`]}</td>
         )]
         /*if(theresOtmDestiny)
         result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].otmdestiny.map((q,index)=>
@@ -6166,7 +6200,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
               otmStatisticsArray.push(x)
             }
           }
-          temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data[y][`${q.name1}total`].toFixed(2)}</td>)
+          temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}total`]==undefined?"0.00":data[y][`${q.name1}total`].toFixed(2)}</td>)
           //Object.keys(otmChoicesStatistics[category][a][q.name1]).
           otmStatisticsArray.forEach((ji,i44)=>{
             console.log("www88",finalObject[category][a][y],data[y]?.[`${q.name1}Acummulated`])
@@ -6175,15 +6209,15 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
               let pmay=ji[0].toUpperCase()+ji.substring(1)
               //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
               if(ji=="percentage"){
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}`])?"0.00":data[y][`%${q.name1}`].toFixed(2)}</td>)  
 
               }else if(ji=="minimum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}Acummulatedminimum`]==undefined?"0.00":data?.[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
               }else if(ji=="maximum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}Acummulatedmaximum`]==undefined?"0.00":data?.[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
               
               }else
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`${q.name1}${pmay}`].toFixed(2)}</td>)
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}${pmay}`]==undefined?"0.00":data[y][`${q.name1}${pmay}`].toFixed(2)}</td>)
 
             
           })
@@ -6212,15 +6246,15 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
               //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
               //temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`]}</td>)
               if(ji=="percentage"){
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`%${q.name1}`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}`])?"0.00":data?.[y]?.[`%${q.name1}`]?.toFixed(2)}</td>)  
 
               }else if(ji=="minimum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}Acummulatedminimum`]==undefined?"0.00":data?.[y]?.[`${q.name1}Acummulatedminimum`]?.toFixed(2)}</td>)  
               }else if(ji=="maximum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`]==undefined?"0.00":data?.[y]?.[`${q.name1}Acummulatedmaximum`]?.toFixed(2)}</td>)  
               
               }else
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y][`${q.name1}${pmay}`].toFixed(2)}</td>)
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y][`${q.name1}${pmay}`]==undefined?"0.00":data?.[y][`${q.name1}${pmay}`]?.toFixed(2)}</td>)
 
             //}
           })
@@ -6234,7 +6268,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
         if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>,...result,...temp]
+            result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}</td>,...result,...temp]
           }else{
             result=[...result,...temp]
           }
@@ -6242,21 +6276,21 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
         else{
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>]
+            result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}</td>]
           }
         }
       }else{
         if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>,...result,...temp]
+            result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}</td>,...result,...temp]
           }else
             result=[...result,temp]
         }
         else
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
 
-            result=[<td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data[y][`${a}TotalCount`]}</td>]
+            result=[<td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}</td>]
       }
     }
       
@@ -6289,21 +6323,21 @@ const displayFirstCategoryFields=(data)=>{
   let n=nf.normal.map((x,index)=>{
     return <tr style={{background:"white",color:"black",margin:0,padding:0}}>
       <td style={{borderRight:"1px solid black"}}>{x}</td> 
-      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`][`${x}total`].toFixed(2)}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[0]==undefined?0.00:(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[0].toFixed(2))}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1]==undefined?0.00:(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1].toFixed(2))}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`][`${x}Media`].toFixed(2)}</td>
-      <td>{data[`getData${currentCategory.name}`][`${x}Median`].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[`getData${currentCategory.name}`]?.[`${x}total`]==undefined?"0.00":data[`getData${currentCategory.name}`][`${x}total`].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[0]==undefined?"0.00":(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[0].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1]==undefined?"0.00":(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[`getData${currentCategory.name}`]?.[`${x}Media`])?"0.00":data[`getData${currentCategory.name}`][`${x}Media`].toFixed(2)}</td>
+      <td>{isNaN(data?.[`getData${currentCategory.name}`]?.[`${x}Median`])?"0.00":data[`getData${currentCategory.name}`][`${x}Median`].toFixed(2)}</td>
     </tr>
   })
   let c=nf.compositeFields.map(x=>{
     return <tr style={{background:"white",color:"black",margin:0,padding:0}}>
       <td style={{borderRight:"1px solid black"}}>{x}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`][`${x}total`].toFixed(2)}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[0]==undefined?0.00:(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[0].toFixed(2))}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1]==undefined?0.00:(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1].toFixed(2))}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[`getData${currentCategory.name}`][`${x}Media`].toFixed(2)}</td>
-      <td>{data[`getData${currentCategory.name}`][`${x}Median`].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[`getData${currentCategory.name}`]?.[`${x}total`]==undefined?"0.00":data[`getData${currentCategory.name}`][`${x}total`].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[0]==undefined?"0.00":(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[0].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1]==undefined?"0.00":(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[`getData${currentCategory.name}`]?.[`${x}Media`])?"0.00":data[`getData${currentCategory.name}`][`${x}Media`].toFixed(2)}</td>
+      <td>{isNaN(data?.[`getData${currentCategory.name}`]?.[`${x}Median`])?"0.00":data[`getData${currentCategory.name}`][`${x}Median`].toFixed(2)}</td>
     </tr>
   })
   return [...n,...c]
@@ -6313,13 +6347,34 @@ const displayFirstCategoryFields=(data)=>{
 
 const calMedian=(arr)=>{
   let median=0
-  let length=arr.length
-  if(length%2==1){
-    median=arr[Math.floor(length/2)]
-  }else{
-    median=(arr[(length/2)-1]+arr[(length/2)])/2
-  }
+  let length=arr?.lenght
+  if(length==undefined || length==0 || isNaN(length))
+    return 0
+  else{
+    if(length%2==1){
+      if(arr[Math.floor(length/2)]==undefined){
+        median=0
+      }else
+        median=arr[Math.floor(length/2)]
+    }else{
+      let p1,p2
+      if(arr[(length/2)-1]==undefined)
+        p1=0
+      else
+        p1=arr[(length/2)-1]
+      if(arr[(length/2)]==undefined){
+        p2=0
+      }else
+        p2=arr[(length/2)]
+
+      
+      
+      
+      median=(p1+p2)/2
+    }
+
   return median
+  }
 }
 
 const displayCategoryFields=(seg,data,cond)=>{
@@ -6330,22 +6385,22 @@ const displayCategoryFields=(seg,data,cond)=>{
     lastColor="white"
     tcr=[<tr style={{background:"white",color:"black",margin:0,padding:0,background:lastColor}}>
       <td style={{borderRight:"1px solid black"}}>{`${seg}TotalCount`}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${seg}TotalCount`].toFixed(2)}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${seg}TotalCountArray`]?.[0]==undefined?0.00:data[seg]?.[`${seg}TotalCountArray`]?.[0].toFixed(2)}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${seg}TotalCountArray`]?.[data[seg]?.[`${seg}TotalCountArray`].length-1]==undefined?0.00:(data[seg]?.[`${seg}TotalCountArray`]?.[data[seg]?.[`${seg}TotalCountArray`].length-1].toFixed(2))}</td>
-      <td style={{borderRight:"1px solid black"}}>{(data[seg]?.[`${seg}TotalCount`]/data[seg]?.[`${seg}TotalCountArray`].length).toFixed(2)}</td>
-      <td>{calMedian(data[seg]?.[`${seg}TotalCountArray`]).toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}TotalCount`]==undefined?"0.00":data?.[seg]?.[`${seg}TotalCount`]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}TotalCountArray`]?.[0]==undefined?"0.00":data[seg]?.[`${seg}TotalCountArray`]?.[0].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}TotalCountArray`]?.[data?.[seg]?.[`${seg}TotalCountArray`].length-1]==undefined?"0.00":(data[seg]?.[`${seg}TotalCountArray`]?.[data[seg]?.[`${seg}TotalCountArray`].length-1].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${seg}TotalCount`]/data?.[seg]?.[`${seg}TotalCountArray`]?.length)?"0.00":(data[seg]?.[`${seg}TotalCount`]/data[seg]?.[`${seg}TotalCountArray`]?.length)?.toFixed(2)}</td>
+      <td>{isNaN(calMedian(data[seg]?.[`${seg}TotalCountArray`]))?"0.00":calMedian(data[seg]?.[`${seg}TotalCountArray`])?.toFixed(2)}</td>
     </tr>]
   }
   let n=nf.normal.map((x,index)=>{
     lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
     return <tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
       <td style={{borderRight:"1px solid black"}}>{x}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}total`]?.toFixed(2)}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[0]==undefined?0.00:data[seg]?.[`${x}AccumulatedArray`]?.[0]?.toFixed(2)}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`]?.length-1]==undefined?0.00:(data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1]?.toFixed(2))}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}Media`]?.toFixed(2)}</td>
-      <td>{data[seg]?.[`${x}Median`]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}total`]==undefined?"0.00":data[seg]?.[`${x}total`]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}AccumulatedArray`]?.[0]==undefined?"0.00":data[seg]?.[`${x}AccumulatedArray`]?.[0]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`]?.length-1]==undefined?"0.00":(data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`]?.length-1]?.toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}Media`])?"0.00":data[seg]?.[`${x}Media`]?.toFixed(2)}</td>
+      <td>{isNaN(data[seg]?.[`${x}Median`])?"0.00":data?.[seg]?.[`${x}Median`]?.toFixed(2)}</td>
     </tr>
   })
   let c=nf.compositeFields.map((x,index)=>{
@@ -6353,11 +6408,11 @@ const displayCategoryFields=(seg,data,cond)=>{
 
     return <tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
       <td style={{borderRight:"1px solid black"}}>{x}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}total`]?.toFixed(2)}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[0]==undefined?0.00:data[seg]?.[`${x}AccumulatedArray`]?.[0]?.toFixed(2)}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1]==undefined?0.00:(data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1]?.toFixed(2))}</td>
-      <td style={{borderRight:"1px solid black"}}>{data[seg]?.[`${x}Media`]?.toFixed(2)}</td>
-      <td>{data[seg]?.[`${x}Median`]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}total`]==undefined?"0.00":data[seg]?.[`${x}total`]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}AccumulatedArray`]?.[0]==undefined?"0.00":data[seg]?.[`${x}AccumulatedArray`]?.[0]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1]==undefined?"0.00":(data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`]?.length-1]?.toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}Media`])?"0.00":data[seg]?.[`${x}Media`]?.toFixed(2)}</td>
+      <td>{isNaN(data[seg]?.[`${x}Median`])?"0.00":data?.[seg]?.[`${x}Median`]?.toFixed(2)}</td>
     </tr>
   })
   return [...tcr,...n,...c]

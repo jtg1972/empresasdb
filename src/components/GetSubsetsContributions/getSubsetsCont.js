@@ -342,7 +342,8 @@ export const doImmediateSonsMath=(vars)=>{
 
 const loadNormalFields=(vars)=>{
   const {cat,data,order}=vars
-  Object.keys(data[cat][cat]).forEach(l=>{
+  if(data?.[cat]?.[cat]!=undefined)
+  Object?.keys(data?.[cat]?.[cat])?.forEach(l=>{
     dataResult[cat][cat][l]=data[cat][cat][l]
   })
 }
@@ -363,7 +364,7 @@ export const getSubsetsCont=({
   dataResult={}
   if(data!=undefined){
     
-    Object.keys(data).forEach(cat=>{
+    Object.keys(data)?.forEach(cat=>{
       if(dataResult[cat]==undefined)
         dataResult={...dataResult,[cat]:{}}
       if(dataResult[cat][cat]==undefined){
