@@ -23,10 +23,11 @@ query TableStates {
 }
 `
 
+
 const mapToState=({categories})=>({
   
   tablesStateRecords:categories.tablesStateRecords,
-  
+  categories:categories.categories
 })
 
 const DisplayTableStatus = () => {

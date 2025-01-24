@@ -128,7 +128,7 @@ export default (category,keyFields,categories,nameMut,nRc)=>{
     }
   }
       
-  const rr=categories.filter(c=>c.id==nRc.id)[0]
+  /*const rr=categories.filter(c=>c.id==nRc.id)[0]
   const nn=category.name
   const sp=nn.split("_")
   let f1
@@ -142,8 +142,8 @@ export default (category,keyFields,categories,nameMut,nRc)=>{
   }    
   counters=[...counters,{name:f1,count:0}]
   console.log("counters44",counters)
-  campos.push(getManyToManyRelation(category,cat,keyFields,categories,counters,cat,f1))
-      
+  //campos.push(getManyToManyRelation(category,cat,keyFields,categories,counters,cat,f1))
+  */    
     
   
   for(let k in keyFields){

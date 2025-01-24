@@ -1,7 +1,7 @@
 import gql from "graphql-tag"
 
 export default (category,categories,mtm)=>{
-  let argsf=category.fields
+  let argsf=category?.["fields"]
   let args1=[]
   let ya={}
   for(let f in argsf){

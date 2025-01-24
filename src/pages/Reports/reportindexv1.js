@@ -1060,7 +1060,7 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
         paddingLeft:0
       }} onClick={()=>{
         ////console.log("click")
-        //setOtmCategoryFields(pivote[name])
+        otmCategoryFields(pivote[name])
 
         toggleOtmIdFieldsDialog(name)
       }}>Add field to identify parent in child relationships</FormButton>
@@ -6831,6 +6831,8 @@ const beginReport=(primero=false,name1,d1)=>{
   ////console.log("croutes",calculateRoutes([`getData${currentCategory.name}`]))
   
   const routes=calculateRoutes([`getData${currentCategory.name}`])
+  let fict=Object.keys(routes).map(x=>x)
+  console.log("routesfine",routes,fict)
   ////console.log("routes111",routes)
   //routesfinal encuentra la ultima parada de cada una de las rutas
   ////console.log("routesfinal",routesFinal(routes))

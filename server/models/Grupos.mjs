@@ -6,7 +6,14 @@ import Sequelize from 'sequelize'
           	static init(sequelize,DataTypes){
 
             		return super.init({
-		 grupo:DataTypes.STRING},{sequelize})
+		 grupo:{
+                type:DataTypes.STRING,
+                defaultValue:""
+              },
+		 otmscmateriasGruposId:{
+                type:DataTypes.INTEGER,
+                defaultValue:0
+              }},{sequelize})
 }static associate(models){models.Grupos.belongsToMany(models.Alumnos,{foreignKey:"mtmGruposAlumnosId",through:"Alumnos_Grupos"})
 
                   models.Alumnos.belongsToMany(models.Grupos,{foreignKey:"mtmAlumnosGruposId",through:"Alumnos_Grupos"})

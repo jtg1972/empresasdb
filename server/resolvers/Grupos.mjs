@@ -45,8 +45,7 @@
                 }
               },Mutation:{
                 
-                createGrupos:async(parent,args,{db})=>{
-                  const product=await db.Grupos.create(args)
+                createGrupos:async(parent,args,{db})=>{const product=await db.Grupos.create(args)
                   return product
                   
                 },
@@ -70,8 +69,10 @@
                   return resp
                 },
                 editGrupos:async(parent,args,{db})=>{
-              await db.Grupos.update({
-                        id:args["id"],mtmAlumnosGrupos:args.mtmAlumnosGrupos,grupo:args.grupo
+              let camposDate=[]
+await db.Grupos.update({
+                        id:args["id"],mtmAlumnosGrupos:args.mtmAlumnosGrupos,grupo:args.grupo,otmscmateriasGruposId:args.otmscmateriasGruposId,
+                        ...camposDate
                       },
                       {
                       where:{id:args.id}

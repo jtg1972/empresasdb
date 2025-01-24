@@ -14,7 +14,7 @@ export const SubsetContributionsTable=({
   const [table,setTable]=useState("")
   useEffect(()=>{
     initializeTablesLoop()
-  },[])
+  },[subsets,data])
 
   const printDataSubset=(table,seg,field,subset,type)=>{
       console.log("table seg subset data",table,seg,field,subset,data)
@@ -464,27 +464,29 @@ const displayTotalOrCount=(seg,piv,table,field,type,x)=>{
 const displaySets=(seg,field,tablePiv,table)=>{
   let t=[]
   let s=[]
-  Object.keys(subsets[tablePiv]).forEach(x=>{
-    t.push(<th className="bord">{x}</th>)
-    s.push(<th>{displayTotalOrCount(seg,tablePiv,table,field,"subset",x)}</th>)
-  })
-  t.unshift(<th className="bord">superset</th>)
-  t.push(<th className="bord">subsets</th>)
-  s.unshift(<th>{displayTotalOrCount(seg,seg,table,field,"superset")}</th>)
-  s.push(<th>{displayTotalOrCount(seg,seg,table,field,"subsets")}</th>)
-  return <table>
-    <thead>
-      <tr>
-        {t}
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        {s}
-      </tr>
-    </tbody>
-    </table>
-  
+  if(subsets?.[tablePiv]!=undefined){
+    Object.keys(subsets[tablePiv]).forEach(x=>{
+      t.push(<th className="bord">{x}</th>)
+      s.push(<th>{displayTotalOrCount(seg,tablePiv,table,field,"subset",x)}</th>)
+    })
+    t.unshift(<th className="bord">superset</th>)
+    t.push(<th className="bord">subsets</th>)
+    s.unshift(<th>{displayTotalOrCount(seg,seg,table,field,"superset")}</th>)
+    s.push(<th>{displayTotalOrCount(seg,seg,table,field,"subsets")}</th>)
+    return <table>
+      <thead>
+        <tr>
+          {t}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {s}
+        </tr>
+      </tbody>
+      </table>
+  }
+  return null
 
 }
 const displayRowHead=(mes)=>{
@@ -637,7 +639,8 @@ const grandTotalsDisplay=(table)=>{
             tablePiv=tab
           
         })
-        if(seg!==table && checkHasFieldToDisplay(seg) && data?.[tablePiv]?.[tablePiv]!=undefined && Object.keys(data[tablePiv][tablePiv]).length>0){
+        if(seg!==table && checkHasFieldToDisplay(seg) && data?.[tablePiv]?.[tablePiv]!=undefined && Object.keys(data[tablePiv][tablePiv]).length>0 && 
+        Object.keys(subsets[tablePiv]).length>0){
           mainTitles.push(<th className="bord">
                   {seg}
                 </th>)
@@ -652,10 +655,13 @@ const grandTotalsDisplay=(table)=>{
       })
       //mainTitles.unshift(dummyt)
       //subTitles.unshift(dummyst)
+      if(data?.[tablePiv]?.[tablePiv]!=undefined && Object.keys(data[tablePiv][tablePiv]).length>0){
       mainTitles.unshift(<th className="bord">
         &nbsp;</th>)
      subTitles.unshift(<th>{displayFieldsGrandTotals(null,null,true)}</th>)
-      return data?.[tablePiv]?.[tablePiv]!=undefined && Object.keys(data[tablePiv][tablePiv]).length>0 && <table>
+      }
+      return data?.[tablePiv]?.[tablePiv]!=undefined && Object.keys(data[tablePiv][tablePiv]).length>0 &&
+      Object.keys(subsets[tablePiv]).length>0 && <table>
               <thead>
                 <tr>
                   {mainTitles}
@@ -698,7 +704,7 @@ const grandTotalsDisplay=(table)=>{
   
 
   const initializeTablesLoop=()=>{
-    let piv2
+    let piv2=[]
     let pivote=""
    
     
@@ -706,7 +712,7 @@ const grandTotalsDisplay=(table)=>{
        console.log("datatable",data[table][table])
       if(data?.[table]?.[table]!=undefined){
     
-       piv2=""
+       piv2=[]
       let firstTables=[]
       let tablePiv
       if(table.startsWith("getData"))
@@ -777,7 +783,8 @@ const grandTotalsDisplay=(table)=>{
           
         })
       }
-      if(piv2!="" && checkHasSegmentsToDisplay(table)){
+      console.log("piv2ver",piv2,piv2.filter(x=>x!="").length,piv2=="",piv2==null,"hola")
+      if(piv2.filter(x=>x!="").length>0 && checkHasSegmentsToDisplay(table)){
       return <div className="cont">
       <table className="main">
         <tbody>

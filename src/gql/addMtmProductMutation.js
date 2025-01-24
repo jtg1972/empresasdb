@@ -1,9 +1,11 @@
 import gql from "graphql-tag"
 
 export default (category,categories,titleMutation,crec)=>{
-  let argsf=category.fields
+  let argsf=category?.["fields"]
   let args1=[]
   let ya={}
+
+  console.log("paramsentrance",category,categories,titleMutation,crec)
   for(let f in argsf){
     if(argsf[f].dataType=="queryCategory"){
       args1.push(`$${argsf[f].name}GlobalCatQuery:Int`)
@@ -34,7 +36,8 @@ export default (category,categories,titleMutation,crec)=>{
         }
       }
     }else if(argsf[f].declaredType=="string" 
-    || argsf[f].declaredType=="date"
+    || argsf[f].declaredType=="date" 
+    || argsf[f].declaredType=="number" 
     || argsf[f].dataType=="multipleValue"){
       args2.push(`${argsf[f].name}:$${argsf[f].name}`)
     }    
@@ -42,7 +45,7 @@ export default (category,categories,titleMutation,crec)=>{
   args2.join(", ")
   let campos=[]
   for(let f in argsf){
-    if(argsf[f].dataType=="relationship"){
+    /*if(argsf[f].dataType=="relationship"){
       if(argsf[f].relationship=="onetomany"){
         let oc=categories.filter(c=>c.id==argsf[f].relationCategory)
         let na=`otm${category.name}${oc[0].name}`        
@@ -58,21 +61,22 @@ export default (category,categories,titleMutation,crec)=>{
         campos.push(`${na}{${ncent}}`)
       
       }
-    }else if(argsf[f].dataType=="queryCategory" && argsf[f].declaredType!=="number"){
+    }else*/ if(argsf[f].dataType=="queryCategory" && argsf[f].declaredType!=="number"){
       campos.push(`${argsf[f].name}GlobalCatQuery`)
       campos.push(`${argsf[f].name}FinalCatQuery`)
       campos.push(`${argsf[f].name}ProductQuery`)
       ya={[argsf[f].name]:true}
 
-    }else if(argsf[f].declaredType=="number"){
+    }else if(argsf[f].declaredType=="number" ||
+    argsf[f].declaredType=="string"){
       if(ya[argsf[f].name]!==true){
         campos.push(`${argsf[f].name}`)
       }
     }else
       campos.push(argsf[f].name)
   }
-  crec.fields.forEach(cr=>{
-    if(cr.dataType=="relationship"){
+  crec?.["fields"]?.forEach(cr=>{
+    /*if(cr.dataType=="relationship"){
       if(cr.relationship=="onetomany"){
         let oc=categories.filter(c=>c.id==cr.relationCategory)
         let na=`${cr.name}`
@@ -94,8 +98,9 @@ export default (category,categories,titleMutation,crec)=>{
                 }else
                   return x.name
               })
-              let ny=category.fields.map(u=>u.name)
-              nc=[...nc,...ny]
+              let ny=category?.["fields"]?.map(u=>u.name)
+              if(ny!=undefined)
+                nc=[...nc,...ny]
               nc.push("id")
               nc.join("\n")
               return `${o.name}{${nc}}`
@@ -104,21 +109,23 @@ export default (category,categories,titleMutation,crec)=>{
             return o.name
           }
         })
-        let nmtm=category.fields.map(c=>c.name)
-        ncent=[...ncent,...nmtm]
+        let nmtm=category?.["fields"]?.map(c=>c.name)
+        if(nmtm!=undefined)
+          ncent=[...ncent,...nmtm]
         ncent.push("id")
         ncent.join("\n")
         campos.push(`${na}{${ncent}}`)
       }
-    }else if(cr.declaredType=="number"){
+    }else*/ if(cr.declaredType=="number" ||
+    cr.declaredType=="string"){
       campos.push(`${cr.name}`)
     }else if(cr.dataType=="queryCategory"){
       campos.push(`${cr.name}GlobalCatQuery`)
       campos.push(`${cr.name}FinalCatQuery`)
       campos.push(`${cr.name}ProductQuery`)
     }
-    else
-      campos.push(cr.name)
+    /*else
+      campos.push(cr.name)*/
   })
   campos.unshift("id")  
   campos=campos.join("\n")
@@ -127,5 +134,6 @@ export default (category,categories,titleMutation,crec)=>{
       ${campos}
     }
   }`  
+  console.log("alertuio45",query)
   return gql`${query}`
 }

@@ -215,6 +215,7 @@ export default{
          console.log("args",args)
         
         let resultado=false
+        for(let iteration=0;iteration<2;iteration++){
         for(let category in cats1){
           let name=cats1[category].name
           console.log("name",name)
@@ -223,10 +224,19 @@ export default{
           cats=cats.map(c=>parseInt(c))
           cats.push(cats1[category].id)
        
-          const fieldsPiv=await db.Fields.findAll({
-            where:{category:{[Op.in]:cats}},
+          let fieldsPiv=[]
+          if(iteration==0){
+          fieldsPiv=await db.Fields.findAll({
+            where:{category:{[Op.in]:cats},dataType:"singleValue"},
             raw:true
-          })
+            
+          })}else{
+            fieldsPiv=await db.Fields.findAll({
+              where:{category:{[Op.in]:cats}},
+              raw:true
+              
+            })
+          }
           /*const mtm=fieldsPiv.filter(d=>{
             return d.dataType=="relationship"
             &&
@@ -425,9 +435,9 @@ export default{
                 }`,indMtmFields,mtmCat,mtmFields)
                 arrMtmFields.push(`type datamtm${respCat.name}${name}{
                   ${catFields}
-                }`)
+                },`)
                 indMtmFields++
-                x1+=`mtm${respCat.name}${name}:[datamtm${respCat.name}${name}]\n`
+                x1+=`mtm${respCat.name}${name}:[datamtm${respCat.name}${name}],\n`
                 
                 if(respCat.name>name){
                   nnmtm=`${name}_${respCat.name}`
@@ -520,7 +530,7 @@ export default{
                       return {...r,...di}
                     })
                     return recs
-                  }
+                  },
                   `
                  
                 }
@@ -950,6 +960,7 @@ export default{
             break;
           }
         }
+        }
         await db.TablesState.update({
           state:"OK"
         },{
@@ -961,8 +972,8 @@ export default{
           return false
       }
      
-      
-    }
-    
+    }  
   }
+      
+  
 }

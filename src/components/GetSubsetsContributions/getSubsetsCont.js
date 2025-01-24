@@ -360,7 +360,7 @@ export const getSubsetsCont=({
 })=>{
   printRaw={}
 
-  console.log("datamain",data)
+  console.log("datamain",data,subsets,subsetsData)
   dataResult={}
   if(data!=undefined){
     

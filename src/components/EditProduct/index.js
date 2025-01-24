@@ -481,7 +481,44 @@ const EditProduct = ({
     MUTATION_EDIT_PRODUCT=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
     MUTATION_EDIT_PRODUCT_MTM=mutationEditProductManyToMany(curCat,keyFields,categories,`editdatamtm${titulo.substr(3)}`,nRc)
   } 
-  const updateClusters=(tablaoriginal,pivoteTable,otherPivoteTable,dg,arg,ftadd,np)=>{
+  let nameVar1=""
+  let nameVar2=""
+  let valueVar1=0
+  let valueVar2=0
+  const updateClusters=(c1,i,reg)=>{
+  
+    let cp=categoryProducts
+    let st=cp[c1[0]][i[0]]
+    for(let u1=1;u1<c1.length;u1++){
+      console.log("stverif",st,c1,i,c1[u1],nameVar1,nameVar2,valueVar1,valueVar2)
+      if(st[c1[u1]]){
+        if(i[u1]!=undefined) 
+          st=st[c1[u1]][i[u1]]
+        else{
+          nameVar1=Object.keys(keyFields)[0]
+          valueVar1=keyFields[nameVar1]
+          nameVar2=Object.keys(keyFields)[1]
+          valueVar2=keyFields[nameVar2]
+          console.log("dispvars22",nameVar1,valueVar1,nameVar2,valueVar2)
+          st[c1[u1]]=st[c1[u1]].map(x=>{
+            if(x?.[nameVar1]!=valueVar1 
+            || x?.[nameVar2]!=valueVar2)
+              return x
+            else 
+              return reg
+
+          })
+        }
+        
+      }
+    }
+    console.log("entro clusters",c1,i)
+    return cp
+  
+  
+}
+
+  /*const updateClusters=(tablaoriginal,pivoteTable,otherPivoteTable,dg,arg,ftadd,np)=>{
     let currentData={...categoryProducts}
     console.log("dg1",dg)
     for(let x in dg){
@@ -491,7 +528,7 @@ const EditProduct = ({
     }
     existe=false
     dispatch(setCategoryProducts(currentData))
-  }
+  }*/
   
   const [getOneMtm]=useMutation(GET_ONE_DATA_MTM,{
     update:(cache,{data})=>{
@@ -531,8 +568,35 @@ const EditProduct = ({
     update:(cache,{data})=>{
       const name=`editdatamtm${titulo.substr(3)}`
       console.log("resu",data[name])
-      setAddRecGlobal(()=>data[name])
-      getGroupMtm({variables:keyFields})
+      let path=[`getData${currentCategory.name}`]
+
+      const c=resultPath(currentCategory.fields.filter(x=>
+        x.dataType=="relationship"),titulo,categories,
+        path,true)
+      const i=getIndexes(tableIndexes,c)
+      console.log("path1",c,i)
+      /*if(c[c.length-2].startsWith("mtm")){
+        pivoteTable=titulo
+        otherPivoteTable=otrotitulo
+        tablaoriginal=c[c.length-3]
+      }else{
+        pivoteTable=otrotitulo
+        otherPivoteTable=titulo
+        tablaoriginal=c[c.length-2]
+      }*/
+      //path=[`getData${currentCategory.name}`]
+      //indexSize=1
+      /*const y=resultPath(currentCategory.fields.filter(x=>
+        x.dataType=="relationship"),pivoteTable,
+        categories,path,true)
+      const i=getIndexesInverse(deleteRecord,pivoteTable,otherPivoteTable,y,tableIndexes)
+      console.log("xxx",deleteRecord,y,i)*/
+
+      let r1=updateClusters(c,i,data[name])
+      dispatch(setCategoryProducts(r1))
+
+      //setAddRecGlobal(()=>data[name])
+      //getGroupMtm({variables:keyFields})
 
     }
   })

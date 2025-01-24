@@ -447,18 +447,26 @@ const formatDate=(d,m,y)=>{
     otrotitulo=`mtm${parentCategory.name}${respCat.name}`
   }
 
-  const updateClusters=(tablaoriginal,pivoteTable,otherPivoteTable,path,ind)=>{
-    console.log("entro clusters",pivoteTable)
-    const recs=checkHasSons(categoryProducts,0,0,pivoteTable,path,ind)
-    console.log("recs",recs,pivoteTable,otherPivoteTable)
-    let currentData=categoryProducts
-    for(let x in recs){
-      ind=[]
-      const i=getIndexesInverse(recs[x],pivoteTable,otherPivoteTable,path,tableIndexes)
-      currentData=updateState(currentData,0,0,tablaoriginal,otherPivoteTable,pivoteTable,recs[x],path,i,deleteRecord)
-      console.log("trans",ind,currentData)
-    }
-    dispatch(setCategoryProducts(currentData))
+  const updateClusters=(c1,i)=>{
+  
+      let cp=categoryProducts
+      let st=cp[c1[0]][i[0]]
+      for(let u1=1;u1<c1.length;u1++){
+        console.log("stverif",st,c1,i,c1[u1],nameVar1,nameVar2,valueVar1,valueVar2)
+        if(st[c1[u1]]){
+          if(i[u1]!=undefined) 
+            st=st[c1[u1]][i[u1]]
+          else
+            st[c1[u1]]=st[c1[u1]].filter(x=>{
+              return x?.[nameVar1]!=valueVar1 
+              || x?.[nameVar2]!=valueVar2 
+            })
+        }
+      }
+      console.log("entro clusters",c1,i)
+      return cp
+    
+    
   }
 
   const [delete2]=useMutation(DELETE_PRODUCT,{
@@ -501,8 +509,9 @@ const formatDate=(d,m,y)=>{
           const c=resultPath(currentCategory.fields.filter(x=>
             x.dataType=="relationship"),titulo,categories,
             path,true)
-          console.log("path1",c)
-          if(c[c.length-2].startsWith("mtm")){
+          const i=getIndexes(tableIndexes,c)
+          console.log("path1",c,i)
+          /*if(c[c.length-2].startsWith("mtm")){
             pivoteTable=titulo
             otherPivoteTable=otrotitulo
             tablaoriginal=c[c.length-3]
@@ -510,16 +519,17 @@ const formatDate=(d,m,y)=>{
             pivoteTable=otrotitulo
             otherPivoteTable=titulo
             tablaoriginal=c[c.length-2]
-          }
+          }*/
           //path=[`getData${currentCategory.name}`]
           //indexSize=1
-          const y=resultPath(currentCategory.fields.filter(x=>
+          /*const y=resultPath(currentCategory.fields.filter(x=>
             x.dataType=="relationship"),pivoteTable,
             categories,path,true)
           const i=getIndexesInverse(deleteRecord,pivoteTable,otherPivoteTable,y,tableIndexes)
-          console.log("xxx",deleteRecord,y,i)
+          console.log("xxx",deleteRecord,y,i)*/
 
-          updateClusters(tablaoriginal,pivoteTable,otherPivoteTable,y,i)
+          let r1=updateClusters(c,i)
+          dispatch(setCategoryProducts(r1))
 
         }
           
@@ -590,6 +600,10 @@ const formatDate=(d,m,y)=>{
     else
       return false
   }
+  let nameVar1
+  let valueVar1
+  let nameVar2
+  let valueVar2
 
   const res=()=>{
     //console.log("displtable",products,respCat)
@@ -695,8 +709,8 @@ const formatDate=(d,m,y)=>{
         let data=[]
         
         for(let yu in totalFields){//respCat.fields){
-          if(totalFields[yu].dataType=="relationship" 
-          && products[p][totalFields[yu].name]!==undefined
+          if(totalFields?.[yu]?.dataType=="relationship" 
+          && products?.[p]?.[totalFields?.[yu]?.name]!==undefined
           && yalohizo==false
           && fieldsNotToDisplay[titulo]!==totalFields[yu].name){
             ifRelations=true
@@ -788,12 +802,16 @@ const formatDate=(d,m,y)=>{
                   x.id==parentRelation)[0]
                 const f1=`mtm${pr.name}${respCat.name}Id`
                 const f2=`mtm${respCat.name}${pr.name}Id`
-                /*console.log("paramsdelmtm",{
+                console.log("paramsdelmtm",{
                   [f1]: parentCatId,
                   [f2]: products[p]["id"]
-                })*/
+                })
                 deleteId=products[p]["id"]
                 deleteRecord=products[p]
+                nameVar1=f1
+                valueVar1=parentCatId
+                nameVar2=f2
+                valueVar2=products[p]["id"]
 
                 delete2({
                   variables:{
@@ -845,6 +863,8 @@ const formatDate=(d,m,y)=>{
               [f1]: parentCatId,
               [f2]: products[p]["id"]
             })*/
+
+            
             const keysEditRecord={
               [f1]: parentCatId,
               [f2]: products[p]["id"]

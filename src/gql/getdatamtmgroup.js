@@ -11,8 +11,8 @@ export default (category,categories,nameMut,crec)=>{
       args1.push(`$${argsf[f].name}ProductQuery:Int`)
       if(argsf[f].declaredType=="number")
         args1.push(`$${argsf[f].name}:Int`)
-    }else if(argsf[f].declaredType=="number"){
-      if(ya[argsf[f].name]!==true){
+    }else if(argsf?.[f]?.declaredType=="number"){
+      if(ya?.[argsf?.[f]?.name]!==true){
         args1.push(`$${argsf[f].name}:Int`)
       }
     }else if(argsf[f].declaredType=="string" 
@@ -22,7 +22,7 @@ export default (category,categories,nameMut,crec)=>{
     }
   
   }
-  args1=args1.join(", ")
+  args1=args1.join(",\n ")
 
   let args2=[]
   for(let f in argsf){
@@ -32,8 +32,8 @@ export default (category,categories,nameMut,crec)=>{
       args2.push(`${argsf[f].name}ProductQuery:$${argsf[f].name}ProductQuery`)
       if(argsf[f].declaredType=="number")
         args2.push(`${argsf[f].name}:$${argsf[f].name}`)
-    }else if(argsf[f].declaredType=="number"){
-      if(ya[argsf[f].name]!==true){
+    }else if(argsf?.[f]?.declaredType=="number"){
+      if(ya?.[argsf?.[f]?.name]!==true){
         args2.push(`${argsf[f].name}:$${argsf[f].name}`)
       }
     }
@@ -41,7 +41,7 @@ export default (category,categories,nameMut,crec)=>{
       args2.push(`${argsf[f].name}:$${argsf[f].name}`)
     }
   }
-  args2.join(", ")
+  args2=args2.join(",\n")
   let campos=[]
   for(let f in argsf){
     if(argsf[f].dataType=="relationship"){
@@ -56,11 +56,11 @@ export default (category,categories,nameMut,crec)=>{
           if(ocf.declaredType=="number" ||
           ocf.declaredType=="string" ||
           ocf.dataType=="multipleValue")
-            return `${ocf.name}\n`
+            return `${ocf.name}`
           else
-            return ""
+            return null
         })
-        campos.push(`${na}{${otrosCampos}}`)
+        campos.push(`${na}{${otrosCampos.join("\n")}}`)
       
       }
     }else if(argsf[f].dataType=="queryCategory" && argsf[f].declaredType=="number"){
@@ -72,14 +72,16 @@ export default (category,categories,nameMut,crec)=>{
       campos.push(`${argsf[f].name}FinalCatQuery`)
       campos.push(`${argsf[f].name}ProductQuery`)
       
-    }else if(argsf[f].declaredType=="number"){
+    }else if(argsf[f].declaredType=="number" ||
+    argsf[f].declaredType=="string"){
       if(ya[argsf[f].name]!==true){
         campos.push(`${argsf[f].name}`)
       }
     }
-    else
-      campos.push(argsf[f].name)
+    //else
+      //campos.push(argsf[f].name)
   }
+  
   crec.fields.forEach(cr=>{
     if(cr.dataType=="relationship"){
       if(cr.relationship=="onetomany"){
@@ -98,15 +100,15 @@ export default (category,categories,nameMut,crec)=>{
                 x=>x.id==o.relationCategory
               )[0]
               let nc=ro.fields.map(x=>{
-                if(x.dataType=="relationship"){
-                  return ""
-                }else
+                if(x.dataType=="singleValue"){
+                  
                   return x.name
+                }
               })
               let ny=category.fields.map(u=>u.name)
               nc=[...nc,...ny]
               nc.push("id")
-              nc.join("\n")
+              nc=nc.join("\n")
               return `${o.name}{${nc}}`
             }
           }else{
@@ -116,7 +118,7 @@ export default (category,categories,nameMut,crec)=>{
         let nmtm=category.fields.map(c=>c.name)
         ncent=[...ncent,...nmtm]
         ncent.push("id")
-        ncent.join("\n")
+        ncent=ncent.join("\n")
         campos.push(`${na}{${ncent}}`)
       
       }
@@ -133,7 +135,7 @@ export default (category,categories,nameMut,crec)=>{
   campos.unshift("id")
   const query=`mutation GetGroupMtm(${args1}){
     ${nameMut}(${args2}){
-      ${campos}
+      ${campos.join("\n")}
     }
   }`
   console.log("querygroup",query)

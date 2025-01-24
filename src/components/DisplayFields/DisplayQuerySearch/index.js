@@ -5,14 +5,14 @@ import { useSelector } from 'react-redux'
 import { searchRecordsFromQuery } from '../../../utilities/searchRecordsFromQuery'
 import FormInput from '../../Forms/FormInput'
 import DisplaySearchProducts from '../DisplaySearchProducts'
-const callGetFieldsCategory=(field,categories,rep)=>{
+const callGetFieldsCategory=(field,categories)=>{
   const cat=categories.filter(c=>c.id==field.relationCategory)
 let bd
   if(cat.length>0){
       bd=cat[0].fields.map(x=>{
       if(x.dataType!=="relationship"){
         return x.name
-      }else if(x.dataType=="relationship"){
+      }/*else if(x.dataType=="relationship"){
         if(rep<2){
           return `\n${x.name}{\n
             ${callGetFieldsCategory(x,categories,rep+1)}
@@ -20,9 +20,9 @@ let bd
           `
         }
         else return ""
-      }
+      }*/
 
-    })
+      })
     bd.unshift("id")
     bd=bd.join("\n")
     return bd
@@ -50,7 +50,7 @@ const getQueryFromCategory=(productCategories,categories,rep=0)=>{
       
 
         return `${x.name}{
-          ${callGetFieldsCategory(x,categories,rep+1)}
+          ${callGetFieldsCategory(x,categories)}
         }`
       }
     })

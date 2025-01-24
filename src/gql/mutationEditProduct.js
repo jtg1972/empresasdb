@@ -4,6 +4,7 @@ const getManyToManyRelation=(parentCategory,sonCategory,categories,counters=[])=
   console.log("soncatfields",sonCategory.fields)
   let y=[...sonCategory.fields,
   ...getMiddleTable(parentCategory,sonCategory,categories)]
+  console.log("yfijoyu",y)
   let nc=y.map(j=>{
     if(j.dataType=="queryCategory" &&
     j.declaredType=="number"){
@@ -15,7 +16,7 @@ const getManyToManyRelation=(parentCategory,sonCategory,categories,counters=[])=
       return getOneToManyRelation(sonCategory,i,categories)
 
     }*/
-    }else if(j.relationship=="manytomany"){
+    }/*else if(j.relationship=="manytomany"){
       console.log("counters",counters)
       const i=categories.filter(c=>c.id==j.relationCategory)[0]
       let u=counters.filter(c=>
@@ -35,12 +36,14 @@ const getManyToManyRelation=(parentCategory,sonCategory,categories,counters=[])=
             })
           )
         }
-      }
-    }else
+      }*/
+    else if(j.dataType=="string" || j.dataType=="number" || j.dataType=="date")
       return j.name
     
   })
+
   nc.push("id")
+  console.log("nc88",nc)
   nc=`mtm${sonCategory.name}${parentCategory.name}{
     ${nc.join("\n")}
   }`
@@ -57,7 +60,7 @@ const getOneToManyRelation=(parentCategory,sonCategory,categories)=>{
       return getOneToManyRelation(sonCategory,i,categories)
     }else if(j.relationship=="manytomany"){
       const i=categories.filter(c=>c.id==j.relationCategory)[0]
-      counters=[...counters,{name:`mtm${i.name}${sonCategory}`,count:0}]
+      //counters=[...counters,{name:`mtm${i.name}${sonCategory}`,count:0}]
       return getManyToManyRelation(sonCategory,i,categories,counters)
     }
 

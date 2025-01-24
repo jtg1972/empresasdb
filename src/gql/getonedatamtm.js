@@ -11,8 +11,8 @@ export default (category,categories,titleMutation,crec)=>{
       args1.push(`$${argsf[f].name}ProductQuery:Int`)
       if(argsf[f].declaredType=="number")
         args1.push(`$${argsf[f].name}:Int`)
-    }else if(argsf[f].declaredType=="number"){
-      if(ya[argsf[f].name]!==true){
+    }else if(argsf?.[f]?.declaredType=="number"){
+      if(ya?.[argsf[f]?.name]!==true){
         args1.push(`$${argsf[f].name}:Int`)
       }
     }else if(argsf[f].declaredType=="string" 
@@ -30,8 +30,8 @@ export default (category,categories,titleMutation,crec)=>{
       args2.push(`${argsf[f].name}ProductQuery:$${argsf[f].name}ProductQuery`)
       if(argsf[f].declaredType=="number")
         args2.push(`${argsf[f].name}:$${argsf[f].name}`)
-    }else if(argsf[f].declaredType=="number"){
-      if(ya[argsf[f].name]!==true){
+    }else if(argsf?.[f]?.declaredType=="number"){
+      if(ya?.[argsf[f]?.["name"]]!==true){
         args2.push(`${argsf[f].name}:$${argsf[f].name}`)
       }
     }else if(argsf[f].dataType!=="relationship"){
@@ -113,5 +113,6 @@ export default (category,categories,titleMutation,crec)=>{
       ${campos}
     }
   }`
+  console.log("onegql",query)
   return gql`${query}`
 }

@@ -810,7 +810,7 @@ const NewProduct = ({
     const c=resultPath(currentCategory.fields.filter(x=>x.dataType=="relationship"),
     titulo,categories,path,true)
     console.log("c22",c)
-    if(c[c.length-2].startsWith("mtm")){
+    /*if(c[c.length-2].startsWith("mtm")){
       pivoteTable=titulo
       otherPivoteTable=otrotitulo
       tablaoriginal=path[path.length-3]
@@ -818,7 +818,7 @@ const NewProduct = ({
       pivoteTable=otrotitulo
       otherPivoteTable=titulo
       tablaoriginal=path[path.length-2]
-    }
+    }*/
     nRc=categories.filter(x=>x.id==relationCategory)[0]
     if(pR?.name<nRc?.name)
       nn=`${pR.name}_${nRc.name}`
@@ -826,22 +826,22 @@ const NewProduct = ({
       nn=`${nRc.name}_${pR.name}`
     relMtMC=categories.filter(x=>x.name==nn)[0]
     nC=categories.filter(x=>x.name==nn)[0]
-    if(pivoteTable==titulo){//estoy insertando en la segunda tabla muchos a muchos
+    /*if(pivoteTable==titulo){//estoy insertando en la segunda tabla muchos a muchos
       nameAlias=`createdatamtm${nRc.name}${pR.name}`
       nameAliasOneMtm=`getonedatamtm${otherPivoteTable.substr(3)}`
       nameGroupAlias=`getdatamtm${pivoteTable.substr(3)}`
       CREATE_PRODUCT_MUTATION_MTM=addMtmProductMutation(relMtMC,categories,nameAlias,nRc)
       GET_ONE_DATA_MTM=getonedatamtm(relMtMC,categories,nameAliasOneMtm,pR)
       GET_DATA_MTM_GROUP=getdatamtmgroup(relMtMC,categories,nameGroupAlias,nRc)
-    }else if(pivoteTable==otrotitulo){//estoy insertando en la primera table mam
+    }else if(pivoteTable==otrotitulo){//estoy insertando en la primera table mam*/
       nameAlias=`createdatamtm${nRc.name}${pR.name}`
-      nameAliasOneMtm=`getonedatamtm${otherPivoteTable.substr(3)}`
-      nameGroupAlias=`getdatamtm${pivoteTable.substr(3)}`
-      console.log("na naomtm nga",nameAlias,nameAliasOneMtm,nameGroupAlias,pR,nRc)
+     //nameAliasOneMtm=`getonedatamtm${otherPivoteTable.substr(3)}`
+      //nameGroupAlias=`getdatamtm${pivoteTable.substr(3)}`
+      //console.log("na naomtm nga",nameAlias,nameAliasOneMtm,nameGroupAlias,pR,nRc)
       CREATE_PRODUCT_MUTATION_MTM=addMtmProductMutation(relMtMC,categories,nameAlias,nRc)
       GET_ONE_DATA_MTM=getonedatamtm(relMtMC,categories,nameAliasOneMtm,nRc)
       GET_DATA_MTM_GROUP=getdatamtmgroup(relMtMC,categories,nameGroupAlias,pR)
-    }
+    //}
     CREATE_PRODUCT_MUT=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
   }else{
     CREATE_PRODUCT_MUT=addProductMutation(respCat,categories,false)
@@ -850,14 +850,14 @@ const NewProduct = ({
     CREATE_PRODUCT_MUTATION_MTM=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
   }
 
-  const [getGroupMtm]=useMutation(GET_DATA_MTM_GROUP,{
+  /*const [getGroupMtm]=useMutation(GET_DATA_MTM_GROUP,{
     update:(cache,{data})=>{
       setGroupRecsGlobal(()=>data[nameGroupAlias])
       getOneMtm({variables:fields})
     }
-  })
+  })*/
 
-  const [getOneMtm]=useMutation(GET_ONE_DATA_MTM,{
+  /*const [getOneMtm]=useMutation(GET_ONE_DATA_MTM,{
     update:(cache,{data})=>{
       let pivoteTable,otherPivoteTable,tablaoriginal
       path=[`getData${currentCategory.name}`]
@@ -882,7 +882,35 @@ const NewProduct = ({
       console.log("npb",np)
       updateClusters(tablaoriginal,pivoteTable,otherPivoteTable,groupRecsGlobal,addRecGlobal,data[nameAliasOneMtm],np)
     }
-  })  
+  })*/
+
+  const simpleUpdateStateHere=(cp1,reg,titulo,c1,i)=>{
+    let cp=cp1
+    let st=cp[c1[0]][i[0]]
+    for(let u1=1;u1<c1.length;u1++){
+      console.log("stverif",st,reg,c1,i,c1[u1])
+      if(st[c1[u1]]){
+        if(i[u1]!=undefined) 
+          st=st[c1[u1]][i[u1]]
+        else
+          st[c1[u1]]=[...st[c1[u1]],reg]
+      }
+    }
+    /*const recs=checkHasSons(categoryProducts,0,0,pivoteTable,path,ind)
+    console.log("recs",recs,pivoteTable,otherPivoteTable)
+    let currentData=categoryProducts
+    for(let x in recs){
+      ind=[]
+      const i=getIndexesInverse(recs[x],pivoteTable,otherPivoteTable,path,tableIndexes)
+      currentData=updateState(currentData,0,0,tablaoriginal,otherPivoteTable,pivoteTable,recs[x],path,i,deleteRecord)
+      console.log("trans",ind,currentData)
+    }*/
+    return cp
+    
+  }
+
+
+ 
   
   
   const [addProduct2]=useMutation(CREATE_PRODUCT_MUT,{
@@ -895,15 +923,33 @@ const NewProduct = ({
         x.dataType=="relationship"),titulo,categories,path,true)  
       console.log("c33",c)
       const i=getIndexes(tableIndexes,c)
-      const us=simpleUpdateState(categoryProducts,0,0,data[nombre],titulo,c,i)
+      if(i[i.length-1]!=undefined){
+        i[i.length-1]=undefined
+      }
+      //const us=simpleUpdateState(categoryProducts,0,0,data[nombre],titulo,c,i)
+      const us=simpleUpdateStateHere(categoryProducts,data[nombre],titulo,c,i)
       dispatch(setCategoryProducts(us))
     }
   })
 
   const [addProduct3]=useMutation(CREATE_PRODUCT_MUTATION_MTM,{
     update:(cache,{data})=>{
-      setAddRecGlobal(()=>({...data[nameAlias]}))
-      getGroupMtm({variables:{...fields}})
+      //setAddRecGlobal(()=>({...data[nameAlias]}))
+      //getGroupMtm({variables:{...fields}})
+      path=[`getData${currentCategory.name}`]
+      console.log("entro aquiiititulo",titulo)
+      const c1=resultPath(currentCategory.fields.filter(x=>
+        x.dataType=="relationship"),titulo,categories,path,true)  
+      console.log("c33",c1)
+      
+      const i=getIndexes(tableIndexes,c1)
+      if(i[i.length-1]!=undefined){
+        i[i.length-1]=undefined
+      }
+      const us=simpleUpdateStateHere(categoryProducts,data[nameAlias],titulo,c1,i)
+      console.log("us555",us)
+      dispatch(setCategoryProducts(us))
+
     }
   })
   
