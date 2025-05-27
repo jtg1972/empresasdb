@@ -7,7 +7,7 @@ import getDummyMut from '../../gql/getDummyMut'
 import getonedatamtm from '../../gql/getonedatamtm'
 import mutationEditProduct from '../../gql/mutationEditProduct'
 import mutationEditProductManyToMany from '../../gql/mutationEditProductManyToMany'
-import simpleUpdateState from '../../gql/updatestatemtm/EditProduct/simpleUpdateState'
+//import simpleUpdateState from '../../gql/updatestatemtm/EditProduct/simpleUpdateState'
 import updateState from '../../gql/updatestatemtm/EditProduct/updateState'
 
 import { resultPath } from '../../gql/updatestatemtm/utils/getPath'
@@ -18,6 +18,7 @@ import Dialog from '../Dialog'
 import DisplayFields from '../DisplayFields'
 import FormButton from '../Forms/FormButton'
 import getIndexesInverse from '../../gql/updatestatemtm/utils/getIndexesInverse'
+import types from '../../redux/mtmupdate/types'
 
 /*const mutationEditProduct=(category)=>{
   let args=[]
@@ -437,11 +438,11 @@ const EditProduct = ({
     nC=categories.filter(x=>x.name==nn)[0]
     
     console.log("prnrc",pR,nRc)
-    const path=[`getData${currentCategory.name}`]
+    //const path=[`getData${currentCategory.name}`]
     //indexSize=1
     
 
-    const p=resultPath(currentCategory.fields.filter(x=>
+    /*const p=resultPath(currentCategory.fields.filter(x=>
       x.dataType=="relationship"
     ),titulo,categories,path,true)
     if(p[p.length-2].startsWith("mtm")){
@@ -471,23 +472,71 @@ const EditProduct = ({
     GET_DATA_MTM_GROUP=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
   }
    
+  console.log("ismanytomany",isManyToMany)*/
+  }
   let MUTATION_EDIT_PRODUCT=""
   let MUTATION_EDIT_PRODUCT_MTM=""
-  console.log("ismanytomany",isManyToMany)
+  
   if(!isManyToMany){
     MUTATION_EDIT_PRODUCT=mutationEditProduct(curCat,categories)
     MUTATION_EDIT_PRODUCT_MTM=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
   }else{
     MUTATION_EDIT_PRODUCT=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
-    MUTATION_EDIT_PRODUCT_MTM=mutationEditProductManyToMany(curCat,keyFields,categories,`editdatamtm${titulo.substr(3)}`,nRc)
+    MUTATION_EDIT_PRODUCT_MTM=mutationEditProductManyToMany(curCat,keyFields,categories,`editdatamtm${titulo.substr(3)}`,nRc,pR)
   } 
   let nameVar1=""
   let nameVar2=""
   let valueVar1=0
   let valueVar2=0
   const updateClusters=(c1,i,reg)=>{
-  
-    let cp=categoryProducts
+    nameVar1=Object.keys(keyFields)[0]
+    nameVar2=Object.keys(keyFields)[1]
+    valueVar1=keyFields[nameVar1]
+    valueVar2=keyFields[nameVar2]
+    console.log("keyfields22",keyFields,reg.original,reg.copy,`${reg.copy?.["key"]}Id`,
+    reg.original[`${reg.copy?.["key"]}Id`],
+    Object.keys(keyFields)[0],
+    keyFields[nameVar1],
+    keyFields
+    )
+    let id1=reg.original[`${reg.copy?.["key"]}Id`]
+    let id2=reg.original[`${reg.original?.["key"]}Id`]
+    dispatch({
+      type:types.ADD_INDEXES_TO_MTMRECORD,
+      payload:{
+        mtm:titulo,
+        id:valueVar1,//[copy[`${original.key}Id`],
+        action:"EDIT",
+        route:[],
+        nameVar1,
+        valueVar1,
+        nameVar2,
+        valueVar2,
+        row:{
+          original:reg.original,
+          copy:reg.copy
+        }
+      }
+    })
+    console.log("ioioio",`${reg.original?.["key"]}Id`,reg.copy)
+    dispatch({
+      type:types.ADD_INDEXES_TO_MTMRECORD,
+      payload:{
+        mtm:`mtm${pR.name}${nRc.name}`,
+        id:valueVar2,
+        action:"EDIT",
+        route:[],
+        nameVar1,
+        valueVar1,
+        nameVar2,
+        valueVar2,
+        row:{
+          original:reg.copy,
+          copy:reg.original
+        }
+      }
+    })
+    /*let cp=categoryProducts
     let st=cp[c1[0]][i[0]]
     for(let u1=1;u1<c1.length;u1++){
       console.log("stverif",st,c1,i,c1[u1],nameVar1,nameVar2,valueVar1,valueVar2)
@@ -501,8 +550,8 @@ const EditProduct = ({
           valueVar2=keyFields[nameVar2]
           console.log("dispvars22",nameVar1,valueVar1,nameVar2,valueVar2)
           st[c1[u1]]=st[c1[u1]].map(x=>{
-            if(x?.[nameVar1]!=valueVar1 
-            || x?.[nameVar2]!=valueVar2)
+            if(x?.["original"][nameVar1]!=valueVar1 
+            || x?.["original"][nameVar2]!=valueVar2)
               return x
             else 
               return reg
@@ -513,7 +562,7 @@ const EditProduct = ({
       }
     }
     console.log("entro clusters",c1,i)
-    return cp
+    return cp*/
   
   
 }
@@ -530,7 +579,7 @@ const EditProduct = ({
     dispatch(setCategoryProducts(currentData))
   }*/
   
-  const [getOneMtm]=useMutation(GET_ONE_DATA_MTM,{
+  /*const [getOneMtm]=useMutation(GET_ONE_DATA_MTM,{
     update:(cache,{data})=>{
       let pivoteTable,otherPivoteTable,tablaoriginal
       let path=[`getData${currentCategory.name}`]
@@ -562,7 +611,7 @@ const EditProduct = ({
       setGroupRecsGlobal(()=>data[nameGroupAlias])
       getOneMtm({variables:keyFields})
     }
-  })
+  })*/
 
   const [editProduct2]=useMutation(MUTATION_EDIT_PRODUCT_MTM,{
     update:(cache,{data})=>{
@@ -593,13 +642,53 @@ const EditProduct = ({
       console.log("xxx",deleteRecord,y,i)*/
 
       let r1=updateClusters(c,i,data[name])
-      dispatch(setCategoryProducts(r1))
+      //esto si dispatch(setCategoryProducts(r1))
 
       //setAddRecGlobal(()=>data[name])
       //getGroupMtm({variables:keyFields})
 
     }
   })
+  
+  const simpleUpdateStateHere=(cp1,reg,titulo,c1,i)=>{
+    let cp=cp1
+    let st
+    for(let po=0;po<c1.length;po++){
+      if(po>=c1.length-1)
+        i[po]=undefined
+    }
+    console.log("poio",c1,i)
+    console.log("titio",titulo)
+    if(titulo.startsWith("getData")){
+      cp[titulo]=cp[titulo].map(x=>{
+        console.log("xverio",x.id,reg.id)
+        if(x.id==reg.id)
+          return {...x,...reg}
+        else
+          return x
+      })
+    }else{
+      st=cp[c1[0]][i[0]]
+      for(let u1=1;u1<c1.length;u1++){
+        console.log("stverif",st,reg,c1,i,c1[u1])
+        if(st[c1[u1]]){
+          if(i[u1]!=undefined) 
+            st=st[c1[u1]][i[u1]]
+          else
+            st[c1[u1]]=st[c1[u1]].map(x=>{
+              if(x.id==reg.id)
+                return {...x,...reg}
+              else
+                return x
+            })
+            
+            
+        }
+      }
+    }
+    return cp
+  }
+  
 
   const [editProduct1]=useMutation(MUTATION_EDIT_PRODUCT,{
     update:(cache,{data})=>{
@@ -620,7 +709,7 @@ const EditProduct = ({
         ),titulo,categories,path,true)
         const i=getIndexes(tableIndexes,p)
 
-        const res=simpleUpdateState(categoryProducts,0,0,data[name],titulo,p,i)
+        const res=simpleUpdateStateHere(categoryProducts,data[name],titulo,p,i)
         dispatch(setCategoryProducts(res))
       //}
     }

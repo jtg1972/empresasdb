@@ -353,7 +353,7 @@ export default{
           let arrMtmDataRes=[]
           let arrHelperFunctions=[]
           const defotm=""
-          
+          let newMtmDefinition=""
           for(let f in fields){
             if(fields[f]["declaredType"]=="string"){
               x1+=`${fields[f]["name"]}:String\n`
@@ -403,7 +403,22 @@ export default{
                   }else
                     return ""
                 })
+                let getFields=await db.Fields.findAll({where:{category:cats1[category].id},raw:true})
+                let cats1New=getFields.map(r=>{
+                  if(r.declaredType=="string"){
+                    return `${r.name}:String`
+                  }else if(r.declaredType=="number"){
+                    return `${r.name}:Int`
+                  }else if(r.declaredType=="queryCategory"){
+                    return `${r["name"]}FinalCatQuery:Int\n
+                     ${r["name"]}ProductQuery:Int`
+
+                  }else
+                    return ""
+                })
+
                 catFields.push("id:Int")
+                cats1New.push("id:Int")
                 let cn=""
                 if(name<respCat.name)
                   cn=`${name}_${respCat.name}`
@@ -429,13 +444,32 @@ export default{
                 catFields.push(`mtm${name}${respCat.name}:[datamtm${name}${respCat.name}]`)
                 catFields=[...catFields,...mtmFields]
                 catFields=catFields.join("\n")
+                cats1New=[...cats1New,...mtmFields]
+                cats1New=cats1New.join("\n")
                 
                 console.log("verrrr",`type datamtm${respCat.name}${name}{
                   ${catFields}
                 }`,indMtmFields,mtmCat,mtmFields)
-                arrMtmFields.push(`type datamtm${respCat.name}${name}{
+                newMtmDefinition+=`type originalmtm${respCat.name}${name}{
                   ${catFields}
-                },`)
+                  key:String
+                    
+      
+                }
+                type copymtm${respCat.name}${name}{
+                  ${cats1New}
+                  key:String
+                }
+                type datamtm${respCat.name}${name}{
+                  original:originalmtm${respCat.name}${name}
+                  copy:copymtm${respCat.name}${name}
+                  
+                }
+                `
+                arrMtmFields.push(newMtmDefinition)
+                /*arrMtmFields.push(`type datamtm${respCat.name}${name}{
+                  ${catFields}
+                },`)*/
                 indMtmFields++
                 x1+=`mtm${respCat.name}${name}:[datamtm${respCat.name}${name}],\n`
                 
@@ -445,21 +479,26 @@ export default{
                 }else{
                   nnmtm=`${respCat.name}_${name}`
                 }
-                arrMtmDataRes.push(`datamtm${respCat.name}${name}:{
+                arrMtmDataRes.push(`originalmtm${respCat.name}${name}:{
                   mtm${name}${respCat.name}:async(parent,args,{db})=>{
-                    const x=await db.${nnmtm}.findAll({
+                    const products=await db.${nnmtm}.findAll({
                       where:{mtm${respCat.name}${name}Id:parent.id},
                       raw:true
                     })
-                    const cd=x.map(c=>c["mtm${name}${respCat.name}Id"])
+                    let oneside=await db.${respCat.name}.findAll({
+                      where:{
+                        id:parent.id
+                      },raw:true
+                    })
+                    const cids=x.map(c=>c["mtm${respCat.name}${name}Id"])
                     console.log("cdddd",cd)
-                    let recs=await db.${name}.findAll({where:{id:{[Op.in]:cd}},raw:true})
-                    recs=recs.map(r=>{
+                    let recs=await db.${name}.findAll({where:{id:{[Op.in]:cids}},raw:true})
+                    let final=products.map(r=>{
                       let nf="mtm${name}${respCat.name}Id"
                       const di=x.filter(u=>u[nf]==r.id)[0]
                       return {...r,...di}
                     })
-                    return recs
+                    return final
                   }
                   
                   
@@ -517,19 +556,34 @@ export default{
                   else
                     c=`${respCat.name}_${name}`
                   manyToManyResolver+=`mtm${respCat.name}${name}:async(parent,args,{db})=>{
-                    const x=await db.${c}.findAll({
+                    const products=await db.${c}.findAll({
                       where:{mtm${name}${respCat.name}Id:parent.id},
                       raw:true
                     })
-                    const cd=x.map(c=>c["mtm${respCat.name}${name}Id"])
+                    let oneside=await db.${name}.findAll({
+                      where:{
+                        id:parent.id
+                      },raw:true
+                    })
+                    const cd=products.map(c=>c["mtm${respCat.name}${name}Id"])
                     console.log("cdddd",cd)
                     let recs=await db.${respCat.name}.findAll({where:{id:{[Op.in]:cd}},raw:true})
-                    recs=recs.map(r=>{
-                      let nf="mtm${respCat.name}${name}Id"
-                      const di=x.filter(u=>u[nf]==r.id)[0]
-                      return {...r,...di}
-                    })
-                    return recs
+                    let final=products.map(r=>{
+                      
+                      let p=recs.filter(t=>t.id==r.mtm${respCat.name}${name}Id)[0]
+                      
+                      return {
+                        original:{
+                          ...r,...p,
+                          key:"mtm${respCat.name}${name}"
+                        },
+                        copy:{
+                          ...oneside[0],
+                          ...r,
+                          key:"mtm${name}${respCat.name}"
+                        }
+                    }})
+                    return final
                   },
                   `
                  
@@ -730,7 +784,15 @@ export default{
                   },
                   raw:true
                 })
-                return {...alumno[0],...product}
+                let profesor=await db.${parts[1]}.findAll({
+                  where:{
+                    id:args.mtm${parts[1]}${parts[0]}Id
+                  },
+                  raw:true
+                })
+                console.log("resyovoy",product,alumno,profesor)
+                return {original:{...alumno[0],...product,key:"mtm${parts[0]}${parts[1]}"},
+                copy:{...profesor[0],...product,key:"mtm${parts[1]}${parts[0]}"}}
               }catch(e){
                 console.log("error",e)
               }
@@ -739,13 +801,21 @@ export default{
               try{
                 let product=await db.${name}.create(args)
                 product=product.dataValues
-                let grupo=await db.${parts[1]}.findAll({
+                let alumno=await db.${parts[1]}.findAll({
                   where:{
                     id:args.mtm${parts[1]}${parts[0]}Id
                   },
                   raw:true
                 })
-                return {...grupo[0],...product}
+                let profesor=await db.${parts[0]}.findAll({
+                  where:{
+                    id:args.mtm${parts[0]}${parts[1]}Id
+                  },
+                  raw:true
+                })
+                console.log("resyovoy",product,alumno,profesor)
+                return {original:{...alumno[0],...product,key:"mtm${parts[1]}${parts[0]}"},
+                copy:{...profesor[0],...product,key:"mtm${parts[0]}${parts[1]}"}}
               }catch(e){
                 console.log("error",e)
               }
@@ -791,7 +861,29 @@ export default{
                 raw:true
               })
               r1=r1[0]
-              return {...r1,...r2}
+              let r3=await db.${parts[1]}.findAll({
+                where:{id:args.mtm${parts[1]}${parts[0]}Id},
+                raw:true
+              })
+              r3=r3[0]
+
+
+              return {
+                original:{
+                  
+                    ...r1,
+                    ...r2,
+                  
+                  key:"mtm${parts[0]}${parts[1]}"
+                },
+                copy:{
+                  
+                    ...r3,
+                    ...r2,
+                  
+                  key:"mtm${parts[1]}${parts[0]}"
+                }
+              }
             },
             editdatamtm${parts[1]}${parts[0]}:async(parent,args,{db})=>{
               let rec=await db.${name}.update({
@@ -817,7 +909,28 @@ export default{
                 raw:true
               })
               r1=r1[0]
-              return {...r1,...r2}
+              let r3=await db.${parts[0]}.findAll({
+                where:{id:args.mtm${parts[0]}${parts[1]}Id},
+                raw:true
+              })
+              r3=r3[0]
+
+              return {
+                original:{
+                  
+                    ...r1,
+                    ...r2,
+                  
+                  key:"mtm${parts[1]}${parts[0]}"
+                },
+                copy:{
+                  
+                    ...r3,
+                    ...r2,
+                  
+                  key:"mtm${parts[0]}${parts[1]}"
+                }
+              }
             },
             `
           }

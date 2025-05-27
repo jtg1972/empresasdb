@@ -10,7 +10,9 @@ const callGetFieldsCategory=(field,categories)=>{
 let bd
   if(cat.length>0){
       bd=cat[0].fields.map(x=>{
+        
       if(x.dataType!=="relationship"){
+          
         return x.name
       }/*else if(x.dataType=="relationship"){
         if(rep<2){
@@ -45,14 +47,21 @@ const getQueryFromCategory=(productCategories,categories,rep=0)=>{
       }else if(x.dataType!=="relationship"){
         return x.name
       }
-      else if(x.dataType=="relationship"){
+      /*else if(x.dataType=="relationship"){
         const t1=categories.filter(t=>t.id==x.relationCategory)
       
-
+        if(x.name=="mtmscmateriassccarreras" ||
+        x.name=="mtmsccarrerasscmaterias")
         return `${x.name}{
+          original{
           ${callGetFieldsCategory(x,categories)}
+          }
         }`
-      }
+        else 
+          return `${x.name}{
+          ${callGetFieldsCategory(x,categories)}
+        }`*/
+      
     })
     fields.unshift("id")
     const q=`getData${p.name}{
@@ -63,7 +72,7 @@ const getQueryFromCategory=(productCategories,categories,rep=0)=>{
   q2=q2.join(`\n`)
   query+=q2
   query+=`}`
-  //console.log("query",query)
+  console.log("queryr1",query)
   return gql`${query}`
 }
 const mapToState=({categories})=>({

@@ -517,7 +517,7 @@ const StructureField = ({
     
       <select {...selectConfigQueryCategory}>
         {categories.map(c=>{
-          if(c.id!==currentCategory.id)
+          //if(c.id!==currentCategory.id)
             return <option value={c.id}>{c.name}</option>
           })
         }

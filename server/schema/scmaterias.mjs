@@ -1,17 +1,34 @@
 
           import {gql} from 'apollo-server-express'
 
-          export default gql`type datamtmsccarrerasscmaterias{
-                  carrera:String
-otmscareassccarrerasId:Int
+          export default gql`
+          type originalmtmsccarrerasscmaterias{
+            id:Int
+                      carrera:String
+                      otmscareassccarrerasId:Int
+                      semestre:String
+                      mtmscmateriassccarrerasId:Int
+                      mtmsccarrerasscmateriasId:Int
+                      key:String
+                      mtmscmateriassccarreras:[datamtmscmateriassccarreras]
+          }
+          type copymtmsccarrerasscmaterias{
+            id:Int
+                    materia:String
+                    otmscareasscmateriasId:Int
+                  semestre:String
+                    mtmscmateriassccarrerasId:Int
+                    mtmsccarrerasscmateriasId:Int
+                    key:String
+                    mtmsccarrerasscmaterias:[datamtmsccarrerasscmaterias]
 
-
-id:Int
-mtmscmateriassccarreras:[datamtmscmateriassccarreras]
-mtmscmateriassccarrerasId:Int
-mtmsccarrerasscmateriasId:Int
-semestre:String
-                },type datamtmscprofesoresscmaterias{
+          }
+          
+          type datamtmsccarrerasscmaterias{
+                  original:originalmtmsccarrerasscmaterias
+                
+                copy:copymtmsccarrerasscmaterias
+              } type datamtmscprofesoresscmaterias{
                   nombre:String
 noderegistro:String
 

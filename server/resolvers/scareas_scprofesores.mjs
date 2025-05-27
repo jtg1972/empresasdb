@@ -108,7 +108,13 @@
                   },
                   raw:true
                 })
+                let profesor=await db.scprofesores.findAll({
+                 where:{id:args.mtmscprofesoresscareasId
+                },
+                raw:true})
                 return {...alumno[0],...product}
+               
+                
               }catch(e){
                 console.log("error",e)
               }

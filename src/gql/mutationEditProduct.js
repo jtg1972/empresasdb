@@ -39,6 +39,8 @@ const getManyToManyRelation=(parentCategory,sonCategory,categories,counters=[])=
       }*/
     else if(j.dataType=="string" || j.dataType=="number" || j.dataType=="date")
       return j.name
+
+    else if(j.relationship=="manytomany"){}
     
   })
 
@@ -132,7 +134,7 @@ export default (category,categories)=>{
       }else{
         campos.push(argsf[f].name)
       }
-    }else{
+    }/*else{
       const rr=categories.filter(c=>c.id==argsf[f].relationCategory)[0]
       if(argsf[f].relationship=="manytomany"){
         counters=[...counters,{name:argsf[f].name,count:0}]
@@ -143,7 +145,7 @@ export default (category,categories)=>{
         campos.push(getOneToManyRelation(category,rr,categories))
       }
 
-    }
+    }*/
   }
   //console.log("camposmi",campos)
   campos.unshift("id")

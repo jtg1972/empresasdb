@@ -1,6 +1,7 @@
 import gql from "graphql-tag"
+import { FcCamcorderPro } from "react-icons/fc"
 
-export default (category,categories,titleMutation,crec)=>{
+export default (category,categories,titleMutation,crec,copy)=>{
   let argsf=category?.["fields"]
   let args1=[]
   let ya={}
@@ -61,13 +62,13 @@ export default (category,categories,titleMutation,crec)=>{
         campos.push(`${na}{${ncent}}`)
       
       }
-    }else*/ if(argsf[f].dataType=="queryCategory" && argsf[f].declaredType!=="number"){
+    }else if(argsf[f].dataType=="queryCategory" && argsf[f].declaredType!=="number"){
       campos.push(`${argsf[f].name}GlobalCatQuery`)
       campos.push(`${argsf[f].name}FinalCatQuery`)
       campos.push(`${argsf[f].name}ProductQuery`)
       ya={[argsf[f].name]:true}
 
-    }else if(argsf[f].declaredType=="number" ||
+    }else*/ if(argsf[f].declaredType=="number" ||
     argsf[f].declaredType=="string"){
       if(ya[argsf[f].name]!==true){
         campos.push(`${argsf[f].name}`)
@@ -75,6 +76,8 @@ export default (category,categories,titleMutation,crec)=>{
     }else
       campos.push(argsf[f].name)
   }
+  campos=campos.join("\n")
+  let campRelOrig=[]
   crec?.["fields"]?.forEach(cr=>{
     /*if(cr.dataType=="relationship"){
       if(cr.relationship=="onetomany"){
@@ -118,22 +121,66 @@ export default (category,categories,titleMutation,crec)=>{
       }
     }else*/ if(cr.declaredType=="number" ||
     cr.declaredType=="string"){
-      campos.push(`${cr.name}`)
-    }else if(cr.dataType=="queryCategory"){
-      campos.push(`${cr.name}GlobalCatQuery`)
-      campos.push(`${cr.name}FinalCatQuery`)
-      campos.push(`${cr.name}ProductQuery`)
-    }
+      campRelOrig.push(`${cr.name}`)
+    }/*else if(cr.dataType=="queryCategory"){
+      campRelOrig.push(`${cr.name}GlobalCatQuery`)
+      campRelOrig.push(`${cr.name}FinalCatQuery`)
+      campRelOrig.push(`${cr.name}ProductQuery`)
+    }*/
     /*else
       campos.push(cr.name)*/
   })
-  campos.unshift("id")  
-  campos=campos.join("\n")
-  const query=`mutation CreateMTMProduct(${args1}){
-    ${titleMutation}(${args2}){
-      ${campos}
-    }
-  }`  
+  campRelOrig.unshift("id")  
+  campRelOrig=campRelOrig.join("\n")
+  let campRelCopy=[]
+  copy?.["fields"]?.forEach(cr=>{
+    if(cr.declaredType=="number" ||
+    cr.declaredType=="string"){
+      campRelCopy.push(`${cr.name}`)
+    }/*else if(cr.dataType=="queryCategory"){
+      campRelCopy.push(`${cr.name}GlobalCatQuery`)
+      campRelCopy.push(`${cr.name}FinalCatQuery`)
+      campRelCopy.push(`${cr.name}ProductQuery`)
+    }*/
+    /*else
+      campos.push(cr.name)*/
+  })
+  campRelCopy.unshift("id")  
+  campRelCopy=campRelCopy.join("\n")
+  
+  
+
+
+
+
+  let query=""
+  /*if(titleMutation=="createdatamtmscmateriassccarreras" ||
+  titleMutation=="createdatamtmsccarrerasscmaterias"){*/
+    query=`mutation CreateMTMProduct(${args1}){
+      ${titleMutation}(${args2}){
+        original{
+          ${campos}
+          ${campRelOrig}
+          key
+        }
+        copy{
+          ${campos}
+          ${campRelCopy}
+          key
+        }
+        
+      }
+    }` 
+  /*}else{
+    query=`mutation CreateMTMProduct(${args1}){
+      ${titleMutation}(${args2}){
+          ${campos}
+          ${campRelOrig}
+      }
+      
+    }`
+  }*/
+
   console.log("alertuio45",query)
   return gql`${query}`
 }

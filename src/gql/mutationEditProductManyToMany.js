@@ -71,10 +71,7 @@ const getMiddleTable=(one,other,categories)=>{
   
 }
 
-
-
-
-export default (category,keyFields,categories,nameMut,nRc)=>{
+export default (category,keyFields,categories,nameMut,nRc,pR)=>{
   let args=[]
   let args1=[]
   let argsf=category.fields
@@ -128,22 +125,127 @@ export default (category,keyFields,categories,nameMut,nRc)=>{
     }
   }
       
-  /*const rr=categories.filter(c=>c.id==nRc.id)[0]
-  const nn=category.name
-  const sp=nn.split("_")
-  let f1
-  let cat
-  if(sp[1]==nRc.name){
-    f1=`mtm${sp[0]}${sp[1]}`
-    cat=categories.filter(c=>c.name==sp[0])[0]
-  }else{
-    f1=`mtm${sp[1]}${sp[0]}`
-    cat=categories.filter(c=>c.name==sp[1])[0]
-  }    
-  counters=[...counters,{name:f1,count:0}]
-  console.log("counters44",counters)
-  //campos.push(getManyToManyRelation(category,cat,keyFields,categories,counters,cat,f1))
-  */    
+    
+  
+  for(let k in keyFields){
+    campos.push(`${k}`)
+  }
+  
+  //campos.push("id")
+  let camposPrinc=[]
+  nRc.fields.forEach(t=>{
+    if(t.declaredType=="number" || t.declaredType=="string"){
+      camposPrinc.push(t.name)
+    }
+  })
+  //console.log("camposmi",campos)
+  //campos.unshift("id")
+  camposPrinc.push("id")
+  campos=campos.join("\n")
+  camposPrinc=camposPrinc.join("\n")
+
+  let camposOtro=[]
+  pR.fields.forEach(t=>{
+    if(t.declaredType=="number" || t.declaredType=="string"){
+      camposOtro.push(t.name)
+    }
+  })
+  camposOtro.push("id")
+  camposOtro=camposOtro.join("\n")
+
+  //args1.unshift("id:$id")
+  args1=args1.join(", ")
+
+  console.log("namemutmtm",nameMut)
+  let query
+  /*if(nameMut!="editdatamtmscmateriassccarreras" &&
+  nameMut!="editdatamtmsccarrerasscmaterias")
+    query=`
+      mutation EditProductoMtm(${args}){
+        ${nameMut}(${args1}){
+          ${campos}
+          ${camposPrinc}
+        }
+      }
+    `
+  else*/
+  query=`
+  mutation EditProductoMtm(${args}){
+    ${nameMut}(${args1}){
+      original{
+        ${campos}
+        ${camposPrinc}
+        key
+      }
+      copy{
+        ${campos}
+        ${camposOtro}
+        key
+      }
+    }
+  }
+`
+
+  console.log("querymtm",query)
+  query=gql`${query}`
+  return query
+}
+
+
+/*export default (category,keyFields,categories,nameMut,nRc)=>{
+  let args=[]
+  let args1=[]
+  let argsf=category.fields
+  for(let f in argsf){
+    //console.log("ffff",f)
+    if(argsf[f].declaredType=="number"){
+      args.push(`$${argsf[f].name}:Int`)
+    }else if(argsf[f].dataType=="queryCategory"){
+      args.push(`$${argsf[f].name}GlobalCatQuery:Int`)
+      args.push(`$${argsf[f].name}FinalCatQuery:Int`)
+      args.push(`$${argsf[f].name}ProductQuery:Int`)
+    }else if(argsf[f].declaredType=="string"){
+      args.push(`$${argsf[f].name}:String`)
+    }else if(argsf[f].declaredType=="date"){
+      args.push(`$${argsf[f].name}:String`)
+    
+    }
+  }
+  //args.unshift("$id:Int")
+  for(let k in keyFields){
+    args.push(`$${k}:Int`)
+  }
+  
+  args=args.join(", ")
+  let counters=[]
+  for(let f in argsf){
+    if(argsf[f].dataType!=="relationship"){
+      if(argsf[f].dataType=="queryCategory"){
+        args1.push(`${argsf[f].name}GlobalCatQuery:$${argsf[f].name}GlobalCatQuery`)
+        args1.push(`${argsf[f].name}FinalCatQuery:$${argsf[f].name}FinalCatQuery`)
+        args1.push(`${argsf[f].name}ProductQuery:$${argsf[f].name}ProductQuery`)
+      }else{
+        args1.push(`${argsf[f].name}:$${argsf[f].name}`)
+      }
+    }
+  }
+  for(let k in keyFields){
+    args1.push(`${k}:$${k}`)
+  }
+  let campos=[]
+  
+  for(let f in argsf){
+    if(argsf[f].dataType!=="relationship"){
+      if(argsf[f].dataType=="queryCategory"){
+        campos.push(`${argsf[f].name}GlobalCatQuery`)
+        campos.push(`${argsf[f].name}FinalCatQuery`)
+        campos.push(`${argsf[f].name}ProductQuery`)
+      }else{
+        campos.push(argsf[f].name)
+      }
+    }
+  }
+      
     
   
   for(let k in keyFields){
@@ -171,4 +273,4 @@ export default (category,keyFields,categories,nameMut,nRc)=>{
   console.log("querymtm",query)
   query=gql`${query}`
   return query
-}
+}*/

@@ -60,12 +60,34 @@ let bd
              
            })
            restcamps.push("id")
-           newcamps=[...newcamps,...restcamps].join("\n")
-    
+           let opposite=categories.filter(c=>c.name==cat[0].name)[0]
+           let oppositecamps=opposite.fields.map(x=>{
+            if(x.declaredType=="number" || x.declaredType=="string")
+              return x.name
+           
+           })
+           oppositecamps.push("id")
+           
+           restcamps=[...restcamps,...newcamps].join("\n")
+           oppositecamps=[...oppositecamps,...newcamps].join("\n")
+           //if(`mtm${ny.name}${cat[0].name}`=="mtmscmateriassccarreras" ||
+           //`mtm${ny.name}${cat[0].name}`=="mtmsccarrerasscmaterias"){
             return `mtm${ny.name}${cat[0].name}{\n
-              ${newcamps}\n
+              original{
+              ${restcamps}\n
+              key\n
+              }
+              copy{
+                ${oppositecamps}\n
+                key\n
+              }
+            }`  
+           /*}else{
             
+            return `mtm${ny.name}${cat[0].name}{\n
+              ${restcamps}\n
             }`
+           }*/
           
         }
 
@@ -123,19 +145,50 @@ const getQueryFromCategory=(productCategories,categories)=>{
               
               return x.name
             })
+            let clavePQ=-1
             let restcamps=t1.fields.map(x=>{
               if(x.declaredType=="string" || x.declaredType=="number")
                return x.name
-              
+              //if(x.dataType=="queryCategory")
+               //return `${x.name}ProductQuery`
+            
             })
             restcamps.push("id")
+          
+          let opposite=categories.filter(c=>c.name==p.name)[0]
+           let oppositecamps=opposite.fields.map(x=>{
+            if(x.declaredType=="number" ||  x.declaredType=="string")
+              return x.name
+            //if(x.dataType=="queryCategory")
+              //return `${x.name}ProductQuery`
+           
+           })
+  //newcamps.push(clavePQ)
+           oppositecamps.push("id")
+           oppositecamps=[...newcamps,...oppositecamps].join("\n")
             console.log("newcamps jorge",newcamps,restcamps,[...newcamps,...restcamps].join("\n"),t1.fields)
-            newcamps=[...newcamps,...restcamps].join("\n")
+            restcamps=[...newcamps,...restcamps].join("\n")
             
-          return `mtm${t1.name}${p.name}{
+          /*return `mtm${t1.name}${p.name}{
             ${newcamps}\n
   
-          }`
+          }`*/
+          /*if(`mtm${t1.name}${p.name}`=="mtmscmateriassccarreras" ||
+           `mtm${t1.name}${p.name}`=="mtmsccarrerasscmaterias"){*/
+            return `mtm${t1.name}${p.name}{\n
+              original{
+              ${restcamps}\n
+              }
+              copy{
+                ${oppositecamps}\n
+              }
+            }`  
+           /*}else{
+            
+            return `mtm${t1.name}${p.name}{\n
+              ${restcamps}\n
+            }`
+           }*/
         }
       }
     })
@@ -204,7 +257,7 @@ const DisplayWholeProductsTable = ({
   const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(productCategories,categories)
   const [getProducts]=useMutation(GET_PRODUCTS_FROM_CATEGORY,{
     update:(cache,{data})=>{
-      //console.log("data:",data)
+      console.log("datamtmboth:",data)
       dispatch(setCategoryProducts(data))
       
     }
@@ -286,15 +339,16 @@ const DisplayWholeProductsTable = ({
         || x.relationship=="manytomany"))
       )
       partials.push(cp)
-      displayTableAndRelations(cp,categoryProducts[cp],oneToManyCategories,cat2,partials,-1,false,-1,-1,-1)
+      displayTableAndRelations(cp,categoryProducts[cp],oneToManyCategories,cat2,partials,-1,false,-1,-1,-1,true,[])
       
     })
     
     return allTables
   }
   let mtmVar1,mtmVar2
-  const displayTableAndRelations=(name,prods,otmrelations,cc,partials,pi,isManyToMany=false,relCat,parRel,relCatInd,displayTable=true)=>{  
+  const displayTableAndRelations=(name,prods,otmrelations,cc,partials,pi,isManyToMany=false,relCat,parRel,relCatInd,displayTable=true,segmentMtm)=>{  
       //console.log("cp[cp]",name,prods,otmrelations,cc)
+      let segmentRoutes
       let parId
       let nameTableManyToMany
       //console.log("relcatind",relCatInd)
@@ -340,8 +394,10 @@ const DisplayWholeProductsTable = ({
         nameMutationManyToManyData=`${catQMtM.name}By${relCatObj.name}Id`
       }
       console.log("verifyy",name,mtmVar1,mtmVar2)
-      displayTable && (isManyToMany && !manyToManyAlreadyDone.includes(mtmVar1) && !manyToManyAlreadyDone.includes(mtmVar1)) && allTables.push(<DisplaySingleTable
+      segmentRoutes=[...segmentMtm,name]
+      displayTable && (isManyToMany && !manyToManyAlreadyDone.includes(mtmVar2)) /*&& !manyToManyAlreadyDone.includes(mtmVar1))*/ && allTables.push(<DisplaySingleTable
         titulo={name}
+        segmentRoutes={segmentRoutes}
         products={prods}
         respCat={cc}
         toggleEditProduct={toggleEditProduct}
@@ -364,6 +420,7 @@ const DisplayWholeProductsTable = ({
 
         displayTable && !isManyToMany && allTables.push(<DisplaySingleTable
           titulo={name}
+          segmentRoutes={segmentRoutes}
           products={prods}
           respCat={cc}
           toggleEditProduct={toggleEditProduct}
@@ -395,6 +452,7 @@ const DisplayWholeProductsTable = ({
 
         const otmcats=respCat.fields.filter(
           x=>{
+            console.log("xerror",x)
             //relationNames.push(x.name)
             if(x.dataType=="relationship" && (x.relationship=="onetomany" ||
             x.relationship=="manytomany") && !manyToManyAlreadyDone.includes(nameTableManyToMany))
@@ -403,7 +461,12 @@ const DisplayWholeProductsTable = ({
             || x.relationship=="manytomany") && !manyToManyAlreadyDone.includes(nameTableManyToMany))
           }
         )
-        const otmClusters=prods?.map(e=>e[y.name])
+        const otmClusters=prods?.map(e=>{
+          if(e?.[y.name])
+            return e[y.name]
+          return ""
+        }
+          )
         for(let i in otmClusters){
           //console.log("tableindex",tableIndexes[cc.name],cc.name)
           //console.log("yname",y)
@@ -423,7 +486,8 @@ const DisplayWholeProductsTable = ({
               y.relationCategory,
               cc.id,
               prods[tableIndexes[name]].id,
-              displayTable=tableIndexes[name]>=0
+              displayTable=tableIndexes[name]>=0,
+              segmentRoutes
             )
           }  
         }

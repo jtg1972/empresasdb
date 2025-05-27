@@ -17,6 +17,8 @@ import { addProduct, setCategoryProducts } from '../../redux/category/actions'
 import Dialog from '../Dialog'
 import DisplayFields from '../DisplayFields'
 import FormButton from '../Forms/FormButton'
+import { BsSortNumericDown } from 'react-icons/bs'
+import types from '../../redux/mtmupdate/types'
 
 
 /*const getDummyMut=(cat)=>{
@@ -529,10 +531,13 @@ const addMtmProductMutation=(category,categories,titleMutation,crec)=>{
 }*/
 
 
-const mapToState=({categories})=>({
+const mapToState=({categories,routes})=>({
   currentCategory:categories.currentCategory,
   categoryProducts:categories.categoryProducts,
-  categories:categories.categories
+  categories:categories.categories,
+  mtmRoutes:routes.routes,
+  indexes:routes.indexes
+
 })
 
 const NewProduct = ({
@@ -553,7 +558,10 @@ const NewProduct = ({
   const [fields,setFields]=useState({})
   const {currentCategory,
   categoryProducts,
-  categories}=useSelector(mapToState)
+  categories,
+  mtmRoutes,
+  indexes
+}=useSelector(mapToState)
   const dispatch=useDispatch()
   let nC,nRc,pR,nn,relMtMC,nameAlias,nameAliasOneMtm
   let existe=false
@@ -562,7 +570,7 @@ const NewProduct = ({
   const [otrotitulo,setOtroTitulo]=useState("")
   const [addRecGlobal,setAddRecGlobal]=useState({})
   const [groupRecsGlobal,setGroupRecsGlobal]=useState([])
-
+   console.log("indexesmtm",indexes) 
   useEffect(()=>{
     if(titulo.startsWith("mtm")){
       pR=categories.filter(x=>x.id==parentRelation)[0]
@@ -838,15 +846,15 @@ const NewProduct = ({
      //nameAliasOneMtm=`getonedatamtm${otherPivoteTable.substr(3)}`
       //nameGroupAlias=`getdatamtm${pivoteTable.substr(3)}`
       //console.log("na naomtm nga",nameAlias,nameAliasOneMtm,nameGroupAlias,pR,nRc)
-      CREATE_PRODUCT_MUTATION_MTM=addMtmProductMutation(relMtMC,categories,nameAlias,nRc)
-      GET_ONE_DATA_MTM=getonedatamtm(relMtMC,categories,nameAliasOneMtm,nRc)
-      GET_DATA_MTM_GROUP=getdatamtmgroup(relMtMC,categories,nameGroupAlias,pR)
+      CREATE_PRODUCT_MUTATION_MTM=addMtmProductMutation(relMtMC,categories,nameAlias,nRc,pR)
+      //GET_ONE_DATA_MTM=getonedatamtm(relMtMC,categories,nameAliasOneMtm,nRc)
+      //GET_DATA_MTM_GROUP=getdatamtmgroup(relMtMC,categories,nameGroupAlias,pR)
     //}
     CREATE_PRODUCT_MUT=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
   }else{
     CREATE_PRODUCT_MUT=addProductMutation(respCat,categories,false)
-    GET_ONE_DATA_MTM=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
-    GET_DATA_MTM_GROUP=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
+    //GET_ONE_DATA_MTM=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
+    //GET_DATA_MTM_GROUP=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
     CREATE_PRODUCT_MUTATION_MTM=getDummyMut(categories.filter(c=>c.name=="Alumnos")[0])
   }
 
@@ -883,10 +891,109 @@ const NewProduct = ({
       updateClusters(tablaoriginal,pivoteTable,otherPivoteTable,groupRecsGlobal,addRecGlobal,data[nameAliasOneMtm],np)
     }
   })*/
+  //categoryProducts,data[nameAlias],titulo,c1,i,data[nameAlias].copy,data[nameAlias.original]
+  const simpleUpdateStateHere1=(cp1,reg,titulo,c1,i,copy,original)=>{
+    /*let cp=cp1
+    let st=cp[c1[0]][i[0]]
+    let bien=false
+    for(let u1=1;u1<c1.length;u1++){
+      console.log("stverif77",st,reg,c1,i,c1[u1])
+      if(st[c1[u1]]){
+        
+        if(i[u1]!=undefined){ 
+          st=st[c1[u1]][i[u1]]
+          if(c1[u1]==c1[c1.length-2] && u1==c1.length-2 && copy[`${original.key}Id`]==st["id"]){
+            console.log("insertabien")
+            bien=true
+          }else if(c1[u1]==c1[c1.length-2] //&& 
+            copy[`${original.key}Id`]!=st["id"]){*/
+            console.log("insertamalllamareduxparaanadirlo",
+            {
+              type:types.ADD_INDEXES_TO_MTMRECORD,
+              payload:{
+                mtm:original.key,
+                id:original["id"],
+                action:"ADD",
+                
+                row:{
+                  original:original,
+                  copy:copy
+                }
+              }
+            },
+            {
+              type:types.ADD_INDEXES_TO_MTMRECORD,
+              payload:{
+                mtm:copy.key,
+                id:copy["id"],
+                action:"ADD",
+                
+                row:{
+                  original:copy,
+                  copy:original
+                }
+              }
+            })
+            dispatch({
+              type:types.ADD_INDEXES_TO_MTMRECORD,
+              payload:{
+                mtm:original.key,
+                id:copy["id"],
+                action:"ADD",
+                
+                row:{
+                  original:original,
+                  copy:copy
+                }
+              }
+            })
+            dispatch({
+              type:types.ADD_INDEXES_TO_MTMRECORD,
+              payload:{
+                mtm:copy.key,
+                id:original["id"],
+                action:"ADD",
+                
+                row:{
+                  original:copy,
+                  copy:original
+                }
+              }
+            })
+          /*  bien=false
+          }
+          
+        }
 
+          /*if(bien==true && c1[u1]==titulo)
+            st[c1[u1]]=[...st[c1[u1]],{original:copy,copy:original}]
+        
+
+      }
+    }
+    return cp*/
+  }
   const simpleUpdateStateHere=(cp1,reg,titulo,c1,i)=>{
     let cp=cp1
     let st=cp[c1[0]][i[0]]
+    if(titulo.startsWith("getData")){
+      cp={...cp,[titulo]:[...cp[titulo],reg]}
+    }else{
+      
+      let newc1=[]
+      for(let po=0;po<c1.length;po++){
+        if(c1[po].startsWith("mtm") && c1[po]==titulo)
+          newc1.push(c1[po])
+        else if(!c1[po].startsWith("mtm")) 
+          newc1.push(c1[po])
+          
+      }
+      c1=newc1
+      console.log("newc1",c1)
+      for(let po=0;po<c1.length;po++){     
+        if(po>=c1.length-1)
+          i[po]=undefined
+      }
     for(let u1=1;u1<c1.length;u1++){
       console.log("stverif",st,reg,c1,i,c1[u1])
       if(st[c1[u1]]){
@@ -904,7 +1011,7 @@ const NewProduct = ({
       const i=getIndexesInverse(recs[x],pivoteTable,otherPivoteTable,path,tableIndexes)
       currentData=updateState(currentData,0,0,tablaoriginal,otherPivoteTable,pivoteTable,recs[x],path,i,deleteRecord)
       console.log("trans",ind,currentData)
-    }*/
+    }*/}
     return cp
     
   }
@@ -915,7 +1022,6 @@ const NewProduct = ({
   
   const [addProduct2]=useMutation(CREATE_PRODUCT_MUT,{
     update:(cache,{data})=>{
-      console.log("data45",titulo)
       let nombre=`create${respCat.name}`
       path=[`getData${currentCategory.name}`]
       console.log("entro aquiii")
@@ -926,29 +1032,74 @@ const NewProduct = ({
       if(i[i.length-1]!=undefined){
         i[i.length-1]=undefined
       }
+      console.log("data45",data[nombre],titulo,c,i)
+
       //const us=simpleUpdateState(categoryProducts,0,0,data[nombre],titulo,c,i)
       const us=simpleUpdateStateHere(categoryProducts,data[nombre],titulo,c,i)
       dispatch(setCategoryProducts(us))
     }
   })
 
+  const addToReduxMtm=(copy,original,titulo)=>{
+    dispatch({
+      type:types.ADD_INDEXES_TO_MTMRECORD,
+      payload:{
+        mtm:titulo,
+        id:copy[`${copy.key}Id`],
+        action:"ADD",
+        route:[],
+        row:{
+          original:copy,
+          copy:original
+        }
+      }
+    })
+  }
+
+  const calculateCopyRoutes=(original,copy,son,parent,cps)=>{
+    console.log("copydecopy",copy,copy.key,mtmRoutes,mtmRoutes[copy.key])
+    let mtmRoute
+    let indexes
+    let nrs=cps
+    if(mtmRoutes[copy.key]!=undefined){
+      mtmRoute=mtmRoutes[copy.key]
+      indexes=getIndexes(tableIndexes,mtmRoutes[copy.key])
+      nrs=simpleUpdateStateHere1(cps,copy,copy.key,mtmRoutes[copy.key],indexes,copy,original)
+      if(copy[[`${original.key}Id`]])
+        console.log("mtmkeyroute",mtmRoute,tableIndexes,copy.key,indexes,copy[`${original.key}Id`],copy["id"])
+      //dispatch(setCategoryProducts(nrs))
+    }else{
+      addToReduxMtm(copy,original,copy.key)
+    }
+    //let x=getIndexes
+    /*let ni=parent.fields.filter(x=>x.name==copy.key)
+    if(ni.length>0){
+      console.log("encontrado",original["id"])
+    }*/
+    return nrs
+
+  }
+
   const [addProduct3]=useMutation(CREATE_PRODUCT_MUTATION_MTM,{
     update:(cache,{data})=>{
       //setAddRecGlobal(()=>({...data[nameAlias]}))
       //getGroupMtm({variables:{...fields}})
+      console.log("data999",data)
       path=[`getData${currentCategory.name}`]
       console.log("entro aquiiititulo",titulo)
       const c1=resultPath(currentCategory.fields.filter(x=>
         x.dataType=="relationship"),titulo,categories,path,true)  
       console.log("c33",c1)
       
-      const i=getIndexes(tableIndexes,c1)
+      /*const i=getIndexes(tableIndexes,c1)
       if(i[i.length-1]!=undefined){
         i[i.length-1]=undefined
-      }
-      const us=simpleUpdateStateHere(categoryProducts,data[nameAlias],titulo,c1,i)
-      console.log("us555",us)
-      dispatch(setCategoryProducts(us))
+      }*/
+      //console.log("paramsxxx",categoryProducts,data[nameAlias],titulo,c1,i,data[nameAlias].copy,data[nameAlias].original)
+      simpleUpdateStateHere1(categoryProducts,data[nameAlias],titulo,[],[],data[nameAlias].copy,data[nameAlias].original)
+      console.log("us555")
+      //let newus=calculateCopyRoutes(data[nameAlias]["original"],data[nameAlias]["copy"],pR,nRc,us)
+      //dispatch(setCategoryProducts(us))
 
     }
   })
@@ -989,6 +1140,7 @@ const NewProduct = ({
         parentCatId
       }
     }else{
+      //console.log("parentId,fields",category,parentId,fields,mtmStr)
       return {
         category:nC,
         structure:mtmStr,

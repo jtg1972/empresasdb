@@ -1,19 +1,36 @@
 
           import {gql} from 'apollo-server-express'
 
-          export default gql`type datamtmscmateriassccarreras{
-                  materia:String
-otmscareasscmateriasId:Int
+          export default gql`
+          type originalmtmscmateriassccarreras{
+            id:Int
+              materia:String
+              otmscareasscmateriasId:Int
+              semestre:String
+              mtmscmateriassccarrerasId:Int
+              mtmsccarrerasscmateriasId:Int
+              mtmsccarrerasscmaterias:[datamtmsccarrerasscmaterias]
 
+              key:String
+              
 
-
-
-id:Int
-mtmsccarrerasscmaterias:[datamtmsccarrerasscmaterias]
-mtmscmateriassccarrerasId:Int
-mtmsccarrerasscmateriasId:Int
-semestre:String
-                },type datamtmscestudiantessccarreras{
+          }
+          type copymtmscmateriassccarreras{
+            id:Int
+              carrera:String
+              otmscareassccarrerasId:Int
+              semestre:String
+              mtmscmateriassccarrerasId:Int
+              mtmsccarrerasscmateriasId:Int
+              key:String
+              mtmscmateriasccarreras:[datamtmscmateriassccarreras]
+          }
+          
+          type datamtmscmateriassccarreras{
+            original:originalmtmscmateriassccarreras
+            copy:copymtmscmateriassccarreras
+            
+          } type datamtmscestudiantessccarreras{
                   nombre:String
 boleta:String
 startingYear:String
@@ -29,8 +46,8 @@ mtmsccarrerasscestudiantesId:Int
               id:Int
 carrera:String
 otmscareassccarrerasId:Int
-mtmscmateriassccarreras:[datamtmscmateriassccarreras],
-mtmscestudiantessccarreras:[datamtmscestudiantessccarreras],
+mtmscmateriassccarreras:[datamtmscmateriassccarreras]
+mtmscestudiantessccarreras:[datamtmscestudiantessccarreras]
 
             }
 

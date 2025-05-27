@@ -1,9 +1,50 @@
 
             import {Op} from 'sequelize'
             export default{
-          datamtmsccarrerasscmaterias:{
+        //datamtmsccarrerasscmaterias:{
+          originalmtmsccarrerasscmaterias:{
                   mtmscmateriassccarreras:async(parent,args,{db})=>{
-                    const x=await db.sccarreras_scmaterias.findAll({
+                    console.log("parentcatbien77",parent)
+                    try{
+                      let products=await db.sccarreras_scmaterias.findAll({
+                        where:{
+                          mtmsccarrerasscmateriasId:parent.original.id
+                        },raw:true
+      
+                      })
+                      let oneside=await db.sccarreras.findAll({
+                        where:{
+                          id:parent.original.id
+                        },raw:true
+                      })
+                      
+                      let cids=products.map(c=>c.mtmscmateriassccarrerasId)
+                      let respProds=await db.scmaterias.findAll({
+                        where:{id:{[Op.in]:cids}},
+                        raw:true
+                      })
+
+                      console.log("aquiaquiaquiverver",parent.id,products,oneside,cids,respProds)
+                      let final=products.map(r=>{
+                        let p=respProds.filter(t=>t.id==r.mtmscmateriassccarrerasId)[0]
+                        return {original:{
+                            ...r,...p,
+                          
+                          key:"mtmscmateriassccarreras"
+                        },
+                        copy:{
+                          
+                            r,...oneside[0],
+                          
+                          key:"mtmsccarrerasscmaterias"
+                        }
+                      }
+                      })
+                      return final
+                    }catch(e){
+                      console.log("error",e)
+                    }
+                    /*const x=await db.sccarreras_scmaterias.findAll({
                       where:{mtmsccarrerasscmateriasId:parent.id},
                       raw:true
                     })
@@ -15,7 +56,7 @@
                       const di=x.filter(u=>u[nf]==r.id)[0]
                       return {...r,...di}
                     })
-                    return recs
+                    return recs*/
                   }
                   
                   
@@ -54,7 +95,46 @@
                     return x
                   },
               mtmsccarrerasscmaterias:async(parent,args,{db})=>{
-                    const x=await db.sccarreras_scmaterias.findAll({
+                try{
+                  let products=await db.sccarreras_scmaterias.findAll({
+                    where:{
+                      mtmscmateriassccarrerasId:parent.id
+                    },raw:true
+  
+                  })
+                  let oneside=await db.scmaterias.findAll({
+                    where:{
+                      id:parent.id
+                    },raw:true
+                  })
+                  
+                  let cids=products.map(c=>c.mtmsccarrerasscmateriasId)
+                  let respProds=await db.sccarreras.findAll({
+                    where:{id:{[Op.in]:cids}},
+                    raw:true
+                  })
+
+                  console.log("aquiaquiaquiverver",parent.id,products,oneside,cids,respProds)
+                  let final=products.map(r=>{
+                    let p=respProds.filter(t=>t.id==r.mtmsccarrerasscmateriasId)[0]
+                    return {original:{
+                        ...r,...p,
+                      
+                      key:"mtmscmateriassccarreras"
+                    },
+                    copy:{
+                      
+                        ...oneside[0],...r,
+                      
+                      key:"mtmsccarrerasscmaterias"
+                    }
+                  }
+                  })
+                  return final
+                }catch(e){
+                  console.log("error",e)
+                }
+                    /*const x=await db.sccarreras_scmaterias.findAll({
                       where:{mtmscmateriassccarrerasId:parent.id},
                       raw:true
                     })
@@ -66,7 +146,7 @@
                       const di=x.filter(u=>u[nf]==r.id)[0]
                       return {...r,...di}
                     })
-                    return recs
+                    return recs*/
                   },
                   mtmscprofesoresscmaterias:async(parent,args,{db})=>{
                     const x=await db.scmaterias_scprofesores.findAll({

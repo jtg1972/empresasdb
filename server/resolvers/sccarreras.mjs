@@ -1,9 +1,48 @@
 
             import {Op} from 'sequelize'
             export default{
-          datamtmscmateriassccarreras:{
+          //datamtmscmateriassccarreras:{
+            originalmtmscmateriassccarreras:{
                   mtmsccarrerasscmaterias:async(parent,args,{db})=>{
-                    const x=await db.sccarreras_scmaterias.findAll({
+                    console.log("parentleerbien",parent)
+                    try{
+                      let products=await db.sccarreras_scmaterias.findAll({
+                        where:{
+                          mtmscmateriassccarrerasId:parent.id
+                        },raw:true
+      
+                      })
+                      let oneside=await db.scmaterias.findAll({
+                        where:{
+                          id:parent.id
+                        },raw:true
+                      })
+                      let cids=products.map(c=>c.mtmsccarrerasscmateriasId)
+                      let respProds=await db.sccarreras.findAll({
+                        where:{id:{[Op.in]:cids}},
+                        raw:true
+                      })
+                      let final=products.map(r=>{
+                        let p=respProds.filter(t=>t.id==r.mtmsccarrerasscmateriasId)[0]
+                        return {
+                          original:{
+                            ...r,...p,
+                            key:"mtmsccarrerasscmaterias"
+                          },
+                          copy:{
+                            
+                              ...oneside[0],...r,
+                            
+                            key:"mtmscmateriassccarreras"
+                          }
+                        }
+                      })
+                      return final
+                    }catch(e){
+                      console.log("error",e)
+                      return []
+                    }
+                    /*const x=await db.sccarreras_scmaterias.findAll({
                       where:{mtmscmateriassccarrerasId:parent.id},
                       raw:true
                     })
@@ -16,10 +55,10 @@
                       return {...r,...di}
                     })
                     return recs
-                  }
+                  }*/
                   
                   
-                },datamtmscestudiantessccarreras:{
+                }},datamtmscestudiantessccarreras:{
                   mtmsccarrerasscestudiantes:async(parent,args,{db})=>{
                     const x=await db.sccarreras_scestudiantes.findAll({
                       where:{mtmscestudiantessccarrerasId:parent.id},
@@ -40,7 +79,47 @@
                 },sccarreras:{
               
               mtmscmateriassccarreras:async(parent,args,{db})=>{
-                    const x=await db.sccarreras_scmaterias.findAll({
+                
+                  console.log("parentleerbien",parent)
+                  try{
+                    let products=await db.sccarreras_scmaterias.findAll({
+                      where:{
+                        mtmsccarrerasscmateriasId:parent.id
+                      },raw:true
+    
+                    })
+                    let oneside=await db.sccarreras.findAll({
+                      where:{
+                        id:parent.id
+                      },raw:true
+                    })
+                    let cids=products.map(c=>c.mtmscmateriassccarrerasId)
+                    let recs=await db.scmaterias.findAll({
+                      where:{id:{[Op.in]:cids}},
+                      raw:true
+                    })
+                    let final=products.map(r=>{
+                      let p=recs.filter(t=>t.id==r.mtmscmateriassccarrerasId)[0]
+                      return {
+                        original:{
+                          ...r,...p,
+                          key:"mtmscmateriassccarreras"
+                        },
+                        copy:{
+                          
+                            ...oneside[0],...r,
+                          
+                          key:"mtmsccarrerasscmaterias"
+                        }
+                      }
+                    })
+                    console.log("returnfinal",final)
+                    return final
+                  }catch(e){
+                    console.log("error",e)
+                    return []
+                  }
+                    /*const x=await db.sccarreras_scmaterias.findAll({
                       where:{mtmsccarrerasscmateriasId:parent.id},
                       raw:true
                     })
@@ -52,7 +131,7 @@
                       const di=x.filter(u=>u[nf]==r.id)[0]
                       return {...r,...di}
                     })
-                    return recs
+                    return recs*/
                   },
                   mtmscestudiantessccarreras:async(parent,args,{db})=>{
                     const x=await db.sccarreras_scestudiantes.findAll({

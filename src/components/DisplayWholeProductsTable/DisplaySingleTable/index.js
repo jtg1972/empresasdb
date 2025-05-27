@@ -12,12 +12,14 @@ import e from 'cors';
 import getIndexesInverse from '../../../gql/updatestatemtm/utils/getIndexesInverse';
 import getIndexes from '../../../gql/updatestatemtm/utils/getIndexes';
 
-import simpleUpdateState from '../../../gql/updatestatemtm/DeleteProduct/simpleUpdateState';
+//import simpleUpdateState from '../../../gql/updatestatemtm/DeleteProduct/simpleUpdateState';
 import checkHasSons from '../../../gql/updatestatemtm/utils/checkHasSons';
 import updateState from '../../../gql/updatestatemtm/DeleteProduct/updateState';
 import { resultPath } from '../../../gql/updatestatemtm/utils/getPath';
 import getMutationForDelete from '../../../gql/getMutationForDelete';
 import getMutationForDeleteManyToMany from '../../../gql/getMutationForDeleteManyToMany';
+import types from '../../../redux/mtmupdate/types';
+import { registerables } from 'chart.js';
 
 
 /*const getMutationForDelete=(categoryName)=>{
@@ -51,14 +53,17 @@ const getMutationForDeleteManyToMany=(parentRelationId,category,categories)=>{
   return gql`${mutation}`
 
 }*/
-const mapToState=({categories})=>({
+const mapToState=({categories,routes})=>({
   categoryProducts:categories.categoryProducts,
   categories:categories.categories,
-  currentCategory:categories.currentCategory
+  currentCategory:categories.currentCategory,
+  mtmRoutes:routes.routes,
+  indexes:routes.indexes,
 })
 
 const DisplaySingleTable = ({
   titulo,
+  segmentRoutes,
   products,
   respCat,
   toggleEditProduct,
@@ -80,14 +85,204 @@ const DisplaySingleTable = ({
     //console.log("productsmain",products)
     //console.log("parentcatid Singletable",parentCatId)
   console.log("parentRelationdisplaySingletable",parentRelation)
+  console.log("segmentRoutes",segmentRoutes)
   const dispatch=useDispatch()
+
+  
   let otrotitulo
   let resultado=[]
   let deleteId
-  const {categoryProducts,
-  categories,
-  currentCategory}=useSelector(mapToState)
- // console.log("respcatst",respCat)
+  const {
+    categoryProducts,
+    categories,
+    currentCategory,
+    mtmRoutes,
+    indexes
+  }=useSelector(mapToState)
+    
+    useEffect(()=>{
+      if(titulo.startsWith("mtm")){
+        dispatch({
+          type:types.ADD_SEGMENT_TO_ROUTE,
+          payload:{
+            segment:titulo,
+            route:segmentRoutes
+          }
+        })
+        console.log("mtmroutesver",mtmRoutes,parentId)
+      }
+    },[titulo])
+    useEffect(()=>{
+      console.log("entrouuuu",indexes?.[titulo]?.[parentId])
+      let ncp=categoryProducts
+      console.log("paramsacttab1global",indexes,titulo,parentId,indexes)
+      parentId=parentId
+      if(indexes?.[titulo]?.[parentId]?.length>0){
+      if(indexes?.[titulo]!=undefined){
+        if(indexes?.[titulo]?.[parentId]!=undefined){
+          indexes?.[titulo]?.[parentId]?.forEach(x=>{
+            if(x.action=="ADD"){
+              let i=getIndexes(tableIndexes,mtmRoutes[titulo])
+              console.log("paramsveradd11",ncp,x.row,titulo,mtmRoutes[titulo],i,x.row.original,x.row.copy)
+              if(i.length>0 && mtmRoutes[titulo].length>0)
+              ncp=simpleUpdateStateHere1(ncp,x.row,titulo,mtmRoutes[titulo],i,x.row.original,x.row.copy)
+            }
+            if(x.action=="EDIT"){
+              let i=getIndexes(tableIndexes,mtmRoutes[titulo])
+              console.log("paramsacttab",ncp,x.row,titulo,mtmRoutes,mtmRoutes[titulo],i,x.row.original,x.row.copy)
+              if(i.length>0 && mtmRoutes[titulo].length>0)
+                ncp=simpleUpdateStateHereEdit(ncp,x.row,titulo,mtmRoutes[titulo],i,x.row.original,x.row.copy,x)
+            }
+            if(x.action=="DELETE"){
+              let i=getIndexes(tableIndexes,mtmRoutes[titulo])
+              console.log("paramsacttabdel",ncp,titulo,mtmRoutes[titulo],i,x.otherId)
+              if(i.length>0 && mtmRoutes[titulo].length>0)
+                ncp=simpleUpdateStateHereDelete(ncp,parentId,x.otherId,titulo,mtmRoutes[titulo],i)
+
+            }
+            
+          })
+          dispatch(setCategoryProducts(ncp))
+          dispatch({
+            type:types.DELETE_INDEX_TO_MTMRECORD,
+            payload:{
+              mtm:titulo,
+              id:parentId
+            }
+          })
+          
+          
+          
+        }
+      }
+    }
+    },[indexes?.[titulo]?.[parentId]?.length])
+
+    const simpleUpdateState=(cp1,titulo,c1,i,deleteId)=>{
+      let cp=cp1
+      let st
+      for(let po=0;po<c1.length;po++){
+        if(po>=c1.length-1)
+          i[po]=undefined
+      }
+    
+      console.log("titio",titulo)
+      if(titulo.startsWith("getData")){
+        cp[titulo]=cp[titulo].filter(x=>{
+          console.log("xverio",x.id,deleteId)
+          if(x.id==deleteId)
+            return false
+          else
+            return true
+        })
+      }else{
+        st=cp[c1[0]][i[0]]
+        for(let u1=1;u1<c1.length;u1++){
+          console.log("stverif",c1,i,c1[u1])
+          if(st[c1[u1]]){
+            if(i[u1]!=undefined) 
+              st=st[c1[u1]][i[u1]]
+            else
+              st[c1[u1]]=st[c1[u1]].filter(x=>{
+                if(x.id==deleteId)
+                  return false
+                else
+                  return true
+              })
+              
+              
+          }
+        }
+      }
+      return cp
+    
+    }
+
+    const simpleUpdateStateHereDelete=(cp,id,otherId,titulo,c1,i)=>{
+      console.log("dataespec2221",cp,otherId,titulo,c1,i)
+      for(let po=0;po<c1?.length;po++){
+        if(po>=c1?.length-1)
+          i[po]=undefined
+      }
+      let st=cp[c1[0]][i[0]]
+      for(let u1=1;u1<c1.length;u1++){
+
+        if(st[c1[u1]]){
+          if(i[u1]!=undefined){ 
+            //console.log("stverif222",st[c1][u1],c1,i,c1[u1],nameVar1,parentId,otherId)
+
+            st=st[c1[u1]][i[u1]]
+          }else{
+            console.log("stveriffin",st[c1[u1]])
+            st[c1[u1]]=st[c1[u1]].filter(x=>{
+              console.log("xorig")
+              return x?.["original"]["id"]!=otherId 
+              
+            })
+          }
+        }
+      }
+      return cp
+    }
+
+    const simpleUpdateStateHere1=(cp1,reg,titulo,c1,i,copy,original)=>{
+      let cp=cp1
+      let st
+      let bien=false
+      for(let po=0;po<c1?.length;po++){
+        if(po>=c1.length-1)
+          i[po]=undefined
+      }
+      st=cp[c1[0]][i[0]]
+      for(let u1=1;u1<c1.length;u1++){
+        console.log("stverif77",st,reg,c1,i,c1[u1])
+
+        if(st[c1[u1]]){
+          if(i[u1]!=undefined) 
+            st=st[c1[u1]][i[u1]]
+          else
+            st[c1[u1]]=[...st[c1[u1]],reg]
+        }
+        
+      }
+      return cp
+    }
+
+    const simpleUpdateStateHereEdit=(ncp,reg,titulo,c1,i,original,copy,redux)=>{
+      let cp=ncp
+      for(let po=0;po<c1?.length;po++){
+        if(po>=c1.length-1)
+          i[po]=undefined
+      }
+    let st=cp[c1[0]][i[0]]
+    for(let u1=1;u1<c1.length;u1++){
+      console.log("stverif",redux,st,c1,i,c1[u1])//,nameVar1,nameVar2,valueVar1,valueVar2)
+      if(st[c1[u1]]){
+        if(i[u1]!=undefined) 
+          st=st[c1[u1]][i[u1]]
+        else{
+          st[c1[u1]]=st[c1[u1]].map(x=>{
+            let nameVar1=redux["nameVar1"]
+            let valueVar1=redux["valueVar1"]
+            let nameVar2=redux["nameVar2"]
+            let valueVar2=redux["valueVar2"]
+            console.log("xverif",x,reg)
+            if(x?.["original"]?.[nameVar1]!=valueVar1 
+            || x?.["original"]?.[nameVar2]!=valueVar2)
+              return x
+            else 
+              return reg
+
+          })
+        }
+        
+      }
+    }
+    console.log("entro clusters",c1,i)
+    return cp
+  }
+    console.log("mtmroutesver",mtmRoutes,titulo,tableIndexes,parentId,indexes)
+  // console.log("respcatst",respCat)
   //console.log("parentId",parentId)
 
   /*const simpleUpdateState=(prods,indexPartials=0,indexArray=0,tit)=>{
@@ -424,7 +619,7 @@ const formatDate=(d,m,y)=>{
       if(fws[cf].relationship=="onetomany" ||
       fws[cf].relationship=="manytomany"){
         if(!isManyToMany)
-          if(products[indTable][fws[cf].name]?.length>0){
+          if(products?.[indTable]?.[fws?.[cf]?.name]?.length>0){
             return true
         }
       }
@@ -446,6 +641,40 @@ const formatDate=(d,m,y)=>{
     x.id==parentRelation)[0]
     otrotitulo=`mtm${parentCategory.name}${respCat.name}`
   }
+  const makeOtherMtmTable=(cp,id,otherId)=>{
+    console.log("parentdelete",{
+      mtm:`mtm${parentCategory.name}${respCat.name}`,
+      id,
+      otherId,
+      action:"DELETE"
+    })
+    dispatch({
+
+
+      type:types.ADD_INDEXES_TO_MTMRECORD,
+      payload:{
+        mtm:`mtm${parentCategory.name}${respCat.name}`,
+        id,
+        action:"DELETE",
+        otherId:otherId,
+        
+
+
+      }
+    })
+    dispatch({
+      type:types.ADD_INDEXES_TO_MTMRECORD,
+      payload:{
+        mtm:`mtm${respCat.name}${parentCategory.name}`,
+        id:otherId,
+        action:"DELETE",
+        otherId:id,
+        
+
+
+      }
+    })
+  }
 
   const updateClusters=(c1,i)=>{
   
@@ -456,13 +685,16 @@ const formatDate=(d,m,y)=>{
         if(st[c1[u1]]){
           if(i[u1]!=undefined) 
             st=st[c1[u1]][i[u1]]
-          else
+          else{
             st[c1[u1]]=st[c1[u1]].filter(x=>{
-              return x?.[nameVar1]!=valueVar1 
-              || x?.[nameVar2]!=valueVar2 
+              return x?.["original"][nameVar1]!=valueVar1 
+              || x?.["original"][nameVar2]!=valueVar2 
             })
+            
+          }
         }
       }
+      makeOtherMtmTable(cp,valueVar2,valueVar1)
       console.log("entro clusters",c1,i)
       return cp
     
@@ -496,8 +728,8 @@ const formatDate=(d,m,y)=>{
           
           const i=getIndexes(tableIndexes,p)
           //console.log("indices",ind)
-    
-            let us=simpleUpdateState(categoryProducts,0,0,titulo,
+            
+            let us=simpleUpdateState(categoryProducts,titulo,
               p,i,deleteId)
           //console.log("us",us)
             dispatch(setCategoryProducts(us))
@@ -511,6 +743,7 @@ const formatDate=(d,m,y)=>{
             path,true)
           const i=getIndexes(tableIndexes,c)
           console.log("path1",c,i)
+          makeOtherMtmTable(categoryProducts,valueVar2,valueVar1)
           /*if(c[c.length-2].startsWith("mtm")){
             pivoteTable=titulo
             otherPivoteTable=otrotitulo
@@ -527,9 +760,12 @@ const formatDate=(d,m,y)=>{
             categories,path,true)
           const i=getIndexesInverse(deleteRecord,pivoteTable,otherPivoteTable,y,tableIndexes)
           console.log("xxx",deleteRecord,y,i)*/
-
-          let r1=updateClusters(c,i)
-          dispatch(setCategoryProducts(r1))
+          //bilet r1=simpleUpdateStateHereDelete(c)
+          //let r1=updateClusters(c,i)
+          //bi
+          
+          
+          //dispatch(setCategoryProducts(r1))
 
         }
           
@@ -622,6 +858,8 @@ const formatDate=(d,m,y)=>{
         x.name==name)[0]
     }
     resultado.push(<p style={{marginTop:"10px",marginBottom:"10px"}}>{titulo}</p>)
+    resultado.push(<p>{segmentRoutes.map(x=>x)}</p>)
+    
     {isSonAndHasParent() &&
       resultado.push(<FormButton
       style={{
@@ -664,8 +902,12 @@ const formatDate=(d,m,y)=>{
 
         if(//products[0][h.name]!==undefined
           fieldsNotToDisplay[titulo]!==h.name){
-          camp.push(h.name)
-          return <th>{h.name}</th>
+            
+               if (!(h.dataType=="queryCategory" && h.relationship==null) || titulo.startsWith("otm")){
+                 camp.push(h.name)
+                 return <th>{h.name}</th>
+               }
+          
         }
       
       })
@@ -741,7 +983,16 @@ const formatDate=(d,m,y)=>{
         }
         //console.log("praw",products,camp)
         //for(let p in products){
+          let route
           for(let c in camp){//products[p]){
+          
+            if(isManyToMany /*&& (titulo=="mtmscmateriassccarreras"
+            || titulo=="mtmsccarrerasscmaterias")*/){
+              route=products[p]["original"]
+              console.log("atingen",products[p])
+            }
+            else 
+              route=products[p]
           /*let cc=categories.filter(v=>
             v.name==cname
           )*/
@@ -755,10 +1006,13 @@ const formatDate=(d,m,y)=>{
           
             if(fs.length==1){
               if(fs[0].relationship=="onetomany"){
+                // && Object.keys(route).length>0){
+                console.log("route00",route)
                 data.push(<td>one to many</td>)
-              }else if(fs[0].relationship=="manytomany"){
+              }else if(fs[0].relationship=="manytomany"){// && Object.keys(route).length>0){
                 if(fs[0].name!==fieldsNotToDisplay[titulo])
-                  data.push(<td>many to many</td>)
+                  
+                    data.push(<td>many to many</td>)
               }else if(fs[0].declaredType=="date"){
                 //if(producto[c]!==""){
               
@@ -766,7 +1020,7 @@ const formatDate=(d,m,y)=>{
                 //let nf=trDateMex(products[p][camp[c]])
                 //console.log("nf",nf)
                 //producto[c]=nf
-                let d=new Date(parseInt(products[p][camp[c]]))
+                let d=new Date(parseInt(route[camp[c]]))
                 let disp=""
                 if(d!="Invalid Date")
                   disp=formatDate(d.getDate(),(d.getMonth()+1),d.getFullYear())+" at "+formatHour(d.getHours(),d.getMinutes())
@@ -775,18 +1029,24 @@ const formatDate=(d,m,y)=>{
                 data.push(<td>{disp}</td>)
                 //}
               }else if(fs[0].dataType=="queryCategory" && fs[0].declaredType=="number"){
-                data.push(<td>{products[p][camp[c]]}</td>)
+                if(route?.[camp?.[c]]!=undefined)
+                data.push(<td>{route[camp[c]]}</td>)
               }else if(fs[0].dataType=="queryCategory"){
                 let x=`${camp[c]}ProductQuery`
                 console.log("imp",x,`${products[p][x]}`)
                 //data.push(<td>{products[p][`${products[p][camp[c]]}GlobalCatQuery`]}</td>)
                 //data.push(<td>{products[p][`${products[p][camp[c]]}FinalCatQuery`]}</td>)
-                data.push(<td>{products[p][x]}</td>)
-              }else { 
-                data.push(<td>{products[p][camp[c]]}</td>)
+                if(route?.[x]!=undefined)
+                data.push(<td>{route[x]}</td>)
+              }else {
+                //if(titulo=="mtmscprofesoresscmaterias") 
+                //console.log("chekjorge",route,camp[c],route[camp[c]])
+                //if(route?.[camp?.[c]])
+                  data.push(<td>{route?.[camp?.[c]]}</td>)
               }
             }else{
-              data.push(<td>{products[p][camp[c]]}</td>)
+              //if(route?.[camp?.[c]])
+                data.push(<td>{route?.[camp?.[c]]}</td>)
             }
           }
         //}
@@ -794,9 +1054,11 @@ const formatDate=(d,m,y)=>{
           
 
           
-          if(!hasSons(p)){
-          data.push(<td><IoIosRemoveCircleOutline
-            onClick={()=>{
+          
+          if(typeof route=="object" && Object.keys(route).length>0){
+            if(!hasSons(p)){
+              data.push(<td><IoIosRemoveCircleOutline
+              onClick={()=>{
               if(isManyToMany){
                 const pr=categories.filter(x=>
                   x.id==parentRelation)[0]
@@ -804,19 +1066,19 @@ const formatDate=(d,m,y)=>{
                 const f2=`mtm${respCat.name}${pr.name}Id`
                 console.log("paramsdelmtm",{
                   [f1]: parentCatId,
-                  [f2]: products[p]["id"]
+                  [f2]: route["id"]//products[p]["id"]
                 })
-                deleteId=products[p]["id"]
-                deleteRecord=products[p]
+                deleteId=route["id"]//products[p]["id"]
+                deleteRecord=route//products[p]
                 nameVar1=f1
                 valueVar1=parentCatId
                 nameVar2=f2
-                valueVar2=products[p]["id"]
+                valueVar2=route["id"]//products[p]["id"]
 
                 delete2({
                   variables:{
                     [f1]: parentCatId,
-                    [f2]: products[p]["id"]
+                    [f2]: route["id"]//products[p]["id"]
                   }
                 })
               }else{
@@ -835,8 +1097,9 @@ const formatDate=(d,m,y)=>{
         }else{
           data.push(<td></td>)
         }
+      }
           
-        
+        if(typeof route=="object" && Object.keys(route).length>0)
         data.push(<td><BsPencilFill
         onClick={()=>{
           if(!isManyToMany){
@@ -867,7 +1130,7 @@ const formatDate=(d,m,y)=>{
             
             const keysEditRecord={
               [f1]: parentCatId,
-              [f2]: products[p]["id"]
+              [f2]: route["id"]
             }
             
             let curCatModified={...curCat}
@@ -887,12 +1150,13 @@ const formatDate=(d,m,y)=>{
         }}
         /></td>)
         }
-        
+       
         acc.push(<tr>{data}</tr>)
       }
-      
-      resultado.push(<table>{header}<tbody>{acc}</tbody></table>)
-      return resultado
+      if(Object.keys(acc).length>0){
+        resultado.push(<table>{header}<tbody>{acc}</tbody></table>)
+        return resultado
+      }
     }else{
       return( 
         <div>

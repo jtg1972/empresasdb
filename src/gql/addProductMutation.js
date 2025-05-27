@@ -48,7 +48,11 @@ export default (category,categories,mtm)=>{
       }else if(argsf[f].relationship=="manytomany"){
         let oc=categories.filter(c=>c.id==argsf[f].relationCategory)
         let na=`mtm${oc[0].name}${category.name}`
-        campos.push(`${na}{id}`)
+        /*if(na!="mtmscmateriassccarreras" && na!="mtmsccarrerasscmaterias"){
+          campos.push(`${na}{id}`)
+        }else{*/
+          campos.push(`${na}{original{id}}`)
+        //}
       }
     }else if(argsf[f].dataType=="queryCategory"){
       campos.push(`${argsf[f].name}GlobalCatQuery`)

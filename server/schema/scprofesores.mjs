@@ -21,7 +21,8 @@ id:Int
 mtmscprofesoresscmaterias:[datamtmscprofesoresscmaterias]
 mtmscprofesoresscmateriasId:Int
 mtmscmateriasscprofesoresId:Int
-                },type scprofesores{
+                }
+    type scprofesores{
               
               id:Int
 nombre:String

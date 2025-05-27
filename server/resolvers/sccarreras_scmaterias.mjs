@@ -8,7 +8,7 @@
                 }
               },Mutation:{
                 
-            getonedatamtmsccarrerasscmaterias:async(parent,args,{db})=>{
+            /*getonedatamtmsccarrerasscmaterias:async(parent,args,{db})=>{
               try{
                 let product=await db.sccarreras_scmaterias.findAll({
                   where:{
@@ -49,9 +49,71 @@
               }catch(e){
                 console.log("error",e)
               }
-            },
+            },*/
             getdatamtmsccarrerasscmaterias:async(parent,args,{db})=>{
-              try{
+              const x=await db.sccarreras_scmaterias.findAll({
+                where:{mtmscmateriassccarrerasId:args.mtmscmateriassccarrerasId},
+                raw:true
+              })
+              const cd=x.map(c=>c["mtmsccarrerasscmateriasId"])
+              console.log("cdddd",cd)
+              let recs=await db.sccarreras.findAll({where:{id:{[Op.in]:cd}},raw:true})
+              recs=recs.map(r=>{
+                let nf="mtmsccarrerasscmateriasId"
+                const di=x.filter(u=>u[nf]==r.id)[0]
+                return {...r,...di}
+              })
+              return recs
+              /*try{
+                let products=await db.sccarreras_scmaterias.findAll({
+                  where:{
+                    mtmscmateriassccarrerasId:args.mtmscmateriassccarrerasId
+                  },raw:true
+
+                })
+                let oneside=await db.scmaterias.findByPk(args.mtmscmateriassccarrerasId)
+                let cids=products.map(c=>c.mtmsccarrerasscmateriasId)
+                let respProds=await db.sccarreras.findAll({
+                  where:{id:{[Op.in]:cids}},
+                  raw:true
+                })
+                let final=products.map(r=>{
+                  let p=respProds.filter(t=>t.id==r.mtmsccarrerasscmateriasId)[0]
+                  return {
+                    original:{
+                      data:{...r,...p},
+                      key:"mtmsccarrerasscmaterias"
+                    },
+                    copy:{
+                      data:{
+                        ...oneside,...p
+                      },
+                      key:"mtmscmateriassccarreras"
+                    }
+                  }
+                })
+                return final
+              }catch(e){
+                console.log("error",e)
+              }*/
+                
+
+            },
+         /*getdatamtmsccarrerasscmaterias:async(parent,args,{db})=>{
+              const x=await db.sccarreras_scmaterias.findAll({
+                where:{mtmsccarrerasscmateriasId:args.mtmsc},
+                raw:true
+              })
+              const cd=x.map(c=>c["mtmscmateriassccarrerasId"])
+              console.log("cdddd",cd)
+              let recs=await db.scmaterias.findAll({where:{id:{[Op.in]:cd}},raw:true})
+              recs=recs.map(r=>{
+                let nf="mtmscmateriassccarrerasId"
+                const di=x.filter(u=>u[nf]==r.id)[0]
+                return {...r,...di}
+              })
+              return recs
+              /*try{
                 let products=await db.sccarreras_scmaterias.findAll({
                   where:{
                     mtmscmateriassccarrerasId:args.mtmscmateriassccarrerasId
@@ -73,8 +135,22 @@
               }
                 
 
-            },
+            },*/
             getdatamtmscmateriassccarreras:async(parent,args,{db})=>{
+              const x=await db.sccarreras_scmaterias.findAll({
+                where:{mtmsccarrerasscmateriasId:args.sccarrerasscmateriasId},
+                raw:true
+              })
+              const cd=x.map(c=>c["mtmscmateriassccarrerasId"])
+              console.log("cdddd",cd)
+              let recs=await db.scmaterias.findAll({where:{id:{[Op.in]:cd}},raw:true})
+              recs=recs.map(r=>{
+                let nf="mtmscmateriassccarrerasId"
+                const di=x.filter(u=>u[nf]==r.id)[0]
+                return {...r,...di}
+              })
+              return recs
+              /*
               try{
                 let products=await db.sccarreras_scmaterias.findAll({
                   where:{
@@ -82,6 +158,12 @@
                   },raw:true
 
                 })
+                let oneside=await db.sccarreras.findAll({
+                  where:{
+                    id:args.mtmsccarrerasscmateriasId
+                  },raw:true
+                })
+                
                 let cids=products.map(c=>c.mtmscmateriassccarrerasId)
                 let respProds=await db.scmaterias.findAll({
                   where:{id:{[Op.in]:cids}},
@@ -89,12 +171,23 @@
                 })
                 let final=products.map(r=>{
                   let p=respProds.filter(t=>t.id==r.mtmscmateriassccarrerasId)[0]
-                  return {...r,...p}
+                  return {original:{
+                      ...r,...p,
+                    
+                    key:"mtmscmateriassccarreras"
+                  },
+                  copy:{
+                    
+                      ...oneside[0],...p,
+                    
+                    key:"mtmsccarrerasscmaterias"
+                  }
+                }
                 })
                 return final
               }catch(e){
                 console.log("error",e)
-              }
+              }*/
                 
 
             },
@@ -110,13 +203,41 @@
                   },
                   raw:true
                 })
-                return {...alumno[0],...product}
+                let profesor=await db.scmaterias.findAll({
+                  where:{
+                    id:args.mtmscmateriassccarrerasId
+                  },
+                  raw:true
+                })
+                console.log("resyovoy",product,alumno,profesor)
+                return {original:{...alumno[0],...product,key:"mtmsccarrerasscmaterias"},
+                copy:{...profesor[0],...product,key:"mtmscmateriassccarreras"}}
               }catch(e){
                 console.log("error",e)
               }
-            },
+            }
+            /*createdatamtmsccarrerasscmaterias:async(parent,args,{db})=>{
+              try{
+
+                console.log("argsargsargs111",args)
+                let product=await db.sccarreras_scmaterias.create(args)
+                product=product.dataValues
+                let alumno=await db.sccarreras.findAll({
+                  where:{
+                    id:args.mtmsccarrerasscmateriasId
+                  },
+                  raw:true
+                })
+                let profesor=await db.scmaterias.findByPk(args.mtmscmateriassccarrerasId)
+                return {original:{...alumno[0],...product,key:"mtmsccarrerasscmaterias"},
+                copy:{...profesor,...product,key:"mtmscmateriassccarreras"}}
+              }catch(e){
+                console.log("error",e)
+              }
+            }*/,
             createdatamtmscmateriassccarreras:async(parent,args,{db})=>{
               try{
+                
                 let product=await db.sccarreras_scmaterias.create(args)
                 product=product.dataValues
                 let grupo=await db.scmaterias.findAll({
@@ -125,7 +246,17 @@
                   },
                   raw:true
                 })
-                return {...grupo[0],...product}
+                let profesor=await db.sccarreras.findAll({
+                  where:{
+                    id:args.mtmsccarrerasscmateriasId
+                  },
+                  raw:true
+                })
+                console.log("resyovoy",product,grupo,profesor)
+
+                return {original:{...grupo[0],...product,key:"mtmscmateriassccarreras"},
+                copy:{...profesor[0],...product,key:"mtmsccarrerasscmaterias"}}
+
               }catch(e){
                 console.log("error",e)
               }
@@ -154,9 +285,28 @@ semestre:args.semestre,
                 where:{id:args.mtmsccarrerasscmateriasId},
                 raw:true
               })
+              let r3=await db.scmaterias.findAll({
+                where:{id:args.mtmscmateriassccarrerasId},
+                raw:true
+              })
               r1=r1[0]
-              return {...r1,...r2}
-            },
+              r3=r3[0]
+              return {
+              original:{
+                
+                  ...r1,
+                  ...r2,
+                
+                key:"mtmsccarrerasscmaterias"
+              },
+              copy:{
+                
+                  ...r3,
+                  ...r2,
+                
+                key:"mtmscmateriassccarreras"
+              }
+            }},
             editdatamtmscmateriassccarreras:async(parent,args,{db})=>{
               let rec=await db.sccarreras_scmaterias.update({
                 
@@ -176,15 +326,32 @@ semestre:args.semestre,
                 },
                 raw:true
               })
+              
               r2=r2[0]
               
               let r1=await db.scmaterias.findAll({
                 where:{id:args.mtmscmateriassccarrerasId},
                 raw:true
               })
+              let r3=await db.sccarreras.findAll({
+                where:{id:args.mtmsccarrerasscmateriasId},
+                raw:true
+              })
               r1=r1[0]
-              return {...r1,...r2}
-            },
+              r3=r3[0]
+              return {
+              original:{
+                
+                  ...r1,...r2,
+                
+                key:"mtmscmateriascarreras"
+              },
+              copy:{
+                  ...r3,...r2,
+                
+                key:"mtmsccarrerasscmaterias"
+              }
+            }},
             
                 createsccarreras_scmaterias:async(parent,args,{db})=>{const product=await db.sccarreras_scmaterias.create(args)
                   return product

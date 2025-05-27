@@ -21,7 +21,7 @@ import { ViewMainWhereCondition } from '../../components/ViewMainWhereCondition'
 import { ViewCompositeFieldDialog } from '../../components/ViewCompositeFieldDialog'
 import { SubsetDialog } from '../../components/SubsetDialog'
 import { SortCriteriaDialog } from '../../components/SortCriteriaDialog'
-import { FcAnswers } from 'react-icons/fc'
+import { FcAnswers, FcNightLandscape } from 'react-icons/fc'
 import { updateLocale } from 'moment'
 import { VariablesAreInputTypesRule } from 'graphql'
 import { isInlineFragment, resultKeyNameFromField } from '@apollo/client/utilities'
@@ -32,6 +32,7 @@ import { GetSubsetsContribution } from '../../components/GetSubsetsContributions
 import { getSubsetsData } from '../../components/GetSubSetsAllTables/getSubsetsData'
 import { getSubsetsCont } from '../../components/GetSubsetsContributions/getSubsetsCont'
 import { SubsetContributionsTable } from '../../components/SubsetsContributionsTable'
+import { argsToArgsConfig } from 'graphql/type/definition'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categories:categories.categories,
@@ -183,8 +184,9 @@ const Reports=()=>{
   const [parentIdentifiers,setParentIdentifiers]=useState({})
   const [finalObjectToSubsets,setFinalObjectToSubsets]=useState({})
   const [subsetsData,setSubsetsData]=useState({})
+  const [mtmChoices,setMtmChoices]=useState({})
   let parentCategories={}
-
+  let displayedMtm=[]
   //const [parentCategories,setParentCategories]=useState({})
   useEffect(()=>{
     setShowFields(false)
@@ -216,7 +218,38 @@ const Reports=()=>{
 
   }
 
-  const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false,dcf={})=>{
+  const clearMtmChoicesSons=(name,padre,sonMtmChoices)=>{
+    sonMtmChoices={...sonMtmChoices,[name]:{normal:[],compositeFields:[]}}
+    return sonMtmChoices
+  }
+
+  const checkReviewMtmData=(e,name1,otm=false,padre,nameMtm,mainCat=false,declaredType,otmdestiny="",cf=false,dcf={},father,son,dataType)=>{
+    if(e.target.checked==true){
+      
+      if(cf==true){
+        setMtmChoices(j=>{
+          console.log("mtmdata",{...j,[nameMtm]:{...j[nameMtm],father,son,compositeFields:[...j[nameMtm]["compositeFields"],dcf]}})
+          return {...j,[nameMtm]:{...j[nameMtm],father,son,compositeFields:[...j[nameMtm]["compositeFields"],dcf]}}
+        })
+      }else 
+        setMtmChoices(j=>{
+          console.log("mtmdata",{...j,[nameMtm]:{...j[nameMtm],father,son,normal:[...j[nameMtm]["normal"],{name1,type:declaredType}]}})
+          return ({...j,[nameMtm]:{...j[nameMtm],father,son,normal:[...j[nameMtm]["normal"],{name1,type:declaredType,dataType}]}})
+        })
+    }else{
+      if(cf==true)
+        setMtmChoices(j=>{
+          console.log("mtmdata",{...j,[nameMtm]:{...j[nameMtm],father,son,compositeFields:[...j[nameMtm]["compositeFields"].filter(x=>x.name1!=name1)]}})
+          return ({...j,[nameMtm]:{...j[nameMtm],father,soncompositeFields:[...j[nameMtm]["compositeFields"].filter(x=>x.name1!=name1)]}})
+        })
+      else
+        setMtmChoices(e=>({...e,[nameMtm]:{...e[nameMtm],father,son,normal:[...e[nameMtm]["normal"].filter(u=>u.name1!==name1)]}}))
+    }
+  }
+
+
+
+  const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false,dcf={},isMtm=false)=>{
     let pc=parentCategories[name1]
     if(parentIdentifiers?.[pc]?.["fieldCompOrNormalType"]=="normal" ||
     parentIdentifiers?.[pc]?.["fieldCompOrNormalType"]=="composite")
@@ -229,33 +262,49 @@ const Reports=()=>{
       clearOtmChoicesSons(name1,padre,{...otmChoices})
       setOtmChoices(sonOtmChoices)
     }
+    let sonMtmChoices
+    if(isMtm && !e.target.checked){
+      sonMtmChoices=mtmChoices
+      clearMtmChoicesSons(name1,padre,{...sonMtmChoices})
+      setMtmChoices(sonMtmChoices)
+    }
     if(e.target.checked){
       ////console.log("otmchoices",otm,mainCat)
       ////console.log("arr",[...fieldsShown,name1])
-      if(otm==true)
+      if(otm==true || isMtm==true)
         setFieldsShown(x=>([...x,name1]))
       if(mainCat){
         setAllCompFieldsCluster(compFieldsArray[`getData${currentCategory.name}`])
 
         const n=`getData${padre}`
-        let  nu={[n]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]}}
+        let  nu={[n]:{otm:[],mtm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]}}
         if(firstCatNormalFields[n]==undefined)
           setFirstCatNormalFields(e=>({...e,...nu}))
         if(otm){
           setFirstCatNormalFields(o=>({...o,[n]:{...o[n],otm:[...o[n]["otm"],name1]}}))
-          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]}}))
+          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[],mtm:[]}}))
         }else if(otmdestiny=="otmdestiny"){
           setFirstCatNormalFields(o=>({...o,[n]:{...o[n],otmdestiny:[...o[n]["otmdestiny"],name1]}}))
 
 
-          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]}}))
+          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[],mtm:[]}}))
         }else if(cf==true){
           setFirstCatNormalFields(o=>({...o,[n]:{...o[n],compositeFields:[...o[n]["compositeFields"],dcf]}}))
+        }else if(isMtm==true){
+          setFirstCatNormalFields(o=>{
+            console.log("verstatefcnm",{...o,[n]:{...o[n],mtm:[...o[n]["mtm"],name1]}})
+            return ({...o,[n]:{...o[n],mtm:[...o[n]["mtm"],name1]}})
+          })
+          setMtmChoices(e=>{
+            console.log("verestate",{...e,[name1]:{normal:[],compositeFields:[]}})
+            return ({...e,[name1]:{normal:[],compositeFields:[]}})
+          })
         }
         else{
           //setFirstCatNormalFields(o=>({...o,[n]:{...o[n],normal:[...o[n]["normal"],name1]}}))
           setFirstCatNormalFields(o=>({...o,[n]:{...o[n],normal:[...o[n]["normal"],{type:declaredType,name1}]}}))
         }
+        console.log("")
       }
       if(mainCat==false){
         setAllCompFieldsCluster(compFieldsArray[nameOtm])
@@ -263,13 +312,22 @@ const Reports=()=>{
         if(otm){  
           
           
-          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]},[nameOtm]:{...e[nameOtm],otm:[...e[nameOtm]["otm"],name1]}}))
+          setOtmChoices(e=>({...e,[name1]:{otm:[],mtm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]},[nameOtm]:{...e[nameOtm],otm:[...e[nameOtm]["otm"],name1]}}))
         
         }else if(otmdestiny=="otmdestiny"){
           setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],otmdestiny:[...e[nameOtm]["otmdestiny"],name1]}}))
         }else if(cf==true){
           setOtmChoices(o=>({...o,[nameOtm]:{...o[nameOtm],compositeFields:[...o[nameOtm]["compositeFields"],dcf]}}))
-        }else{
+        }else if(isMtm){
+          setOtmChoices(o=>{
+            console.log("verstatefcnm",{...o,[nameOtm]:{...o[nameOtm],mtm:[...o[nameOtm]["mtm"],name1]}})
+            return ({...o,[nameOtm]:{...o[nameOtm],mtm:[...o[nameOtm]["mtm"],name1]}})
+          })
+          setMtmChoices(e=>({...e,[name1]:{normal:[],compositeFields:[]}}))
+        }
+        
+        else{
+          
           setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"],{name1,type:declaredType}]}}))
         }
       }
@@ -295,7 +353,13 @@ const Reports=()=>{
             e={...e,[n]:{...e[n],compositeFields:[...e[n]["compositeFields"].filter(x=>x.name1!==name1)]}}
             return e
           })
-        }else{
+        }else if(isMtm){
+          setFirstCatNormalFields(e=>{
+            e={...e,[n]:{...e[n],mtm:[...e[n]["mtm"].filter(x=>x!==name1)]}}
+            return e
+          })
+        }
+        else{
           setFirstCatNormalFields(e=>{
             e={...e,[n]:{...e[n],normal:[...e[n]["normal"].filter(x=>x.name1!==name1)]}}
             return e
@@ -316,6 +380,11 @@ const Reports=()=>{
             e={...e,[nameOtm]:{...e[nameOtm],compositeFields:[...e[nameOtm]["compositeFields"].filter(x=>x.name1!==name1)]}}
             return e
           })
+        }else if(isMtm){  
+          
+          
+          setOtmChoices(e=>({...e,[name1]:{normal:[],otm:[],otmdestiny:[]},[nameOtm]:{...e[nameOtm],mtm:[...e[nameOtm]["mtm"].filter(u=>u!==name1)]}}))
+        
         }else{
           setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"].filter(u=>u.name1!==name1)]}}))
         }
@@ -450,11 +519,17 @@ const Reports=()=>{
   }
   
   const displayAncestorsCats=(trackCatPath,ntm="")=>{
+    console.log("trackCatPath",trackCatPath)
     let output=[]
     let ns=otmChoicesOrder
     
     
     for(let l in trackCatPath){
+      let correctOtmMtm
+      if(otmChoices[trackCatPath[trackCatPath.length-1]])
+        correctOtmMtm=otmChoices[trackCatPath[trackCatPath.length-1]]
+      else
+        correctOtmMtm=mtmChoices[trackCatPath[trackCatPath.length-1]]
 
       if(l<trackCatPath.length-1){
         if(partialOtmChoicesStatistics[trackCatPath[l]]==undefined)
@@ -495,9 +570,10 @@ const Reports=()=>{
             
               
               
-          {otmChoices[trackCatPath[trackCatPath.length-1]]?.normal.map(x=>{
+          {/*otmChoices[trackCatPath[trackCatPath.length-1]]*/
+          correctOtmMtm?.normal.map(x=>{
 
-            if(x.type=="number"){
+            if(x.type=="number" && x.dataType!="queryCategory"){
               
               return <div><span style={{marginRight:"10px"}}>{x.name1}total</span>
              
@@ -508,7 +584,19 @@ const Reports=()=>{
                 
                 console.log("everi",otmChoicesStatistics)
 
-              }}/> {x.name1}total
+              }}/> {x.name1}total <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  //console.log("bit1",trackCatPath[l],ntm,`${x.name1}total`)
+                  toggleOpenWhereStatementNumberDialog({
+                    categoryName:trackCatPath[l],
+                    fieldName:`${x.name1}total`,
+                    segment:ntm
+                  })
+                }
+              }>xAdd where condition</a> 
+            {displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}
          
               <br/><input type="checkbox" 
               onChange={e=>{
@@ -624,7 +712,7 @@ const Reports=()=>{
               }>xAdd where condition</a><br/>
               {displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedaximum`,ntm)}
               
-              <a  
+              {/*<a  
               style={{textDecoration:"underline"}} onClick={
                 (e)=>{
                   e.preventDefault()
@@ -636,12 +724,13 @@ const Reports=()=>{
                   })
                 }
               }>xAdd where condition</a> 
-              {displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}
+            {displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}*/}
               </div>
           
       }})}
           
-          {otmChoices[trackCatPath[trackCatPath.length-1]]?.compositeFields.map(x=>{
+          {/*otmChoices[trackCatPath[trackCatPath.length-1]]?*/
+          correctOtmMtm.compositeFields.map(x=>{
             if(x.type=="number"){
               
 
@@ -677,9 +766,21 @@ const Reports=()=>{
                 
                 console.log("everi",otmChoicesStatistics)
 
-              }}/> {x.name1}total
+              }}/> {x.name1}total <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  //console.log("bit1",trackCatPath[l],ntm,`${x.name1}total`)
+                  toggleOpenWhereStatementNumberDialog({
+                  categoryName:trackCatPath[l],
+                  fieldName:`${x.name1}total`,
+                  segment:ntm
+                })
+              }}>xAdd where condition</a> 
+              {displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}
+              
          
-            <br/><input type="checkbox"
+            <input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
               doWorkSort(e.target.checked,`%${x.name1}`,trackCatPath[l],ntm,"number")
@@ -714,8 +815,8 @@ const Reports=()=>{
                   segment:ntm
                 })
               }
-            }>xAdd where condition</a>
-            <br/>{displayWhereClauses(trackCatPath[l],`${x.name1}Media`,ntm)}
+            }>xAdd where condition</a><br/>
+            {displayWhereClauses(trackCatPath[l],`${x.name1}Media`,ntm)}
             <input type="checkbox"
             onChange={e=>{
               console.log("ever",e)
@@ -776,7 +877,7 @@ const Reports=()=>{
               
               console.log("everi",otmChoicesStatistics) 
             }}
-            /> Maximum <br/><a  
+            /> Maximum <a  
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
                 e.preventDefault()
@@ -789,7 +890,7 @@ const Reports=()=>{
               }
             }>xAdd where condition</a>
             {displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedmaximum`,ntm)}            
-            <br/><a  
+            <br/>{/*<a  
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
                 e.preventDefault()
@@ -800,7 +901,7 @@ const Reports=()=>{
                 segment:ntm
               })
             }}>xAdd where condition</a> 
-            {displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}
+          {displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}*/}
             </div>
             
       }})}
@@ -861,6 +962,318 @@ const Reports=()=>{
   const displayParentIdentifierNull=(category,segment,field,type)=>{
     doWorkSort(false,"parentIdentifier",segment,segment,type) 
     return null
+
+  }
+  
+  const displayMenuMtm=(field,cat,nameOtm,mainCat,trackCatPath)=>{
+    let res=cat.fields.filter(x=>x.name==field)[0]
+    let otmSide=categories.filter(x=>x.id==res.relationCategory)[0]
+    let tableName
+    //console.log("field cat",field,cat,cat.name,cat.fields.filter(x=>x.name==field),fields)
+    if(cat.name>otmSide.name)
+      tableName=`${otmSide.name}_${cat.name}`
+    else
+      tableName=`${cat.name}_${otmSide.name}`
+
+    let otmSideFields=otmSide.fields.filter(x=>{
+      if(x.declaredType=="string" || x.declaredType=="number")
+        return true
+    })
+    let son=`mtm${otmSide.name}${cat.name}Id`
+    let father=`mtm${cat.name}${otmSide.name}Id`
+    if(pivote==undefined)
+      pivote={}
+    if(pivote[field]==undefined)
+      pivote={...pivote,[field]:[]}
+    let fields=[...otmSideFields]
+    let mtmData=categories.filter(x=>x.name==tableName)[0].fields
+    fields=[...fields,...mtmData]
+    console.log("field cat",field,cat,cat.name,cat.fields.filter(x=>x.name==field),fields)
+    console.log("tcp",trackCatPath)
+    return <div style={{margin:"0",marginLeft:"10px"}}>
+      {fields.map(c=>{
+        if(c.declaredType=="number" || c.declaredType=="date" ||
+        c.declaredType=="string")
+          pivote={...pivote,[field]:[...pivote[field],{name1:c.name,type:c.declaredType}]}
+      return (c.declaredType=="date" &&
+        <p>
+          <input type="checkbox" 
+          style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
+          onChange={(e)=>{
+  
+              doWorkSort(e.target.checked,c.name,field,field,"number")
+  
+
+            checkReviewMtmData(e,c.name,false,cat.name,field/*nameOtm*/,mainCat,c.declaredType,c.relationship,true,null,father,son,c.dataType)
+          }}/>
+    
+          <span style={{marginRight:"10px"}}>{c.name}Date</span>
+        
+          {/*(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
+          isReadyToWhere(nameOtm,c.name,false)) &&*/ 
+          isReadyToWhereMtm(field,c.name,false) &&
+          <a  
+          style={{textDecoration:"underline"}} 
+          onClick={(e)=>{
+            e.preventDefault()
+            /*if(nameOtm==""){
+              toggleOpenWhereStatementDateDialog({
+                categoryName:`getData${currentCategory.name}`,
+                fieldName:c.name,
+                segment:`getData${currentCategory.name}`,
+              })
+        
+            }else{*/
+              toggleOpenWhereStatementDateDialog({
+                categoryName:field,
+                fieldName:c.name,
+                segment:field
+              })
+            //}
+          }}>Add where condition
+          </a>
+          }
+
+          {c.name!==`${nameOtm}Id` && displayWhereClauses(nameOtm,c.name)} 
+        </p>) || (c.declaredType=="number" &&
+      <p style={{marginBottom:"0px"}}>
+        <input type="checkbox" 
+    style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
+    onChange={(e)=>{
+      
+        doWorkSort(e.target.checked,c.name,field,field,"number")
+
+
+      checkReviewMtmData(e,c.name,false,cat.name,field/*nameOtm*/,mainCat,c.declaredType,c.relationship,null,null,father,son,c.dataType)
+    }}/>
+    
+        <span style={{marginRight:"10px"}}>{c.name}Number</span>
+        
+        {/*(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
+        isReadyToWhere(nameOtm,c.name,false)) && */
+        isReadyToWhereMtm(field,c.name,false) && <a  
+      style={{textDecoration:"underline"}} onClick={
+        (e)=>{
+          e.preventDefault()
+          /*if(nameOtm==""){
+              toggleOpenWhereStatementNumberDialog({
+                categoryName:field,//`getData${currentCategory.name}`,
+                fieldName:c.name,
+                segment:field//</p>`getData${currentCategory.name}`,
+              })
+        
+          }else{*/
+            toggleOpenWhereStatementNumberDialog({
+              categoryName:field,//nameOtm,
+              fieldName:c.name,
+              segment:field//nameOtm
+            })
+          //}
+        }
+      }>Add where condition</a>}
+
+      {c.name!==`${nameOtm}Id` && displayWhereClauses(nameOtm,c.name)}
+      </p>
+    ) || (c.declaredType=="string" &&
+      <p style={{marginBottom:"0px"}}>
+        <input type="checkbox" 
+        style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
+         onChange={(e)=>{
+          if(nameOtm=="")
+            doWorkSort(e.target.checked,c.name,`getData${currentCategory.name}`,`getData${currentCategory.name}`,"string")
+          else
+            doWorkSort(e.target.checked,c.name,nameOtm,nameOtm,"string")
+          checkReviewMtmData(e,c.name,false,cat.name,field/*nameOtm*/,mainCat,c.declaredType,c.relationship,null,null,father,son,c.dataType)
+          }}/>
+    
+        <span style={{marginRight:"10px"}}>{c.name}String</span>
+        {isReadyToWhereMtm(field,c.name,false) &&
+        <a 
+        style={{textDecoration:"underline",color:"white"}} onClick={
+        (e)=>{
+          e.preventDefault()
+          if(nameOtm==""){
+              toggleOpenWhereStatementStringDialog({
+                categoryName:field,//`getData${currentCategory.name}`,
+                fieldName:c.name,
+                segment:field//`getData${currentCategory.name}`
+              })
+        
+          }else{
+            toggleOpenWhereStatementStringDialog({
+              categoryName:field,//nameOtm,
+              fieldName:c.name,
+              segment:field//nameOtm
+            })
+          }
+        }}>Add where condition</a>}<br/>
+        
+        
+        {c.name!==`${nameOtm}Id` && displayWhereClauses(nameOtm,c.name)}
+        </p>
+    )
+    
+    })}
+    
+    {displayAncestorsCats(trackCatPath,field,field)}
+    
+        <a style={{textDecoration:"underline"}}
+        onClick={e=>{
+          e.preventDefault()
+          toggleOpenWhereSelectMain({
+            categoryName:field,
+            fieldName:"hybrid",
+            segment:"hybrid"
+          })
+          
+          }
+        }>Add main where condition</a><br/>
+        <p onClick={()=>toggleOpenViewMainWhereConditionDialog({categoryName:field})}></p>
+        {(conditionsWhere[field]?.["main"]==undefined || typeof conditionsWhere[field]?.["main"]!=="object")?<p>none</p>:
+      <p onClick={()=>toggleOpenViewMainWhereConditionDialog({categoryName:field,
+        segment:conditionsWhere[field]?.["main"]?.["segment"],
+        field:conditionsWhere[field]?.["main"]?.["field"]})}>{conditionsWhere[field]?.["main"]?.["rule"]}</p>}
+        <a style={{textDecoration:"underline"}}
+        onClick={e=>{
+          e.preventDefault()
+          toggleOpenWhereStatementHybridDialog({
+            categoryName:field,
+            fieldName:"hybrid",
+            segment:"hybrid"
+          })
+          }
+        }
+        >Add multiple field where condition</a>
+        {displayWhereClauses(field,"hybrid","hybrid")}
+        <a style={{textDecoration:"underline",display:"inline"}}
+        onClick={e=>{
+          e.preventDefault()
+          toggleOpenSortCriteriaDialog({categoryName:field,otmChoicesSort:otmChoicesOrder[field],sortRules:sortRules,setSortRules:setSortRules})
+        }}>Add Order Criteria</a>
+
+<FormButton style={{
+        textAlign:"left",
+        textDecoration:"underline",
+        marginLeft:0,
+        paddingLeft:0
+      }} onClick={()=>{
+        ////console.log("click",otmChoices[name]["normal"])
+        setOtmCategoryFields(pivote[field])
+        toggleCompositeFieldDialog(field)
+      }}>Add composite field</FormButton>
+      {compFieldsArray[field]?.map(d=>{
+          return <>
+          {d.type=="date" && /*<p>
+              <input type="checkbox"/> {d.name1}
+            </p>*/
+            <p><input type="checkbox" 
+            style={{marginRight:"5px", color:"white"}}
+            onChange={(e)=>{
+              //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
+              doWorkSort(e.target.checked,d.name1,field,field,"number")
+
+              checkReviewMtmData(e,d.name1,false,"",field,false,true,"",true,d,father,son,d.dataType)
+            }}
+            />
+            <a style={{color:"yellow", marginRight:"10px"}}
+            onClick={()=>{
+              toggleOpenViewCompositeFieldDialog({specificOtmName:field,compositeFieldName:d.name1})
+            }}>{d.name1}Number</a>
+            {isReadyToWhereMtm(field,d.name1,true) && <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                toggleOpenWhereStatementDateDialog({
+                  fieldName:d.name1,
+                  categoryName:field,
+                  segment:field
+                })
+              }
+            }>Add where condition</a>
+            }
+            x
+            {displayWhereClauses(field,d.name1)}
+            </p>
+            
+            
+          
+          }
+
+          {d.type=="number" && <p>
+
+          
+          <input type="checkbox" 
+            style={{marginRight:"5px", color:"white"}}
+            onChange={(e)=>{
+              //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
+              doWorkSort(e.target.checked,d.name1,field,field,"number")
+
+              checkReviewMtmData(e,d.name1,false,"",field,false,true,"",true,d,father,son,displayCategoryHeaders.dataType)
+            }}
+            />
+            <a style={{color:"yellow", marginRight:"10px"}}
+            onClick={()=>{
+              toggleOpenViewCompositeFieldDialog({specificOtmName:field,compositeFieldName:d.name1})
+            }}>{d.name1}Number</a>
+            {isReadyToWhereMtm(field,d.name1,true) && <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                toggleOpenWhereStatementNumberDialog({
+                  fieldName:d.name1,
+                  categoryName:field,
+                  segment:field
+                })
+              }
+            }>Add where condition</a>
+            }
+            x
+            {displayWhereClauses(field,d.name1)}
+            </p>
+            
+            
+            
+        }
+        
+        {d.type=="string" && <p>
+
+          
+        <input type="checkbox" 
+          style={{marginRight:"5px", color:"white"}}
+          onChange={(e)=>{
+            //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
+            doWorkSort(e.target.checked,d.name1,field,field,"string")
+
+            checkReviewMtmData(e,d.name1,false,"",field,false,true,"",true,d,father,son,d.dataType)
+          }}
+          />
+          <a style={{color:"yellow",marginRight:"10px"}}
+             onClick={()=>{
+               toggleOpenViewCompositeFieldDialog({specificOtmName:field,compositeFieldName:d.name1})
+          }}>{d.name1}String</a>
+          {isReadyToWhere(field,d.name1,true) && <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                
+                toggleOpenWhereStatementStringDialog({categoryName:field,
+                fieldName:d.name1,
+                segment:field})
+              }
+            }>Add where condition</a>
+          }
+          x
+          {displayWhereClauses(field,d.name1)}
+          </p>
+          
+}</>})}
+    
+      
+      
+    
+    </div>
+
+    
 
   }
 
@@ -1060,7 +1473,7 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
         paddingLeft:0
       }} onClick={()=>{
         ////console.log("click")
-        otmCategoryFields(pivote[name])
+        setOtmCategoryFields(pivote[name])
 
         toggleOtmIdFieldsDialog(name)
       }}>Add field to identify parent in child relationships</FormButton>
@@ -1072,6 +1485,23 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
   }
 
 let pivote={}
+
+const isReadyToWhereMtm=(otm,busca,comp=false)=>{
+  let res=[]
+  if(comp==false)
+    return mtmChoices[otm]?.normal.filter(x=>{
+      if(x.name1==busca)
+        return true
+      return false
+    }).length>=1?true:false
+  else if (comp==true){
+    return mtmChoices[otm]?.compositeFields.filter(x=>{
+      if(x.name1==busca)
+        return true
+      return false
+    }).length>=1?true:false
+  }
+}
 
 const isReadyToWhere=(otm,busca,comp=false)=>{
   let res=[]
@@ -1280,6 +1710,8 @@ const displayWhereClauses=(cat,field,seg="")=>{
 
 }
 
+
+
 const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackCatPath)=>{
   let fieldsSingle=[]
   let pc=""
@@ -1313,6 +1745,24 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             <a style={{color:"green"}}>{c.name}</a>
             <br/>
             {isChecked(c.name) && displayMenu(c.name,cat.name,[...trackCatPath,c.name])}
+          </>
+        }else if(c.relationship=="manytomany"){
+          let nameTableMtm=""
+
+          if(parentCategories[c.name]==undefined)
+            parentCategories={...parentCategories,[`${c.name}`]:pc}
+          console.log("pc22",parentCategories)
+          return <>
+            <input type="checkbox" 
+            style={{marginRight:"5px", color:"white"}}
+            onChange={(e)=>{
+              //e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false,dcf={},isMtm=false
+              checkReview(e,c.name,false,cat.name,nameOtm,mainCat,"","",false,{},true)
+            }}
+            />
+            <a style={{color:"green"}}>{c.name}</a>
+            <br/>
+            {isChecked(c.name) && displayMenuMtm(c.name,cat,c.name /*nameOtm*/,mainCat,[...trackCatPath,c.name])}
           </>
         }
         if(nameOtm!=="")
@@ -1498,11 +1948,11 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
         {displayWhereClauses(`getData${currentCategory.name}`,"hybrid","hybrid")}
 
       </div>}
-      <a style={{textDecoration:"underline",display:"inline"}}
+      {primero && <a style={{textDecoration:"underline",display:"inline"}}
         onClick={e=>{
           e.preventDefault()
           toggleOpenSortCriteriaDialog({categoryName:`getData${currentCategory.name}`,otmChoicesSort:otmChoicesOrder[`getData${currentCategory.name}`],sortRules:sortRules,setSortRules:setSortRules})
-        }}>Add Order Criteria</a>
+        }}>Add Order Criteriafirst</a>}
       {primero && fieldsSingle && (<><FormButton style={{
           textAlign:"left",
           textDecoration:"underline",
@@ -1632,6 +2082,16 @@ const calculateGrandRoutes=(grandsRoute,nameCluster)=>{
     routes={...routes,...calculateGrandRoutes(routes[l],l)}
     
   })
+  console.log("otmcho11",otmChoices[nameCluster])
+  otmChoices?.[nameCluster]?.["mtm"]?.map(l=>{
+    console.log("lll",l)
+    routes[l]=[...grandsRoute,l]
+   
+    
+    
+  })
+
+
   return routes
 
 }
@@ -1640,15 +2100,29 @@ const calculateRoutes=(parentsRoute)=>{
  let parentNodeName=`getData${currentCategory.name}`
   let data=categoryProducts[parentNodeName]
   let routes={}
+  let otmMtm=[]
+
   if(firstCatNormalFields[parentNodeName]["otm"].length>0){
     let sons=firstCatNormalFields[parentNodeName]["otm"].map(l=>{
       routes[l]=[...parentsRoute,l]
       routes={...routes,...calculateGrandRoutes(routes[l],l)}
       
     })
-  }else
+  } 
+    console.log("hui",firstCatNormalFields[parentNodeName]["mtm"])
+
+    if(firstCatNormalFields?.[parentNodeName]?.["mtm"]?.length>0){
+    
+      let sonsMtm=firstCatNormalFields[parentNodeName]["mtm"].map(l=>{
+        routes[l]=[...parentsRoute,l]
+      })
+    }
+  
+  if(firstCatNormalFields[parentNodeName]["otm"].length==0 && firstCatNormalFields[parentNodeName]["mtm"].length==0)
    return {[parentNodeName]:[parentNodeName]}
-  return routes
+    
+   console.log("hui",routes)
+   return routes
 
 
 }
@@ -1948,9 +2422,11 @@ const getTotalsOfSonNumericVariables=(oavTotals,data,routeStep,r,eachIndex)=>{
     console.log("step441",oavTotals,data,routeStep,r,eachIndex)
     data?.forEach(y=>{
       //if(verifyMeetWithConditionsBySegmentBaseLevel(r,eachIndex,y)){
-
-        final=[...final,y.id]
-        console.log("step44",final,oavTotals)
+        if(r[eachIndex].startsWith("otm"))
+          final=[...final,y.id]
+        else
+          final=[...final,`${y[mtmChoices[r[eachIndex]]["son"]]}-${y[mtmChoices[r[eachIndex]]["father"]]}`]
+        console.log("step44",r[eachIndex],final,oavTotals)
         Object.keys(oavTotals).forEach(p=>{
           const nn=p.substring(0,p.length-5)
           let oo=buscaCompField(compFieldsArray[routeStep],nn)
@@ -2051,8 +2527,15 @@ const getNormalFieldsOfEachIndex=(object,step,x)=>{
   })
   //if(indice==(doneLd[r[eachIndex]].len-1))
     //doneLd[r[eachIndex]].done=true
-
-  normalFields={id:x["id"],...normalFields}
+  let newId
+  if(step.startsWith("otm") || step.startsWith("getData"))
+    normalFields={id:x["id"],...normalFields}
+  else if(step.startsWith("mtm")){
+    newId=`${x[mtmChoices[step]["son"]]}-${x[mtmChoices[step]["father"]]}`
+    normalFields={id:newId,...normalFields}
+  }
+  console.log("stepio",step,newId)
+  
   return normalFields
 }
 
@@ -2411,6 +2894,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
     //if(verifyMeetWithConditionsBySegmentBaseLevel(r,eachIndex,x)==true || verifyMeetWithConditionsBySegmentBaseLevel(r,eachIndex,x)=="pending"){
 
       let ui=[...doneLd[r[eachIndex]].nodeDone]
+      
       if([...ui].includes(x["id"]))
         doneLd={...doneLd,[r[eachIndex]]:{...doneLd[r[eachIndex]],count:doneLd[r[eachIndex]].count++,
         done:true}}
@@ -2428,6 +2912,18 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
       /*else 
         otherAccVars=[{},[]]*/
       console.log("ot,oav",otherAccVars)
+      let normalFields
+      if(r[eachIndex]==`getData${currentCategory.name}`)
+        normalFields=getNormalFieldsOfEachIndex(firstCatNormalFields[r[eachIndex]],r[eachIndex],x)
+      else if(r[eachIndex].startsWith("mtm"))
+        normalFields=getNormalFieldsOfEachIndex(mtmChoices[r[eachIndex]],r[eachIndex],x)
+      else
+        normalFields=getNormalFieldsOfEachIndex(otmChoices[r[eachIndex]],r[eachIndex],x)
+      let nId
+      if(r[eachIndex].startsWith("otm") || r[eachIndex].startsWith("getData"))
+        nId=x.id
+      else if(r[eachIndex].startsWith("mtm"))
+        nId=normalFields["id"]
       if(eachIndex==0){
         totalRoutes={
           ...totalRoutes,
@@ -2435,7 +2931,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
             ...totalRoutes[r[eachIndex]],
             [current]:{
               ...totalRoutes[r[eachIndex]][current],
-              [x.id]:{
+              [nId]:{
                 normalData:{},
                 total:0,
                 keys:[],
@@ -2452,7 +2948,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
             ...totalRoutes[r[eachIndex]],
             [current]:{
               ...totalRoutes[r[eachIndex]][current],
-              [x.id]:{
+              [nId]:{
                 normalData:{},
                 total:0,
                 keys:[],
@@ -2465,11 +2961,19 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
         }
       }
       
-      let normalFields
+      /*let normalFields
       if(r[eachIndex]==`getData${currentCategory.name}`)
         normalFields=getNormalFieldsOfEachIndex(firstCatNormalFields[r[eachIndex]],r[eachIndex],x)
+      else if(r[eachIndex].startsWith("mtm"))
+        normalFields=getNormalFieldsOfEachIndex(mtmChoices[r[eachIndex]],r[eachIndex],x)
       else
         normalFields=getNormalFieldsOfEachIndex(otmChoices[r[eachIndex]],r[eachIndex],x)
+      let nId
+      if(r[eachIndex].startsWith("otm") || r[eachIndex].startsWith("getData"))
+        nId=x.id
+      else if(r[eachIndex].startsWith("mtm"))
+        nId=normalFields["id"]*/
+
       if(eachIndex==0){
         totalRoutes={
           ...totalRoutes,
@@ -2477,7 +2981,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
             ...totalRoutes[r[eachIndex]],
             [current]:{
               ...totalRoutes[r[eachIndex]][current],
-              [x.id]:{
+              [nId]:{
                 ...totalRoutes[r[eachIndex]][current][x.id],
                 normalData:{...normalFields},
                 total:otherAccVars[1].length,
@@ -2500,7 +3004,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
             ...totalRoutes[r[eachIndex]],
             [current]:{
               ...totalRoutes[r[eachIndex]][current],
-              [x.id]:{
+              [nId]:{
                 ...totalRoutes[r[eachIndex]][current][x.id],
                 normalData:{...normalFields,
                   parentIdentifier:totalRoutes[r[eachIndex-1]][`${r[eachIndex]}total`]?.[fieldId]?.["normalData"]?.[parentIdField],
@@ -3207,6 +3711,7 @@ let resultado=[]
 const getCatPadre=routes=>{
   let max=0
   let numRoute=-1
+  console.log("routespadre",routes)
   for(let i=0;i<routes.length;i++){
     if(routes[i].length>=2 && routes[i].length>max){
       numRoute=i
@@ -3258,9 +3763,68 @@ const calculateSons=(routes,catPadre,legRoutes)=>{
   return res
 }
 
+const deleteEqualRoutes=(routes)=>{
+  console.log("prevroutes",...routes)
+  let borrar=[]
+  if(routes.length>1){
+  for(let i=0;i<routes.length;i++){
+    let cur=i
+      if(!borrar.includes(i)){
+      for(let j=0;j<routes.length;j++){
+        console.log("borrar1",borrar,routes[j],borrar.includes(j))
+        console.log("keycode",cur,j,j==cur,borrar,j,borrar.includes(j))
+        //if(borrar.includes(j)==false){
+          
+          if(j==cur){
+            console.log("keycode111")
+            continue
+          }else{
+            for(let o=0;o<routes[cur].length;o++){
+              
+            
+              if(routes[cur][o]==routes?.[j]?.[o] && o==routes[cur].length-1){
+                console.log("deleteclave",...routes[j])
+                borrar.push(j)
+
+              }else{
+                if(routes[cur][o]!=routes?.[j]?.[o]){
+                  console.log("routesespec",routes[j])
+                  
+              
+                  
+                  break;
+
+                }else{
+                  continue
+                }
+              }  
+            }
+
+            
+          
+          }
+        //}
+      }
+    }
+    }
+  }
+  let newRoutes=[]
+  console.log("borrarverif",borrar)
+  for(let nai=0;nai<routes.length;nai++){
+    console.log("borrarespec",borrar,nai,borrar.includes(nai),routes[nai])
+    if(borrar.includes(nai)==false)
+      newRoutes.push(routes[nai])
+  }
+  console.log("newroutes",...newRoutes)
+  routes=newRoutes
+  return routes
+}
+
 const findTheLowerLevelCategory1=(routes,res=[],legRoutes)=>{
+  routes=deleteEqualRoutes(routes)
+  console.log("deroutes",...routes)
   let catPadre=getCatPadre(routes)
-  
+  console.log("ftllc",routes,res,legRoutes,catPadre)
   if(catPadre!==-1){
     let sons={}
     if(sons[catPadre]==undefined)
@@ -3447,6 +4011,20 @@ const getNumericFields=(cat)=>{
         res["compositeFields"].push(x.name1)
     })
 
+  }else if(cat.startsWith("mtm")){
+    mtmChoices?.[cat]?.["normal"].forEach(x=>{
+      console.log("veryu",x.dataType,x.type)
+      if(x.type=="number" && x.dataType!="queryCategory")
+        res["normal"].push(x.name1)
+
+    })
+    console.log("resnormal",res["normal"])
+    mtmChoices?.[cat]?.["compositeFields"].forEach(x=>{
+      if(x.type=="number")
+        res["compositeFields"].push(x.name1)
+    })
+    
+
   }else{
     
     otmChoices?.[cat]?.["normal"].forEach(x=>{
@@ -3612,7 +4190,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
     realGrandTotals[mainKey]={}
   if(realGrandTotals[mainKey][cat]==undefined)
     realGrandTotals[mainKey][cat]={}
-  console.log("a1 a2",a1,a2)
+  console.log("a1 a2",a1,a2,cat,mainKey)
   /*if(accumulatedValues[trueKey]==undefined)
     accumulatedValues[cat]={}*/
 
@@ -3631,7 +4209,19 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
       
       Object.keys(a2[p]).forEach(o=>{
         ////console.log("m1",a2[o].keys,x[m1],a2[o].keys.includes(parseInt(x[m1])))
-        if(a2[p][o].keys.includes(parseInt(x[m1]))){
+        let cond
+        let keyTransform=x[m1]
+        if(!Number.isInteger(x[m1])){
+          keyTransform=x[m1]
+          cond=a2[p][o].keys.map(x=>x.toString()).includes(keyTransform)
+          console.log("ppppmtm",typeof x[m1],p,a2[p][o].keys,keyTransform,cond,a1[p],a2[p][o].keys.includes(keyTransform))
+
+        }else{
+          keyTransform=x[m1]
+          cond=a2[p][o].keys.includes(keyTransform)
+        }
+        console.log("a2orig",a2[p][o].keys,x[m1],p,cond)
+        if(cond==true){//a2[p][o].keys.includes(x[m1])){//parseInt(x[m1]))){
           /*if(accumulatedValues[p][o]==undefined)
             accumulatedValues[p][o]={}*/
           /*if(mainKey==`getData${currentCategory.name}` && ![...doneMain].includes(o)){
@@ -3674,9 +4264,9 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
               if(isLast(cat) || p==cat){
               
                 let st=0
-                console.log("prob",a1[p][x[m1]][nf["normal"][j1]],nf["normal"][j1])
-                if(a1[p][x[m1]][nf["normal"][j1]]!=null && a1[p][x[m1]][nf["normal"][j1]]!=undefined){
-                  st=a1[p][x[m1]][nf["normal"][j1]]
+                console.log("prob",a1[p][keyTransform][nf["normal"][j1]],nf["normal"][j1])
+                if(a1[p][keyTransform][nf["normal"][j1]]!=null && a1[p][keyTransform][nf["normal"][j1]]!=undefined){
+                  st=a1[p][keyTransform][nf["normal"][j1]]
                 }
                 a2[p][o][`${nf["normal"][j1]}total`]+=st
                 if(a2[p][o][`${nf["normal"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["normal"][j1]}Acummulated`]==null)
@@ -3701,14 +4291,24 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
               
               }else{
                 let st=0
-                console.log("prob",a1[p][x[m1]][`${nf["normal"][j1]}total`],nf["normal"][j1])
-                if(a1[p][x[m1]][`${nf["normal"][j1]}total`]!=null && a1[p][x[m1]][`${nf["normal"][j1]}total`]!=undefined)
-                  st=a1[p][x[m1]][`${nf["normal"][j1]}total`]
+                console.log("prob",a1[p][keyTransform][`${nf["normal"][j1]}total`],nf["normal"][j1])
+                
+                /*if(a1[p][keyTransform][`${nf["normal"][j1]}total`]!=null && a1[p][keyTransform][`${nf["normal"][j1]}total`]!=undefined){
+                  if(p.startsWith("otm"))
+                    st=a1[p][keyTransform][`${nf["normal"][j1]}total`]
+                  else{
+                    if(a1[p][keyTransform][`${nf["normal"][j1]}total`]==undefined)
+                      st=a1[p][keyTransform][`${nf["normal"][j1]}`]
+                    else
+                      st=a1[p][keyTransform][`${nf["normal"][j1]}total`]
+                  }
+                }*/
+                st=a1[p][keyTransform][`${nf["normal"][j1]}total`]
                 a2[p][o][`${nf["normal"][j1]}total`]+=st
                 if(a2[p][o][`${nf["normal"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["normal"][j1]}Acummulated`]==null)
                   a2[p][o][`${nf["normal"][j1]}Acummulated`]=[]
-                if(a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]==undefined || a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]==null)
-                  a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]=[]
+                if(a1[p][keyTransform][`${nf["normal"][j1]}Acummulated`]==undefined || a1[p][keyTransform][`${nf["normal"][j1]}Acummulated`]==null)
+                  a1[p][keyTransform][`${nf["normal"][j1]}Acummulated`]=[]
                 /*if(realGrandTotals[mainKey][p]==undefined)
                   realGrandTotals[mainKey][p]={}
                
@@ -3733,19 +4333,37 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
 
             }
             }
+            console.log("nfcomp",nf.compositeFields)
             if(nf.compositeFields.length>0){ 
             for(let j1=0;j1<nf.compositeFields.length;j1++){
               
               console.log("m1",a2,o,a2[p],a2[p][o],a1,p,x[m1],nf["compositeFields"][j1],`${nf["compositeFields"][j1]}total`,isLast(p),a1[p],a1[p][x[m1]],a1[p][x[m1]][nf["compositeFields"]],a1[p][x[m1]][nf["compositeFields"][j1]],a1[p][x[m1]][`${nf["compositeFields"][j1]}total`],a2[p][o][`${nf["compositeFields"][j1]}total`])
-              
-              if(isLast(cat) || cat==p){
+              console.log("catprim",cat,p)
+              if((isLast(cat) || cat==p)){
               
                 let st=0
-                console.log("prob",a1[p][x[m1]][nf["compositeFields"][j1]],nf["compositeFields"][j1])
-                if(a1[p][x[m1]][nf["compositeFields"][j1]]!=null && a1[p][x[m1]][nf["compositeFields"][j1]]!=undefined){
-                  st=a1[p][x[m1]][nf["compositeFields"][j1]]
-                }
+                console.log("prob",a1[p][keyTransform][nf["compositeFields"][j1]],nf["compositeFields"][j1])
+                /*if((a1[p][x[m1]][nf["compositeFields"][j1]]!=null && a1[p][keyTransform][nf["compositeFields"][j1]]!=undefined) ||
+                (a1[p][x[m1]][`${nf["compositeFields"][j1]}total`]!=null && a1[p][keyTransform][`${nf["compositeFields"][j1]}total`]!=undefined)){
+                  if(p.startsWith("otm"))
+                    st=a1[p][keyTransform][`${nf["compositeFields"][j1]}total`]
+                  else{
+                    
+                    if(a1[p][keyTransform][`${nf["compositeFields"][j1]}total`]==undefined)
+                      st=a1[p][keyTransform][`${nf["compositeFields"][j1]}`]
+                    else
+                      st=a1[p][keyTransform][`${nf["compositeFields"][j1]}total`]
+                  }
+                  
+                  console.log("st77",st)
+                }*/
+                st=a1[p][keyTransform][`${nf["compositeFields"][j1]}`]
+
+                  
+                  
                 a2[p][o][`${nf["compositeFields"][j1]}total`]+=st
+                console.log("paramsioio",p,o,keyTransform,a2[p][o][`${nf["compositeFields"][j1]}total`])
+                console.log("suma",a2[p][o][`${nf["compositeFields"][j1]}total`])
                 if(a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]==null)
                   a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]=[]
                 a2[p][o][`${nf["compositeFields"][j1]}Acummulated`].push(st)
@@ -3765,11 +4383,28 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 realGrandTotals[p][p]={...realGrandTotals[p][p],[`${nf["compositeFields"][j1]}total`]:realGrandTotals[p][p][`${nf["compositeFields"][j1]}total`]+st}*/
 
               }else{
+                console.log("jorgejorgetoro")
                 let st=0
-                console.log("prob",a1[p][x[m1]][`${nf["compositeFields"][j1]}total`],nf["compositeFields"][j1])
-                if(a1[p][x[m1]][`${nf["compositeFields"][j1]}total`]!=null && a1[p][x[m1]][`${nf["compositeFields"][j1]}total`]!=undefined)
-                  st=a1[p][x[m1]][`${nf["compositeFields"][j1]}total`]
+                console.log("prob",a1[p][keyTransform][`${nf["compositeFields"][j1]}total`],nf["compositeFields"][j1])
+                
+                /*if((a1[p][keyTransform][`${nf["compositeFields"][j1]}total`]!=null && a1[p][keyTransform][`${nf["compositeFields"][j1]}total`]!=undefined) ||
+                (a1[p][keyTransform][`${nf["compositeFields"][j1]}`]!=null && a1[p][keyTransform][`${nf["compositeFields"][j1]}`]!=undefined)){
+                  if(p.startsWith("otm"))
+                    st=a1[p][keyTransform][`${nf["compositeFields"][j1]}total`]
+                  else{
+                    if(a1[p][keyTransform][`${nf["compositeFields"][j1]}total`]==undefined)
+                      st=a1[p][keyTransform][`${nf["compositeFields"][j1]}`]
+                    else
+                      st=a1[p][keyTransform][`${nf["compositeFields"][j1]}total`]
+                  }
+                  console.log("st77",st)
+                }*/
+                console.log("paramsioio",p,o,x[keyTransform],a2[p][o][`${nf["compositeFields"][j1]}total`])
+
+                st=a1[p][keyTransform][`${nf["compositeFields"][j1]}total`]
+                console.log("entroaqui88",a1)
                 a2[p][o][`${nf["compositeFields"][j1]}total`]+=st
+                console.log("suma",a2[p][o][`${nf["compositeFields"][j1]}total`])
                 /*if(realGrandTotals[mainKey][p]==undefined)
                 realGrandTotals[mainKey][p]={}
              
@@ -3777,8 +4412,8 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                   realGrandTotals[mainKey][p][`${nf["compositeFields"][j1]}total`]=0
                 
                 realGrandTotals[mainKey][p]={...realGrandTotals[mainKey][p],[`${nf["compositeFields"][j1]}total`]:realGrandTotals[mainKey][p][`${nf["compositeFields"][j1]}total`]+st}*/
-                if(a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]==null)
-                  a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]=[]
+                if(a1[p][keyTransform][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]==null)
+                  a1[p][keyTransform][`${nf["compositeFields"][j1]}Acummulated`]=[]
 
                 if(a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]==null)
                   a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]=[]
@@ -4129,7 +4764,7 @@ const getStatisticsRecursive=(data,cat,order,pp)=>{
                           problem(data[u],x.name1,`${x.name1}AcummulatedSonBy${pp}`,`${x.name1}By${pp}Median`)
                         }
                       })
-                      getStatisticsRecursive(data,u,order,pp)
+                      //esto estaba sin commentgetStatisticsRecursive(data,u,order,pp)
                     //}
 
                   //} 
@@ -4143,17 +4778,22 @@ const getStatisticsRecursive=(data,cat,order,pp)=>{
 }
 
 const getStatistics=(data,cat,order)=>{
+  let arr
   Object.keys(data).forEach(y=>{
     if(y!==cat){
       if(y!==`getData${currentCategory.name}`){
-        otmChoices[y].normal.forEach(x=>{
+      if(y.startsWith("otm")){
+        arr=otmChoices[y]
+      }else if(y.startsWith("mtm"))
+        arr=mtmChoices[y]
+        arr.normal.forEach(x=>{
           if(x.type=="number"){
             console.log("tttt",data[y],x.name1)
             calculateMedia(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Media`)
             problem(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Median`)
           }
         })
-        otmChoices[y].compositeFields.forEach(x=>{
+        arr.compositeFields.forEach(x=>{
           if(x.type=="number"){
             console.log("tttt",data[y],x.name1)
             calculateMedia(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Media`)
@@ -4189,8 +4829,13 @@ const getStatistics=(data,cat,order)=>{
                 order[i]?.[catInInf].forEach((g,index)=>{
                   if(index%2==0){
                     if(g!==`getData${currentCategory.name}`){
-                      console.log("ggg",g,otmChoices[g])
-                      otmChoices[g].normal.forEach(x=>{
+                      if(g.startsWith("otm")){
+                        arr=otmChoices[g]
+                      }else if(g.startsWith("mtm"))
+                        arr=mtmChoices[g]
+                      
+                      console.log("ggg",g)
+                      arr.normal.forEach(x=>{
                         console.log("tttt",catInInf,data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
         
                         if(x.type=="number"){
@@ -4199,7 +4844,7 @@ const getStatistics=(data,cat,order)=>{
                           problem(data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
                         }
                       })
-                      otmChoices[g].compositeFields.forEach(x=>{
+                      arr.compositeFields.forEach(x=>{
                         console.log("tttt",catInInf,data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
         
                         if(x.type=="number"){
@@ -4208,7 +4853,7 @@ const getStatistics=(data,cat,order)=>{
                           problem(data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
                         }
                       })
-                      getStatisticsRecursive(data,g,order,catInInf)
+                      // estaba sin comment getStatisticsRecursive(data,g,order,catInInf)
                     }
 
                   } 
@@ -4287,8 +4932,14 @@ const calculateMediaAndMediansOfRecords=(category)=>{
           let total=0
           
           let median=0
-            
-          otmChoices[y].normal.forEach(i=>{
+          let arr
+       
+          if(y.startsWith("otm")){
+            arr=otmChoices[y]
+          }else if(y.startsWith("mtm"))
+            arr=mtmChoices[y]
+        
+          arr.normal.forEach(i=>{
             if(i.type=="number"){
               total=0
               let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
@@ -4310,7 +4961,7 @@ const calculateMediaAndMediansOfRecords=(category)=>{
 
             }
           })
-          otmChoices[y].compositeFields.forEach(i=>{
+          arr.compositeFields.forEach(i=>{
             if(i.type=="number"){
             
               let total=0
@@ -4338,7 +4989,14 @@ const calculateMediaAndMediansOfRecords=(category)=>{
         }
       }else{
         if(category==y){
-          otmChoices[y].normal.forEach(i=>{
+          let arr
+        
+          if(y.startsWith("otm")){
+            arr=otmChoices[y]
+          }else if(y.startsWith("mtm"))
+            arr=mtmChoices[y]
+        
+          arr.normal.forEach(i=>{
             if(i.type=="number"){
               let total=0
               let median=0
@@ -4361,7 +5019,7 @@ const calculateMediaAndMediansOfRecords=(category)=>{
 
             }
           })
-          otmChoices[y].compositeFields.forEach(i=>{
+          arr.compositeFields.forEach(i=>{
             if(i.type=="number"){
               let total=0
               let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
@@ -4385,7 +5043,14 @@ const calculateMediaAndMediansOfRecords=(category)=>{
             }
           })
         }else{
-          otmChoices[y].normal.forEach(i=>{
+          let arr
+        
+          if(y.startsWith("otm")){
+            arr=otmChoices[y]
+          }else if(y.startsWith("mtm"))
+            arr=mtmChoices[y]
+        
+          arr.normal.forEach(i=>{
             if(i.type=="number"){
               let total=0
               let median=0
@@ -4408,7 +5073,7 @@ const calculateMediaAndMediansOfRecords=(category)=>{
 
             }
           })
-          otmChoices[y].compositeFields.forEach(i=>{
+          arr.compositeFields.forEach(i=>{
             if(i.type=="number"){
               let total=0
               let median=0
@@ -4464,7 +5129,12 @@ const calculatePercentageOverGrandTotal=(category)=>{
             }
           })
         }else{
-          otmChoices[y].normal.forEach(i=>{
+          let arr
+          if(y.startsWith("otm"))
+            arr=otmChoices[y]
+          else if(y.startsWith("mtm"))
+            arr=mtmChoices[y]
+          arr.normal.forEach(i=>{
             if(i.type=="number"){
               finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
@@ -4473,7 +5143,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
             }
           })
-          otmChoices[y].compositeFields.forEach(i=>{
+          arr.compositeFields.forEach(i=>{
             if(i.type=="number"){
               finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
@@ -4484,8 +5154,14 @@ const calculatePercentageOverGrandTotal=(category)=>{
           })
         }
       }else{
+        let arr
         if(category==y){
-          otmChoices[y].normal.forEach(i=>{
+          if(y.startsWith("otm")){
+            arr=otmChoices[y]
+          }else if(y.startsWith("mtm"))
+            arr=mtmChoices[y]
+          
+          arr.normal.forEach(i=>{
             if(i.type=="number"){
               finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               //((finalObject[category][y][u][`${i.name1}`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
@@ -4494,7 +5170,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][i.name1])
             }
           })
-          otmChoices[y].compositeFields.forEach(i=>{
+          arr.compositeFields.forEach(i=>{
             if(i.type=="number"){
               finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               //((finalObject[category][y][u][`${i.name1}`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
@@ -4504,7 +5180,14 @@ const calculatePercentageOverGrandTotal=(category)=>{
             }
           })
         }else{
-          otmChoices[y].normal.forEach(i=>{
+          let arr
+        
+          if(y.startsWith("otm")){
+            arr=otmChoices[y]
+          }else if(y.startsWith("mtm"))
+            arr=mtmChoices[y]
+        
+          arr.normal.forEach(i=>{
             if(i.type=="number"){
               finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
@@ -4513,7 +5196,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
             }
           })
-          otmChoices[y].compositeFields.forEach(i=>{
+          arr.compositeFields.forEach(i=>{
             if(i.type=="number"){
               finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
@@ -4535,7 +5218,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
 const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,order)=>{
   let trueKey
   let cats
-  console.log("order",order)
+  console.log("orderfinal",order)
   if(order.length==0){
     let data=totalRoutes[`getData${currentCategory.name}`]["undefinedtotal"]
     updateTerminalFinalObject(data,`getData${currentCategory.name}`)
@@ -4571,6 +5254,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
   */
  realGrandTotals={}
  realGrandTotals1={}
+ console.log("orderver",order)
   for(let i=0;i<order.length;i++){
     trueKey=Object.keys(order[i])[0]
     cats=order[i][trueKey]
@@ -4578,7 +5262,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
     let cat
     for(let j=0;j<cats.length;j+=2){
       cat=cats[j]   
-      console.log("prob111",cat,finalObject[cat],finalObject)
+      console.log("prob111",cat,trueKey,finalObject[cat],finalObject[trueKey])
       //if(isLast(cat))
         getTotalsOfNumericVariables(finalObject[cat],finalObject[trueKey],cat,trueKey)
         //if(isLast(cat))
@@ -5665,6 +6349,47 @@ const getSubsetsBlock=(order,y)=>{
   otmChoicesStatistics={otmChoicesStatistics}
   />
 }
+const getDataReportTest=(routes,finalRoutes)=>{
+  const root=`getData${currentCategory.name}`
+  totalRoutes={}
+  //for(let i=0;i<finalRoutes.length;i++){
+    finalObject={}
+    totalRoutes={}
+  
+    
+    console.log("calcroutes",finalRoutes,calculateRoutes([`getData${currentCategory.name}`]),getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])))
+    
+    for(let i=0;i<finalRoutes.length;i++){
+      getLevelData1(categoryProducts[root],routes[finalRoutes[i]],0,true)  
+    }
+    let y=findTheLowerLevelCategory1(getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])),[],getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])))
+    getInverseTraverseSonTotalsWithConditionsWhereRoutes1(routes,finalRoutes,y)
+    let order=getOrderToPrintTables(y)
+    console.log("ordertoprinttables",order,y)
+    let tts
+    //let table
+    let tablesToCont={}
+    //setFinalObjectToSubsets(finalObject)
+    //empieza bloque para obtener datos de subsets
+    
+    //termina bloque para obtener datos de subsets
+    order[0].forEach(y=>{
+      let table
+      tts=[]
+      tts=getTableToSort(finalObject[y])
+      //sortToGetFinalTable(tts,sortRules[y])
+      //if(y=="getDataclientes")
+      table=getTableToDisplay(sortToGetFinalTable(tts,sortRules[y],y),y)
+
+      tablesToCont[y]=table[y]
+      printFinalTableNew(y,table[y],order[1][y])//,order[0])
+      printGrandTotalsTrue(y,realGrandTotals1[y],order[1][y])
+    })
+    setReportShow(totalTables)
+    console.log("definitive",routes,y)
+  console.log("totalRoutes55",totalRoutes,finalObject)
+}
+
 
 const getDataReport=(routes,finalRoutes)=>{
   const root=`getData${currentCategory.name}`
@@ -5674,6 +6399,7 @@ const getDataReport=(routes,finalRoutes)=>{
     totalRoutes={}
   
   getLevelData1(categoryProducts[root],routes[finalRoutes[0]],0,true)
+  
   //console.log("gt222",grandTotals)
   //console.log("routedetail",routes,finalRoutes)
    ////console.log("totalRoutes",totalRoutes,categoryProducts[root],finalRoutes)
@@ -5873,8 +6599,10 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
       theresComposite=composite>0 
       theresOtmDestiny=otmdestiny>0 
       if(theresNormal)
-      result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].normal.map((q,index)=>
-        <th style={{borderRight:(realSegmentLast==category && normal-1==index && !theresComposite)?"none":"1px solid white"}}>{q.name1}</th>
+      result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].normal.map((q,index)=>{
+        
+          return <th style={{borderRight:(realSegmentLast==category && normal-1==index && !theresComposite)?"none":"1px solid white"}}>{q.name1}</th>
+      }
       )]
       if(theresComposite)
       result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.map((q,index)=>
@@ -5888,23 +6616,29 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
       
     }else{
       console.log("otmchoices22",otmChoices[segment])
-
-      let normal=otmChoices[category].normal.length
-      let composite=otmChoices[category].compositeFields.length
-      let otmdestiny=otmChoices[category].otmdestiny.length
+      let arr
+    if(category.startsWith("mtm"))
+      arr=mtmChoices[category]
+    else if(category.startsWith("otm"))
+      arr=otmChoices[category]
+      let normal=arr.normal.length
+      let composite=arr.compositeFields.length
+      let otmdestiny=0
+      if(category.startsWith("otm"))
+       otmdestiny=arr.otmdestiny.length
       theresNormal=normal>0
       theresComposite=composite>0  
       theresOtmDestiny=otmdestiny>0
       if(theresNormal)   
-      result=[...result,...otmChoices[category].normal.map((q,index)=>
+      result=[...result,...arr.normal.map((q,index)=>
         <th style={{borderRight:(realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny))?"none":"1px solid white"}}>{q.name1}</th>
       )]
       if(theresComposite)
-      result=[...result,...otmChoices[category].compositeFields.map((q,index)=>
+      result=[...result,...arr.compositeFields.map((q,index)=>
         <th style={{borderRight:(realSegmentLast==category && composite-1==index && !theresOtmDestiny)?"none":"1px solid white"}}>{q.name1}</th>
       )]
-      if(theresOtmDestiny)
-      result=[...result,...otmChoices[category].otmdestiny.map((q,index)=>
+      if(theresOtmDestiny==true)
+      result=[...result,...arr.otmdestiny.map((q,index)=>
         <th style={{borderRight:(realSegmentLast==category && otmdestiny-1==index)?"none":"1px solid white"}}>{q}</th>
       )]
       let parentCat=parentCategories[category]
@@ -5917,9 +6651,17 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     result.unshift(<th style={{borderRight:realSegmentLast==category && !(theresNormal || theresComposite || !theresOtmDestiny)?"none":"1px solid white"}}>Id</th>)
   }else{
     let temp=[]
-    let normal=otmChoices[segment].normal.length
-    let composite=otmChoices[segment].compositeFields.length
-    let otmdestiny=otmChoices[segment].otmdestiny.length
+    let arr
+    if(segment.startsWith("mtm"))
+      arr=mtmChoices[segment]
+    else if(segment.startsWith("otm"))
+      arr=otmChoices[segment]
+    let normal=arr.normal.filter(x=>{
+      if(x.type!="number" && x.dataType!="queryCategory")
+        return true
+      return false}).length
+    let composite=arr.compositeFields.length
+    let otmdestiny=arr?.otmdestiny?.length
     theresNormal=normal>0
     theresComposite=composite>0  
     theresOtmDestiny=otmdestiny>0
@@ -5927,20 +6669,20 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     
     let lastIndexNumberComposite=-1
     let lastIndexNumber=-1
-    otmChoices[segment].normal.forEach((x,index)=>{
-      if(x.type=="number")
+    arr.normal.forEach((x,index)=>{
+      if(x.type!="number" && x.dataType!="queryCategory")
         lastIndexNumber=index
     })
-    otmChoices[segment].compositeFields.forEach((x,index)=>{
+    arr.compositeFields.forEach((x,index)=>{
       if(x.type=="number")
         lastIndexNumberComposite=index
     })
     
     console.log("theresnormal",segment,realSegmentLast,lastIndexNumber,lastIndexNumberComposite,realSegmentLast==segment && lastIndexNumber==-1 && lastIndexNumberComposite==-1)
     if(theresNormal)
-    otmChoices[segment].normal.forEach((q,index)=>{
+      arr.normal.forEach((q,index)=>{
         
-      if(q.type=="number"){
+      if(q.type=="number" && q.dataType!="queryCategory"){
         console.log("uiiii",otmChoicesStatistics?.[category]?.[segment],q.name1)
         let otmStatisticsArray=[]
         for(let x in otmChoicesStatistics?.[category]?.[segment]?.[q.name1]){
@@ -5969,7 +6711,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     result=[...result,...temp]
     temp=[]
     if(theresComposite)
-     otmChoices[segment].compositeFields.forEach((q,index)=>{
+     arr.compositeFields.forEach((q,index)=>{
 
       if(q.type=="number"){
         //console.log("compfields33",otmChoices[segment].compositeFields,otmChoicesStatistics[category][segment]?.[q.name1])
@@ -6126,19 +6868,24 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
       )]*/
 
       }else{
-        len=1+otmChoices[category].normal.length+
-        otmChoices[category].compositeFields.length
-        let normal=otmChoices[category].normal.length
-        let composite=otmChoices[category].compositeFields.length
+        let arr
+        if(category.startsWith("mtm"))
+          arr=mtmChoices[category]
+        else if(category.startsWith("otm"))
+          arr=otmChoices[category]
+        len=1+arr.normal.length+
+        arr.compositeFields.length
+        let normal=arr.normal.length
+        let composite=arr.compositeFields.length
         theresNormal=normal>0
         theresComposite=composite>0 
-        let otmdestiny=otmChoices[category].otmdestiny.length
+        let otmdestiny=arr?.otmdestiny?.length
         theresOtmDestiny=otmdestiny>0
  
       
 
         if(theresNormal)        
-        result=[...result,...otmChoices[category].normal.map((q,index)=>{
+        result=[...result,...arr.normal.map((q,index)=>{
           let disp=""
           
           if(q.type=="date"){
@@ -6152,13 +6899,13 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
         }
         )]
         if(theresComposite)
-        result=[...result,...otmChoices[category].compositeFields.map((q,index)=>
+        result=[...result,...arr.compositeFields.map((q,index)=>
           <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
         )]
       
       
       if(theresOtmDestiny)
-      result=[...result,...otmChoices[category].otmdestiny.map((q,index)=>
+      result=[...result,...arr?.otmdestiny?.map((q,index)=>
           <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && otmdestiny-1==index?"none":"1px solid black"}}>{data[y][q]}</td>
         )]
       let parentCat=parentCategories[category]
@@ -6172,27 +6919,32 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
     result.unshift(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{data[y]["id"]}</td>)
   
   }else{
+    let arr
+    if(a.startsWith("mtm"))
+      arr=mtmChoices[a]
+    else if(a.startsWith("otm"))
+      arr=otmChoices[a]
       let lastIndexNumber=-1
       let lastIndexNumberComposite=-1
-        otmChoices[a].normal.forEach((x,index)=>{
-          if(x.type=="number")
+        arr.normal.forEach((x,index)=>{
+          if(x.type!="number" && x.dataType!="queryCategory")
             lastIndexNumber=index
         })
-        otmChoices[a].compositeFields.forEach((x,index)=>{
+        arr.compositeFields.forEach((x,index)=>{
           if(x.type=="number")
             lastIndexNumberComposite=index
         })
-        let normal=otmChoices[a].normal.length
-        let composite=otmChoices[a].compositeFields.length
+        let normal=arr.normal.length
+        let composite=arr.compositeFields.length
         let theresNormal=normal>0
         let theresComposite=composite>0  
         let theresOtmDestiny
       let temp=[]
-      len=1+otmChoices[a].normal.length+
-        otmChoices[a].compositeFields.length
+      len=1+arr.normal.length+
+        arr.compositeFields.length
       if(theresNormal)
-      otmChoices[a].normal.forEach((q,index)=>{
-        if(q.type=="number"){
+      arr.normal.forEach((q,index)=>{
+        if(q.type=="number" && q.dataType!="queryCategory"){
           let otmStatisticsArray=[]
           for(let x in otmChoicesStatistics?.[category]?.[a]?.[q.name1]){
             console.log("o1111",otmChoicesStatistics?.[category]?.[a]?.[q.name1]?.[x],x)
@@ -6229,7 +6981,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
       result=[...result,...temp]
       temp=[]
       if(theresComposite)
-      otmChoices[a].compositeFields.forEach((q,index)=>{
+      arr.compositeFields.forEach((q,index)=>{
         if(q.type=="number"){
           let otmStatisticsArray=[]
           for(let x in otmChoicesStatistics?.[category]?.[a]?.[q.name1]){
@@ -6837,10 +7589,14 @@ const beginReport=(primero=false,name1,d1)=>{
   //routesfinal encuentra la ultima parada de cada una de las rutas
   ////console.log("routesfinal",routesFinal(routes))
   const finalRoutes=routesFinal(routes)
+  console.log("finalRoutes1",finalRoutes)
   grandTotals={}
   doneLd={}
   //console.log("importante routes finalRoutes",routes,finalRoutes)
-  getDataReport({...routes},[...finalRoutes])
+  
+  //getDataReport({...routes},[...finalRoutes])
+  getDataReportTest({...routes},[...finalRoutes])
+  /*quitar este para bien
   //calculateAmountsBegins(routes)
 
   /*let parentNodeName,parentNode

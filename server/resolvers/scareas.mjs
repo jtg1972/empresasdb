@@ -1,7 +1,31 @@
 
             import {Op} from 'sequelize'
             export default{
-          datamtmscprofesoresscareas:{
+              datamtmscprofesoresscareas:{
+                mtmscareasscprofesores:async(parent,args,{db})=>{
+                  const x=await db.scareas_scprofesores.findAll({
+                    where:{mtmscprofesoresscareasId:parent.id},
+                    raw:true
+                  })
+                  /*const y
+                  if(x.length>0)
+                    y=await db.scprofesores.findByPk(x[0]["mtmscprofesoresscareasId"])*/
+                  const cd=x.map(c=>c["mtmscareasscprofesoresId"])
+                  console.log("cdddd",cd)
+                  let recs=await db.scareas.findAll({where:{id:{[Op.in]:cd}},raw:true})
+                  recs=recs.map(r=>{
+                    let nf="mtmscareasscprofesoresId"
+                    const di=x.filter(u=>u[nf]==r.id)[0]
+                    return {...r,...di}
+                    
+
+                  })
+                  return recs
+                }
+                
+                
+              }
+          /*datamtmscprofesoresscareas:{
                   mtmscareasscprofesores:async(parent,args,{db})=>{
                     const x=await db.scareas_scprofesores.findAll({
                       where:{mtmscprofesoresscareasId:parent.id},
@@ -19,7 +43,7 @@
                   }
                   
                   
-                },scareas:{
+                }*/,scareas:{
               otmscareassccarreras:async(parent,args,{db})=>{
                     const x=await db.sccarreras.findAll({
                       where:{otmscareassccarrerasId:parent.id},
