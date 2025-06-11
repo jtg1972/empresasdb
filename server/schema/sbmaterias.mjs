@@ -21,6 +21,7 @@ semestre:Int
 
 otmsbareasbmateriasId:Int
 
+
 id:Int
 mtmsbcarrerassbmateriasId:Int
 mtmsbmateriassbcarrerasId:Int
@@ -30,6 +31,69 @@ semestre:Int
                 type datamtmsbcarrerassbmaterias{
                   original:originalmtmsbcarrerassbmaterias
                   copy:copymtmsbcarrerassbmaterias
+                  
+                }
+                type originalmtmsbcarrerassbmaterias{
+                  carrera:String
+
+
+otmsbareasbcarrerasId:Int
+id:Int
+mtmsbmateriassbcarreras:[datamtmsbmateriassbcarreras]
+mtmsbcarrerassbmateriasId:Int
+mtmsbmateriassbcarrerasId:Int
+semestre:Int
+                  key:String
+                    
+      
+                }
+                type copymtmsbcarrerassbmaterias{
+                  materia:String
+
+
+otmsbareasbmateriasId:Int
+
+
+id:Int
+mtmsbcarrerassbmateriasId:Int
+mtmsbmateriassbcarrerasId:Int
+semestre:Int
+                  key:String
+                }
+                type datamtmsbcarrerassbmaterias{
+                  original:originalmtmsbcarrerassbmaterias
+                  copy:copymtmsbcarrerassbmaterias
+                  
+                }
+                type originalmtmsbprofesoressbmaterias{
+                  nombre:String
+registro:String
+
+
+
+id:Int
+mtmsbmateriassbprofesores:[datamtmsbmateriassbprofesores]
+mtmsbmateriassbprofesoresId:Int
+mtmsbprofesoressbmateriasId:Int
+                  key:String
+                    
+      
+                }
+                type copymtmsbprofesoressbmaterias{
+                  materia:String
+
+
+otmsbareasbmateriasId:Int
+
+
+id:Int
+mtmsbmateriassbprofesoresId:Int
+mtmsbprofesoressbmateriasId:Int
+                  key:String
+                }
+                type datamtmsbprofesoressbmaterias{
+                  original:originalmtmsbprofesoressbmaterias
+                  copy:copymtmsbprofesoressbmaterias
                   
                 }
                 type sbmaterias{
@@ -42,6 +106,7 @@ materiaIdProductQuery:Int
 mtmsbcarrerassbmaterias:[datamtmsbcarrerassbmaterias],
 otmsbareasbmateriasId:Int
 otmsbmateriassbgrupos:[sbgrupos]
+mtmsbprofesoressbmaterias:[datamtmsbprofesoressbmaterias],
 
             }
 

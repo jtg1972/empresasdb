@@ -25,5 +25,8 @@ import Sequelize from 'sequelize'
 		 estudianteIdGlobalCatQuery:DataTypes.INTEGER,
 		 estudianteIdFinalCatQuery:DataTypes.INTEGER,
 		 estudianteIdProductQuery:DataTypes.INTEGER},{sequelize})
-}}
+}static associate(models){models.sbestudiantes.belongsToMany(models.sbgrupos,{foreignKey:"mtmsbestudiantessbgruposId",through:"sbestudiantes_sbgrupos"})
+
+                  models.sbgrupos.belongsToMany(models.sbestudiantes,{foreignKey:"mtmsbgrupossbestudiantesId",through:"sbestudiantes_sbgrupos"})
+                }}
 export default sbestudiantes

@@ -272,21 +272,21 @@
                 },
                 editsbarea_sbprofesores:async(parent,args,{db})=>{
               await db.sbarea_sbprofesores.update({
-                        mtmsbprofesoressbareaId:args.mtmsbprofesoressbareaId,
-mtmsbareasbprofesoresId:args.mtmsbareasbprofesoresId
+                        mtmsbareasbprofesoresId:args.mtmsbareasbprofesoresId,
+mtmsbprofesoressbareaId:args.mtmsbprofesoressbareaId
                       },
                       {
                         where:{
-                          mtmsbprofesoressbareaId:args.mtmsbprofesoressbareaId,
-mtmsbareasbprofesoresId:args.mtmsbareasbprofesoresId
+                          mtmsbareasbprofesoresId:args.mtmsbareasbprofesoresId,
+mtmsbprofesoressbareaId:args.mtmsbprofesoressbareaId
                         }
                       }
                     )
                   
                     let nuevo=await db.sbarea_sbprofesores.findAll({
                       where:{
-                        mtmsbprofesoressbareaId:args.mtmsbprofesoressbareaId,
-mtmsbareasbprofesoresId:args.mtmsbareasbprofesoresId
+                        mtmsbareasbprofesoresId:args.mtmsbareasbprofesoresId,
+mtmsbprofesoressbareaId:args.mtmsbprofesoressbareaId
                       },raw:true
                     })
                     nuevo=nuevo[0]

@@ -17,5 +17,8 @@ import Sequelize from 'sequelize'
                 type:DataTypes.INTEGER,
                 defaultValue:0
               }},{sequelize})
-}}
+}static associate(models){models.sbgrupos.belongsToMany(models.sbestudiantes,{foreignKey:"mtmsbgrupossbestudiantesId",through:"sbestudiantes_sbgrupos"})
+
+                  models.sbestudiantes.belongsToMany(models.sbgrupos,{foreignKey:"mtmsbestudiantessbgruposId",through:"sbestudiantes_sbgrupos"})
+                }}
 export default sbgrupos

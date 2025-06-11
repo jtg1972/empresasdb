@@ -20,5 +20,8 @@ import Sequelize from 'sequelize'
 }static associate(models){models.sbprofesores.belongsToMany(models.sbarea,{foreignKey:"mtmsbprofesoressbareaId",through:"sbarea_sbprofesores"})
 
                   models.sbarea.belongsToMany(models.sbprofesores,{foreignKey:"mtmsbareasbprofesoresId",through:"sbarea_sbprofesores"})
+                models.sbprofesores.belongsToMany(models.sbmaterias,{foreignKey:"mtmsbprofesoressbmateriasId",through:"sbmaterias_sbprofesores"})
+
+                  models.sbmaterias.belongsToMany(models.sbprofesores,{foreignKey:"mtmsbmateriassbprofesoresId",through:"sbmaterias_sbprofesores"})
                 }}
 export default sbprofesores

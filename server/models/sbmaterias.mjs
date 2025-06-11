@@ -25,5 +25,8 @@ import Sequelize from 'sequelize'
                   models.sbgrupos.belongsTo(models.sbmaterias,
                     {foreignKey:"sbmateriasId"})
                     
-                  }}
+                  models.sbmaterias.belongsToMany(models.sbprofesores,{foreignKey:"mtmsbmateriassbprofesoresId",through:"sbmaterias_sbprofesores"})
+
+                  models.sbprofesores.belongsToMany(models.sbmaterias,{foreignKey:"mtmsbprofesoressbmateriasId",through:"sbmaterias_sbprofesores"})
+                }}
 export default sbmaterias

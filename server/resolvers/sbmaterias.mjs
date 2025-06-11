@@ -24,6 +24,29 @@
                   }
                   
                   
+                },originalmtmsbprofesoressbmaterias:{
+                  mtmsbmateriassbprofesores:async(parent,args,{db})=>{
+                    const products=await db.sbmaterias_sbprofesores.findAll({
+                      where:{mtmsbprofesoressbmateriasId:parent.id},
+                      raw:true
+                    })
+                    let oneside=await db.sbprofesores.findAll({
+                      where:{
+                        id:parent.id
+                      },raw:true
+                    })
+                    const cids=x.map(c=>c["mtmsbprofesoressbmateriasId"])
+                    console.log("cdddd",cd)
+                    let recs=await db.sbmaterias.findAll({where:{id:{[Op.in]:cids}},raw:true})
+                    let final=products.map(r=>{
+                      let nf="mtmsbmateriassbprofesoresId"
+                      const di=x.filter(u=>u[nf]==r.id)[0]
+                      return {...r,...di}
+                    })
+                    return final
+                  }
+                  
+                  
                 },sbmaterias:{
               otmsbmateriassbgrupos:async(parent,args,{db})=>{
                     const x=await db.sbgrupos.findAll({
@@ -63,6 +86,36 @@
                     }})
                     return final
                   },
+                  mtmsbprofesoressbmaterias:async(parent,args,{db})=>{
+                    const products=await db.sbmaterias_sbprofesores.findAll({
+                      where:{mtmsbmateriassbprofesoresId:parent.id},
+                      raw:true
+                    })
+                    let oneside=await db.sbmaterias.findAll({
+                      where:{
+                        id:parent.id
+                      },raw:true
+                    })
+                    const cd=products.map(c=>c["mtmsbprofesoressbmateriasId"])
+                    console.log("cdddd",cd)
+                    let recs=await db.sbprofesores.findAll({where:{id:{[Op.in]:cd}},raw:true})
+                    let final=products.map(r=>{
+                      
+                      let p=recs.filter(t=>t.id==r.mtmsbprofesoressbmateriasId)[0]
+                      
+                      return {
+                        original:{
+                          ...r,...p,
+                          key:"mtmsbprofesoressbmaterias"
+                        },
+                        copy:{
+                          ...oneside[0],
+                          ...r,
+                          key:"mtmsbmateriassbprofesores"
+                        }
+                    }})
+                    return final
+                  },
                   
             },
             Query:{
@@ -98,7 +151,7 @@
                 editsbmaterias:async(parent,args,{db})=>{
               let camposDate=[]
 await db.sbmaterias.update({
-                        id:args["id"],materia:args.materia,materiaId:args.materiaId,mtmsbcarrerassbmaterias:args.mtmsbcarrerassbmaterias,otmsbareasbmateriasId:args.otmsbareasbmateriasId,otmsbmateriassbgrupos:args.otmsbmateriassbgrupos,
+                        id:args["id"],materia:args.materia,materiaId:args.materiaId,mtmsbcarrerassbmaterias:args.mtmsbcarrerassbmaterias,otmsbareasbmateriasId:args.otmsbareasbmateriasId,otmsbmateriassbgrupos:args.otmsbmateriassbgrupos,mtmsbprofesoressbmaterias:args.mtmsbprofesoressbmaterias,
                         ...camposDate
                       },
                       {

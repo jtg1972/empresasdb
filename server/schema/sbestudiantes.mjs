@@ -1,7 +1,39 @@
 
           import {gql} from 'apollo-server-express'
 
-          export default gql`type sbestudiantes{
+          export default gql`type originalmtmsbgrupossbestudiantes{
+                  clavedelgrupo:String
+
+otmsbmateriassbgruposId:Int
+
+id:Int
+mtmsbestudiantessbgrupos:[datamtmsbestudiantessbgrupos]
+mtmsbgrupossbestudiantesId:Int
+calificacion:Int
+mtmsbestudiantessbgruposId:Int
+                  key:String
+                    
+      
+                }
+                type copymtmsbgrupossbestudiantes{
+                  nombre:String
+boleta:String
+incomingyear:Int
+semesterType:String
+
+
+id:Int
+mtmsbgrupossbestudiantesId:Int
+calificacion:Int
+mtmsbestudiantessbgruposId:Int
+                  key:String
+                }
+                type datamtmsbgrupossbestudiantes{
+                  original:originalmtmsbgrupossbestudiantes
+                  copy:copymtmsbgrupossbestudiantes
+                  
+                }
+                type sbestudiantes{
               
               id:Int
 nombre:String
@@ -11,6 +43,7 @@ semesterType:String
 estudianteIdGlobalCatQuery:Int
 estudianteIdFinalCatQuery:Int
 estudianteIdProductQuery:Int
+mtmsbgrupossbestudiantes:[datamtmsbgrupossbestudiantes],
 
             }
 

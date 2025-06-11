@@ -2425,7 +2425,7 @@ const getTotalsOfSonNumericVariables=(oavTotals,data,routeStep,r,eachIndex)=>{
         if(r[eachIndex].startsWith("otm"))
           final=[...final,y.id]
         else
-          final=[...final,`${y[mtmChoices[r[eachIndex]]["son"]]}-${y[mtmChoices[r[eachIndex]]["father"]]}`]
+          final=[...final,`${y["original"][mtmChoices[r[eachIndex]]["son"]]}-${y["original"][mtmChoices[r[eachIndex]]["father"]]}`]
         console.log("step44",r[eachIndex],final,oavTotals)
         Object.keys(oavTotals).forEach(p=>{
           const nn=p.substring(0,p.length-5)
@@ -2455,6 +2455,7 @@ const getTotalsOfSonNumericVariables=(oavTotals,data,routeStep,r,eachIndex)=>{
 
 const getNormalFieldsOfEachIndex=(object,step,x)=>{
   let normalFields={}
+  console.log("objectstep",object,step,x)
   object?.normal?.forEach(oo=>{
     if(oo["name1"]!=="1" && oo["name1"]!=="2" && oo["name1"]!=="3"){
       normalFields={...normalFields,[oo["name1"]]:x[oo["name1"]]}
@@ -2916,7 +2917,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
       if(r[eachIndex]==`getData${currentCategory.name}`)
         normalFields=getNormalFieldsOfEachIndex(firstCatNormalFields[r[eachIndex]],r[eachIndex],x)
       else if(r[eachIndex].startsWith("mtm"))
-        normalFields=getNormalFieldsOfEachIndex(mtmChoices[r[eachIndex]],r[eachIndex],x)
+        normalFields=getNormalFieldsOfEachIndex(mtmChoices[r[eachIndex]],r[eachIndex],x["original"])
       else
         normalFields=getNormalFieldsOfEachIndex(otmChoices[r[eachIndex]],r[eachIndex],x)
       let nId
@@ -3735,7 +3736,7 @@ const findFather=(catPadre,route,legRoutes,j)=>{
     //console.log("findfather",catPadre,route[i],route[i]==catPadre)
     if(route[i]==catPadre){
       let res=legRoutes[j][i+1]
-      console.log("findfather",catPadre,legRoutes,res,legRoutes[j][i+1],legRoutes[j][i+2])
+      console.log("findfather4",catPadre,legRoutes,res,legRoutes[j][i+1],legRoutes[j][i+2])
       let u=`${legRoutes[j][i+2]}total`
       console.log("ufinal",u)
       let res1
@@ -3752,7 +3753,7 @@ const findFather=(catPadre,route,legRoutes,j)=>{
 
 const calculateSons=(routes,catPadre,legRoutes)=>{
   let res=[]
-  console.log("params routes catpadre",routes,catPadre,routes[0])
+  console.log("params routes catpadre",...routes,"esp",catPadre,"esp",routes[0])
   for(let i=0;i<routes.length;i++){
     let r1=findFather(catPadre,routes[i],legRoutes,i)
     if(r1!=-1){
@@ -3760,16 +3761,17 @@ const calculateSons=(routes,catPadre,legRoutes)=>{
       res=[...res,...r1]
     }
   }
+  console.log("params1",res)
   return res
 }
 
-const deleteEqualRoutes=(routes)=>{
-  console.log("prevroutes",...routes)
+const deleteEqualRoutes=(routes,lr)=>{
+  console.log("prevroutes",...routes,"esp",...lr)
   let borrar=[]
   if(routes.length>1){
   for(let i=0;i<routes.length;i++){
     let cur=i
-      if(!borrar.includes(i)){
+      if(!borrar.includes(Object.keys(routes)[i])){
       for(let j=0;j<routes.length;j++){
         console.log("borrar1",borrar,routes[j],borrar.includes(j))
         console.log("keycode",cur,j,j==cur,borrar,j,borrar.includes(j))
@@ -3783,6 +3785,7 @@ const deleteEqualRoutes=(routes)=>{
               
             
               if(routes[cur][o]==routes?.[j]?.[o] && o==routes[cur].length-1){
+              
                 console.log("deleteclave",...routes[j])
                 borrar.push(j)
 
@@ -3809,28 +3812,42 @@ const deleteEqualRoutes=(routes)=>{
     }
   }
   let newRoutes=[]
-  console.log("borrarverif",borrar)
+  console.log("borrarverif",Object.keys(routes),routes,Object.keys(lr),lr,borrar)
+  let newLR=[]
   for(let nai=0;nai<routes.length;nai++){
     console.log("borrarespec",borrar,nai,borrar.includes(nai),routes[nai])
-    if(borrar.includes(nai)==false)
+    if(borrar.includes(nai)==false){
       newRoutes.push(routes[nai])
+      
+      console.log("equip",newRoutes,newLR)
+    }
+    if(borrar.includes(nai)==false){
+      newLR.push(lr[nai])
+    }
+      
   }
-  console.log("newroutes",...newRoutes)
   routes=newRoutes
+  lr=newLR
+  console.log("newroutes",...routes,"esp",...lr)
+
   return routes
 }
 
 const findTheLowerLevelCategory1=(routes,res=[],legRoutes)=>{
-  routes=deleteEqualRoutes(routes)
+  console.log("deroutes1",...routes)
+  routes=deleteEqualRoutes(routes,legRoutes)
   console.log("deroutes",...routes)
   let catPadre=getCatPadre(routes)
-  console.log("ftllc",routes,res,legRoutes,catPadre)
+  console.log("ftllc",...routes,catPadre,res)
   if(catPadre!==-1){
     let sons={}
     if(sons[catPadre]==undefined)
       sons[catPadre]=[]
     //sons[catPadre]=calculateSons(routes,catPadre)
+    if(!catPadre.startsWith("getData"))
     res=[...res,{[catPadre]:calculateSons(routes,catPadre,legRoutes)},...findTheLowerLevelCategory1(routes,res,legRoutes)]
+    else
+    res=[...res,{[catPadre]:calculateSons(routes,catPadre,legRoutes)}]
 
     
     return res
@@ -6363,6 +6380,8 @@ const getDataReportTest=(routes,finalRoutes)=>{
       getLevelData1(categoryProducts[root],routes[finalRoutes[i]],0,true)  
     }
     let y=findTheLowerLevelCategory1(getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])),[],getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])))
+
+    console.log("yfinal",y)
     getInverseTraverseSonTotalsWithConditionsWhereRoutes1(routes,finalRoutes,y)
     let order=getOrderToPrintTables(y)
     console.log("ordertoprinttables",order,y)
@@ -7099,7 +7118,8 @@ const displayFirstCategoryFields=(data)=>{
 
 const calMedian=(arr)=>{
   let median=0
-  let length=arr?.lenght
+  let length=arr?.length
+  console.log("arrdesp",arr,length)
   if(length==undefined || length==0 || isNaN(length))
     return 0
   else{
@@ -7589,7 +7609,7 @@ const beginReport=(primero=false,name1,d1)=>{
   //routesfinal encuentra la ultima parada de cada una de las rutas
   ////console.log("routesfinal",routesFinal(routes))
   const finalRoutes=routesFinal(routes)
-  console.log("finalRoutes1",finalRoutes)
+  console.log("finalRoutes1",routes,finalRoutes)
   grandTotals={}
   doneLd={}
   //console.log("importante routes finalRoutes",routes,finalRoutes)
