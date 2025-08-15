@@ -202,6 +202,8 @@ export default{
 
     createTableGood:async(parent,args,{db})=>{
       let nnmtm=""
+      let arrMtmResolver=[]
+      let arrMtmResolverFinal=[]
       let cats2=await db.Category.findAll(
         {
           where:{
@@ -217,6 +219,7 @@ export default{
         let resultado=false
         for(let iteration=0;iteration<2;iteration++){
         for(let category in cats1){
+          arrMtmResolverFinal=[]
           let name=cats1[category].name
           console.log("name",name)
 
@@ -351,10 +354,12 @@ export default{
           let arrMtmFields=[]
           let indMtmFields=0
           let arrMtmDataRes=[]
+          arrMtmResolver=[]
           let arrHelperFunctions=[]
           const defotm=""
           let newMtmDefinition=""
           for(let f in fields){
+            arrMtmResolver=[]
             if(fields[f]["declaredType"]=="string"){
               x1+=`${fields[f]["name"]}:String\n`
               x2+=`${fields[f]["name"]}:String,\n`
@@ -389,6 +394,7 @@ export default{
                 x1+=`otm${name}${respCat["name"]}:[${respCat["name"]}]\n`
                 
               }else if(fields[f]["relationship"]=="manytomany"){
+                const categoriesAll=await db.Category.findAll({raw:true})
                 const respCat=await db.Category.findByPk(fields[f]["relationCategory"])
                 const fieldsRespCat=await db.Fields.findAll({where:{category:respCat.id},raw:true})
                 let catFields=fieldsRespCat.map(r=>{
@@ -400,10 +406,65 @@ export default{
                     return `${r["name"]}FinalCatQuery:Int\n
                      ${r["name"]}ProductQuery:Int`
 
-                  }else
+                  }else if(r.relationship=="manytomany"){
+                    let n=categoriesAll.filter(x=>x.id==r.relationCategory)[0]
+                    let c
+                    if(n.name>respCat.name)
+                      c=`${respCat.name}_${n.name}`
+                    else
+                      c=`${n.name}_${respCat.name}`
+                    arrMtmResolver.push(`mtm${n.name}${respCat.name}:async(parent,args,{db})=>{
+                      
+                        const products=await db.${c}.findAll({
+                          where:{mtm${respCat.name}${n.name}Id:parent.id},
+                          raw:true
+                        })
+                        let oneside=await db.${respCat.name}.findAll({
+                          where:{
+                            id:parent.id
+                          },raw:true
+                        })
+                        const cd=products.map(c=>c["mtm${n.name}${respCat.name}Id"])
+                        console.log("cdddd",cd)
+                        let recs=await db.${n.name}.findAll({where:{id:{[Op.in]:cd}},raw:true})
+                        let final=products.map(r=>{
+                          
+                          let p=recs.filter(t=>t.id==r.mtm${n.name}${respCat.name}Id)[0]
+                          
+                          return {
+                            
+                              ...r,...p,
+                              key:"mtm${n.name}${respCat.name}"
+                            }
+                           
+                        })
+                        return final
+                      
+
+                    }`)
+                    return `${r.name}:[data${r.name}]`
+                  }
+                  else if(r.relationship=="onetomany"){
+                    let n=categoriesAll.filter(x=>x.id==r.relationCategory)[0]
+                    
+                    
+                    arrMtmResolver.push(`otm${respCat.name}${n.name}:async(parent,args,{db})=>{
+                      const x=await db.${n.name}.findAll({
+                        where:{otm${respCat.name}${n.name}Id:parent.id},
+                        raw:true
+                      })
+                      
+                      return x
+                    }`)
+                    return `${r.name}:[${n.name}]`
+                  }
+                  else
                     return ""
                 })
+                console.log("catfields11",catFields.join("\n"))
                 let getFields=await db.Fields.findAll({where:{category:cats1[category].id},raw:true})
+                const respCat1=""
+              
                 let cats1New=getFields.map(r=>{
                   if(r.declaredType=="string"){
                     return `${r.name}:String`
@@ -413,7 +474,15 @@ export default{
                     return `${r["name"]}FinalCatQuery:Int\n
                      ${r["name"]}ProductQuery:Int`
 
-                  }else
+                  }else if(r.relationship=="manytomany"){
+                    //arrMtmResolver.push(`${r.name}`)
+                    return `${r.name}:[data${r.name}]`
+                  }
+                  else if(r.relationship=="onetomany"){
+                    
+                    return `${r.name}:[${r.name}]`
+                  }
+                  else
                     return ""
                 })
 
@@ -439,37 +508,36 @@ export default{
 
                   }else
                     return ""
+
                 })
 
-                catFields.push(`mtm${name}${respCat.name}:[datamtm${name}${respCat.name}]`)
-                catFields=[...catFields,...mtmFields]
+                //catFields.push(`mtm${name}${respCat.name}:[datamtm${name}${respCat.name}]`)
+                catFields=[...catFields,...mtmFields,]
                 catFields=catFields.join("\n")
+                cats1New.push("key:String")
                 cats1New=[...cats1New,...mtmFields]
                 cats1New=cats1New.join("\n")
                 
                 console.log("verrrr",`type datamtm${respCat.name}${name}{
                   ${catFields}
+                  key:String
                 }`,indMtmFields,mtmCat,mtmFields)
-                newMtmDefinition+=`type originalmtm${respCat.name}${name}{
+                
+                
+                console.log("typedatamtm",`type datamtm${respCat.name}${name}{
+                  ${catFields}
+                },`)
+                arrMtmFields.push(`type datamtm${respCat.name}${name}{
                   ${catFields}
                   key:String
-                    
-      
-                }
-                type copymtm${respCat.name}${name}{
-                  ${cats1New}
-                  key:String
-                }
-                type datamtm${respCat.name}${name}{
-                  original:originalmtm${respCat.name}${name}
-                  copy:copymtm${respCat.name}${name}
-                  
-                }
-                `
-                arrMtmFields.push(newMtmDefinition)
-                /*arrMtmFields.push(`type datamtm${respCat.name}${name}{
-                  ${catFields}
-                },`)*/
+                },`)
+
+                arrMtmResolverFinal.push(`datamtm${respCat.name}${name}:{
+                  ${arrMtmResolver.join(",\n")}
+                }  
+                `)
+
+                
                 indMtmFields++
                 x1+=`mtm${respCat.name}${name}:[datamtm${respCat.name}${name}],\n`
                 
@@ -479,7 +547,7 @@ export default{
                 }else{
                   nnmtm=`${respCat.name}_${name}`
                 }
-                arrMtmDataRes.push(`originalmtm${respCat.name}${name}:{
+                /*arrMtmDataRes.push(`originalmtm${respCat.name}${name}:{
                   mtm${name}${respCat.name}:async(parent,args,{db})=>{
                     const products=await db.${nnmtm}.findAll({
                       where:{mtm${respCat.name}${name}Id:parent.id},
@@ -502,7 +570,9 @@ export default{
                   }
                   
                   
-                },`)
+                },`)*/
+
+
               }
             }
             
@@ -573,16 +643,12 @@ export default{
                       let p=recs.filter(t=>t.id==r.mtm${respCat.name}${name}Id)[0]
                       
                       return {
-                        original:{
+                        
                           ...r,...p,
                           key:"mtm${respCat.name}${name}"
-                        },
-                        copy:{
-                          ...oneside[0],
-                          ...r,
-                          key:"mtm${name}${respCat.name}"
                         }
-                    }})
+                       
+                    })
                     return final
                   },
                   `
@@ -593,7 +659,7 @@ export default{
 
           }
         
-          console.log("otomres",oneToManyResolver)
+          console.log("otomres",oneToManyResolver,manyToManyResolver)
           
 
           let content2=`
@@ -638,12 +704,14 @@ export default{
             
               create${name}(
                 ${x2}
+                parentArg:String
                 ):${name}
               
               
               getData${name}:[${name}]\n`
               if(cats1[category].manyToMany==false){
-                content2+=`remove${name}(id:Int):Boolean!\n`
+                content2+=`remove${name}(id:Int,parentArg:String,
+                  hardDelete:Boolean):Boolean!\n`
               }else{
                 const split=cats1[category].name.split("_")
                 const fc=split[0]
@@ -665,6 +733,7 @@ export default{
           arrMtmDataRes.forEach(i=>{
             content3+=i
           })
+          content3+=arrMtmResolverFinal.join(",\n")+",\n"
           if(oneToManyResolver!=="" || manyToManyResolver!==""){
             content3+=`${name}:{
               ${oneToManyResolver}
@@ -791,8 +860,8 @@ export default{
                   raw:true
                 })
                 console.log("resyovoy",product,alumno,profesor)
-                return {original:{...alumno[0],...product,key:"mtm${parts[0]}${parts[1]}"},
-                copy:{...profesor[0],...product,key:"mtm${parts[1]}${parts[0]}"}}
+                return {...alumno[0],...product,key:"mtm${parts[0]}${parts[1]}"}
+                
               }catch(e){
                 console.log("error",e)
               }
@@ -814,8 +883,8 @@ export default{
                   raw:true
                 })
                 console.log("resyovoy",product,alumno,profesor)
-                return {original:{...alumno[0],...product,key:"mtm${parts[1]}${parts[0]}"},
-                copy:{...profesor[0],...product,key:"mtm${parts[0]}${parts[1]}"}}
+                return {...alumno[0],...product,key:"mtm${parts[1]}${parts[0]}"}
+                
               }catch(e){
                 console.log("error",e)
               }
@@ -869,21 +938,13 @@ export default{
 
 
               return {
-                original:{
                   
                     ...r1,
                     ...r2,
                   
                   key:"mtm${parts[0]}${parts[1]}"
-                },
-                copy:{
-                  
-                    ...r3,
-                    ...r2,
-                  
-                  key:"mtm${parts[1]}${parts[0]}"
                 }
-              }
+              
             },
             editdatamtm${parts[1]}${parts[0]}:async(parent,args,{db})=>{
               let rec=await db.${name}.update({
@@ -916,20 +977,11 @@ export default{
               r3=r3[0]
 
               return {
-                original:{
-                  
                     ...r1,
                     ...r2,
                   
                   key:"mtm${parts[1]}${parts[0]}"
-                },
-                copy:{
-                  
-                    ...r3,
-                    ...r2,
-                  
-                  key:"mtm${parts[0]}${parts[1]}"
-                }
+                
               }
             },
             `
@@ -938,8 +990,39 @@ export default{
             
 
               content3+=`Mutation:{
-                ${helperFunctionsResolvers}
+                
+                
+
                 create${name}:async(parent,args,{db})=>{`
+                /*
+                let product=null
+                  let p=null
+                  if(args.id==null){
+                    product=await db.sbcarreras.create(args)
+                    return product
+                  }
+                  else{
+                    let np=args["parentArg"]
+                    let np1=args[np]
+                    console.log("argsyuyu",args,args["parentArg"],args.otmsbareassbcarrerasId,np1)
+
+                    p=await db.sbcarreras.update({
+                      [args["parentArg"]]:args[args["parentArg"]],
+                      
+                    },
+                    {
+                    where:{id:args.id}
+                    }
+                  )
+                  }
+                  if(p){
+                    const nuevo=await db.sbcarreras.findByPk(args.id)
+                    return nuevo
+                  }
+                  return null
+
+                
+                */
                 Object.keys(fields).forEach(k=>{
                   if(fields[k].declaredType=="date"){
                     content3+=`if(new Date(args.${fields[k].name})=="Invalid Date")\n
@@ -949,10 +1032,27 @@ export default{
                    
                 })
 
-                content3+=`const product=await db.${name}.create(args)
+                content3+=`
+                let product=null
+                let p=null
+                if(args.id==null){
+                  product=await db.${name}.create(args)
                   return product
-                  
-                },
+                }else{
+                  p=await db.${name}.update({
+                    [args["parentArg"]]:args[args["parentArg"]],
+                    
+                  },
+                  {
+                  where:{id:args.id}
+                  })
+                }
+                if(p){
+                  const nuevo=await db.${name}.findByPk(args.id)
+                  return nuevo
+                }
+                return null
+              },
                
                 getData${name}:async(parent,args,{db})=>{
                   const products=await db.${name}.findAll({raw:true})
@@ -960,12 +1060,26 @@ export default{
                   return products
                 },`
                   if(cats1[category].manyToMany==false){
-
+                    
                     content3+=`remove${name}:async(parent,args,{db})=>{
+                      let p
                       try{
-                        const product=await db.${name}.findByPk(args.id)
-                        product.destroy()
+                        if(args.hardDelete==true){
+                          const product=await db.${name}.findByPk(args.id)
+                          product.destroy()
+                          return true
+                        }else{
+                          p=await db.${name}.update({
+                            [args["parentArg"]]:0,
+                            
+                          },
+                          {
+                          where:{id:args.id}
+                          }
+                          
+                        )
                         return true
+                        }
                       }catch(e){
                         console.log("error",e)
                         return false
@@ -981,7 +1095,7 @@ export default{
                 },
                 edit${name}:async(parent,args,{db})=>{
               `
-              if(cats1[category].manyToMany==false){ 
+              if(cats1[category].manyToMany==false){  
                 let noProcess=[]   
                 content3+="let camposDate=[]\n"
                 Object.keys(fields).forEach(k=>{
@@ -1059,7 +1173,7 @@ export default{
               }
 
       
-          try{
+         try{
             WriteToFile(`./models/${name}`,content)
             WriteToFile(`./schema/${name}`,content2)
             WriteToFile(`./resolvers/${name}`,content3)
@@ -1087,6 +1201,8 @@ export default{
      
     }  
   }
-      
+
   
-}
+  }
+
+    

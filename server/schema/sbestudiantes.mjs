@@ -1,39 +1,18 @@
 
           import {gql} from 'apollo-server-express'
 
-          export default gql`type originalmtmsbgrupossbestudiantes{
+          export default gql`type datamtmsbgrupossbestudiantes{
                   clavedelgrupo:String
 
 otmsbmateriassbgruposId:Int
-
-id:Int
 mtmsbestudiantessbgrupos:[datamtmsbestudiantessbgrupos]
-mtmsbgrupossbestudiantesId:Int
-calificacion:Int
-mtmsbestudiantessbgruposId:Int
-                  key:String
-                    
-      
-                }
-                type copymtmsbgrupossbestudiantes{
-                  nombre:String
-boleta:String
-incomingyear:Int
-semesterType:String
-
-
+otmsbgrupossbprofesores:[sbprofesores]
 id:Int
 mtmsbgrupossbestudiantesId:Int
 calificacion:Int
 mtmsbestudiantessbgruposId:Int
                   key:String
-                }
-                type datamtmsbgrupossbestudiantes{
-                  original:originalmtmsbgrupossbestudiantes
-                  copy:copymtmsbgrupossbestudiantes
-                  
-                }
-                type sbestudiantes{
+                },type sbestudiantes{
               
               id:Int
 nombre:String
@@ -64,11 +43,13 @@ estudianteIdGlobalCatQuery:Int,
 estudianteIdFinalCatQuery:Int,
 estudianteIdProductQuery:Int
 ,
+                parentArg:String
                 ):sbestudiantes
               
               
               getDatasbestudiantes:[sbestudiantes]
-removesbestudiantes(id:Int):Boolean!
+removesbestudiantes(id:Int,parentArg:String,
+                  hardDelete:Boolean):Boolean!
 editsbestudiantes(id:Int,
 nombre:String,
 boleta:String,

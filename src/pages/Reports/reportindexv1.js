@@ -3731,21 +3731,27 @@ const getCatPadre=routes=>{
 }
 
 const findFather=(catPadre,route,legRoutes,j)=>{
-  
+  console.log("legroutes99",...legRoutes)
   for(let i=0;i<route.length;i++){
     //console.log("findfather",catPadre,route[i],route[i]==catPadre)
     if(route[i]==catPadre){
-      let res=legRoutes[j][i+1]
+      let res=originalRoutes[j][i+1]
       console.log("findfather4",catPadre,legRoutes,res,legRoutes[j][i+1],legRoutes[j][i+2])
-      let u=`${legRoutes[j][i+2]}total`
+      let u=`${originalRoutes[j][i+2]}total`
       console.log("ufinal",u)
       let res1
-      if(u!=undefined)
-        res1=[res,u]
-      else
-        res1=[res,"final"]
-      route.splice(route.length-1,1)
-      return res1
+      if(res!=undefined){
+         res1=[res,u]
+         if(catPadre.startsWith("get")){
+           console.log("catpadre88",catPadre,legRoutes[j],res)
+         }
+         route.splice(route.length-1,1)
+         return res1
+      }else
+        return -1
+        //res1=[res,"final"]
+      //route.splice(route.length-1,1)
+      //return res1
     }
   }
   return -1
@@ -3753,25 +3759,32 @@ const findFather=(catPadre,route,legRoutes,j)=>{
 
 const calculateSons=(routes,catPadre,legRoutes)=>{
   let res=[]
-  console.log("params routes catpadre",...routes,"esp",catPadre,"esp",routes[0])
+  //console.log("params routes catpadre",...routes,"esp",catPadre,"esp",...legRoutes)
   for(let i=0;i<routes.length;i++){
-    let r1=findFather(catPadre,routes[i],legRoutes,i)
+    let r1=findFather(catPadre,goodRoutes[i],originalRoutes,i)
     if(r1!=-1){
       
       res=[...res,...r1]
+      //console.log("catPadrepor",catPadre,[...routes[i]],res)
     }
   }
-  console.log("params1",res)
+  console.log("params1",catPadre,res)
   return res
 }
+let goodRoutes=[]
+let originalRoutes=[]
 
-const deleteEqualRoutes=(routes,lr)=>{
-  console.log("prevroutes",...routes,"esp",...lr)
+const deleteEqualRoutes=(/*routes,lr*/)=>{
+  //console.log("prevroutes",...routes,"esp",...lr)
   let borrar=[]
-  if(routes.length>1){
+  //goodRoutes=[]
+  //originalRoutes=[]
+  //if(routes.length>1){
+    let routes=goodRoutes
+    let lr=originalRoutes
   for(let i=0;i<routes.length;i++){
     let cur=i
-      if(!borrar.includes(Object.keys(routes)[i])){
+      if(!borrar.includes(i)){
       for(let j=0;j<routes.length;j++){
         console.log("borrar1",borrar,routes[j],borrar.includes(j))
         console.log("keycode",cur,j,j==cur,borrar,j,borrar.includes(j))
@@ -3810,50 +3823,60 @@ const deleteEqualRoutes=(routes,lr)=>{
       }
     }
     }
-  }
+  
   let newRoutes=[]
-  console.log("borrarverif",Object.keys(routes),routes,Object.keys(lr),lr,borrar)
+ //console.log("borrarverif",Object.keys(routes),...routes,Object.keys(lr),...lr,borrar)
   let newLR=[]
+  //if(borrar.length>0){
   for(let nai=0;nai<routes.length;nai++){
     console.log("borrarespec",borrar,nai,borrar.includes(nai),routes[nai])
     if(borrar.includes(nai)==false){
       newRoutes.push(routes[nai])
       
-      console.log("equip",newRoutes,newLR)
+      //console.log("equip",newRoutes,newLR)
     }
     if(borrar.includes(nai)==false){
-      newLR.push(lr[nai])
+    newLR.push(lr[nai])
     }
       
   }
-  routes=newRoutes
-  lr=newLR
-  console.log("newroutes",...routes,"esp",...lr)
+  goodRoutes=newRoutes
+  originalRoutes=newLR
+  //}
+  //console.log("newroutes",...routes,"esp",...lr)
 
-  return routes
+  return goodRoutes
+  //}
 }
 
 const findTheLowerLevelCategory1=(routes,res=[],legRoutes)=>{
   console.log("deroutes1",...routes)
+  goodRoutes=routes
+  originalRoutes=legRoutes
   routes=deleteEqualRoutes(routes,legRoutes)
   console.log("deroutes",...routes)
-  let catPadre=getCatPadre(routes)
+  let catPadre=getCatPadre(goodRoutes)
   console.log("ftllc",...routes,catPadre,res)
-  if(catPadre!==-1){
+  if(catPadre!=-1){
     let sons={}
     if(sons[catPadre]==undefined)
       sons[catPadre]=[]
     //sons[catPadre]=calculateSons(routes,catPadre)
-    if(!catPadre.startsWith("getData"))
-    res=[...res,{[catPadre]:calculateSons(routes,catPadre,legRoutes)},...findTheLowerLevelCategory1(routes,res,legRoutes)]
-    else
-    res=[...res,{[catPadre]:calculateSons(routes,catPadre,legRoutes)}]
+    if(!catPadre.startsWith("getData")){
+      console.log("calcsons")
+      
+    res=[...res,{[catPadre]:calculateSons(goodRoutes,catPadre,originalRoutes)},...findTheLowerLevelCategory1(goodRoutes,res,originalRoutes)]
+    }else{
 
-    
+     //if(catPadre.startsWith("get"))
+      //console.log("yu88",...routes)
+    res=[...res,{[catPadre]:calculateSons(goodRoutes,catPadre,originalRoutes)},...findTheLowerLevelCategory1(goodRoutes,res,originalRoutes)]
+    }
+    //console.log("res555",...res,catPadre,...routes)
     return res
   }else{
 
-  console.log("ressons",res,routes)
+  //console.log("ressons",...res,...routes)
   return res
   }
 }

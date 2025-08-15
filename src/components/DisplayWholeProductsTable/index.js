@@ -11,6 +11,7 @@ import DisplaySingleTable from './DisplaySingleTable'
 import GetQueryManyToManyData, { getMutationManyToManyData } from './DisplaySingleTable/GetQueryManyToManyData'
 import { fieldNameFromStoreName } from '@apollo/client/cache'
 let fieldsNotToDisplay={}
+let alreadyDisplayed=[]
 const callGetFieldsCategory=(field,categories,rep=0,ar="")=>{
   let ui
   const cat=categories.filter(c=>c.id==field.relationCategory)
@@ -28,11 +29,16 @@ let bd
       }else if(x.dataType!=="relationship"){
         return x.name
       }else if(x.dataType=="relationship"){
+        
         if(x.relationship=="onetomany"){
+          console.log("repbu",alreadyDisplayed,"esp",x.name)
+          if(!alreadyDisplayed.includes(x.name)){
+            alreadyDisplayed.push(x.name)
           return `\n${x.name}{\n
             ${callGetFieldsCategory(x,categories)}
           }\n
           `
+          }
         }else if(x.relationship=="manytomany"){
           //console.log("entrrooooo44445")
           /*if(rep+1==2 ){
@@ -42,6 +48,7 @@ let bd
             }
             return ''
           }else{*/
+            
             const ny=categories.filter(c=>c.id==x.relationCategory)[0]
             let nn
             if(ny.name>cat[0].name)
@@ -49,20 +56,22 @@ let bd
             else
               nn=`${ny.name}_${cat[0].name}`
             ui=`mtm${ny.name}${cat[0].name}`
+            if(!alreadyDisplayed.includes(ui)){
+              alreadyDisplayed.push(ui)
             let catm=categories.filter(c=>c.name==nn)[0]
             let newcamps=catm.fields.map(x=>{
               
                 return x.name
             })
             let restcamps=ny.fields.map(x=>{
-              if(x.declaredType=="number" || x.declaredType=="string")
+              if((x.declaredType=="number" || x.declaredType=="string")&& x.relationship!="otmdestiny")
               return x.name
              
            })
            restcamps.push("id")
            let opposite=categories.filter(c=>c.name==cat[0].name)[0]
            let oppositecamps=opposite.fields.map(x=>{
-            if(x.declaredType=="number" || x.declaredType=="string")
+            if((x.declaredType=="number" || x.declaredType=="string" && x.relationship!="otmdestiny"))
               return x.name
            
            })
@@ -90,7 +99,7 @@ let bd
            }*/
           
         }
-
+      }
       }
 
     })
@@ -107,6 +116,7 @@ let bd
 
 const getQueryFromCategory=(productCategories,categories)=>{
   fieldsNotToDisplay={}
+  alreadyDisplayed=[]
   let query=`mutation GetData {`
   //console.log("productcats",productCategories)
   let fields
@@ -127,68 +137,75 @@ const getQueryFromCategory=(productCategories,categories)=>{
         const t1=categories.filter(t=>t.id==x.relationCategory)[0]
       
         if(x.relationship=="onetomany"){
-          return `${x.name}{
-            ${callGetFieldsCategory(x,categories)}
-          }`
+          if(!alreadyDisplayed.includes(x.name)){
+            alreadyDisplayed.push(x.name)
+            return `${x.name}{
+              ${callGetFieldsCategory(x,categories)}
+            }`
+          }
         }else if(x.relationship=="manytomany"){
           //console.log("entro aqQUIW3242341")
           //console.log("xnameee",`mtm${t1.name}${p.name}`)
-          const ar=`mtm${t1.name}${p.name}`
-          let nn
-            if(t1.name>p.name)
-              nn=`${p.name}_${t1.name}`
-            else
-              nn=`${t1.name}_${p.name}`
-            //ui=`mtm${ny.name}${cat[0].name}`
-            let catm=categories.filter(c=>c.name==nn)[0]
-            let newcamps=catm.fields.map(x=>{
-              
-              return x.name
-            })
-            let clavePQ=-1
-            let restcamps=t1.fields.map(x=>{
-              if(x.declaredType=="string" || x.declaredType=="number")
-               return x.name
-              //if(x.dataType=="queryCategory")
-               //return `${x.name}ProductQuery`
-            
-            })
-            restcamps.push("id")
           
-          let opposite=categories.filter(c=>c.name==p.name)[0]
-           let oppositecamps=opposite.fields.map(x=>{
-            if(x.declaredType=="number" ||  x.declaredType=="string")
-              return x.name
-            //if(x.dataType=="queryCategory")
-              //return `${x.name}ProductQuery`
-           
-           })
-  //newcamps.push(clavePQ)
-           oppositecamps.push("id")
-           oppositecamps=[...newcamps,...oppositecamps].join("\n")
-            console.log("newcamps jorge",newcamps,restcamps,[...newcamps,...restcamps].join("\n"),t1.fields)
-            restcamps=[...newcamps,...restcamps].join("\n")
+          const ar=`mtm${t1.name}${p.name}`
+          if(!alreadyDisplayed.includes(ar)){
+            alreadyDisplayed.push(ar)
+            let nn
+              if(t1.name>p.name)
+                nn=`${p.name}_${t1.name}`
+              else
+                nn=`${t1.name}_${p.name}`
+              //ui=`mtm${ny.name}${cat[0].name}`
+              let catm=categories.filter(c=>c.name==nn)[0]
+              let newcamps=catm.fields.map(x=>{
+                
+                return x.name
+              })
+              let clavePQ=-1
+              let restcamps=t1.fields.map(x=>{
+                if((x.declaredType=="string" || x.declaredType=="number")&& x.relationship!="otmdestiny")
+                return x.name
+                //if(x.dataType=="queryCategory")
+                //return `${x.name}ProductQuery`
+              
+              })
+              restcamps.push("id")
             
-          /*return `mtm${t1.name}${p.name}{
-            ${newcamps}\n
-  
-          }`*/
-          /*if(`mtm${t1.name}${p.name}`=="mtmscmateriassccarreras" ||
-           `mtm${t1.name}${p.name}`=="mtmsccarrerasscmaterias"){*/
-            return `mtm${t1.name}${p.name}{\n
-              original{
-              ${restcamps}\n
-              }
-              copy{
-                ${oppositecamps}\n
-              }
-            }`  
-           /*}else{
+            let opposite=categories.filter(c=>c.name==p.name)[0]
+            let oppositecamps=opposite.fields.map(x=>{
+              if((x.declaredType=="number" ||  x.declaredType=="string") && x.relationship!="otmdestiny")
+                return x.name
+              //if(x.dataType=="queryCategory")
+                //return `${x.name}ProductQuery`
             
-            return `mtm${t1.name}${p.name}{\n
-              ${restcamps}\n
-            }`
-           }*/
+            })
+    //newcamps.push(clavePQ)
+            oppositecamps.push("id")
+            oppositecamps=[...newcamps,...oppositecamps].join("\n")
+              console.log("newcamps jorge",newcamps,restcamps,[...newcamps,...restcamps].join("\n"),t1.fields)
+              restcamps=[...newcamps,...restcamps].join("\n")
+              
+            /*return `mtm${t1.name}${p.name}{
+              ${newcamps}\n
+    
+            }`*/
+            /*if(`mtm${t1.name}${p.name}`=="mtmscmateriassccarreras" ||
+            `mtm${t1.name}${p.name}`=="mtmsccarrerasscmaterias"){*/
+              return `mtm${t1.name}${p.name}{\n
+                original{
+                ${restcamps}\n
+                }
+                copy{
+                  ${oppositecamps}\n
+                }
+              }`  
+            /*}else{
+              
+              return `mtm${t1.name}${p.name}{\n
+                ${restcamps}\n
+              }`
+            }*/
+          }
         }
       }
     })
@@ -230,6 +247,8 @@ const DisplayWholeProductsTable = ({
   toggleNewProduct,
   toggleFilter,
   searchProductsFilter,
+  setDqIds,
+  dqIds
   
 }) => {
   let deleteFunctions={}
@@ -438,6 +457,8 @@ const DisplayWholeProductsTable = ({
           nameFieldKey={nameFieldKey}
           nameFieldKeyToDisplay={nameFieldKeyToDisplay}
           nameMutationManyToManyData={nameMutationManyToManyData}
+          setDqIds={setDqIds}
+          dqIds={dqIds}
           />
           )
       }

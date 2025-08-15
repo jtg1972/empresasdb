@@ -27,7 +27,7 @@ export const ViewMainWhereCondition=({
   return <Dialog
     open={open}
     closeDialog={toggleDialog}
-    headline={"Setting main rule of category: "+categoryName+(segment!==""?". Found in segment "+segment:"")+", and in field "+field}
+    headline={"View main rule of category: "+categoryName+(segment!==""?". Found in segment "+segment:"")+", and in field "+field}
     >
 
   {printHeader()}

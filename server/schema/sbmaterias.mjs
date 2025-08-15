@@ -1,102 +1,28 @@
 
           import {gql} from 'apollo-server-express'
 
-          export default gql`type originalmtmsbcarrerassbmaterias{
+          export default gql`type datamtmsbcarrerassbmaterias{
                   carrera:String
 
-
+mtmsbmateriassbcarreras:[datamtmsbmateriassbcarreras]
 otmsbareasbcarrerasId:Int
 id:Int
-mtmsbmateriassbcarreras:[datamtmsbmateriassbcarreras]
 mtmsbcarrerassbmateriasId:Int
 mtmsbmateriassbcarrerasId:Int
 semestre:Int
                   key:String
-                    
-      
-                }
-                type copymtmsbcarrerassbmaterias{
-                  materia:String
-
-
-otmsbareasbmateriasId:Int
-
-
-id:Int
-mtmsbcarrerassbmateriasId:Int
-mtmsbmateriassbcarrerasId:Int
-semestre:Int
-                  key:String
-                }
-                type datamtmsbcarrerassbmaterias{
-                  original:originalmtmsbcarrerassbmaterias
-                  copy:copymtmsbcarrerassbmaterias
-                  
-                }
-                type originalmtmsbcarrerassbmaterias{
-                  carrera:String
-
-
-otmsbareasbcarrerasId:Int
-id:Int
-mtmsbmateriassbcarreras:[datamtmsbmateriassbcarreras]
-mtmsbcarrerassbmateriasId:Int
-mtmsbmateriassbcarrerasId:Int
-semestre:Int
-                  key:String
-                    
-      
-                }
-                type copymtmsbcarrerassbmaterias{
-                  materia:String
-
-
-otmsbareasbmateriasId:Int
-
-
-id:Int
-mtmsbcarrerassbmateriasId:Int
-mtmsbmateriassbcarrerasId:Int
-semestre:Int
-                  key:String
-                }
-                type datamtmsbcarrerassbmaterias{
-                  original:originalmtmsbcarrerassbmaterias
-                  copy:copymtmsbcarrerassbmaterias
-                  
-                }
-                type originalmtmsbprofesoressbmaterias{
+                },type datamtmsbprofesoressbmaterias{
                   nombre:String
 registro:String
-
-
-
-id:Int
+mtmsbareasbprofesores:[datamtmsbareasbprofesores]
 mtmsbmateriassbprofesores:[datamtmsbmateriassbprofesores]
-mtmsbmateriassbprofesoresId:Int
-mtmsbprofesoressbmateriasId:Int
-                  key:String
-                    
-      
-                }
-                type copymtmsbprofesoressbmaterias{
-                  materia:String
-
-
-otmsbareasbmateriasId:Int
-
+otmsbgrupossbprofesoresId:Int
 
 id:Int
 mtmsbmateriassbprofesoresId:Int
 mtmsbprofesoressbmateriasId:Int
                   key:String
-                }
-                type datamtmsbprofesoressbmaterias{
-                  original:originalmtmsbprofesoressbmaterias
-                  copy:copymtmsbprofesoressbmaterias
-                  
-                }
-                type sbmaterias{
+                },type sbmaterias{
               
               id:Int
 materia:String
@@ -125,11 +51,13 @@ materiaIdFinalCatQuery:Int,
 materiaIdProductQuery:Int
 ,otmsbareasbmateriasId:Int,
 
+                parentArg:String
                 ):sbmaterias
               
               
               getDatasbmaterias:[sbmaterias]
-removesbmaterias(id:Int):Boolean!
+removesbmaterias(id:Int,parentArg:String,
+                  hardDelete:Boolean):Boolean!
 editsbmaterias(id:Int,
 materia:String,
 materiaIdGlobalCatQuery:Int,

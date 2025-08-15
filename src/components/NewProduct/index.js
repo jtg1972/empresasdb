@@ -551,7 +551,8 @@ const NewProduct = ({
   isManyToMany,
   relationCategory,
   parentRelation,
-  parentCatId
+  parentCatId,
+  dataQueryIds
   
 }) => {
   const [editFields,setEditFields]=useState({})
@@ -571,6 +572,7 @@ const NewProduct = ({
   const [addRecGlobal,setAddRecGlobal]=useState({})
   const [groupRecsGlobal,setGroupRecsGlobal]=useState([])
    console.log("indexesmtm",indexes) 
+   console.log("dataqueryids",dataQueryIds)
   useEffect(()=>{
     if(titulo.startsWith("mtm")){
       pR=categories.filter(x=>x.id==parentRelation)[0]
@@ -976,6 +978,14 @@ const NewProduct = ({
   const simpleUpdateStateHere=(cp1,reg,titulo,c1,i)=>{
     let cp=cp1
     let st=cp[c1[0]][i[0]]
+    
+    let newi=[]
+    for(let j=0;j<i.length;j++){
+      if(i[j]!=undefined)
+        newi.push(i[j])
+    }
+    i=newi
+    console.log("rou8900",c1,i)
     if(titulo.startsWith("getData")){
       cp={...cp,[titulo]:[...cp[titulo],reg]}
     }else{
@@ -1106,7 +1116,7 @@ const NewProduct = ({
   
   const buttonClick=()=>{
     if(titulo.startsWith("mtm")){
-      console.log("x1")
+      console.log("xfields",fields)
       addProduct3({
         variables:{
           ...fields

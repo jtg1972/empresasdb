@@ -1,42 +1,25 @@
 
           import {gql} from 'apollo-server-express'
 
-          export default gql`type originalmtmsbprofesoressbarea{
+          export default gql`type datamtmsbprofesoressbarea{
                   nombre:String
 registro:String
-
-
-id:Int
 mtmsbareasbprofesores:[datamtmsbareasbprofesores]
-mtmsbprofesoressbareaId:Int
-mtmsbareasbprofesoresId:Int
-                  key:String
-                    
-      
-                }
-                type copymtmsbprofesoressbarea{
-                  area:String
-
-
+mtmsbmateriassbprofesores:[datamtmsbmateriassbprofesores]
+otmsbgrupossbprofesoresId:Int
 
 id:Int
 mtmsbprofesoressbareaId:Int
 mtmsbareasbprofesoresId:Int
                   key:String
-                }
-                type datamtmsbprofesoressbarea{
-                  original:originalmtmsbprofesoressbarea
-                  copy:copymtmsbprofesoressbarea
-                  
-                }
-                type sbarea{
+                },type sbarea{
               
               id:Int
 area:String
 otmsbareasbcarreras:[sbcarreras]
 otmsbareasbmaterias:[sbmaterias]
 mtmsbprofesoressbarea:[datamtmsbprofesoressbarea],
-
+whereClauses:String
             }
 
             type Query{
@@ -50,11 +33,13 @@ mtmsbprofesoressbarea:[datamtmsbprofesoressbarea],
                 id:Int,
 area:String,
 
+                parentArg:String
                 ):sbarea
               
               
-              getDatasbarea:[sbarea]
-removesbarea(id:Int):Boolean!
+              getDatasbarea(whereClauses:String):[sbarea]
+removesbarea(id:Int,parentArg:String,
+                  hardDelete:Boolean):Boolean!
 editsbarea(id:Int,
 area:String,
 ):sbarea

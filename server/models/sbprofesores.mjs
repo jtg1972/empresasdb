@@ -14,6 +14,10 @@ import Sequelize from 'sequelize'
                 type:DataTypes.STRING,
                 defaultValue:""
               },
+		 otmsbgrupossbprofesoresId:{
+                type:DataTypes.INTEGER,
+                defaultValue:0
+              },
 		 profesorIdGlobalCatQuery:DataTypes.INTEGER,
 		 profesorIdFinalCatQuery:DataTypes.INTEGER,
 		 profesorIdProductQuery:DataTypes.INTEGER},{sequelize})

@@ -1,37 +1,19 @@
 
           import {gql} from 'apollo-server-express'
 
-          export default gql`type originalmtmsbmateriassbcarreras{
+          export default gql`type datamtmsbmateriassbcarreras{
                   materia:String
 
-
-otmsbareasbmateriasId:Int
-id:Int
 mtmsbcarrerassbmaterias:[datamtmsbcarrerassbmaterias]
-mtmsbcarrerassbmateriasId:Int
-mtmsbmateriassbcarrerasId:Int
-semestre:Int
-                  key:String
-                    
-      
-                }
-                type copymtmsbmateriassbcarreras{
-                  carrera:String
-
-
-otmsbareasbcarrerasId:Int
+otmsbareasbmateriasId:Int
+otmsbmateriassbgrupos:[sbgrupos]
+mtmsbprofesoressbmaterias:[datamtmsbprofesoressbmaterias]
 id:Int
 mtmsbcarrerassbmateriasId:Int
 mtmsbmateriassbcarrerasId:Int
 semestre:Int
                   key:String
-                }
-                type datamtmsbmateriassbcarreras{
-                  original:originalmtmsbmateriassbcarreras
-                  copy:copymtmsbmateriassbcarreras
-                  
-                }
-                type sbcarreras{
+                },type sbcarreras{
               
               id:Int
 carrera:String
@@ -40,6 +22,7 @@ carreraIdFinalCatQuery:Int
 carreraIdProductQuery:Int
 mtmsbmateriassbcarreras:[datamtmsbmateriassbcarreras],
 otmsbareasbcarrerasId:Int
+whereClauses:String
 
             }
 
@@ -58,11 +41,13 @@ carreraIdFinalCatQuery:Int,
 carreraIdProductQuery:Int
 ,otmsbareasbcarrerasId:Int,
 
+                parentArg:String
                 ):sbcarreras
               
               
               getDatasbcarreras:[sbcarreras]
-removesbcarreras(id:Int):Boolean!
+removesbcarreras(id:Int,parentArg:String,
+                  hardDelete:Boolean):Boolean!
 editsbcarreras(id:Int,
 carrera:String,
 carreraIdGlobalCatQuery:Int,

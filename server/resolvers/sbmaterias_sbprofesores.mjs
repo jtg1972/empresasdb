@@ -118,7 +118,7 @@
                 return {original:{...alumno[0],...product,key:"mtmsbmateriassbprofesores"},
                 copy:{...profesor[0],...product,key:"mtmsbprofesoressbmaterias"}}
               }catch(e){
-                console.log("error",e)
+                console.log("errorjor",e)
               }
             },
             createdatamtmsbprofesoressbmaterias:async(parent,args,{db})=>{
@@ -141,7 +141,7 @@
                 return {original:{...alumno[0],...product,key:"mtmsbprofesoressbmaterias"},
                 copy:{...profesor[0],...product,key:"mtmsbmateriassbprofesores"}}
               }catch(e){
-                console.log("error",e)
+                console.log("errorjor",e)
               }
             },editdatamtmsbmateriassbprofesores:async(parent,args,{db})=>{
               let rec=await db.sbmaterias_sbprofesores.update({

@@ -11,6 +11,7 @@ import { ApolloProvider } from "@apollo/client";
 import MainLayoutProducts from "./layouts/MainLayoutProducts";
 import store from './redux/store'
 import "react-datetime/css/react-datetime.css"
+import NewDetailProduct from "./pages/NewDetailProduct";
 
 const App=()=>(
   <Provider store={store}>
@@ -27,7 +28,8 @@ const App=()=>(
             <Route exact path="/categories/"
             element={
               <MainLayoutProducts>
-                <DetailedProduct/>
+                {/*<DetailedProduct/>*/}
+                <NewDetailProduct/>
               </MainLayoutProducts>
             }/>
             <Route exact path="/reports/"

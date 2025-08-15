@@ -136,7 +136,8 @@ const DetailedProduct = () => {
   const [relationCategory,setRelationCategory]=useState(-1)
   const [parentRelation,setParentRelation]=useState(-1)
   const [parentCatId,setParentCatId]=useState(-1)
-  const toggleNewProduct=(rc,ti,ps,tit,pid,iMtM,relCat,pr,pcid)=>{
+  const [dqIds,setDqIds]=useState([])
+  const toggleNewProduct=(rc,ti,ps,tit,pid,iMtM,relCat,pr,pcid,dataQueryIds)=>{
     //console.log("parentcatIddetprod",pcid)
     setRespCat1(rc)
     setTableIndexes(ti)
@@ -148,7 +149,7 @@ const DetailedProduct = () => {
     setParentRelation(pr)
     setParentCatId(pcid)
     setOpenNewProduct(!openNewProduct)
-    
+    setDqIds(dataQueryIds)
     
   }
   const [openFilter,setOpenFilter]=useState(false)
@@ -289,6 +290,7 @@ const DetailedProduct = () => {
         relationCategory={relationCategory}
         parentRelation={parentRelation}
         parentCatId={parentCatId}
+        dataQueryIds={dqIds}
       />
       }
       {/*currentCategoryId!==0 &&
@@ -318,6 +320,8 @@ const DetailedProduct = () => {
       toggleNewProduct={toggleNewProduct}
       toggleFilter={toggleFilter}
       searchProductsFilter={searchProductsFilter}
+      setDqIds={setDqIds}
+      dqIds={dqIds}
       />}
 
       {currentCategoryId!=0 &&

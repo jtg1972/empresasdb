@@ -80,7 +80,9 @@ const DisplaySingleTable = ({
   mutMtmData,
   nameFieldKey,
   nameFieldKeyToDisplay,
-  nameMutationManyToManyData
+  nameMutationManyToManyData,
+  setDqIds,
+  dqIds,
   })=>{
     //console.log("productsmain",products)
     //console.log("parentcatid Singletable",parentCatId)
@@ -97,7 +99,8 @@ const DisplaySingleTable = ({
     categories,
     currentCategory,
     mtmRoutes,
-    indexes
+    indexes,
+    
   }=useSelector(mapToState)
     
     useEffect(()=>{
@@ -842,6 +845,7 @@ const formatDate=(d,m,y)=>{
   let valueVar2
 
   const res=()=>{
+    let prodQueryIds=[]
     //console.log("displtable",products,respCat)
     let parentCategory1
     let headers2={}
@@ -871,8 +875,9 @@ const formatDate=(d,m,y)=>{
         marginBottom:"10px"
       }}
       onClick={()=>{
-        console.log("parentRelatiion1",parentRelation)
-        toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId,isManyToMany,relationCategory,parentRelation,parentCatId)
+        console.log("parentRelatiion1",parentRelation,dqIds)
+        toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId,isManyToMany,relationCategory,parentRelation,parentCatId,dqIds)
+      
       }
       }
       >Add Record of {respCat.name}</FormButton>)
@@ -1029,15 +1034,19 @@ const formatDate=(d,m,y)=>{
                 data.push(<td>{disp}</td>)
                 //}
               }else if(fs[0].dataType=="queryCategory" && fs[0].declaredType=="number"){
-                if(route?.[camp?.[c]]!=undefined)
-                data.push(<td>{route[camp[c]]}</td>)
+                if(route?.[camp?.[c]]!=undefined){
+                  prodQueryIds.push(route[camp[c]])
+                  data.push(<td>{route[camp[c]]}</td>)
+                }
               }else if(fs[0].dataType=="queryCategory"){
                 let x=`${camp[c]}ProductQuery`
                 console.log("imp",x,`${products[p][x]}`)
                 //data.push(<td>{products[p][`${products[p][camp[c]]}GlobalCatQuery`]}</td>)
                 //data.push(<td>{products[p][`${products[p][camp[c]]}FinalCatQuery`]}</td>)
-                if(route?.[x]!=undefined)
+                if(route?.[x]!=undefined){
                 data.push(<td>{route[x]}</td>)
+                prodQueryIds.push(route[x])
+                }
               }else {
                 //if(titulo=="mtmscprofesoresscmaterias") 
                 //console.log("chekjorge",route,camp[c],route[camp[c]])
@@ -1172,8 +1181,10 @@ const formatDate=(d,m,y)=>{
             marginBottom:"10px"
           }}
           onClick={()=>{
+            console.log("prodqueryids",prodQueryIds)
+            setDqIds(prodQueryIds)
             //console.log("parentcadid single table",parentCatId)
-            toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId,isManyToMany,relationCategory,parentRelation,parentCatId)}
+            toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId,isManyToMany,relationCategory,parentRelation,parentCatId,dqIds)}
           }
           >Add Record of {respCat.name}
           </FormButton>

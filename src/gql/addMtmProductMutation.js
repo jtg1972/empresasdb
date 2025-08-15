@@ -119,8 +119,8 @@ export default (category,categories,titleMutation,crec,copy)=>{
         ncent.join("\n")
         campos.push(`${na}{${ncent}}`)
       }
-    }else*/ if(cr.declaredType=="number" ||
-    cr.declaredType=="string"){
+    }else*/ if((cr.declaredType=="number" ||
+    cr.declaredType=="string") && cr.relationship!="otmdestiny"){
       campRelOrig.push(`${cr.name}`)
     }/*else if(cr.dataType=="queryCategory"){
       campRelOrig.push(`${cr.name}GlobalCatQuery`)
@@ -134,8 +134,8 @@ export default (category,categories,titleMutation,crec,copy)=>{
   campRelOrig=campRelOrig.join("\n")
   let campRelCopy=[]
   copy?.["fields"]?.forEach(cr=>{
-    if(cr.declaredType=="number" ||
-    cr.declaredType=="string"){
+    if((cr.declaredType=="number" ||
+    cr.declaredType=="string") && cr.relationship!="otmdestiny"){
       campRelCopy.push(`${cr.name}`)
     }/*else if(cr.dataType=="queryCategory"){
       campRelCopy.push(`${cr.name}GlobalCatQuery`)

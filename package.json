@@ -34,6 +34,7 @@
     "redux-thunk": "^2.3.0",
     "sass": "^1.42.1",
     "select2-react-component": "^6.1.1",
+    "sequelize": "^6.37.7",
     "web-vitals": "^1.1.2"
   },
   "scripts": {

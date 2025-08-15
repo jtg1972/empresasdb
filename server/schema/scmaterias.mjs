@@ -56,7 +56,7 @@ otmscmateriasscgrupos:[scgrupos]
               
             }
             type Mutation{
-            
+              
               createscmaterias(
                 id:Int,
 materia:String,
