@@ -10,6 +10,7 @@ id:Int
 mtmsbprofesoressbareaId:Int
 mtmsbareasbprofesoresId:Int
                   key:String
+                  otherKey:String
                 },type datamtmsbmateriassbprofesores{
                   materia:String
 
@@ -21,6 +22,7 @@ id:Int
 mtmsbmateriassbprofesoresId:Int
 mtmsbprofesoressbmateriasId:Int
                   key:String
+                  otherKey:String
                 },type sbprofesores{
               
               id:Int
@@ -33,6 +35,7 @@ profesorIdGlobalCatQuery:Int
 profesorIdFinalCatQuery:Int
 profesorIdProductQuery:Int
 
+              whereClauses:String
             }
 
             type Query{
@@ -55,7 +58,7 @@ profesorIdProductQuery:Int
                 ):sbprofesores
               
               
-              getDatasbprofesores:[sbprofesores]
+              getDatasbprofesores(whereClauses:String):[sbprofesores]
 removesbprofesores(id:Int,parentArg:String,
                   hardDelete:Boolean):Boolean!
 editsbprofesores(id:Int,

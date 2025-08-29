@@ -12,6 +12,7 @@ id:Int
 mtmsbprofesoressbareaId:Int
 mtmsbareasbprofesoresId:Int
                   key:String
+                  otherKey:String
                 },type sbarea{
               
               id:Int
@@ -19,7 +20,8 @@ area:String
 otmsbareasbcarreras:[sbcarreras]
 otmsbareasbmaterias:[sbmaterias]
 mtmsbprofesoressbarea:[datamtmsbprofesoressbarea],
-whereClauses:String
+
+              whereClauses:String
             }
 
             type Query{

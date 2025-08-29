@@ -1,81 +1,163 @@
 
             import {Op} from 'sequelize'
+            import {codifyRuleMtm} from './../utils/whereClauses/index.mjs'
+            import codifyRule from './../utils/whereClauses/index.mjs'
             export default{
           datamtmsbestudiantessbgrupos:{
                   mtmsbgrupossbestudiantes:async(parent,args,{db})=>{
-                      
-                        const products=await db.sbestudiantes_sbgrupos.findAll({
-                          where:{mtmsbestudiantessbgruposId:parent.id},
+                        let products=[]
+                        let whereClauses=JSON.parse(parent.whereClauses)
+                        let singleWhere={}
+                        let sharedWhere={}
+                        if(whereClauses!=undefined &&
+                          whereClauses?.["mtmsbgrupossbestudiantes"]?.["single"]?.["main"]!=undefined &&
+                          whereClauses?.["mtmsbgrupossbestudiantes"]?.["single"]?.["main"]!="none"
+                        ){
+                          singleWhere=codifyRuleMtm(whereClauses,"mtmsbgrupossbestudiantes","single")
+                        }
+                        if(whereClauses!=undefined &&
+                          whereClauses?.["mtmsbgrupossbestudiantes"]?.["shared"]?.["main"]!=undefined &&
+                          whereClauses?.["mtmsbgrupossbestudiantes"]?.["shared"]?.["main"]!="none"
+                        ){
+                          sharedWhere=codifyRuleMtm(whereClauses,"mtmsbgrupossbestudiantes","shared")
+                        }
+                        products=await db.sbestudiantes.findAll({
+                          where:{id:parent.id},
+                          include:{
+                            required:false,
+                            model:db.sbgrupos,
+                            where:{
+                              ...singleWhere
+                            },
+                            through:{
+                              model:db.sbestudiantes_sbgrupos,
+                              where:{
+                                ...sharedWhere
+                              }
+                            }
+                          },
                           raw:true
                         })
-                        let oneside=await db.sbestudiantes.findAll({
-                          where:{
-                            id:parent.id
-                          },raw:true
+                        let objeto={}
+                        let res=[]
+                        products=products.forEach(x=>{
+                          objeto={}
+                          let keys=Object.keys(x)
+                          for(let k=0;k<keys.length;k++){
+                            let lastSegmentPos=keys[k].lastIndexOf(".")
+                            let lastSegmentText=keys[k].substring(lastSegmentPos+1)
+                            console.log("lastsegkey",lastSegmentText,lastSegmentPos)
+                            objeto[lastSegmentText]=x[keys[k]]
+                          }
+                          objeto["id"]=x["sbgrupos.id"]
+                          objeto.mtmsbestudiantessbgruposId=x["id"]
+                          if(objeto["mtmsbgrupossbestudiantesId"]!=null)
+                            res.push(objeto)
                         })
-                        const cd=products.map(c=>c["mtmsbgrupossbestudiantesId"])
-                        console.log("cdddd",cd)
-                        let recs=await db.sbgrupos.findAll({where:{id:{[Op.in]:cd}},raw:true})
-                        let final=products.map(r=>{
-                          
-                          let p=recs.filter(t=>t.id==r.mtmsbgrupossbestudiantesId)[0]
-                          
-                          return {
-                            
-                              ...r,...p,
-                              key:"mtmsbgrupossbestudiantes"
-                            }
-                           
-                        })
-                        return final
-                      
+                        res.map(o=>({
+                          ...o,
+                          whereClauses:parent.whereClauses,
+                          key:"mtmsbgrupossbestudiantes",
+                          otherKey:"mtmsbestudiantessbgrupos"
+
+
+                        }))
+                        return res
 
                     }
                 }  
                 ,
 sbgrupos:{
               otmsbgrupossbprofesores:async(parent,args,{db})=>{
-                    const x=await db.sbprofesores.findAll({
-                      where:{otmsbgrupossbprofesoresId:parent.id},
+                    let nj=JSON.parse(args.whereClauses)
+                    let wc={}
+                    if(parent.whereClauses!=undefined &&
+                      parent.whereClauses["otmsbgrupossbprofesores"] &&
+                      parent.whereClauses["otmsbgrupossbprofesores"]["main"]!=undefined &&
+                      parent.whereClauses["otmsbgrupossbprofesores"]["main"]!="none"
+                    ){
+                      wc=codifyRule(nj,"otmsbgrupossbprofesores")
+                      
+                    }
+                    let products=db.sbgrupos.findAll({
+                      where:{[Op.and]:[{otmsbgrupossbprofesoresId:parent.id},{...wc}]},
                       raw:true
+
                     })
-                    
-                    return x
+                    products=products.map(x=>({
+                      ...x,whereClauses:parent.whereClauses
+                    }))
+                    return products
                   },
               mtmsbestudiantessbgrupos:async(parent,args,{db})=>{
-                    const products=await db.sbestudiantes_sbgrupos.findAll({
-                      where:{mtmsbgrupossbestudiantesId:parent.id},
+                    let products=[]
+                    let whereClauses=JSON.parse(parent.whereClauses)
+                    let singleWhere={}
+                    let sharedWhere={}
+                    if(whereClauses!=undefined &&
+                      whereClauses?.["mtmsbestudiantessbgrupos"]?.["single"]?.["main"]!=undefined &&
+                      whereClauses?.["mtmsbestudiantessbgrupos"]?.["single"]?.["main"]!="none"
+                    ){
+                      singleWhere=codifyRuleMtm(whereClauses,"mtmsbestudiantessbgrupos","single")
+                    }
+                    if(whereClauses!=undefined &&
+                      whereClauses?.["mtmsbestudiantessbgrupos"]?.["shared"]?.["main"]!=undefined &&
+                      whereClauses?.["mtmsbestudiantessbgrupos"]?.["shared"]?.["main"]!="none"
+                    ){
+                      sharedWhere=codifyRuleMtm(whereClauses,"mtmsbestudiantessbgrupos","shared")
+                    }
+                    products=await db.sbgrupos.findAll({
+                      where:{id:parent.id},
+                      include:{
+                        required:false,
+                        model:db.sbestudiantes,
+                        where:{
+                          ...singleWhere
+                        },
+                        through:{
+                          model:db.sbestudiantes_sbgrupos,
+                          where:{
+                            ...sharedWhere
+                          }
+                        }
+                      },
                       raw:true
                     })
-                    let oneside=await db.sbgrupos.findAll({
-                      where:{
-                        id:parent.id
-                      },raw:true
+                    let objeto={}
+                    let res=[]
+                    products=products.forEach(x=>{
+                      objeto={}
+                      let keys=Object.keys(x)
+                      for(let k=0;k<keys.length;k++){
+                        let lastSegmentPos=keys[k].lastIndexOf(".")
+                        let lastSegmentText=keys[k].substring(lastSegmentPos+1)
+                        console.log("lastsegkey",lastSegmentText,lastSegmentPos)
+                        objeto[lastSegmentText]=x[keys[k]]
+                      }
+                      objeto["id"]=x["sbestudiantes.id"]
+                      objeto.mtmsbgrupossbestudiantesId=x["id"]
+                      if(objeto["mtmsbestudiantessbgruposId"]!=null)
+                        res.push(objeto)
                     })
-                    const cd=products.map(c=>c["mtmsbestudiantessbgruposId"])
-                    console.log("cdddd",cd)
-                    let recs=await db.sbestudiantes.findAll({where:{id:{[Op.in]:cd}},raw:true})
-                    let final=products.map(r=>{
-                      
-                      let p=recs.filter(t=>t.id==r.mtmsbestudiantessbgruposId)[0]
-                      
-                      return {
-                        
-                          ...r,...p,
-                          key:"mtmsbestudiantessbgrupos"
-                        }
-                       
-                    })
-                    return final
-                  },
-                  
+                    res.map(o=>({
+                      ...o,
+                      whereClauses:parent.whereClauses,
+                      key:"mtmsbestudiantessbgrupos",
+                      otherKey:"mtmsbgrupossbestudiantes"
+
+
+                    }))
+                    return res
+
+                },
             },
             Query:{
                 sbgrupos:async(parent,args,{db})=>{
                   const products=await db.sbgrupos.findAll()
                   return products     
                 }
-              },Mutation:{
+              },
+              Mutation:{
                 
                 
 
@@ -102,8 +184,21 @@ sbgrupos:{
               },
                
                 getDatasbgrupos:async(parent,args,{db})=>{
-                  const products=await db.sbgrupos.findAll({raw:true})
-                  
+                  let nj={}
+                  if(args.whereClauses!=""){
+                    nj=JSON.parse(args.whereClauses)
+                  }
+                  let condWhere={}
+                  if(nj?.sbgrupos?.["main"]!=undefined &&
+                  nj?.sbgrupos?.["main"]!="none")
+                    condWhere=codifyRule(nj,sbgrupos)
+                  let products=await db.sbgrupos.findAll({
+                    raw:true,
+                    where:{...condWhere}
+                  })
+                  products=products.map(x=>({
+                    ...x,whereClauses:args.whereClauses
+                  }))
                   return products
                 },removesbgrupos:async(parent,args,{db})=>{
                       let p

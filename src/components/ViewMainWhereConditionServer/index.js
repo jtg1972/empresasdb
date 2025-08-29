@@ -10,7 +10,9 @@ export const ViewMainWhereConditionServer=({
   categoryName,
   segment,
   field,
-  rule
+  rule,
+  relationshipType,
+  subVar
 })=>{
   console.log("entroaquisisi")
 
@@ -34,9 +36,12 @@ export const ViewMainWhereConditionServer=({
   {printHeader()}
   <div style={{display:"flex",flexDirection:"row",
   width:"100%",flexGrow:0}}>
-    
+    {relationshipType!="manytomany"?
     <p style={{color:"black"}}>{conditionsWhere[categoryName]?.["main"]?.["rule"]==undefined?"none":conditionsWhere[categoryName]?.["main"]?.["rule"]  
     }</p>
+    :<p style={{color:"black"}}>{conditionsWhere[categoryName]?.[subVar]?.["main"]?.["rule"]==undefined?"none":conditionsWhere[categoryName]?.[subVar]?.["main"]?.["rule"]  
+    }</p>
+    }
     </div>
     </Dialog>
       

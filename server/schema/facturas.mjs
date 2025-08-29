@@ -1,6 +1,6 @@
 
           import {gql} from 'apollo-server-express'
-
+          
           export default gql`type facturas{
               
               id:Int
@@ -27,7 +27,7 @@ invoiceDate:String,
                 ):facturas
               
               
-              getDatafacturas:[facturas]
+              getDatafacturas(whereClauses:String):[facturas]
 removefacturas(id:Int):Boolean!
 editfacturas(id:Int,
 otmclientesfacturasId:Int,

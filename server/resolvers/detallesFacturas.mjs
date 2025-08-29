@@ -1,5 +1,6 @@
 
             import {Op} from 'sequelize'
+            import codifyRule from './../utils/whereClauses/index.mjs'
             export default{
           detallesFacturas:{
               otmdetallesFacturassondetprod:async(parent,args,{db})=>{
@@ -25,8 +26,30 @@
                 },
                
                 getDatadetallesFacturas:async(parent,args,{db})=>{
-                  const products=await db.detallesFacturas.findAll({raw:true})
+                  /*const products=await db.detallesFacturas.findAll({raw:true})
                   
+                  return products*/
+                  if(args.whereClauses!=""){
+                    console.log("nj",args.whereClauses,JSON.parse(args.whereClauses))
+                    let nj=JSON.parse(args.whereClauses)
+                    if(nj?.["detallesFacturas"]?.["main"]!=undefined && nj?.["detallesFacturas"]?.["main"]!="none"){
+                      console.log("nj",nj)
+                      //let getRules=gr(args.rules)
+                      //let products=await db.sbarea.findAll({raw:true,where:nj["sbarea"]})
+                      let products=await db.detallesFacturas.findAll({
+                        where:{...codifyRule(JSON.parse(args.whereClauses),"detallesFacturas")},
+                        raw:true})
+                      products=products.map(x=>{
+                        return {...x,whereClauses:args.whereClauses}
+                      })
+                      return products
+                    }
+                  }
+                  
+                  let products=await db.detallesFacturas.findAll({raw:true})
+                  products=products.map(x=>{
+                    return {...x,whereClauses:args.whereClauses}
+                  })
                   return products
                 },removedetallesFacturas:async(parent,args,{db})=>{
                       try{

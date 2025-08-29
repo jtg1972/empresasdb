@@ -109,6 +109,8 @@ export const WhereStatementStringServerDialog = ({
   segment,
   setConditionsWhere,
   conditionsWhere,
+  relationshipType,
+  subVar,
   comboDataSt,
   setComboDataSt,
   otmCategoryFields,
@@ -574,37 +576,79 @@ export const WhereStatementStringServerDialog = ({
   }
   const addCondition=()=>{
     let mapeo=conditionsWhere
-    if(mapeo[categoryName]==undefined){
-      mapeo={...mapeo,[categoryName]:{}}
-    }
-    /*if(mapeo[categoryName][segment]==undefined){
-      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],[segment]:{}}}
-    }*/
-    if(mapeo[categoryName][fieldName]==undefined){
-      mapeo={...mapeo,
-        [categoryName]:{
-          ...mapeo[categoryName],
-          [fieldName]:{
+    if(relationshipType!="manytomany"){
+      if(mapeo[categoryName]==undefined){
+        mapeo={...mapeo,[categoryName]:{}}
+      }
+      /*if(mapeo[categoryName][segment]==undefined){
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],[segment]:{}}}
+      }*/
+      if(mapeo[categoryName][fieldName]==undefined){
+        mapeo={...mapeo,
+          [categoryName]:{
+            ...mapeo[categoryName],
+            [fieldName]:{
 
+            }
           }
         }
       }
-    }
-    
-    
-    mapeo={
-      ...mapeo,[categoryName]:{
-        ...mapeo[categoryName],
-        [fieldName]:{
-          ...mapeo[categoryName][fieldName],
-          [nameWhereClause]:{
-            name:nameWhereClause,
-            rule:addConditionWhereArray
-          },
-          type:"string",
-          categoryName,
-          fieldName
+      
+      
+      mapeo={
+        ...mapeo,[categoryName]:{
+          ...mapeo[categoryName],
+          [fieldName]:{
+            ...mapeo[categoryName][fieldName],
+            [nameWhereClause]:{
+              name:nameWhereClause,
+              rule:addConditionWhereArray
+            },
+            type:"string",
+            categoryName,
+            fieldName
+          }
         }
+      }
+    }else{
+      mapeo=conditionsWhere
+      if(mapeo[categoryName]==undefined){
+        mapeo={...mapeo,[categoryName]:{}}
+      }
+      if(mapeo[categoryName][subVar]==undefined){
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],
+          [subVar]:{
+            
+
+        }}}
+      }
+      if(mapeo[categoryName][subVar][fieldName]==undefined){
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],
+          [subVar]:{
+            ...mapeo[categoryName][subVar],
+            [fieldName]:{}
+
+        }}}
+      }
+      mapeo={
+        ...mapeo,[categoryName]:{
+          ...mapeo[categoryName],
+          [subVar]:{
+            ...mapeo[categoryName][subVar],
+          
+            [fieldName]:{
+              ...mapeo[categoryName][subVar][fieldName],
+              [nameWhereClause]:{
+                name:nameWhereClause,
+                rule:addConditionWhereArray
+              },
+              type:"string",
+            categoryName,
+            fieldName
+            }
+          }
+        }
+      
       }
     }
   

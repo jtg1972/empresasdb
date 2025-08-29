@@ -413,7 +413,7 @@ export default{
                       c=`${respCat.name}_${n.name}`
                     else
                       c=`${n.name}_${respCat.name}`
-                    arrMtmResolver.push(`mtm${n.name}${respCat.name}:async(parent,args,{db})=>{
+                    /*estaba anterior arrMtmResolver.push(`mtm${n.name}${respCat.name}:async(parent,args,{db})=>{
                       
                         const products=await db.${c}.findAll({
                           where:{mtm${respCat.name}${n.name}Id:parent.id},
@@ -441,22 +441,204 @@ export default{
                         return final
                       
 
+                    }`)*/
+                    arrMtmResolver.push(`mtm${n.name}${respCat.name}:async(parent,args,{db})=>{
+                        let products=[]
+                        let whereClauses=JSON.parse(parent.whereClauses)
+                        let singleWhere={}
+                        let sharedWhere={}
+                        if(whereClauses!=undefined &&
+                          whereClauses?.["mtm${n.name}${respCat.name}"]?.["single"]?.["main"]!=undefined &&
+                          whereClauses?.["mtm${n.name}${respCat.name}"]?.["single"]?.["main"]!="none"
+                        ){
+                          singleWhere=codifyRuleMtm(whereClauses,"mtm${n.name}${respCat.name}","single")
+                        }
+                        if(whereClauses!=undefined &&
+                          whereClauses?.["mtm${n.name}${respCat.name}"]?.["shared"]?.["main"]!=undefined &&
+                          whereClauses?.["mtm${n.name}${respCat.name}"]?.["shared"]?.["main"]!="none"
+                        ){
+                          sharedWhere=codifyRuleMtm(whereClauses,"mtm${n.name}${respCat.name}","shared")
+                        }
+                        products=await db.${respCat.name}.findAll({
+                          where:{id:parent.id},
+                          include:{
+                            required:false,
+                            model:db.${n.name},
+                            where:{
+                              ...singleWhere
+                            },
+                            through:{
+                              model:db.${c},
+                              where:{
+                                ...sharedWhere
+                              }
+                            }
+                          },
+                          raw:true
+                        })
+                        let objeto={}
+                        let res=[]
+                        products=products.forEach(x=>{
+                          objeto={}
+                          let keys=Object.keys(x)
+                          for(let k=0;k<keys.length;k++){
+                            let lastSegmentPos=keys[k].lastIndexOf(".")
+                            let lastSegmentText=keys[k].substring(lastSegmentPos+1)
+                            console.log("lastsegkey",lastSegmentText,lastSegmentPos)
+                            objeto[lastSegmentText]=x[keys[k]]
+                          }
+                          objeto["id"]=x["${n.name}.id"]
+                          objeto.mtm${respCat.name}${n.name}Id=x["id"]
+                          if(objeto["mtm${n.name}${respCat.name}Id"]!=null)
+                            res.push(objeto)
+                        })
+                        res.map(o=>({
+                          ...o,
+                          whereClauses:parent.whereClauses,
+                          key:"mtm${n.name}${respCat.name}",
+                          otherKey:"mtm${respCat.name}${n.name}"
+
+
+                        }))
+                        return res
+
                     }`)
                     return `${r.name}:[data${r.name}]`
+                    /*prototiponuevo
+                    mtmsbestudiantessbgrupos:async(parent,args,{db})=>{
+                let products=[]
+                
+                let whereClauses=JSON.parse(parent.whereClauses)
+                console.log("parentwherec1",whereClauses,parent)
+                console.log("parentwherec11",whereClauses["mtmsbestudiantessbgrupos"]?.main)
+                let singleWhere={}
+                let sharedWhere={}
+                if(whereClauses!=undefined && 
+                  whereClauses?.["mtmsbestudiantessbgrupos"]?.["single"]?.["main"]!=undefined &&
+                  whereClauses?.["mtmsbestudiantessbgrupos"]?.["single"]?.["main"]!="none"){
+                  singleWhere=codifyRuleMtm(whereClauses,"mtmsbestudiantessbgrupos","single")
+                }
+                if(whereClauses!=undefined && 
+                  whereClauses?.["mtmsbestudiantessbgrupos"]?.["shared"]?.["main"]!=undefined &&
+                  whereClauses?.["mtmsbestudiantessbgrupos"]?.["shared"]?.["main"]!="none"){
+                  sharedWhere=codifyRuleMtm(whereClauses,"mtmsbestudiantessbgrupos","shared")
+                }
+                  
+                  
+                  
+                  products=await db.sbgrupos.findAll({
+                    where:{id:parent.id},
+                    include:{
+                      required:false,
+                      model:db.sbestudiantes,
+                      required:false,
+                      where:{...singleWhere},//nombre:{[Op.like]:"t%"}},
+                      through:{
+                        model:db.sbestudiantes_sbgrupos,
+                        
+                          where:{
+                            ...sharedWhere
+                              
+                          },
+                        }
+                        
+                       
+                      
+                      },
+                    raw:true
+                  })
+              console.log("prodfinal",products)
+                let objecto={}
+                let res=[]
+                products.forEach(x=>{
+                  let objeto={}
+                  if(x["sbestudiantes.sbestudiantes_sbgrupos.mtmsbestudiantessbgruposId"]!=null){
+                    objeto.boleta=x[`sbestudiantes.boleta`]
+                    objeto.nombre=x[`sbestudiantes.nombre`]
+                    //objeto.id=x[`sbprofesores.id`]
+                    objeto.mtmsbestudiantessbgruposId=x[`sbestudiantes.sbestudiantes_sbgrupos.mtmsbestudiantessbgruposId`]
+
+                    objeto.mtmsbgrupossbestudiantesId=x[`id`]
+                    objeto.semesterType=x["sbestudiantes.semesterType"]
+                    objeto.calificacion=x["sbestudiantes.sbestudiantes_sbgrupos.calificacion"]
+                    objeto.incomingyear=x["sbestudiantes.incomingyear"]
+                    objeto.id=x["sbestudiantes.id"]
+                    //console.log("productsui",products)
+                    res.push(objeto)
+                  }
+                })
+                console.log("objcod",products,res)
+                res=res.map(x=>(
+                  {...x,whereClauses:parent.whereClauses}
+                ))
+                return res
+                
+                    
+                  },
+                  
+            }
+
+                    */
                   }
                   else if(r.relationship=="onetomany"){
                     let n=categoriesAll.filter(x=>x.id==r.relationCategory)[0]
                     
                     
-                    arrMtmResolver.push(`otm${respCat.name}${n.name}:async(parent,args,{db})=>{
+                    /*pasado bienarrMtmResolver.push(`otm${respCat.name}${n.name}:async(parent,args,{db})=>{
                       const x=await db.${n.name}.findAll({
                         where:{otm${respCat.name}${n.name}Id:parent.id},
                         raw:true
                       })
                       
                       return x
+                    }`)*/
+                    
+                    arrMtmResolver.push(`otm${respCat.name}${n.name}:async(parent,args,{db})=>{
+                      let nj=JSON.parse(parent.whereClauses)
+                      let wc={}
+                      if(nj?.whereClauses!=undefined &&
+                        nj?.["otm${respCat.name}${n.name}"] &&
+                        nj?.["otm${respCat.name}${n.name}"]?.["main"]!=undefined &&
+                        nj?.["otm${respCat.name}${n.name}"]?.["main"]!="none"
+                      ){
+                        wc=codifyRule(nj,"otm${respCat.name}${n.name}")
+                        
+                      }
+                      let products=await db.${n.name}.findAll({
+                        where:{[Op.and]:[{otm${respCat.name}${n.name}Id:parent.id},{...wc}]},
+                        raw:true
+
+                      })
+                      products=products.map(x=>({
+                        ...x,whereClauses:parent.whereClauses
+                      }))
+                      return products
                     }`)
                     return `${r.name}:[${n.name}]`
+                    /*prototipo bien
+                    otmsbareasbcarreras:async(parent,args,{db})=>{
+                    let nj=JSON.parse(parent.whereClauses)
+                    if(parent.whereClauses!=undefined){
+                      let x=await db.sbcarreras.findAll({
+                        where:{[Op.and]:[{otmsbareasbcarrerasId:parent.id},{...nj["otmsbareasbcarreras"]}]},
+                        raw:true
+                      })
+                      x=x.map(y=>{
+                        return {...y,whereClauses:parent.whereClauses}
+                      })
+                      return x
+                    }
+                    else{
+                      let x=await db.sbcarreras.findAll({
+                        where:{otmsbareascarrerasId:parent.id},
+                        raw:true
+                      })
+                      return x
+                    }
+
+                  }
+
+                    */
                   }
                   else
                     return ""
@@ -530,6 +712,7 @@ export default{
                 arrMtmFields.push(`type datamtm${respCat.name}${name}{
                   ${catFields}
                   key:String
+                  otherKey:String
                 },`)
 
                 arrMtmResolverFinal.push(`datamtm${respCat.name}${name}:{
@@ -610,14 +793,50 @@ export default{
               const respCat=await db.Category.findByPk(relations[r].relationCategory)
               if(respCat){
                 if(relations[r].relationship=="onetomany"){
-            
+                  /*
+                  `otm${name}${respCat.name}:async(parent,args,{db})=>{
+                      let nj=JSON.parse(args.whereClauses)
+                      let wc={}
+                      if(parent.whereClauses!=undefined &&
+                        parent.whereClauses["otm${name}${respCat.name}"] &&
+                        parent.whereClauses["otm${name}${respCat.name}"]["main"]!=undefined &&
+                        parent.whereClauses["otm${name}${respCat.name}"]["main"]!="none"
+                      ){
+                        wc=codifyRule(nj,"otm${name}${respCat.name}")
+                        
+                      }
+                      let products=db.${n.name}.findAll({
+                        where:{Op.and:[{otm${name}${respCat.name}Id:parent.id}],...wc},
+                        raw:true
+
+                      })
+                      products=products.map(x=>({
+                        ...x,whereClauses:parent.whereClauses
+                      }))
+                      return products
+                    }`
+
+                */
                   oneToManyResolver+=`otm${name}${respCat.name}:async(parent,args,{db})=>{
-                    const x=await db.${respCat.name}.findAll({
-                      where:{otm${name}${respCat.name}Id:parent.id},
+                    let nj=JSON.parse(parent.whereClauses)
+                    let wc={}
+                    if(parent?.whereClauses!=undefined &&
+                      nj?.["otm${name}${respCat.name}"] &&
+                      nj?.["otm${name}${respCat.name}"]?.["main"]!=undefined &&
+                      nj?.["otm${name}${respCat.name}"]?.["main"]!="none"
+                    ){
+                      wc=codifyRule(nj,"otm${name}${respCat.name}")
+                      
+                    }
+                    let products=await db.${respCat.name}.findAll({
+                      where:{[Op.and]:[{otm${name}${respCat.name}Id:parent.id},{...wc}]},
                       raw:true
+
                     })
-                    
-                    return x
+                    products=products.map(x=>({
+                      ...x,whereClauses:parent.whereClauses
+                    }))
+                    return products
                   },`
                 }else if(relations[r].relationship=="manytomany"){
                   let c=""
@@ -625,7 +844,71 @@ export default{
                     c=`${name}_${respCat.name}`
                   else
                     c=`${respCat.name}_${name}`
-                  manyToManyResolver+=`mtm${respCat.name}${name}:async(parent,args,{db})=>{
+                  /*prototipobien
+                  mtm${respCat.name}${name}:async(parent,args,{db})=>{
+                        let products=[]
+                        let whereClauses=JSON.parse(parent.whereClauses)
+                        let singleWhere={}
+                        let sharedWhere={}
+                        if(whereClauses!=undefined &&
+                          whereClauses["mtm${respCat.name}${name}"]["single"]["main"]!=undefined &&
+                          whereClauses["mtm${respCat.name}${name}"]["single"]["main"]!="none"
+                        ){
+                          singleWhere=codifyRule(whereClauses,"mtm${respCat.name}${name}","single")
+                        }
+                        if(whereClauses!=undefined &&
+                          whereClauses["mtm${respCat.name}${name}"]["shared"]["main"]!=undefined &&
+                          whereClauses["mtm${respCat.name}${name}"]["shared"]["main"]!="none"
+                        ){
+                          sharedWhere=codifyRule(whereClauses,"mtm${respCat.name}${name}","shared")
+                        }
+                        products=await db.${name}.findAll({
+                          where:{id:parent.id},
+                          include:{
+                            required:false,
+                            model:db.${respCat.name},
+                            where:{
+                              ...singleWhere
+                            },
+                            through:{
+                              model:${c}
+                              where:{
+                                ...sharedWhere
+                              }
+                            }
+                          },
+                          raw:true
+                        })
+                        let objeto={}
+                        let res=[]
+                        products=products.forEach(x=>{
+                          objecto={}
+                          let keys=Object.keys(x)
+                          for(let k=0;k<keys.length;k++){
+                            let lastSegmentPos=keys[k].lastIndexOf(".")
+                            let lastSegmentText=keys[k].substring(lastSegmentPos+1)
+                            console.log("lastsegkey",lastSegmentText,lastSegmentPos)
+                            objeto[lastSegmentText]=x[keys[k]]
+                          }
+                          objeto[id]=x["${respCat.name}.id"]
+                          objeto.mtm${name}${respCat.name}Id=x["id"]
+                          if(x["mtm${respCat.name}${name}Id"]!=null)
+                            res.push(objeto)
+                        })
+                        res.map(o=>({
+                          ...o,
+                          whereClauses:parent.whereClauses,
+                          key:"mtm${respCat.name}${name},
+                          otherKey:"mtm${name}${respCat.name}
+
+
+                        }))
+                        return res
+
+                    }
+                  
+                  */
+                  /*anterior bienmanyToManyResolver+=`mtm${respCat.name}${name}:async(parent,args,{db})=>{
                     const products=await db.${c}.findAll({
                       where:{mtm${name}${respCat.name}Id:parent.id},
                       raw:true
@@ -651,8 +934,68 @@ export default{
                     })
                     return final
                   },
-                  `
-                 
+                  `*/
+                  manyToManyResolver+=`mtm${respCat.name}${name}:async(parent,args,{db})=>{
+                    let products=[]
+                    let whereClauses=JSON.parse(parent.whereClauses)
+                    let singleWhere={}
+                    let sharedWhere={}
+                    if(whereClauses!=undefined &&
+                      whereClauses?.["mtm${respCat.name}${name}"]?.["single"]?.["main"]!=undefined &&
+                      whereClauses?.["mtm${respCat.name}${name}"]?.["single"]?.["main"]!="none"
+                    ){
+                      singleWhere=codifyRuleMtm(whereClauses,"mtm${respCat.name}${name}","single")
+                    }
+                    if(whereClauses!=undefined &&
+                      whereClauses?.["mtm${respCat.name}${name}"]?.["shared"]?.["main"]!=undefined &&
+                      whereClauses?.["mtm${respCat.name}${name}"]?.["shared"]?.["main"]!="none"
+                    ){
+                      sharedWhere=codifyRuleMtm(whereClauses,"mtm${respCat.name}${name}","shared")
+                    }
+                    products=await db.${name}.findAll({
+                      where:{id:parent.id},
+                      include:{
+                        required:false,
+                        model:db.${respCat.name},
+                        where:{
+                          ...singleWhere
+                        },
+                        through:{
+                          model:db.${c},
+                          where:{
+                            ...sharedWhere
+                          }
+                        }
+                      },
+                      raw:true
+                    })
+                    let objeto={}
+                    let res=[]
+                    products=products.forEach(x=>{
+                      objeto={}
+                      let keys=Object.keys(x)
+                      for(let k=0;k<keys.length;k++){
+                        let lastSegmentPos=keys[k].lastIndexOf(".")
+                        let lastSegmentText=keys[k].substring(lastSegmentPos+1)
+                        console.log("lastsegkey",lastSegmentText,lastSegmentPos)
+                        objeto[lastSegmentText]=x[keys[k]]
+                      }
+                      objeto["id"]=x["${respCat.name}.id"]
+                      objeto.mtm${name}${respCat.name}Id=x["id"]
+                      if(objeto["mtm${respCat.name}${name}Id"]!=null)
+                        res.push(objeto)
+                    })
+                    res.map(o=>({
+                      ...o,
+                      whereClauses:parent.whereClauses,
+                      key:"mtm${respCat.name}${name}",
+                      otherKey:"mtm${name}${respCat.name}"
+
+
+                    }))
+                    return res
+
+                },`
                 }
               }
             }
@@ -677,6 +1020,7 @@ export default{
           content2+=`type ${name}{
               
               ${x1}
+              whereClauses:String
             }
 
             type Query{
@@ -708,7 +1052,7 @@ export default{
                 ):${name}
               
               
-              getData${name}:[${name}]\n`
+              getData${name}(whereClauses:String):[${name}]\n`
               if(cats1[category].manyToMany==false){
                 content2+=`remove${name}(id:Int,parentArg:String,
                   hardDelete:Boolean):Boolean!\n`
@@ -728,6 +1072,8 @@ export default{
 
           let content3=`
             import {Op} from 'sequelize'
+            import {codifyRuleMtm} from './../utils/whereClauses/index.mjs'
+            import codifyRule from './../utils/whereClauses/index.mjs'
             export default{
           `
           arrMtmDataRes.forEach(i=>{
@@ -742,12 +1088,14 @@ export default{
             `
           }
               
-          content3+=`Query:{
+       content3+=`Query:{
                 ${name}:async(parent,args,{db})=>{
                   const products=await db.${name}.findAll()
                   return products     
                 }
-              },`
+              },
+              `
+            
 
           let helperFunctionsResolvers=""
           parts=name.split("_")
@@ -1055,10 +1403,54 @@ export default{
               },
                
                 getData${name}:async(parent,args,{db})=>{
-                  const products=await db.${name}.findAll({raw:true})
-                  
+                  let nj={}
+                  if(args.whereClauses!=""){
+                    nj=JSON.parse(args.whereClauses)
+                  }
+                  let condWhere={}
+                  if(nj?.${name}?.["main"]!=undefined &&
+                  nj?.${name}?.["main"]!="none")
+                    condWhere=codifyRule(nj,${name})
+                  let products=await db.${name}.findAll({
+                    raw:true,
+                    where:{...condWhere}
+                  })
+                  products=products.map(x=>({
+                    ...x,whereClauses:args.whereClauses
+                  }))
                   return products
                 },`
+
+                /*ejemploprototipo
+                getDatasbarea:async(parent,args,{db})=>{
+                  console.log("whereclausesi",args,args.whereClauses)
+                  if(args.whereClauses!=""){
+                    console.log("nj",args.whereClauses,JSON.parse(args.whereClauses))
+                    let nj=JSON.parse(args.whereClauses)
+                    if(nj?.["sbarea"]?.["main"]!=undefined && nj?.["sbarea"]?.["main"]!="none"){
+                      console.log("nj",nj)
+                      //let getRules=gr(args.rules)
+                      //let products=await db.sbarea.findAll({raw:true,where:nj["sbarea"]})
+                      let products=await db.sbarea.findAll({
+                        where:{...codifyRule(JSON.parse(args.whereClauses),"sbarea")},
+                        raw:true})
+                      products=products.map(x=>{
+                        return {...x,whereClauses:args.whereClauses}
+                      })
+                      console.log("productsar",products)
+                      return products
+                    }
+                  }
+                  
+                  let products=await db.sbarea.findAll({raw:true})
+                  products=products.map(x=>{
+                    return {...x,whereClauses:args.whereClauses}
+                  })
+                  console.log("productsar",products)
+                  return products
+                  
+                }
+                */
                   if(cats1[category].manyToMany==false){
                     
                     content3+=`remove${name}:async(parent,args,{db})=>{

@@ -35,7 +35,7 @@ atunesProductQuery:Int
                 ):detallesFacturas
               
               
-              getDatadetallesFacturas:[detallesFacturas]
+              getDatadetallesFacturas(whereClauses:String):[detallesFacturas]
 removedetallesFacturas(id:Int):Boolean!
 editdetallesFacturas(id:Int,
 otmfacturasdetallesFacturasId:Int,

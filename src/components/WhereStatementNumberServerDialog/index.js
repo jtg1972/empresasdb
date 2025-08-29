@@ -102,6 +102,9 @@ export const WhereStatementNumberServerDialog = ({
   segment,
   setConditionsWhere,
   conditionsWhere,
+  relationshipType,
+  subVar,
+
   comboDataSt,
   setComboDataSt,
   otmCategoryFields,
@@ -111,7 +114,7 @@ export const WhereStatementNumberServerDialog = ({
   compFieldsArray,
   setCompFieldsArray
 }) => {
-
+  console.log("rtsubvar",relationshipType,subVar)
 
 
   //console.log("parametros",otmChoices,setOtmChoices,specificOtmName)
@@ -502,18 +505,18 @@ export const WhereStatementNumberServerDialog = ({
     
   }
   const addCondition=()=>{
-    let mapeo=conditionsWhere
-    if(mapeo[categoryName]==undefined){
-      mapeo={...mapeo,[categoryName]:{}}
-    }
-    if(mapeo[categoryName][fieldName]==undefined){
-      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],
-        [fieldName]:{
+    let mapeo
+    if(relationshipType!="manytomany"){
+      mapeo=conditionsWhere
+      if(mapeo[categoryName]==undefined){
+        mapeo={...mapeo,[categoryName]:{}}
+      }
+      if(mapeo[categoryName][fieldName]==undefined){
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],
+          [fieldName]:{
 
-      }}}
-    }
-    
-    
+        }}}
+      }
       mapeo={
         ...mapeo,[categoryName]:{
           ...mapeo[categoryName],
@@ -529,8 +532,50 @@ export const WhereStatementNumberServerDialog = ({
           }
         }
       }
-    
-    console.log("mapeo",mapeo)
+    }else{
+      let typeshorsi=""
+      
+      mapeo=conditionsWhere
+      if(mapeo[categoryName]==undefined){
+        mapeo={...mapeo,[categoryName]:{}}
+      }
+      if(mapeo[categoryName][subVar]==undefined){
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],
+          [subVar]:{
+            
+
+        }}}
+      }
+      if(mapeo[categoryName][subVar][fieldName]==undefined){
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],
+          [subVar]:{
+            ...mapeo[categoryName][subVar],
+            [fieldName]:{}
+
+        }}}
+      }
+      mapeo={
+        ...mapeo,[categoryName]:{
+          ...mapeo[categoryName],
+          [subVar]:{
+            ...mapeo[categoryName][subVar],
+          
+            [fieldName]:{
+              ...mapeo[categoryName][subVar][fieldName],
+              [nameWhereClause]:{
+                name:nameWhereClause,
+                rule:addConditionWhereArray
+              },
+              type:"number",
+              categoryName,
+              fieldName
+            }
+          }
+        }
+      
+      }
+    }
+    console.log("mapeo",mapeo,relationshipType,subVar)
     setConditionsWhere(mapeo)
     setNameWhereClause("")
     setAdded(true)

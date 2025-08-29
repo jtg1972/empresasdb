@@ -218,7 +218,7 @@ const NewSelectData=({
     let curCat=categories.filter(x=>x.id==catId)
     //gcbf=setCheckBoxFields
     //gcbdf=setCheckBoxFields
-    
+    let subVar=""
     console.log("curcats",curCat)
     if(curCat.length==1){
       let active=false
@@ -233,46 +233,116 @@ const NewSelectData=({
 
       }
       console.log("mc",mc)
-      let oc
+      let ocSingle
+      let ocShare
       let newFields=[]
-      
+      let oc
       
       if(relationshipType=="manytomany"){
         newFields=[...curCat[0].fields,...mc.fields]
-        oc=ordenaCampos(newFields,curCat[0].name)
+        
+        ocSingle=ordenaCampos(curCat[0].fields,curCat[0].name)
+        ocShare=ordenaCampos(mc.fields,mc.name)
+        oc=[...ocSingle,...ocShare]
       }
       else{
         newFields=curCat[0].fields
         oc=ordenaCampos(newFields,curCat[0].name)
       }
-      console.log("oc",oc)
+      console.log("oc",ocSingle,ocShare)
       
       return <p>
-        <p style={{textDecoration:"underline"}}>
+        {relationshipType!="manytomany" && <div><p style={{textDecoration:"underline"}}>
           <a onClick={e=>{
           e.preventDefault()
           toggleOpenWhereSelectMainServer({
             categoryName:field,
             fieldName:"hybrid",
+            relationshipType
             
           })
           
           }
         }>Add main where condition</a></p>
-        <p onClick={()=>toggleOpenViewMainWhereConditionServerDialog({categoryName:field})}></p>
+        <p onClick={()=>toggleOpenViewMainWhereConditionServerDialog({categoryName:field,relationshipType})}></p>
         {(conditionsWhere[field]?.["main"]==undefined || typeof conditionsWhere[field]?.["main"]!=="object")?<p>none</p>:
-      <p onClick={()=>toggleOpenViewMainWhereConditionServerDialog({categoryName:field})}>{conditionsWhere[field]?.["main"]?.["rule"]}</p>
+      <p onClick={()=>toggleOpenViewMainWhereConditionServerDialog({categoryName:field,relationshipType})}>{conditionsWhere[field]?.["main"]?.["rule"]}</p>
       }
       
         
         <p><a style={{textDecoration:"underline"}}onClick={e=>{
           e.preventDefault()
-          toggleOpenWhereStatementHybridServerDialog({categoryName:field,fielName:"hybrid"})
+          toggleOpenWhereStatementHybridServerDialog({categoryName:field,fielName:"hybrid",relationshipType})
         }}>Add hybrid where condition</a><br/>
-        {displayWhereClauses(field,"hybrid")}</p>
+        {displayWhereClauses(field,"hybrid")}</p></div>}
         {
-        oc.map(y=>{
+        oc.map((y,index)=>{
         let x=newFields.filter(p=>p.name==y)?.[0]
+        let title=""
+        let singles=[]
+        let manys=[]
+        if(index<ocSingle?.length && relationshipType=="manytomany"){
+          subVar="single"
+          singles.push(index)
+          if(index==0)
+            title=<p>Single Side
+            <div><p style={{textDecoration:"underline"}}>
+          <a onClick={e=>{
+          e.preventDefault()
+          toggleOpenWhereSelectMainServer({
+            categoryName:field,
+            fieldName:"hybrid",
+            relationshipType,
+            subVar:"single"
+          })
+          
+          }
+        }>Add main where condition</a></p>
+        <p onClick={()=>toggleOpenViewMainWhereConditionServerDialog({categoryName:field,relationshipType,subVar:"single"})}></p>
+        {(conditionsWhere?.[field]?.["single"]?.["main"]==undefined || typeof conditionsWhere[field]?.["single"]?.["main"]!=="object")?<p>none</p>:
+      <p onClick={()=>toggleOpenViewMainWhereConditionServerDialog({categoryName:field,relationshipType,subVar:"single"})}>{conditionsWhere[field]?.["single"]?.["main"]?.["rule"]}</p>
+      }
+      
+        
+        <p><a style={{textDecoration:"underline"}}onClick={e=>{
+          e.preventDefault()
+          toggleOpenWhereStatementHybridServerDialog({categoryName:field,fielName:"hybrid",relationshipType,subVar:"single"})
+        }}>Add hybrid where condition</a><br/>
+        {displayWhereClauses(field,"hybrid",relationshipType,"single")}</p></div>
+          </p>
+   }else if(index>=ocSingle?.length && relationshipType=="manytomany"){
+        subVar="shared"
+
+        manys.push(index)
+        if(index==ocSingle.length)
+          title=<p>Shared data
+            <div><p style={{textDecoration:"underline"}}>
+          <a onClick={e=>{
+          e.preventDefault()
+          toggleOpenWhereSelectMainServer({
+            categoryName:field,
+            fieldName:"hybrid",
+            relationshipType,
+            subVar:"shared"
+          })
+          
+          }
+        }>Add main where condition</a></p>
+        <p onClick={()=>toggleOpenViewMainWhereConditionServerDialog({categoryName:field,relationshipType,subVar:"shared"})}></p>
+        {(conditionsWhere[field]?.["shared"]?.["main"]==undefined || typeof conditionsWhere[field]?.["shared"]["main"]!=="object")?<p>none</p>:
+      <p onClick={()=>toggleOpenViewMainWhereConditionServerDialog({categoryName:field,relationshipType,subVar:"shared"})}>{conditionsWhere[field]?.["shared"]?.["main"]?.["rule"]}</p>
+      }
+      
+        
+        <p><a style={{textDecoration:"underline"}}onClick={e=>{
+          e.preventDefault()
+          toggleOpenWhereStatementHybridServerDialog({categoryName:field,fielName:"hybrid",relationshipType,subVar:"shared"})
+        }}>Add hybrid where condition</a><br/>
+        {displayWhereClauses(field,"hybrid",relationshipType,"shared")}</p></div>
+          </p>
+   }else
+          title=""
+
         if(x.relationship=="onetomany" ||
          x.relationship=="manytomany"){
            
@@ -293,43 +363,51 @@ const NewSelectData=({
          
           
           return <p style={{color:!existegood(gcbf[namej],namej,gcbf)?"red":"white",marginLeft:"0px"}}>
-
+            {title}
             {existegood(gcbf[namej],namej,gcbf) && <input type="checkbox" checked={gcbf[namej]["checked"]==true} onChange={e=>setCheckBoxState(namej,e,x.relationship,field,x.name,[...routec["routec"],x.name])}/>} {x.name} ({x.relationship})
             {gcbf?.[namej]?.["checked"]} {namej} {gcbf[namej]["checked"]==true?<p style={{marginLeft:"17px"}}>{displaySubcategory(x.relationCategory,x.name,gcbf[namej],curCat[0].name,x.relationship)}</p>:""}
           </p>
         }
-        else
+        else{
           return <p style={{marginLeft:"0px"}}>
+           {((index==0 || index==ocSingle?.length) && title)}
             <input type="checkbox" onChange={e=>setCheckBoxState(x.name,e,null,field,x.name)}/> {x.name} ({x.declaredType}) {gcbdf?.[field]?.["fields"]?.includes(x.name) && <a style={{textDecoration:"underline"}} 
             onClick={(e)=>{
               e.preventDefault()
               if(x.declaredType=="number"){
-          
+                console.log("singles",singles,index)
                 toggleOpenWhereStatementNumberServerDialog({
                   categoryName:field,
-                  fieldName:x.name
+                  fieldName:x.name,
+                  relationshipType,
+                  subVar:singles.includes(index)?"single":"shared"
                   
                 })
               }else if(x.declaredType=="string"){
                 toggleOpenWhereStatementStringServerDialog({
                   categoryName:field,
-                  fieldName:x.name
+                  fieldName:x.name,
+                  relationshipType,
+                  subVar:singles.includes(index)?"single":"shared"
                   
                 })
               }else if(x.declaredType=="date"){
                 toggleOpenWhereStatementDateServerDialog({
                   categoryName:field,
-                  fieldName:x.name
+                  fieldName:x.name,
+                  relationshipType,
+                  subVar:singles.includes(index)?"single":"shared"
                   
                 })
               }
               
             }}>Add where clause</a>}
-            {gcbdf?.[field]?.["fields"]?.includes(x.name) && displayWhereClauses(field,x.name)}
+            {gcbdf?.[field]?.["fields"]?.includes(x.name) && displayWhereClauses(field,x.name,relationshipType,singles.includes(index)?"single":"shared")}
            
           </p>
 
-      })}
+      }
+    })}
       
       </p>
     }
@@ -724,8 +802,16 @@ const NewSelectData=({
     return cong
   }
 
-  const displayWhereClauses=(cat,field)=>{
-    let cc=conditionsWhere?.[cat]
+  const displayWhereClauses=(cat,field,relationshipType,subVar)=>{
+    let cc
+    console.log("paramswhere",cat,field,relationshipType,subVar)
+    if(relationshipType!="manytomany")
+      cc=conditionsWhere?.[cat]
+    else{
+     
+        cc=conditionsWhere?.[cat]?.[subVar]
+     
+    }
     console.log("cc",conditionsWhere)
     if(cc){
       let f=cc?.[field]
@@ -742,30 +828,40 @@ const NewSelectData=({
             if(typeof f[x]=="object")
               return<p><a onClick={(e)=>{
                 e.preventDefault()
-                if(f.type=="string")
+                let ruleexp
+                if(relationshipType!="manytomany")
+                  ruleexp=conditionsWhere[cat]?.[field]?.[x]?.["rule"]
+                else{
+                  ruleexp=conditionsWhere[cat]?.[subVar]?.[field]?.[x]?.["rule"]
+                }
+                if(f.type=="string"){
                   toggleOpenViewWhereStatementStringServerDialog(
-                    conditionsWhere[cat]?.[field]?.[x]?.["rule"],
+                    //conditionsWhere[cat]?.[field]?.[x]?.["rule"],
+                    ruleexp,
                     {
                     categoryName:cat,
                     fieldName:field
                   })
-                else if(f.type=="number")
+                }else if(f.type=="number")
                   toggleOpenViewWhereStatementNumberServerDialog(
-                    conditionsWhere[cat]?.[field]?.[x]?.["rule"],
+                    //conditionsWhere[cat]?.[field]?.[x]?.["rule"],
+                    ruleexp,
                     {
                     categoryName:cat,
                     fieldName:field
                   })
                 else if(f.type=="date")
                   toggleOpenViewWhereStatementDateServerDialog(
-                    conditionsWhere[cat]?.[field]?.[x]?.["rule"],
+                    //conditionsWhere[cat]?.[field]?.[x]?.["rule"],
+                    ruleexp,
                     {
                     categoryName:cat,
                     fieldName:field
                   })
                 else if(f.type=="hybrid")
                   toggleOpenViewWhereStatementHybridServerDialog(
-                    conditionsWhere[cat]?.[field]?.[x]?.["rule"],
+                    //conditionsWhere[cat]?.[field]?.[x]?.["rule"],
+                    ruleexp,
                     {
                     categoryName:cat,
                     fieldName:field

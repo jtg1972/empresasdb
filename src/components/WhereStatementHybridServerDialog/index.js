@@ -90,6 +90,8 @@ export const WhereStatementHybridServerDialog = ({
   conditionsWhere,
   comboDataSt,
   setComboDataSt,
+  relationshipType,
+  subVar,
   otmCategoryFields,
   setOtmChoices,
   otmChoices,
@@ -586,36 +588,72 @@ export const WhereStatementHybridServerDialog = ({
   }
   const addCondition=()=>{
     let mapeo=conditionsWhere
-    if(mapeo[categoryName]==undefined){
-      mapeo={...mapeo,[categoryName]:{}}
-    }
-    if(mapeo[categoryName]["hybrid"]==undefined){
-      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],hybrid:{}}}
-    }
-    /*if(mapeo[categoryName]["hybrid"]==undefined){
-      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],hybrid:{
-        ...mapeo[categoryName]["hybrid"],
-        ["hybrid"]:{
+    if(relationshipType!="manytomany"){
+      if(mapeo[categoryName]==undefined){
+        mapeo={...mapeo,[categoryName]:{}}
+      }
+      if(mapeo[categoryName]["hybrid"]==undefined){
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],hybrid:{}}}
+      }
+      /*if(mapeo[categoryName]["hybrid"]==undefined){
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],hybrid:{
+          ...mapeo[categoryName]["hybrid"],
+          ["hybrid"]:{
 
-      }}}}
-    }*/
-    
-    
-      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],["hybrid"]:{
-        ...mapeo[categoryName]["hybrid"],
-        
-        
-          [nameWhereClause]:{
-            name:nameWhereClause,
-            rule:addConditionWhereArray
-          },
-          type:"hybrid",
-          categoryName,
-          segment:"hybrid",
-          fieldName:"hybrid"
+        }}}}
+      }*/
+      
+      
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],["hybrid"]:{
+          ...mapeo[categoryName]["hybrid"],
+          
+          
+            [nameWhereClause]:{
+              name:nameWhereClause,
+              rule:addConditionWhereArray
+            },
+            type:"hybrid",
+            categoryName,
+            segment:"hybrid",
+            fieldName:"hybrid"
+          }
         }
-      }}
-    
+      }
+    }else{
+      if(mapeo[categoryName]==undefined){
+        mapeo={...mapeo,[categoryName]:{}}
+      }
+
+      if(mapeo[categoryName][subVar]==undefined){
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],[subVar]:{}}}
+      }
+
+      if(mapeo[categoryName][subVar]["hybrid"]==undefined){
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],
+          [subVar]:{...mapeo[categoryName][subVar],hybrid:{}}}}
+      }
+      
+      
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],
+          [subVar]:{
+            ...mapeo[categoryName][subVar],
+            ["hybrid"]:{
+              ...mapeo[categoryName][subVar]["hybrid"],
+          
+          
+              [nameWhereClause]:{
+                name:nameWhereClause,
+                rule:addConditionWhereArray
+              },
+              type:"hybrid",
+              categoryName,
+              segment:"hybrid",
+              fieldName:"hybrid"
+            }
+          }
+        }
+      }
+    }
     console.log("mapeo",mapeo)
     setConditionsWhere(mapeo)
     setNameWhereClause("")
@@ -675,40 +713,73 @@ export const WhereStatementHybridServerDialog = ({
     let res=[]
     //res.push("Select Field")
     console.log("rastreo",categoryName)
-    if(conditionsWhere?.[categoryName]!=undefined){
-    
-      //console.log("rastreo",Object.keys(conditionsWhere?.[categoryName]?.[ss]))
-      Object.keys(conditionsWhere?.[categoryName]).map(x=>{
-        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
-          if(conditionsWhere?.[categoryName]?.[x]!==undefined){
-            console.log("punto",x)
-            res.push(x)
-        
+    if(relationshipType!="manytomany"){
+      if(conditionsWhere?.[categoryName]!=undefined){
+      
+        //console.log("rastreo",Object.keys(conditionsWhere?.[categoryName]?.[ss]))
+        Object.keys(conditionsWhere?.[categoryName]).map(x=>{
+          if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
+            if(conditionsWhere?.[categoryName]?.[x]!==undefined){
+              console.log("punto",x)
+              res.push(x)
+          
+            }
           }
+        })
         }
-      })
+      }else{
+        console.log("verifii",subVar,conditionsWhere?.[categoryName]?.[subVar])
+        if(conditionsWhere?.[categoryName]?.[subVar]!=undefined){
+      
+          //console.log("rastreo",Object.keys(conditionsWhere?.[categoryName]?.[ss]))
+          Object.keys(conditionsWhere?.[categoryName]?.[subVar]).map(x=>{
+            if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
+              if(conditionsWhere?.[categoryName]?.[subVar]?.[x]!==undefined){
+                console.log("punto",x)
+                res.push(x)
+            
+              }
+            }
+          })
+        }
+      }
       console.log("resui",res)
       setListFields(res)
-    }
+    
   }
 
   const displayRulesCombo=(ss,ff)=>{
     let res=[]
     //res.push("Select Rule")
-
-    if(conditionsWhere?.[categoryName]?.[ff]!==undefined){
-    
-    
-      Object.keys(conditionsWhere?.[categoryName]?.[ff]).map(x=>{
-        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
-          if(conditionsWhere?.[categoryName]?.[ff]?.[x]!==undefined){
-            res.push(x)
-        
+    if(relationshipType!="manytomany"){
+      if(conditionsWhere?.[categoryName]?.[ff]!==undefined){
+      
+      
+        Object.keys(conditionsWhere?.[categoryName]?.[ff]).map(x=>{
+          if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
+            if(conditionsWhere?.[categoryName]?.[ff]?.[x]!==undefined){
+              res.push(x)
+          
+            }
           }
+        })
+      }
+    }else{
+        if(conditionsWhere?.[categoryName]?.[subVar]?.[ff]!==undefined){
+      
+      
+          Object.keys(conditionsWhere?.[categoryName]?.[subVar]?.[ff]).map(x=>{
+            if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
+              if(conditionsWhere?.[categoryName]?.[subVar]?.[ff]?.[x]!==undefined){
+                res.push(x)
+            
+              }
+            }
+          })
         }
-      })
+      }
       setListRules(res)
-    }
+    
   }
     
 

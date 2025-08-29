@@ -12,6 +12,7 @@ mtmsbgrupossbestudiantesId:Int
 calificacion:Int
 mtmsbestudiantessbgruposId:Int
                   key:String
+                  otherKey:String
                 },type sbestudiantes{
               
               id:Int
@@ -24,6 +25,7 @@ estudianteIdFinalCatQuery:Int
 estudianteIdProductQuery:Int
 mtmsbgrupossbestudiantes:[datamtmsbgrupossbestudiantes],
 
+              whereClauses:String
             }
 
             type Query{
@@ -47,7 +49,7 @@ estudianteIdProductQuery:Int
                 ):sbestudiantes
               
               
-              getDatasbestudiantes:[sbestudiantes]
+              getDatasbestudiantes(whereClauses:String):[sbestudiantes]
 removesbestudiantes(id:Int,parentArg:String,
                   hardDelete:Boolean):Boolean!
 editsbestudiantes(id:Int,

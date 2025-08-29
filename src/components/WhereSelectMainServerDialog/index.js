@@ -88,6 +88,8 @@ export const WhereSelectMainServerDialog = ({
   segment,
   setConditionsWhere,
   conditionsWhere,
+  relationshipType,
+  subVar,
   comboDataSt,
   setComboDataSt,
   otmCategoryFields,
@@ -486,19 +488,55 @@ export const WhereSelectMainServerDialog = ({
   }
   const addCondition=()=>{
     let mapeo=conditionsWhere
-    if(mapeo[categoryName]==undefined){
-      mapeo={...mapeo,[categoryName]:{}}
-    }
-    if(mapeo[categoryName]["main"]==undefined){
-      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],main:"none"}}
-      
-    }
-    mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],main:isWhereCondition!=="none"?{
-      category:categoryName,
-      //segment:selectedSegment,
-      field:selectedField,
-      rule:selectedRule}:"none"}}
-    
+    if(relationshipType!="manytomany"){
+      if(mapeo[categoryName]==undefined){
+        mapeo={...mapeo,[categoryName]:{}}
+      }
+      if(mapeo[categoryName]["main"]==undefined){
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],main:"none"}}
+        
+      }
+      mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],main:isWhereCondition!=="none"?{
+        category:categoryName,
+        //segment:selectedSegment,
+        field:selectedField,
+        rule:selectedRule}:"none"}}
+    }else{
+      if(mapeo[categoryName]==undefined){
+        mapeo={...mapeo,[categoryName]:{}}
+      }
+      if(mapeo[categoryName][subVar]==undefined){
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],[subVar]:{}}}
+        
+      }
+      if(mapeo[categoryName][subVar]["main"]==undefined){
+        mapeo={
+          ...mapeo,[categoryName]:{
+            ...mapeo[categoryName],
+            [subVar]:{
+              ...mapeo[categoryName][subVar],
+              main:"none"
+            }
+          }
+        }
+      }
+      mapeo={
+        ...mapeo,
+        [categoryName]:{
+          ...mapeo[categoryName],
+          [subVar]:{
+            ...mapeo[categoryName][subVar],
+            main:isWhereCondition!=="none"?
+              {
+                category:categoryName,
+          //segment:selectedSegment,
+                field:selectedField,
+                rule:selectedRule
+              }:"none"
+          }
+        }
+      }
+    }  
     console.log("mapeo",mapeo)
     setConditionsWhere(mapeo)
     
@@ -558,38 +596,72 @@ export const WhereSelectMainServerDialog = ({
     let res=[]
     //res.push("Select Field")
     console.log("rastreo",ss)
-    if(conditionsWhere?.[categoryName]!==undefined){
-    
-      console.log("rastreo",Object.keys(conditionsWhere?.[categoryName]))
-      Object.keys(conditionsWhere?.[categoryName]).map(x=>{
-        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type" && x!="main"){
-          if(conditionsWhere?.[categoryName]?.[x]!==undefined){
-            res.push(x)
-        
+    if(relationshipType!="manytomany"){
+      if(conditionsWhere?.[categoryName]!==undefined){
+      
+        console.log("rastreo",Object.keys(conditionsWhere?.[categoryName]))
+        Object.keys(conditionsWhere?.[categoryName]).map(x=>{
+          if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type" && x!="main"){
+            if(conditionsWhere?.[categoryName]?.[x]!==undefined){
+              res.push(x)
+          
+            }
           }
-        }
-      })
-      setListFields(res)
+        })
+      }
+      
+    }else{
+      if(conditionsWhere?.[categoryName]?.[subVar]!==undefined){
+      
+        console.log("rastreo",Object.keys(conditionsWhere?.[categoryName]?.[subVar]))
+        Object.keys(conditionsWhere?.[categoryName]?.[subVar]).map(x=>{
+          if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type" && x!="main"){
+            if(conditionsWhere?.[categoryName]?.[subVar]?.[x]!==undefined){
+              res.push(x)
+          
+            }
+          }
+        })
+      }
+      
+
     }
+    setListFields(res)
   }
 
   const displayRulesCombo=(ss,ff)=>{
     let res=[]
     //res.push("Select Rule")
-
-    if(conditionsWhere?.[categoryName]?.[ff]!==undefined){
-    
+    if(relationshipType!="manytomany"){
+      if(conditionsWhere?.[categoryName]?.[ff]!==undefined){
       
-      Object.keys(conditionsWhere?.[categoryName]?.[ff]).map(x=>{
-        if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
-          if(conditionsWhere?.[categoryName]?.[ff]?.[x]!==undefined){
-            res.push(x)
         
+        Object.keys(conditionsWhere?.[categoryName]?.[ff]).map(x=>{
+          if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
+            if(conditionsWhere?.[categoryName]?.[ff]?.[x]!==undefined){
+              res.push(x)
+          
+            }
           }
-        }
-      })
-      setListRules(res)
+        })
+      }
+    }else{
+      if(conditionsWhere?.[categoryName]?.[subVar]?.[ff]!==undefined){
+      
+        
+        Object.keys(conditionsWhere?.[categoryName]?.[subVar]?.[ff]).map(x=>{
+          if(x!=="categoryName" && x!=="segment" && x!=="fieldName" && x!=="type"){
+            if(conditionsWhere?.[categoryName]?.[subVar][ff]?.[x]!==undefined){
+              res.push(x)
+          
+            }
+          }
+        })
+      }
+
     }
+    setListRules(res)
+
   }
 
   const displayCurrentMainCategory=()=>{
@@ -608,7 +680,10 @@ export const WhereSelectMainServerDialog = ({
     <Dialog 
       open={open}
       closeDialog={toggleDialog} 
-      headline={"Category: "+categoryName+", Setting Main Where Clause"}
+      headline={relationshipType!="manytomany"?
+      "Category: "+categoryName+", Setting Main Where Clauses":
+      "Category: "+categoryName+", Type of data "+ subVar+", Setting Main Where Clause"
+    }
    >     
   
       <p style={{backgroundColor:"brown",color:"white",border:"none",outline:"none",padding:"3px",marginBottom:"5px"}}>Current main category: {displayCurrentMainCategory()}</p>

@@ -13,6 +13,7 @@ mtmsbcarrerassbmateriasId:Int
 mtmsbmateriassbcarrerasId:Int
 semestre:Int
                   key:String
+                  otherKey:String
                 },type sbcarreras{
               
               id:Int
@@ -22,8 +23,8 @@ carreraIdFinalCatQuery:Int
 carreraIdProductQuery:Int
 mtmsbmateriassbcarreras:[datamtmsbmateriassbcarreras],
 otmsbareasbcarrerasId:Int
-whereClauses:String
 
+              whereClauses:String
             }
 
             type Query{
@@ -45,7 +46,7 @@ carreraIdProductQuery:Int
                 ):sbcarreras
               
               
-              getDatasbcarreras:[sbcarreras]
+              getDatasbcarreras(whereClauses:String):[sbcarreras]
 removesbcarreras(id:Int,parentArg:String,
                   hardDelete:Boolean):Boolean!
 editsbcarreras(id:Int,

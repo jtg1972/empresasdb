@@ -1,5 +1,6 @@
 
             import {Op} from 'sequelize'
+            import codifyRule from './../utils/whereClauses/index.mjs'
             export default{
           facturas:{
               otmfacturasdetallesFacturas:async(parent,args,{db})=>{
@@ -34,9 +35,33 @@
                 },
                
                 getDatafacturas:async(parent,args,{db})=>{
-                  const products=await db.facturas.findAll({raw:true})
+                  /*const products=await db.facturas.findAll({raw:true})
                   
+                  return products*/
+
+                  if(args.whereClauses!=""){
+                    console.log("nj",args.whereClauses,JSON.parse(args.whereClauses))
+                    let nj=JSON.parse(args.whereClauses)
+                    if(nj?.["facturas"]?.["main"]!=undefined && nj?.["facturas"]?.["main"]!="none"){
+                      console.log("nj",nj)
+                      //let getRules=gr(args.rules)
+                      //let products=await db.sbarea.findAll({raw:true,where:nj["sbarea"]})
+                      let products=await db.facturas.findAll({
+                        where:{...codifyRule(JSON.parse(args.whereClauses),"facturas")},
+                        raw:true})
+                      products=products.map(x=>{
+                        return {...x,whereClauses:args.whereClauses}
+                      })
+                      return products
+                    }
+                  }
+                  
+                  let products=await db.facturas.findAll({raw:true})
+                  products=products.map(x=>{
+                    return {...x,whereClauses:args.whereClauses}
+                  })
                   return products
+                 
                 },removefacturas:async(parent,args,{db})=>{
                       try{
                         const product=await db.facturas.findByPk(args.id)

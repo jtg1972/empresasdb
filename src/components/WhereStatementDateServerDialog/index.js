@@ -172,6 +172,8 @@ export const WhereStatementDateServerDialog = ({
   categoryName,
   segment,
   setConditionsWhere,
+  relationshipType,
+  subVar,
   conditionsWhere,
   comboDataSt,
   setComboDataSt,
@@ -622,6 +624,7 @@ export const WhereStatementDateServerDialog = ({
   }
   const addCondition=()=>{
     let mapeo=conditionsWhere
+    if(relationshipType!="manytomany"){
     if(mapeo[categoryName]==undefined){
       mapeo={...mapeo,[categoryName]:{}}
     }
@@ -649,7 +652,46 @@ export const WhereStatementDateServerDialog = ({
           }
         }
       }
-    
+    }else{
+      mapeo=conditionsWhere
+      if(mapeo[categoryName]==undefined){
+        mapeo={...mapeo,[categoryName]:{}}
+      }
+      if(mapeo[categoryName][subVar]==undefined){
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],
+          [subVar]:{
+            
+
+        }}}
+      }
+      if(mapeo[categoryName][subVar][fieldName]==undefined){
+        mapeo={...mapeo,[categoryName]:{...mapeo[categoryName],
+          [subVar]:{
+            ...mapeo[categoryName][subVar],
+            [fieldName]:{}
+
+        }}}
+      }
+      mapeo={
+        ...mapeo,[categoryName]:{
+          ...mapeo[categoryName],
+          [subVar]:{
+            ...mapeo[categoryName][subVar],
+          
+            [fieldName]:{
+              ...mapeo[categoryName][subVar][fieldName],
+              [nameWhereClause]:{
+                name:nameWhereClause,
+                rule:addConditionWhereArray
+              },
+              type:"date",
+             categoryName,
+             fieldName
+            }
+          }
+        }
+      }
+    }
     console.log("mapeo",mapeo)
     setConditionsWhere(mapeo)
     setNameWhereClause("")
