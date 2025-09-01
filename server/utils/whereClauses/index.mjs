@@ -90,8 +90,13 @@ const parseHybrid=(rule,field,conditionsWhere,subVar="")=>{
   let type
   let nr
   for(let i=1;i<rule.length;i+=2){
-    nr=conditionsWhere[rule[i]["category"]][rule[i]["field"]][rule[i]["rule"]]["rule"]
-    type=conditionsWhere?.[rule[i]["category"]][rule[i]["field"]]["type"]
+    if(subVar==""){
+      nr=conditionsWhere[rule[i]["category"]][rule[i]["field"]][rule[i]["rule"]]["rule"]
+      type=conditionsWhere?.[rule[i]["category"]][rule[i]["field"]]["type"]
+    }else{
+      nr=conditionsWhere[rule[i]["category"]][subVar][rule[i]["field"]][rule[i]["rule"]]["rule"]
+      type=conditionsWhere?.[rule[i]["category"]][subVar][rule[i]["field"]]["type"]
+    }
     if(type=="hybrid")
       if(i-1==0 && rule[0]=="not"){
         if(subVar=="")
