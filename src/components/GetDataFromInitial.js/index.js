@@ -82,7 +82,7 @@ let bd
 
 
 const getQueryFromCategory=(p,categories,checkBoxDataFields)=>{
-  let query=`mutation GetData($whereClauses:String) {`
+  let query=`mutation GetData($whereClauses:String,$sortClauses:String){`
   //console.log("productcats",productCategories)
   let fields
   //let q2=productCategories.map(p=>{
@@ -146,7 +146,7 @@ const getQueryFromCategory=(p,categories,checkBoxDataFields)=>{
       
     })
     fields.unshift("id")
-    const q=`getData${p.name}(whereClauses:$whereClauses){
+    const q=`getData${p.name}(whereClauses:$whereClauses,sortClauses:$sortClauses){
       ${fields.length>0 && fields.join(`\n\t\t`)}
     }`
     //return q
@@ -164,7 +164,8 @@ const mapToState=({categories})=>({
 })
 const GetDataFromInital=({
   checkBoxDataFields,
-  conditionsWhere
+  conditionsWhere,
+  sortClauses
 })=>{
   
   const {
@@ -182,11 +183,12 @@ const GetDataFromInital=({
       
     }
   })
-  console.log("stringentrance",JSON.stringify(conditionsWhere))
+  console.log("stringentrance",JSON.stringify(conditionsWhere),JSON.stringify(sortClauses))
   useEffect(()=>{
     getProducts({
       variables:{
-        whereClauses:JSON.stringify(conditionsWhere)
+        whereClauses:JSON.stringify(conditionsWhere),
+        sortClauses:JSON.stringify(sortClauses)
       }
     })
   },[])

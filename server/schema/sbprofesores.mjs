@@ -36,6 +36,7 @@ profesorIdFinalCatQuery:Int
 profesorIdProductQuery:Int
 
               whereClauses:String
+              sortClauses:String
             }
 
             type Query{
@@ -58,7 +59,7 @@ profesorIdProductQuery:Int
                 ):sbprofesores
               
               
-              getDatasbprofesores(whereClauses:String):[sbprofesores]
+              getDatasbprofesores(whereClauses:String,sortClauses:String):[sbprofesores]
 removesbprofesores(id:Int,parentArg:String,
                   hardDelete:Boolean):Boolean!
 editsbprofesores(id:Int,

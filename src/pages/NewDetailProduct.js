@@ -27,7 +27,7 @@ import { ViewWhereStatementDateServerDialog } from '../components/ViewWhereState
 import { ViewWhereStatementStringServerDialog } from '../components/ViewWhereStatementStringServerDialog'
 import { ViewWhereStatementHybridServerDialog } from '../components/ViewWhereStatementHybridServerDialog'
 import { ViewMainWhereConditionServer } from '../components/ViewMainWhereConditionServer'
-
+import { SortCriteriaServerDialog } from '../components/SortCriteriaServerDialog'
 
 const SELECT_CATEGORY=gql`
   query selectCategory($id:Int!){
@@ -259,6 +259,17 @@ const NewDetailProduct = () => {
     setOpenViewMainWhereConditionServerDialog(!openViewMainWhereConditionServerDialog)
 
   }
+  //toggleOpenSortCriteriaDialog({categoryName:field,otmChoicesSort:otmChoicesOrder[field],sortRules:sortRules,setSortRules:setSortRules})
+  const [otmChoicesServerOrder,setOtmChoicesServerOrder]=useState({})
+  const [otmChoicesServerSort,setOtmChoicesServerSort]=useState({})
+  const [sortServerRules,setSortServerRules]=useState({})
+  const toggleOpenSortCriteriaServerDialog=(vars)=>{
+    setVarOrderHeadServerCriteria(vars)
+    setOpenSortCriteriaServerDialog(!openSortCriteriaServerDialog)
+  }
+  const [varOrderHeadServerCriteria,setVarOrderHeadServerCriteria]=useState({})
+  const [openSortCriteriaServerDialog,setOpenSortCriteriaServerDialog]=useState(false)
+
   const {loading,data,error}=useQuery(
     CATEGORIES1
   )
@@ -448,6 +459,12 @@ const NewDetailProduct = () => {
       toggleOpenViewWhereStatementNumberServerDialog={toggleOpenViewWhereStatementNumberServerDialog}
       toggleOpenViewWhereStatementStringServerDialog={toggleOpenViewWhereStatementStringServerDialog}
       toggleOpenViewMainWhereConditionServerDialog={toggleOpenViewMainWhereConditionServerDialog}
+      
+      toggleOpenSortCriteriaServerDialog={toggleOpenSortCriteriaServerDialog}
+      otmChoicesServerOrder={otmChoicesServerOrder}
+      setOtmChoicesServerOrder={setOtmChoicesServerOrder}
+      sortRules={sortServerRules}
+      setSortRules={setSortServerRules}
       />}
 
       {currentCategoryId!=0 &&
@@ -546,6 +563,14 @@ const NewDetailProduct = () => {
       conditionsWhere={conditionsWhereServer}
       {...varsHeadWhereStatementServer}
 
+    />}
+    
+    {openSortCriteriaServerDialog && <SortCriteriaServerDialog
+      open={openSortCriteriaServerDialog}
+      toggleDialog={toggleOpenSortCriteriaServerDialog}
+      sortRules={sortServerRules}
+      setSortRules={setSortServerRules}
+      {...varOrderHeadServerCriteria}
     />}
 
       

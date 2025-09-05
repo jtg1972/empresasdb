@@ -1,6 +1,8 @@
 
             import {Op} from 'sequelize'
             import {codifyRuleMtm} from './../utils/whereClauses/index.mjs'
+            import {codifySortRule} from './../utils/whereClauses/index.mjs'
+            import {codifySortRuleMtm} from './../utils/whereClauses/index.mjs'
             import codifyRule from './../utils/whereClauses/index.mjs'
             export default{
           datamtmsbmateriassbcarreras:{
@@ -21,6 +23,16 @@
                         ){
                           sharedWhere=codifyRuleMtm(whereClauses,"mtmsbcarrerassbmaterias","shared")
                         }
+                        let sj={}
+                      if(parent?.sortClauses!=undefined)
+                        sj=JSON.parse(parent.sortClauses)
+                      let codSortSingle=[]
+                     console.log("parentsort",sj)
+                      if(sj!=undefined && sj?.["mtmsbcarrerassbmaterias"]!=undefined && sj?.["mtmsbcarrerassbmaterias"]?.[0]!="nosort")
+                        codSortSingle=codifySortRuleMtm(sj["mtmsbcarrerassbmaterias"],"sbcarreras",db.sbcarreras,"sbcarreras_sbmaterias",db.sbcarreras_sbmaterias)
+                      
+                      
+                    console.log("codsortsingle",codSortSingle)
                         products=await db.sbmaterias.findAll({
                           where:{id:parent.id},
                           include:{
@@ -29,13 +41,16 @@
                             where:{
                               ...singleWhere
                             },
+                            
                             through:{
                               model:db.sbcarreras_sbmaterias,
                               where:{
                                 ...sharedWhere
-                              }
+                              },
+                              
                             }
                           },
+                          order:codSortSingle,
                           raw:true
                         })
                         let objeto={}
@@ -51,6 +66,12 @@
                           }
                           objeto["id"]=x["sbcarreras.id"]
                           objeto.mtmsbmateriassbcarrerasId=x["id"]
+                          Object.keys(objeto).filter(z=>{
+                        
+                            if("mtmsbcarrerassbmateriasId".startsWith(z))
+                              objeto["mtmsbcarrerassbmateriasId"]=objeto[z]
+                        })
+                        //in field server
                           if(objeto["mtmsbcarrerassbmateriasId"]!=null)
                             res.push(objeto)
                         })
@@ -76,9 +97,16 @@ otmsbmateriassbgrupos:async(parent,args,{db})=>{
                         wc=codifyRule(nj,"otmsbmateriassbgrupos")
                         
                       }
+                      let sj={}
+                      if(parent?.sortClauses!=undefined)
+                        sj=JSON.parse(parent.sortClauses)
+                      let codSort=[]
+                      if(sj!=undefined && sj?.["otmsbmateriassbgrupos"]!=undefined && sj?.["otmsbmateriassbgrupos"]?.[0]!="nosort")
+                        codSort=codifySortRule(sj["otmsbmateriassbgrupos"])
                       let products=await db.sbgrupos.findAll({
                         where:{[Op.and]:[{otmsbmateriassbgruposId:parent.id},{...wc}]},
-                        raw:true
+                        raw:true,
+                        order:codSort
 
                       })
                       products=products.map(x=>({
@@ -103,6 +131,16 @@ mtmsbprofesoressbmaterias:async(parent,args,{db})=>{
                         ){
                           sharedWhere=codifyRuleMtm(whereClauses,"mtmsbprofesoressbmaterias","shared")
                         }
+                        let sj={}
+                      if(parent?.sortClauses!=undefined)
+                        sj=JSON.parse(parent.sortClauses)
+                      let codSortSingle=[]
+                     console.log("parentsort",sj)
+                      if(sj!=undefined && sj?.["mtmsbprofesoressbmaterias"]!=undefined && sj?.["mtmsbprofesoressbmaterias"]?.[0]!="nosort")
+                        codSortSingle=codifySortRuleMtm(sj["mtmsbprofesoressbmaterias"],"sbprofesores",db.sbprofesores,"sbmaterias_sbprofesores",db.sbmaterias_sbprofesores)
+                      
+                      
+                    console.log("codsortsingle",codSortSingle)
                         products=await db.sbmaterias.findAll({
                           where:{id:parent.id},
                           include:{
@@ -111,13 +149,16 @@ mtmsbprofesoressbmaterias:async(parent,args,{db})=>{
                             where:{
                               ...singleWhere
                             },
+                            
                             through:{
                               model:db.sbmaterias_sbprofesores,
                               where:{
                                 ...sharedWhere
-                              }
+                              },
+                              
                             }
                           },
+                          order:codSortSingle,
                           raw:true
                         })
                         let objeto={}
@@ -133,6 +174,12 @@ mtmsbprofesoressbmaterias:async(parent,args,{db})=>{
                           }
                           objeto["id"]=x["sbprofesores.id"]
                           objeto.mtmsbmateriassbprofesoresId=x["id"]
+                          Object.keys(objeto).filter(z=>{
+                        
+                            if("mtmsbprofesoressbmateriasId".startsWith(z))
+                              objeto["mtmsbprofesoressbmateriasId"]=objeto[z]
+                        })
+                        //in field server
                           if(objeto["mtmsbprofesoressbmateriasId"]!=null)
                             res.push(objeto)
                         })
@@ -168,6 +215,13 @@ sbcarreras:{
                     ){
                       sharedWhere=codifyRuleMtm(whereClauses,"mtmsbmateriassbcarreras","shared")
                     }
+                    let sj={}
+                      if(parent?.sortClauses!=undefined)
+                        sj=JSON.parse(parent.sortClauses)
+                      let codSortSingle=[]
+                     console.log("parentsort",sj)
+                      if(sj!=undefined && sj?.["mtmsbmateriassbcarreras"]!=undefined && sj?.["mtmsbmateriassbcarreras"]?.[0]!="nosort")
+                        codSortSingle=codifySortRuleMtm(sj["mtmsbmateriassbcarreras"],"sbmaterias",db.sbmaterias,"sbcarreras_sbmaterias",db.sbcarreras_sbmaterias)
                     products=await db.sbcarreras.findAll({
                       where:{id:parent.id},
                       include:{
@@ -176,13 +230,16 @@ sbcarreras:{
                         where:{
                           ...singleWhere
                         },
+                        
                         through:{
                           model:db.sbcarreras_sbmaterias,
                           where:{
                             ...sharedWhere
-                          }
+                          },
+                          
                         }
                       },
+                      order:codSortSingle,
                       raw:true
                     })
                     let objeto={}
@@ -198,6 +255,12 @@ sbcarreras:{
                       }
                       objeto["id"]=x["sbmaterias.id"]
                       objeto.mtmsbcarrerassbmateriasId=x["id"]
+                      Object.keys(objeto).filter(z=>{
+                        
+                        if("mtmsbmateriassbcarrerasId".startsWith(z))
+                          objeto["mtmsbmateriassbcarrerasId"]=objeto[z]
+                    })
+                    //in field server
                       if(objeto["mtmsbmateriassbcarrerasId"]!=null)
                         res.push(objeto)
                     })
@@ -247,6 +310,7 @@ sbcarreras:{
                
                 getDatasbcarreras:async(parent,args,{db})=>{
                   let nj={}
+                  
                   if(args.whereClauses!=""){
                     nj=JSON.parse(args.whereClauses)
                   }
@@ -254,12 +318,20 @@ sbcarreras:{
                   if(nj?.sbcarreras?.["main"]!=undefined &&
                   nj?.sbcarreras?.["main"]!="none")
                     condWhere=codifyRule(nj,sbcarreras)
+
+                  let sj={}
+                  if(args?.sortClauses!=undefined)
+                    sj=JSON.parse(args.sortClauses)
+                  let codSort=[]
+                  if(sj!=undefined && sj?.["sbcarreras"]!=undefined && sj?.["sbcarreras"]?.[0]!="nosort")
+                    codSort=codifySortRule(sj["sbcarreras"])
                   let products=await db.sbcarreras.findAll({
                     raw:true,
-                    where:{...condWhere}
+                    where:{...condWhere},
+                    order:codSort
                   })
                   products=products.map(x=>({
-                    ...x,whereClauses:args.whereClauses
+                    ...x,whereClauses:args.whereClauses,sortClauses:args.sortClauses
                   }))
                   return products
                 },removesbcarreras:async(parent,args,{db})=>{

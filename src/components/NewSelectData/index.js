@@ -187,10 +187,16 @@ const NewSelectData=({
       toggleOpenViewWhereStatementHybridServerDialog,
       toggleOpenViewWhereStatementNumberServerDialog,
       toggleOpenViewWhereStatementStringServerDialog,
-      toggleOpenViewMainWhereConditionServerDialog
+      toggleOpenViewMainWhereConditionServerDialog,
 
-
+      otmChoicesServerOrder,
+      setOtmChoicesServerOrder,
+      toggleOpenSortCriteriaServerDialog,
+      sortRules,
+      setSortRules
 })=>{
+
+  //toggleOpenSortCriteriaDialog({categoryName:field,otmChoicesSort:otmChoicesOrder[field],sortRules:sortRules,setSortRules:setSortRules})
   const {
     currentCategory,
     categories,
@@ -203,7 +209,7 @@ const NewSelectData=({
   let categoryAlreadyDisplayed=[]
   let counter=0
   console.log("ccat",currentCategory)
-
+  let otmCSOrder={}
   /*const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(categories.filter(x=>x.name==currentCategory.name)[0],categories,checkBoxDataFields)
   const [getProducts]=useMutation(GET_PRODUCTS_FROM_CATEGORY,{
     update:(cache,{data})=>{
@@ -212,17 +218,20 @@ const NewSelectData=({
       
     }
   })*/
+  console.log("otmcsorder",otmChoicesServerOrder)
 
   const displaySubcategory=(catId,field,routec,prName,relationshipType)=>{
     console.log("routecoo",prName,relationshipType,field)
     let curCat=categories.filter(x=>x.id==catId)
     //gcbf=setCheckBoxFields
     //gcbdf=setCheckBoxFields
+    
     let subVar=""
     console.log("curcats",curCat)
+    let nmtm
     if(curCat.length==1){
       let active=false
-      let nmtm
+      
       let mc
       if(relationshipType=="manytomany"){
         if(prName>curCat[0].name)
@@ -272,9 +281,17 @@ const NewSelectData=({
         
         <p><a style={{textDecoration:"underline"}}onClick={e=>{
           e.preventDefault()
-          toggleOpenWhereStatementHybridServerDialog({categoryName:field,fielName:"hybrid",relationshipType})
+          toggleOpenWhereStatementHybridServerDialog({categoryName:field,fieldName:"hybrid",relationshipType})
         }}>Add hybrid where condition</a><br/>
-        {displayWhereClauses(field,"hybrid")}</p></div>}
+        {displayWhereClauses(field,"hybrid")}</p>
+        
+        <p><a style={{textDecoration:"underline"}}onClick={e=>{
+          e.preventDefault()
+          toggleOpenSortCriteriaServerDialog({categoryName:field,otmChoicesSort:otmChoicesServerOrder[field],sortRules:sortRules,setSortRules:setSortRules})
+        }}>Add sort criteria</a><br/>
+        </p>
+        
+        </div>}
         {
         oc.map((y,index)=>{
         let x=newFields.filter(p=>p.name==y)?.[0]
@@ -308,7 +325,14 @@ const NewSelectData=({
           e.preventDefault()
           toggleOpenWhereStatementHybridServerDialog({categoryName:field,fielName:"hybrid",relationshipType,subVar:"single"})
         }}>Add hybrid where condition</a><br/>
-        {displayWhereClauses(field,"hybrid",relationshipType,"single")}</p></div>
+        {displayWhereClauses(field,"hybrid",relationshipType,"single")}</p>
+        
+        <p><a style={{textDecoration:"underline"}}onClick={e=>{
+          e.preventDefault()
+          toggleOpenSortCriteriaServerDialog({categoryName:field,otmChoicesSort:otmChoicesServerOrder[field],sortRules:sortRules,setSortRules:setSortRules,subVar:"single",relationshipType:"manytomany"})
+        }}>Add sort criteria</a><br/>
+        </p>
+        </div>
           </p>
    }else if(index>=ocSingle?.length && relationshipType=="manytomany"){
         subVar="shared"
@@ -338,7 +362,14 @@ const NewSelectData=({
           e.preventDefault()
           toggleOpenWhereStatementHybridServerDialog({categoryName:field,fielName:"hybrid",relationshipType,subVar:"shared"})
         }}>Add hybrid where condition</a><br/>
-        {displayWhereClauses(field,"hybrid",relationshipType,"shared")}</p></div>
+        {displayWhereClauses(field,"hybrid",relationshipType,"shared")}</p>
+        
+ {/*<p><a style={{textDecoration:"underline"}}onClick={e=>{
+          e.preventDefault()
+          toggleOpenSortCriteriaServerDialog({categoryName:field,otmChoicesSort:otmChoicesServerOrder[field]["shared"],sortRules:sortRules,setSortRules:setSortRules,subVar:"shared",relationshipType:"manytomany"})
+        }}>Add sort criteria</a><br/>
+        </p>*/}
+        </div>
           </p>
    }else
           title=""
@@ -369,11 +400,45 @@ const NewSelectData=({
           </p>
         }
         else{
+          
           return <p style={{marginLeft:"0px"}}>
            {((index==0 || index==ocSingle?.length) && title)}
-            <input type="checkbox" onChange={e=>setCheckBoxState(x.name,e,null,field,x.name)}/> {x.name} ({x.declaredType}) {gcbdf?.[field]?.["fields"]?.includes(x.name) && <a style={{textDecoration:"underline"}} 
+            <input type="checkbox" onChange={e=>{
+              setOtmChoicesServerOrder(p=>{
+                console.log("etarget",e.target.checked)
+              if(relationshipType!="manytomany"){
+                  if(e.target.checked==true){
+                    if(p?.[field]==undefined)
+                      p={...p,[field]:[]}
+                    p={...p,[field]:[...p[field],{name:x.name,type:x.declaredType}]}
+                  }else{
+                    p[field]=p[field].filter(y=>y.name!=x.name)
+                  }
+                }else{
+                  subVar=singles.includes(index)?"single":"shared"
+                  let model
+                  if(subVar=="single")
+                    model=curCat[0].name
+                  else
+                    model=nmtm
+                  if(e.target.checked==true){
+                    if(p?.[field]==undefined)
+                      p={...p,[field]:[]}
+                    /*if(p[field][subVar]==undefined)
+                      p[field]={...p[field],[subVar]:[]}*/
+                    p={...p,[field]:[...p[field],{name:x.name,type:x.declaredType,model,grandModel:curCat[0].name}]}
+                  }else{
+                    p[field]=p[field].filter(y=>y.name!=x.name)
+                  }
+                }
+                console.log("pio",p)
+                return p
+              })
+              setCheckBoxState(x.name,e,null,field,x.name)
+            }}/> {x.name} ({x.declaredType}) {gcbdf?.[field]?.["fields"]?.includes(x.name) && <a style={{textDecoration:"underline"}} 
             onClick={(e)=>{
               e.preventDefault()
+              
               if(x.declaredType=="number"){
                 console.log("singles",singles,index)
                 toggleOpenWhereStatementNumberServerDialog({
@@ -904,6 +969,11 @@ const NewSelectData=({
     }}>Add hybrid where condition</a><br/>
     {displayWhereClauses(currentCategory.name,"hybrid")}
     </p>
+    <p><a style={{textDecoration:"underline",marginLeft:"10px"}}onClick={e=>{
+          e.preventDefault()
+          toggleOpenSortCriteriaServerDialog({categoryName:currentCategory.name,otmChoicesSort:otmChoicesServerOrder[currentCategory.name],sortRules:sortRules,setSortRules:setSortRules})
+        }}>Add sort criteria</a><br/>
+        </p>
     <p>{oc.map((y)=>{
       let x=currentCategory["fields"].filter(p=>p.name==y)?.[0]
       let active=false
@@ -940,7 +1010,23 @@ const NewSelectData=({
         </p>
       }else
         return <p style={{marginLeft:"10px"}}>
-          <input type="checkbox" onChange={e=>setCheckBoxState(x.name,e,null,`${currentCategory.name}`,x.name)}/> {x.name} ({x.declaredType}) {gcbdf?.[currentCategory.name]?.["fields"]?.includes(x.name) && <a style={{textDecoration:"underline"}}
+          <input type="checkbox" onChange={e=>{
+            setOtmChoicesServerOrder(p=>{
+              console.log("etarget",e.target.checked)
+              
+                if(e.target.checked==true){
+                  if(p?.[currentCategory.name]==undefined)
+                    p={...p,[currentCategory.name]:[]}
+                  p={...p,[currentCategory.name]:[...p[currentCategory.name],{name:x.name,type:x.declaredType}]}
+                }else{
+                  p[currentCategory.name]=p[currentCategory.name].filter(y=>y.name!=x.name)
+                }
+              
+              console.log("pio",p)
+              return p
+            })
+            setCheckBoxState(x.name,e,null,`${currentCategory.name}`,x.name)
+          }}/> {x.name} ({x.declaredType}) {gcbdf?.[currentCategory.name]?.["fields"]?.includes(x.name) && <a style={{textDecoration:"underline"}}
           onClick={(e)=>{
             e.preventDefault()
             if(x.declaredType=="number"){
@@ -1413,6 +1499,7 @@ return <div>
   {showQuery && !change && <GetDataFromInital
     checkBoxDataFields={checkBoxDataFields}
     conditionsWhere={conditionsWhere}
+    sortClauses={sortRules}
   />}
 </div>
 }

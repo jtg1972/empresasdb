@@ -22,6 +22,7 @@ otmsbareasbmaterias:[sbmaterias]
 mtmsbprofesoressbarea:[datamtmsbprofesoressbarea],
 
               whereClauses:String
+              sortClauses:String
             }
 
             type Query{
@@ -39,7 +40,7 @@ area:String,
                 ):sbarea
               
               
-              getDatasbarea(whereClauses:String):[sbarea]
+              getDatasbarea(whereClauses:String,sortClauses:String):[sbarea]
 removesbarea(id:Int,parentArg:String,
                   hardDelete:Boolean):Boolean!
 editsbarea(id:Int,

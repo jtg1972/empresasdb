@@ -37,6 +37,7 @@ otmsbmateriassbgrupos:[sbgrupos]
 mtmsbprofesoressbmaterias:[datamtmsbprofesoressbmaterias],
 
               whereClauses:String
+              sortClauses:String
             }
 
             type Query{
@@ -58,7 +59,7 @@ materiaIdProductQuery:Int
                 ):sbmaterias
               
               
-              getDatasbmaterias(whereClauses:String):[sbmaterias]
+              getDatasbmaterias(whereClauses:String,sortClauses:String):[sbmaterias]
 removesbmaterias(id:Int,parentArg:String,
                   hardDelete:Boolean):Boolean!
 editsbmaterias(id:Int,

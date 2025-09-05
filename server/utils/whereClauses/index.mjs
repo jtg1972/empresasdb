@@ -1,5 +1,30 @@
 import {Op} from 'sequelize'
 
+const codifySortRule=(conditionsSort)=>{
+  let res=conditionsSort.map(x=>([
+    x.field,x.typeOrder.toUpperCase()
+  ]))
+  return res
+}
+
+//codifySortRuleMtm(sj["mtmsbprofesoressbarea"],"sbprofesores",db.sbprofesores,"sbareas_sbprofesores",db.sbareas_sbprofesores)
+const codifySortRuleMtm=(conditionsSort,singleName,singleNameModel,sharedName,sharedNameModel)=>{
+  
+  let res=conditionsSort.map(x=>{
+    let rm
+    if(x.model==singleName)
+      rm=singleNameModel
+    else if(x.model==sharedName)
+      rm=sharedNameModel
+    if(x.model==x.grandModel)
+      return [{model:rm},`${x.field}`,`${x.typeOrder.toUpperCase()}`]
+    else
+      return [{model:singleNameModel},{model:sharedNameModel},`${x.field}`,`${x.typeOrder.toUpperCase()}`]
+
+  })
+  console.log("sortmtmjorge",conditionsSort,res)
+  return res
+}
 const getFieldNameforQuery1=(field,type,oneSide,bothSides,catName,oneSideName)=>{
   let mtmName=""
   console.log("variabmain",catName,oneSideName)
@@ -439,3 +464,5 @@ const parseDate=(rule,field,conditionsWhere)=>{
 
 export default codifyRule
 export {codifyRuleMtm}
+export {codifySortRule}
+export {codifySortRuleMtm}

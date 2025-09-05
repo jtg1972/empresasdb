@@ -25,6 +25,7 @@ mtmsbmateriassbcarreras:[datamtmsbmateriassbcarreras],
 otmsbareasbcarrerasId:Int
 
               whereClauses:String
+              sortClauses:String
             }
 
             type Query{
@@ -46,7 +47,7 @@ carreraIdProductQuery:Int
                 ):sbcarreras
               
               
-              getDatasbcarreras(whereClauses:String):[sbcarreras]
+              getDatasbcarreras(whereClauses:String,sortClauses:String):[sbcarreras]
 removesbcarreras(id:Int,parentArg:String,
                   hardDelete:Boolean):Boolean!
 editsbcarreras(id:Int,

@@ -459,6 +459,16 @@ export default{
                         ){
                           sharedWhere=codifyRuleMtm(whereClauses,"mtm${n.name}${respCat.name}","shared")
                         }
+                        let sj={}
+                      if(parent?.sortClauses!=undefined)
+                        sj=JSON.parse(parent.sortClauses)
+                      let codSortSingle=[]
+                     console.log("parentsort",sj)
+                      if(sj!=undefined && sj?.["mtm${n.name}${respCat.name}"]!=undefined && sj?.["mtm${n.name}${respCat.name}"]?.[0]!="nosort")
+                        codSortSingle=codifySortRuleMtm(sj["mtm${n.name}${respCat.name}"],"${n.name}",db.${n.name},"${c}",db.${c})
+                      
+                      
+                    console.log("codsortsingle",codSortSingle)
                         products=await db.${respCat.name}.findAll({
                           where:{id:parent.id},
                           include:{
@@ -467,13 +477,16 @@ export default{
                             where:{
                               ...singleWhere
                             },
+                            
                             through:{
                               model:db.${c},
                               where:{
                                 ...sharedWhere
-                              }
+                              },
+                              
                             }
                           },
+                          order:codSortSingle,
                           raw:true
                         })
                         let objeto={}
@@ -489,6 +502,12 @@ export default{
                           }
                           objeto["id"]=x["${n.name}.id"]
                           objeto.mtm${respCat.name}${n.name}Id=x["id"]
+                          Object.keys(objeto).filter(z=>{
+                        
+                            if("mtm${n.name}${respCat.name}Id".startsWith(z))
+                              objeto["mtm${n.name}${respCat.name}Id"]=objeto[z]
+                        })
+                        //in field server
                           if(objeto["mtm${n.name}${respCat.name}Id"]!=null)
                             res.push(objeto)
                         })
@@ -604,9 +623,16 @@ export default{
                         wc=codifyRule(nj,"otm${respCat.name}${n.name}")
                         
                       }
+                      let sj={}
+                      if(parent?.sortClauses!=undefined)
+                        sj=JSON.parse(parent.sortClauses)
+                      let codSort=[]
+                      if(sj!=undefined && sj?.["otm${respCat.name}${n.name}"]!=undefined && sj?.["otm${respCat.name}${n.name}"]?.[0]!="nosort")
+                        codSort=codifySortRule(sj["otm${respCat.name}${n.name}"])
                       let products=await db.${n.name}.findAll({
                         where:{[Op.and]:[{otm${respCat.name}${n.name}Id:parent.id},{...wc}]},
-                        raw:true
+                        raw:true,
+                        order:codSort
 
                       })
                       products=products.map(x=>({
@@ -828,10 +854,16 @@ export default{
                       wc=codifyRule(nj,"otm${name}${respCat.name}")
                       
                     }
+                    let sj={}
+                      if(parent?.sortClauses!=undefined)
+                        sj=JSON.parse(parent.sortClauses)
+                      let codSort=[]
+                      if(sj!=undefined && sj?.["otm${name}${respCat.name}"]!=undefined && sj?.["otm${name}${respCat.name}"]?.[0]!="nosort")
+                        codSort=codifySortRule(sj["otm${name}${respCat.name}"])
                     let products=await db.${respCat.name}.findAll({
                       where:{[Op.and]:[{otm${name}${respCat.name}Id:parent.id},{...wc}]},
-                      raw:true
-
+                      raw:true,
+                      order:codSort
                     })
                     products=products.map(x=>({
                       ...x,whereClauses:parent.whereClauses
@@ -952,6 +984,13 @@ export default{
                     ){
                       sharedWhere=codifyRuleMtm(whereClauses,"mtm${respCat.name}${name}","shared")
                     }
+                    let sj={}
+                      if(parent?.sortClauses!=undefined)
+                        sj=JSON.parse(parent.sortClauses)
+                      let codSortSingle=[]
+                     console.log("parentsort",sj)
+                      if(sj!=undefined && sj?.["mtm${respCat.name}${name}"]!=undefined && sj?.["mtm${respCat.name}${name}"]?.[0]!="nosort")
+                        codSortSingle=codifySortRuleMtm(sj["mtm${respCat.name}${name}"],"${respCat.name}",db.${respCat.name},"${c}",db.${c})
                     products=await db.${name}.findAll({
                       where:{id:parent.id},
                       include:{
@@ -960,13 +999,16 @@ export default{
                         where:{
                           ...singleWhere
                         },
+                        
                         through:{
                           model:db.${c},
                           where:{
                             ...sharedWhere
-                          }
+                          },
+                          
                         }
                       },
+                      order:codSortSingle,
                       raw:true
                     })
                     let objeto={}
@@ -982,6 +1024,12 @@ export default{
                       }
                       objeto["id"]=x["${respCat.name}.id"]
                       objeto.mtm${name}${respCat.name}Id=x["id"]
+                      Object.keys(objeto).filter(z=>{
+                        
+                        if("mtm${respCat.name}${name}Id".startsWith(z))
+                          objeto["mtm${respCat.name}${name}Id"]=objeto[z]
+                    })
+                    //in field server
                       if(objeto["mtm${respCat.name}${name}Id"]!=null)
                         res.push(objeto)
                     })
@@ -1021,6 +1069,7 @@ export default{
               
               ${x1}
               whereClauses:String
+              sortClauses:String
             }
 
             type Query{
@@ -1052,7 +1101,7 @@ export default{
                 ):${name}
               
               
-              getData${name}(whereClauses:String):[${name}]\n`
+              getData${name}(whereClauses:String,sortClauses:String):[${name}]\n`
               if(cats1[category].manyToMany==false){
                 content2+=`remove${name}(id:Int,parentArg:String,
                   hardDelete:Boolean):Boolean!\n`
@@ -1073,6 +1122,8 @@ export default{
           let content3=`
             import {Op} from 'sequelize'
             import {codifyRuleMtm} from './../utils/whereClauses/index.mjs'
+            import {codifySortRule} from './../utils/whereClauses/index.mjs'
+            import {codifySortRuleMtm} from './../utils/whereClauses/index.mjs'
             import codifyRule from './../utils/whereClauses/index.mjs'
             export default{
           `
@@ -1404,6 +1455,7 @@ export default{
                
                 getData${name}:async(parent,args,{db})=>{
                   let nj={}
+                  
                   if(args.whereClauses!=""){
                     nj=JSON.parse(args.whereClauses)
                   }
@@ -1411,12 +1463,20 @@ export default{
                   if(nj?.${name}?.["main"]!=undefined &&
                   nj?.${name}?.["main"]!="none")
                     condWhere=codifyRule(nj,${name})
+
+                  let sj={}
+                  if(args?.sortClauses!=undefined)
+                    sj=JSON.parse(args.sortClauses)
+                  let codSort=[]
+                  if(sj!=undefined && sj?.["${name}"]!=undefined && sj?.["${name}"]?.[0]!="nosort")
+                    codSort=codifySortRule(sj["${name}"])
                   let products=await db.${name}.findAll({
                     raw:true,
-                    where:{...condWhere}
+                    where:{...condWhere},
+                    order:codSort
                   })
                   products=products.map(x=>({
-                    ...x,whereClauses:args.whereClauses
+                    ...x,whereClauses:args.whereClauses,sortClauses:args.sortClauses
                   }))
                   return products
                 },`

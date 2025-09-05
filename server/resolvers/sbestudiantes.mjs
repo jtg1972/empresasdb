@@ -1,6 +1,8 @@
 
             import {Op} from 'sequelize'
             import {codifyRuleMtm} from './../utils/whereClauses/index.mjs'
+            import {codifySortRule} from './../utils/whereClauses/index.mjs'
+            import {codifySortRuleMtm} from './../utils/whereClauses/index.mjs'
             import codifyRule from './../utils/whereClauses/index.mjs'
             export default{
           datamtmsbgrupossbestudiantes:{
@@ -21,6 +23,16 @@
                         ){
                           sharedWhere=codifyRuleMtm(whereClauses,"mtmsbestudiantessbgrupos","shared")
                         }
+                        let sj={}
+                      if(parent?.sortClauses!=undefined)
+                        sj=JSON.parse(parent.sortClauses)
+                      let codSortSingle=[]
+                     console.log("parentsort",sj)
+                      if(sj!=undefined && sj?.["mtmsbestudiantessbgrupos"]!=undefined && sj?.["mtmsbestudiantessbgrupos"]?.[0]!="nosort")
+                        codSortSingle=codifySortRuleMtm(sj["mtmsbestudiantessbgrupos"],"sbestudiantes",db.sbestudiantes,"sbestudiantes_sbgrupos",db.sbestudiantes_sbgrupos)
+                      
+                      
+                    console.log("codsortsingle",codSortSingle)
                         products=await db.sbgrupos.findAll({
                           where:{id:parent.id},
                           include:{
@@ -29,13 +41,16 @@
                             where:{
                               ...singleWhere
                             },
+                            
                             through:{
                               model:db.sbestudiantes_sbgrupos,
                               where:{
                                 ...sharedWhere
-                              }
+                              },
+                              
                             }
                           },
+                          order:codSortSingle,
                           raw:true
                         })
                         let objeto={}
@@ -51,6 +66,12 @@
                           }
                           objeto["id"]=x["sbestudiantes.id"]
                           objeto.mtmsbgrupossbestudiantesId=x["id"]
+                          Object.keys(objeto).filter(z=>{
+                        
+                            if("mtmsbestudiantessbgruposId".startsWith(z))
+                              objeto["mtmsbestudiantessbgruposId"]=objeto[z]
+                        })
+                        //in field server
                           if(objeto["mtmsbestudiantessbgruposId"]!=null)
                             res.push(objeto)
                         })
@@ -76,9 +97,16 @@ otmsbgrupossbprofesores:async(parent,args,{db})=>{
                         wc=codifyRule(nj,"otmsbgrupossbprofesores")
                         
                       }
+                      let sj={}
+                      if(parent?.sortClauses!=undefined)
+                        sj=JSON.parse(parent.sortClauses)
+                      let codSort=[]
+                      if(sj!=undefined && sj?.["otmsbgrupossbprofesores"]!=undefined && sj?.["otmsbgrupossbprofesores"]?.[0]!="nosort")
+                        codSort=codifySortRule(sj["otmsbgrupossbprofesores"])
                       let products=await db.sbprofesores.findAll({
                         where:{[Op.and]:[{otmsbgrupossbprofesoresId:parent.id},{...wc}]},
-                        raw:true
+                        raw:true,
+                        order:codSort
 
                       })
                       products=products.map(x=>({
@@ -107,6 +135,13 @@ sbestudiantes:{
                     ){
                       sharedWhere=codifyRuleMtm(whereClauses,"mtmsbgrupossbestudiantes","shared")
                     }
+                    let sj={}
+                      if(parent?.sortClauses!=undefined)
+                        sj=JSON.parse(parent.sortClauses)
+                      let codSortSingle=[]
+                     console.log("parentsort",sj)
+                      if(sj!=undefined && sj?.["mtmsbgrupossbestudiantes"]!=undefined && sj?.["mtmsbgrupossbestudiantes"]?.[0]!="nosort")
+                        codSortSingle=codifySortRuleMtm(sj["mtmsbgrupossbestudiantes"],"sbgrupos",db.sbgrupos,"sbestudiantes_sbgrupos",db.sbestudiantes_sbgrupos)
                     products=await db.sbestudiantes.findAll({
                       where:{id:parent.id},
                       include:{
@@ -115,13 +150,16 @@ sbestudiantes:{
                         where:{
                           ...singleWhere
                         },
+                        
                         through:{
                           model:db.sbestudiantes_sbgrupos,
                           where:{
                             ...sharedWhere
-                          }
+                          },
+                          
                         }
                       },
+                      order:codSortSingle,
                       raw:true
                     })
                     let objeto={}
@@ -137,6 +175,12 @@ sbestudiantes:{
                       }
                       objeto["id"]=x["sbgrupos.id"]
                       objeto.mtmsbestudiantessbgruposId=x["id"]
+                      Object.keys(objeto).filter(z=>{
+                        
+                        if("mtmsbgrupossbestudiantesId".startsWith(z))
+                          objeto["mtmsbgrupossbestudiantesId"]=objeto[z]
+                    })
+                    //in field server
                       if(objeto["mtmsbgrupossbestudiantesId"]!=null)
                         res.push(objeto)
                     })
@@ -186,6 +230,7 @@ sbestudiantes:{
                
                 getDatasbestudiantes:async(parent,args,{db})=>{
                   let nj={}
+                  
                   if(args.whereClauses!=""){
                     nj=JSON.parse(args.whereClauses)
                   }
@@ -193,12 +238,20 @@ sbestudiantes:{
                   if(nj?.sbestudiantes?.["main"]!=undefined &&
                   nj?.sbestudiantes?.["main"]!="none")
                     condWhere=codifyRule(nj,sbestudiantes)
+
+                  let sj={}
+                  if(args?.sortClauses!=undefined)
+                    sj=JSON.parse(args.sortClauses)
+                  let codSort=[]
+                  if(sj!=undefined && sj?.["sbestudiantes"]!=undefined && sj?.["sbestudiantes"]?.[0]!="nosort")
+                    codSort=codifySortRule(sj["sbestudiantes"])
                   let products=await db.sbestudiantes.findAll({
                     raw:true,
-                    where:{...condWhere}
+                    where:{...condWhere},
+                    order:codSort
                   })
                   products=products.map(x=>({
-                    ...x,whereClauses:args.whereClauses
+                    ...x,whereClauses:args.whereClauses,sortClauses:args.sortClauses
                   }))
                   return products
                 },removesbestudiantes:async(parent,args,{db})=>{
