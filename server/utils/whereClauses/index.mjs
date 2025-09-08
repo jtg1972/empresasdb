@@ -9,8 +9,8 @@ const codifySortRule=(conditionsSort)=>{
 
 //codifySortRuleMtm(sj["mtmsbprofesoressbarea"],"sbprofesores",db.sbprofesores,"sbareas_sbprofesores",db.sbareas_sbprofesores)
 const codifySortRuleMtm=(conditionsSort,singleName,singleNameModel,sharedName,sharedNameModel)=>{
-  
-  let res=conditionsSort.map(x=>{
+  let res=[]
+  res=conditionsSort.map(x=>{
     let rm
     if(x.model==singleName)
       rm=singleNameModel

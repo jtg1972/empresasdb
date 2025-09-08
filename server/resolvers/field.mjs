@@ -444,7 +444,9 @@ export default{
                     }`)*/
                     arrMtmResolver.push(`mtm${n.name}${respCat.name}:async(parent,args,{db})=>{
                         let products=[]
-                        let whereClauses=JSON.parse(parent.whereClauses)
+                        let whereClauses
+                        if(parent.whereClauses)
+                          whereClauses=JSON.parse(parent.whereClauses)
                         let singleWhere={}
                         let sharedWhere={}
                         if(whereClauses!=undefined &&
@@ -511,9 +513,10 @@ export default{
                           if(objeto["mtm${n.name}${respCat.name}Id"]!=null)
                             res.push(objeto)
                         })
-                        res.map(o=>({
+                        res=res.map(o=>({
                           ...o,
                           whereClauses:parent.whereClauses,
+                          sortClauses:parent.sortClauses,
                           key:"mtm${n.name}${respCat.name}",
                           otherKey:"mtm${respCat.name}${n.name}"
 
@@ -613,7 +616,9 @@ export default{
                     }`)*/
                     
                     arrMtmResolver.push(`otm${respCat.name}${n.name}:async(parent,args,{db})=>{
-                      let nj=JSON.parse(parent.whereClauses)
+                      let nj
+                      if(parent.whereClauses)
+                        nj=JSON.parse(parent.whereClauses)
                       let wc={}
                       if(nj?.whereClauses!=undefined &&
                         nj?.["otm${respCat.name}${n.name}"] &&
@@ -636,7 +641,8 @@ export default{
 
                       })
                       products=products.map(x=>({
-                        ...x,whereClauses:parent.whereClauses
+                        ...x,whereClauses:parent.whereClauses,
+                        sortClauses:parent.sortClauses
                       }))
                       return products
                     }`)
@@ -738,7 +744,10 @@ export default{
                 arrMtmFields.push(`type datamtm${respCat.name}${name}{
                   ${catFields}
                   key:String
-                  otherKey:String
+                  otherKey:String,
+                  whereClauses:String,
+                  sortClauses:String,
+
                 },`)
 
                 arrMtmResolverFinal.push(`datamtm${respCat.name}${name}:{
@@ -844,7 +853,10 @@ export default{
 
                 */
                   oneToManyResolver+=`otm${name}${respCat.name}:async(parent,args,{db})=>{
-                    let nj=JSON.parse(parent.whereClauses)
+                    let nj
+                    if(parent?.whereClauses)
+                      
+                       nj=JSON.parse(parent.whereClauses)
                     let wc={}
                     if(parent?.whereClauses!=undefined &&
                       nj?.["otm${name}${respCat.name}"] &&
@@ -866,7 +878,8 @@ export default{
                       order:codSort
                     })
                     products=products.map(x=>({
-                      ...x,whereClauses:parent.whereClauses
+                      ...x,whereClauses:parent.whereClauses,
+                      sortClauses:parent.sortClauses
                     }))
                     return products
                   },`
@@ -969,7 +982,9 @@ export default{
                   `*/
                   manyToManyResolver+=`mtm${respCat.name}${name}:async(parent,args,{db})=>{
                     let products=[]
-                    let whereClauses=JSON.parse(parent.whereClauses)
+                    let whereClauses
+                    if(parent.whereClauses)
+                      whereClauses=JSON.parse(parent.whereClauses)
                     let singleWhere={}
                     let sharedWhere={}
                     if(whereClauses!=undefined &&
@@ -1033,9 +1048,10 @@ export default{
                       if(objeto["mtm${respCat.name}${name}Id"]!=null)
                         res.push(objeto)
                     })
-                    res.map(o=>({
+                    res=res.map(o=>({
                       ...o,
                       whereClauses:parent.whereClauses,
+                      sortClauses:parent.sortClauses,
                       key:"mtm${respCat.name}${name}",
                       otherKey:"mtm${name}${respCat.name}"
 

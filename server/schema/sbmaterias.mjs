@@ -11,7 +11,10 @@ mtmsbcarrerassbmateriasId:Int
 mtmsbmateriassbcarrerasId:Int
 semestre:Int
                   key:String
-                  otherKey:String
+                  otherKey:String,
+                  whereClauses:String,
+                  sortClauses:String,
+
                 },type datamtmsbprofesoressbmaterias{
                   nombre:String
 registro:String
@@ -23,7 +26,10 @@ id:Int
 mtmsbmateriassbprofesoresId:Int
 mtmsbprofesoressbmateriasId:Int
                   key:String
-                  otherKey:String
+                  otherKey:String,
+                  whereClauses:String,
+                  sortClauses:String,
+
                 },type sbmaterias{
               
               id:Int

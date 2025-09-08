@@ -12,7 +12,10 @@ mtmsbgrupossbestudiantesId:Int
 calificacion:Int
 mtmsbestudiantessbgruposId:Int
                   key:String
-                  otherKey:String
+                  otherKey:String,
+                  whereClauses:String,
+                  sortClauses:String,
+
                 },type sbestudiantes{
               
               id:Int

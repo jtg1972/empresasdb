@@ -8,7 +8,9 @@
           datamtmsbprofesoressbarea:{
                   mtmsbareasbprofesores:async(parent,args,{db})=>{
                         let products=[]
-                        let whereClauses=JSON.parse(parent.whereClauses)
+                        let whereClauses
+                        if(parent.whereClauses)
+                          whereClauses=JSON.parse(parent.whereClauses)
                         let singleWhere={}
                         let sharedWhere={}
                         if(whereClauses!=undefined &&
@@ -47,7 +49,7 @@
                               where:{
                                 ...sharedWhere
                               },
-                              order:codSortSingle
+                              
                             }
                           },
                           order:codSortSingle,
@@ -75,9 +77,10 @@
                           if(objeto["mtmsbareasbprofesoresId"]!=null)
                             res.push(objeto)
                         })
-                        res.map(o=>({
+                        res=res.map(o=>({
                           ...o,
                           whereClauses:parent.whereClauses,
+                          sortClauses:parent.sortClauses,
                           key:"mtmsbareasbprofesores",
                           otherKey:"mtmsbprofesoressbarea"
 
@@ -88,7 +91,9 @@
                     },
 mtmsbmateriassbprofesores:async(parent,args,{db})=>{
                         let products=[]
-                        let whereClauses=JSON.parse(parent.whereClauses)
+                        let whereClauses
+                        if(parent.whereClauses)
+                          whereClauses=JSON.parse(parent.whereClauses)
                         let singleWhere={}
                         let sharedWhere={}
                         if(whereClauses!=undefined &&
@@ -127,7 +132,7 @@ mtmsbmateriassbprofesores:async(parent,args,{db})=>{
                               where:{
                                 ...sharedWhere
                               },
-                              order:codSortSingle
+                              
                             }
                           },
                           order:codSortSingle,
@@ -155,9 +160,10 @@ mtmsbmateriassbprofesores:async(parent,args,{db})=>{
                           if(objeto["mtmsbmateriassbprofesoresId"]!=null)
                             res.push(objeto)
                         })
-                        res.map(o=>({
+                        res=res.map(o=>({
                           ...o,
                           whereClauses:parent.whereClauses,
+                          sortClauses:parent.sortClauses,
                           key:"mtmsbmateriassbprofesores",
                           otherKey:"mtmsbprofesoressbmaterias"
 
@@ -170,7 +176,10 @@ mtmsbmateriassbprofesores:async(parent,args,{db})=>{
                 ,
 sbarea:{
               otmsbareasbcarreras:async(parent,args,{db})=>{
-                    let nj=JSON.parse(parent.whereClauses)
+                    let nj
+                    if(parent?.whereClauses)
+                      
+                       nj=JSON.parse(parent.whereClauses)
                     let wc={}
                     if(parent?.whereClauses!=undefined &&
                       nj?.["otmsbareasbcarreras"] &&
@@ -192,11 +201,15 @@ sbarea:{
                       order:codSort
                     })
                     products=products.map(x=>({
-                      ...x,whereClauses:parent.whereClauses
+                      ...x,whereClauses:parent.whereClauses,
+                      sortClauses:parent.sortClauses
                     }))
                     return products
                   },otmsbareasbmaterias:async(parent,args,{db})=>{
-                    let nj=JSON.parse(parent.whereClauses)
+                    let nj
+                    if(parent?.whereClauses)
+                      
+                       nj=JSON.parse(parent.whereClauses)
                     let wc={}
                     if(parent?.whereClauses!=undefined &&
                       nj?.["otmsbareasbmaterias"] &&
@@ -218,13 +231,16 @@ sbarea:{
                       order:codSort
                     })
                     products=products.map(x=>({
-                      ...x,whereClauses:parent.whereClauses
+                      ...x,whereClauses:parent.whereClauses,
+                      sortClauses:parent.sortClauses
                     }))
                     return products
                   },
               mtmsbprofesoressbarea:async(parent,args,{db})=>{
                     let products=[]
-                    let whereClauses=JSON.parse(parent.whereClauses)
+                    let whereClauses
+                    if(parent.whereClauses)
+                      whereClauses=JSON.parse(parent.whereClauses)
                     let singleWhere={}
                     let sharedWhere={}
                     if(whereClauses!=undefined &&
@@ -288,9 +304,10 @@ sbarea:{
                       if(objeto["mtmsbprofesoressbareaId"]!=null)
                         res.push(objeto)
                     })
-                    res.map(o=>({
+                    res=res.map(o=>({
                       ...o,
                       whereClauses:parent.whereClauses,
+                      sortClauses:parent.sortClauses,
                       key:"mtmsbprofesoressbarea",
                       otherKey:"mtmsbareasbprofesores"
 

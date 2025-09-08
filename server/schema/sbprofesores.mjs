@@ -10,7 +10,10 @@ id:Int
 mtmsbprofesoressbareaId:Int
 mtmsbareasbprofesoresId:Int
                   key:String
-                  otherKey:String
+                  otherKey:String,
+                  whereClauses:String,
+                  sortClauses:String,
+
                 },type datamtmsbmateriassbprofesores{
                   materia:String
 
@@ -22,7 +25,10 @@ id:Int
 mtmsbmateriassbprofesoresId:Int
 mtmsbprofesoressbmateriasId:Int
                   key:String
-                  otherKey:String
+                  otherKey:String,
+                  whereClauses:String,
+                  sortClauses:String,
+
                 },type sbprofesores{
               
               id:Int

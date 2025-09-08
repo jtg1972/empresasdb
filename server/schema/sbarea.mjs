@@ -12,7 +12,10 @@ id:Int
 mtmsbprofesoressbareaId:Int
 mtmsbareasbprofesoresId:Int
                   key:String
-                  otherKey:String
+                  otherKey:String,
+                  whereClauses:String,
+                  sortClauses:String,
+
                 },type sbarea{
               
               id:Int

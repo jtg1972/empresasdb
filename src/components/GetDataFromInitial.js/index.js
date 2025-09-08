@@ -29,6 +29,8 @@ let bd
           if(checkBoxDataFields?.[field.name]?.["otm"]?.includes(x.name)){
             return `\n${x.name}{\n
               ${callGetFieldsCategory(x,categories,checkBoxDataFields)}
+              sortClauses
+              whereClauses
             }\n
             `
           }else
@@ -58,7 +60,8 @@ let bd
             return `mtm${ny.name}${cat[0].name}{\n
               ${newcamps.join("\n")}
               ${callGetFieldsCategory(x,categories,checkBoxDataFields)}
-              
+              sortClauses
+              whereClauses
               
             }`
             //${restcamps}\n
@@ -102,6 +105,8 @@ const getQueryFromCategory=(p,categories,checkBoxDataFields)=>{
           if(checkBoxDataFields?.[p?.name]?.["otm"]?.includes(x.name)){
             return `${x.name}{
               ${callGetFieldsCategory(x,categories,checkBoxDataFields)}
+              sortClauses
+              whereClauses
             }`
           }else
             return ""
@@ -134,7 +139,8 @@ const getQueryFromCategory=(p,categories,checkBoxDataFields)=>{
             return `mtm${t1.name}${p.name}{\n
               ${newcamps.join("\n")}
               ${callGetFieldsCategory(x,categories,checkBoxDataFields)}
-              
+              sortClauses
+              whereClauses
             }`
             //${restcamps}\nkey
             
@@ -148,6 +154,8 @@ const getQueryFromCategory=(p,categories,checkBoxDataFields)=>{
     fields.unshift("id")
     const q=`getData${p.name}(whereClauses:$whereClauses,sortClauses:$sortClauses){
       ${fields.length>0 && fields.join(`\n\t\t`)}
+      sortClauses
+      whereClauses
     }`
     //return q
   //})

@@ -8,7 +8,9 @@
           datamtmsbgrupossbestudiantes:{
                   mtmsbestudiantessbgrupos:async(parent,args,{db})=>{
                         let products=[]
-                        let whereClauses=JSON.parse(parent.whereClauses)
+                        let whereClauses
+                        if(parent.whereClauses)
+                          whereClauses=JSON.parse(parent.whereClauses)
                         let singleWhere={}
                         let sharedWhere={}
                         if(whereClauses!=undefined &&
@@ -75,9 +77,10 @@
                           if(objeto["mtmsbestudiantessbgruposId"]!=null)
                             res.push(objeto)
                         })
-                        res.map(o=>({
+                        res=res.map(o=>({
                           ...o,
                           whereClauses:parent.whereClauses,
+                          sortClauses:parent.sortClauses,
                           key:"mtmsbestudiantessbgrupos",
                           otherKey:"mtmsbgrupossbestudiantes"
 
@@ -87,7 +90,9 @@
 
                     },
 otmsbgrupossbprofesores:async(parent,args,{db})=>{
-                      let nj=JSON.parse(parent.whereClauses)
+                      let nj
+                      if(parent.whereClauses)
+                        nj=JSON.parse(parent.whereClauses)
                       let wc={}
                       if(nj?.whereClauses!=undefined &&
                         nj?.["otmsbgrupossbprofesores"] &&
@@ -110,7 +115,8 @@ otmsbgrupossbprofesores:async(parent,args,{db})=>{
 
                       })
                       products=products.map(x=>({
-                        ...x,whereClauses:parent.whereClauses
+                        ...x,whereClauses:parent.whereClauses,
+                        sortClauses:parent.sortClauses
                       }))
                       return products
                     }
@@ -120,7 +126,9 @@ sbestudiantes:{
               
               mtmsbgrupossbestudiantes:async(parent,args,{db})=>{
                     let products=[]
-                    let whereClauses=JSON.parse(parent.whereClauses)
+                    let whereClauses
+                    if(parent.whereClauses)
+                      whereClauses=JSON.parse(parent.whereClauses)
                     let singleWhere={}
                     let sharedWhere={}
                     if(whereClauses!=undefined &&
@@ -184,9 +192,10 @@ sbestudiantes:{
                       if(objeto["mtmsbgrupossbestudiantesId"]!=null)
                         res.push(objeto)
                     })
-                    res.map(o=>({
+                    res=res.map(o=>({
                       ...o,
                       whereClauses:parent.whereClauses,
+                      sortClauses:parent.sortClauses,
                       key:"mtmsbgrupossbestudiantes",
                       otherKey:"mtmsbestudiantessbgrupos"
 
