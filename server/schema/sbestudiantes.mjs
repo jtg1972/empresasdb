@@ -3,9 +3,9 @@
 
           export default gql`type datamtmsbgrupossbestudiantes{
                   clavedelgrupo:String
-
 otmsbmateriassbgruposId:Int
 mtmsbestudiantessbgrupos:[datamtmsbestudiantessbgrupos]
+
 otmsbgrupossbprofesores:[sbprofesores]
 id:Int
 mtmsbgrupossbestudiantesId:Int
@@ -55,7 +55,10 @@ estudianteIdProductQuery:Int
               
               getDatasbestudiantes(whereClauses:String,sortClauses:String):[sbestudiantes]
 removesbestudiantes(id:Int,parentArg:String,
-                  hardDelete:Boolean):Boolean!
+                  hardDelete:Boolean,
+                  otmCategoryIds:[String],
+                  mtmCategoryIds:[String]
+                  ):Boolean!
 editsbestudiantes(id:Int,
 nombre:String,
 boleta:String,

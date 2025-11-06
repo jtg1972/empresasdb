@@ -3,9 +3,9 @@
 
           export default gql`type datamtmsbcarrerassbmaterias{
                   carrera:String
-
 mtmsbmateriassbcarreras:[datamtmsbmateriassbcarreras]
 otmsbareasbcarrerasId:Int
+
 id:Int
 mtmsbcarrerassbmateriasId:Int
 mtmsbmateriassbcarrerasId:Int
@@ -67,7 +67,10 @@ materiaIdProductQuery:Int
               
               getDatasbmaterias(whereClauses:String,sortClauses:String):[sbmaterias]
 removesbmaterias(id:Int,parentArg:String,
-                  hardDelete:Boolean):Boolean!
+                  hardDelete:Boolean,
+                  otmCategoryIds:[String],
+                  mtmCategoryIds:[String]
+                  ):Boolean!
 editsbmaterias(id:Int,
 materia:String,
 otmsbareasbmateriasId:Int,

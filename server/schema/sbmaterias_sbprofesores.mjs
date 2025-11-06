@@ -13,6 +13,8 @@ mtmsbprofesoressbmateriasId:Int
 		 mtmsbprofesoressbmateriasIdFinalCatQuery:Int
 		 mtmsbprofesoressbmateriasIdProductQuery:Int
 
+              whereClauses:String
+              sortClauses:String
             }
 
             type Query{
@@ -115,10 +117,11 @@ mtmsbprofesoressbmateriasId:Int,
 		 mtmsbprofesoressbmateriasIdFinalCatQuery:Int,
 		 mtmsbprofesoressbmateriasIdProductQuery:Int,
 
+                parentArg:String
                 ):sbmaterias_sbprofesores
               
               
-              getDatasbmaterias_sbprofesores:[sbmaterias_sbprofesores]
+              getDatasbmaterias_sbprofesores(whereClauses:String,sortClauses:String):[sbmaterias_sbprofesores]
 removesbmaterias_sbprofesores(mtmsbmateriassbprofesoresId:Int,mtmsbprofesoressbmateriasId:Int):Boolean
 editsbmaterias_sbprofesores(id:Int,
 mtmsbmateriassbprofesoresId:Int,

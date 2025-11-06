@@ -66,6 +66,7 @@
                             console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                             objeto[lastSegmentText]=x[keys[k]]
                           }
+                          
                           objeto["id"]=x["sbgrupos.id"]
                           objeto.mtmsbestudiantessbgruposId=x["id"]
                           Object.keys(objeto).filter(z=>{
@@ -180,6 +181,7 @@ sbgrupos:{
                         console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                         objeto[lastSegmentText]=x[keys[k]]
                       }
+                      
                       objeto["id"]=x["sbestudiantes.id"]
                       objeto.mtmsbgrupossbestudiantesId=x["id"]
                       Object.keys(objeto).filter(z=>{
@@ -262,9 +264,31 @@ sbgrupos:{
                       let p
                       try{
                         if(args.hardDelete==true){
-                          const product=await db.sbgrupos.findByPk(args.id)
+                          for(let x=0;x<args.otmCategoryIds.length;x++){
+                            let ke=args.otmCategoryIds[x]
+                            let fi="otmsbgrupos"+ke+"Id"
+                            console.log("resres",
+                              "db."+ke+".update({"+fi+":0},{where:{"+fi+":"+args.id+"}})")
+                            db[ke].update({[fi]:0},{where:{[fi]:args.id}})
+                          }
+                          let table=""
+                          
+                            
+                          for(let x=0;x<args.mtmCategoryIds.length;x++){
+                            if("sbgrupos">args.mtmCategoryIds[x])
+                              table=args.mtmCategoryIds[x]+"_"+"sbgrupos"
+                            else
+                              table="sbgrupos"+"_"+args.mtmCategoryIds[x]
+                            
+                            let mtmvar="mtm"+"sbgrupos"+args.mtmCategoryIds[x]+"Id"
+                            console.log("resres",
+                              "db."+table+".destroy({where:{"+mtmvar+":"+args.id+"}})")
+                            db[table].destroy({where:{[mtmvar]:args.id}})
+                          }
+                         const product=await db.sbarea.findByPk(args.id)
                           product.destroy()
                           return true
+
                         }else{
                           p=await db.sbgrupos.update({
                             [args["parentArg"]]:0,

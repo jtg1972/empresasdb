@@ -66,6 +66,7 @@
                             console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                             objeto[lastSegmentText]=x[keys[k]]
                           }
+                          
                           objeto["id"]=x["sbestudiantes.id"]
                           objeto.mtmsbgrupossbestudiantesId=x["id"]
                           Object.keys(objeto).filter(z=>{
@@ -181,6 +182,7 @@ sbestudiantes:{
                         console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                         objeto[lastSegmentText]=x[keys[k]]
                       }
+                      
                       objeto["id"]=x["sbgrupos.id"]
                       objeto.mtmsbestudiantessbgruposId=x["id"]
                       Object.keys(objeto).filter(z=>{
@@ -211,11 +213,7 @@ sbestudiantes:{
                   return products     
                 }
               },
-              Mutation:{
-                
-                
-
-                createsbestudiantes:async(parent,args,{db})=>{
+              Mutation:{createsbestudiantes:async(parent,args,{db})=>{
                 let product=null
                 let p=null
                 if(args.id==null){
@@ -267,9 +265,31 @@ sbestudiantes:{
                       let p
                       try{
                         if(args.hardDelete==true){
-                          const product=await db.sbestudiantes.findByPk(args.id)
+                          for(let x=0;x<args.otmCategoryIds.length;x++){
+                            let ke=args.otmCategoryIds[x]
+                            let fi="otmsbestudiantes"+ke+"Id"
+                            console.log("resres",
+                              "db."+ke+".update({"+fi+":0},{where:{"+fi+":"+args.id+"}})")
+                            db[ke].update({[fi]:0},{where:{[fi]:args.id}})
+                          }
+                          let table=""
+                          
+                            
+                          for(let x=0;x<args.mtmCategoryIds.length;x++){
+                            if("sbestudiantes">args.mtmCategoryIds[x])
+                              table=args.mtmCategoryIds[x]+"_"+"sbestudiantes"
+                            else
+                              table="sbestudiantes"+"_"+args.mtmCategoryIds[x]
+                            
+                            let mtmvar="mtm"+"sbestudiantes"+args.mtmCategoryIds[x]+"Id"
+                            console.log("resres",
+                              "db."+table+".destroy({where:{"+mtmvar+":"+args.id+"}})")
+                            db[table].destroy({where:{[mtmvar]:args.id}})
+                          }
+                         const product=await db.sbarea.findByPk(args.id)
                           product.destroy()
                           return true
+
                         }else{
                           p=await db.sbestudiantes.update({
                             [args["parentArg"]]:0,

@@ -367,7 +367,7 @@ const DisplayWholeProductsTable = ({
     Object.keys(categoryProducts).forEach((cp,index)=>{
       const nc=cp.substr(7)
       const cat2=categories.filter(c=>c.name==nc)[0]
-      const oneToManyCategories=cat2.fields.filter(
+      const oneToManyCategories=cat2?.fields?.filter(
         x=>(x.dataType=="relationship" && (x.relationship=="onetomany"
         || x.relationship=="manytomany") && (checkBoxDataFields?.[cat2.name]?.mtm?.includes(x.name) ||
         checkBoxDataFields?.[cat2.name]?.otm?.includes(x.name)))
@@ -518,7 +518,7 @@ const DisplayWholeProductsTable = ({
           manyToManyAlreadyDone.push(name)
       if(!isManyToMany){  */
       let relationNames=[]
-      otmrelations.forEach(y=>{
+      otmrelations?.forEach(y=>{
         const respCat=categories.filter(o=>o.id==y.relationCategory)[0]
         //console.log("y,respCat",y,respCat)
 

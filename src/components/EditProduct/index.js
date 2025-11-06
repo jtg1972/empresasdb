@@ -762,10 +762,10 @@ const EditProduct = ({
     update:(cache,{data})=>{
      //console.log("entro a mutationeditproductnotmtm")
      let name
-     if(titulo.startsWith("otm"))
+  //   if(titulo.startsWith("otm"))
       name=`edit${curCat.name}`
-    else
-    name=`editdatamtm${titulo.substr(3)}`
+    //else
+    //name=`editdatamtm${titulo.substr(3)}`
     
       /*if(isManyToMany){
         setAddRecGlobal(()=>data[name])
@@ -788,7 +788,9 @@ const EditProduct = ({
       console.log("updacate",updateCategories)
       updateCategories[curCat.name].forEach(i=>{
        // console.log("ucs",updateCategoriesIds,curCat.name,updateCategoriesIds[i],i)
-       console.log("paramsucs",i,data[name],parentFields?.[i])
+       console.log("paramsucs",i,data[name],parentFields?.[i],i.substring(7))
+       //if(i.startsWith("getData"))
+        //i=i.substring(7)
         dispatch({
           type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
           payload:{

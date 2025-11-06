@@ -53,7 +53,10 @@ grupoIdProductQuery:Int
               
               getDatasbgrupos(whereClauses:String,sortClauses:String):[sbgrupos]
 removesbgrupos(id:Int,parentArg:String,
-                  hardDelete:Boolean):Boolean!
+                  hardDelete:Boolean,
+                  otmCategoryIds:[String],
+                  mtmCategoryIds:[String]
+                  ):Boolean!
 editsbgrupos(id:Int,
 clavedelgrupo:String,
 otmsbmateriassbgruposId:Int,

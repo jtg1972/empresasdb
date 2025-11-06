@@ -52,7 +52,10 @@ carreraIdProductQuery:Int
               
               getDatasbcarreras(whereClauses:String,sortClauses:String):[sbcarreras]
 removesbcarreras(id:Int,parentArg:String,
-                  hardDelete:Boolean):Boolean!
+                  hardDelete:Boolean,
+                  otmCategoryIds:[String],
+                  mtmCategoryIds:[String]
+                  ):Boolean!
 editsbcarreras(id:Int,
 carrera:String,
 otmsbareasbcarrerasId:Int,

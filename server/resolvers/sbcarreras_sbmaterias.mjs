@@ -107,6 +107,7 @@
                 let siexiste=await db.sbcarreras_sbmaterias.findAll({where:{
                   mtmsbmateriassbcarrerasId:args.mtmsbmateriassbcarrerasId,
                   mtmsbcarrerassbmateriasId:args.mtmsbcarrerassbmateriasId
+
                 },raw:true})
                 let product
                 if(siexiste.length==0){
@@ -115,7 +116,6 @@
                 }else{
                   product=siexiste[0]
                 }
-                
                 
                 
                 let alumno=await db.sbcarreras.findAll({
@@ -143,6 +143,7 @@
                 let siexiste=await db.sbcarreras_sbmaterias.findAll({where:{
                   mtmsbmateriassbcarrerasId:args.mtmsbmateriassbcarrerasId,
                   mtmsbcarrerassbmateriasId:args.mtmsbcarrerassbmateriasId
+
                 },raw:true})
                 let product
                 if(siexiste.length==0){

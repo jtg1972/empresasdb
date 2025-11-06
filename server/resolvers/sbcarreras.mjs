@@ -66,6 +66,7 @@
                             console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                             objeto[lastSegmentText]=x[keys[k]]
                           }
+                          
                           objeto["id"]=x["sbcarreras.id"]
                           objeto.mtmsbmateriassbcarrerasId=x["id"]
                           Object.keys(objeto).filter(z=>{
@@ -180,6 +181,7 @@ mtmsbprofesoressbmaterias:async(parent,args,{db})=>{
                             console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                             objeto[lastSegmentText]=x[keys[k]]
                           }
+                          
                           objeto["id"]=x["sbprofesores.id"]
                           objeto.mtmsbmateriassbprofesoresId=x["id"]
                           Object.keys(objeto).filter(z=>{
@@ -264,6 +266,7 @@ sbcarreras:{
                         console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                         objeto[lastSegmentText]=x[keys[k]]
                       }
+                      
                       objeto["id"]=x["sbmaterias.id"]
                       objeto.mtmsbcarrerassbmateriasId=x["id"]
                       Object.keys(objeto).filter(z=>{
@@ -294,11 +297,7 @@ sbcarreras:{
                   return products     
                 }
               },
-              Mutation:{
-                
-                
-
-                createsbcarreras:async(parent,args,{db})=>{
+              Mutation:{createsbcarreras:async(parent,args,{db})=>{
                 let product=null
                 let p=null
                 if(args.id==null){
@@ -350,9 +349,31 @@ sbcarreras:{
                       let p
                       try{
                         if(args.hardDelete==true){
-                          const product=await db.sbcarreras.findByPk(args.id)
+                          for(let x=0;x<args.otmCategoryIds.length;x++){
+                            let ke=args.otmCategoryIds[x]
+                            let fi="otmsbcarreras"+ke+"Id"
+                            console.log("resres",
+                              "db."+ke+".update({"+fi+":0},{where:{"+fi+":"+args.id+"}})")
+                            db[ke].update({[fi]:0},{where:{[fi]:args.id}})
+                          }
+                          let table=""
+                          
+                            
+                          for(let x=0;x<args.mtmCategoryIds.length;x++){
+                            if("sbcarreras">args.mtmCategoryIds[x])
+                              table=args.mtmCategoryIds[x]+"_"+"sbcarreras"
+                            else
+                              table="sbcarreras"+"_"+args.mtmCategoryIds[x]
+                            
+                            let mtmvar="mtm"+"sbcarreras"+args.mtmCategoryIds[x]+"Id"
+                            console.log("resres",
+                              "db."+table+".destroy({where:{"+mtmvar+":"+args.id+"}})")
+                            db[table].destroy({where:{[mtmvar]:args.id}})
+                          }
+                         const product=await db.sbarea.findByPk(args.id)
                           product.destroy()
                           return true
+
                         }else{
                           p=await db.sbcarreras.update({
                             [args["parentArg"]]:0,

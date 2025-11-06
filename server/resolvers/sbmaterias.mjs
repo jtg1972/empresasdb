@@ -66,6 +66,7 @@
                             console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                             objeto[lastSegmentText]=x[keys[k]]
                           }
+                          
                           objeto["id"]=x["sbmaterias.id"]
                           objeto.mtmsbcarrerassbmateriasId=x["id"]
                           Object.keys(objeto).filter(z=>{
@@ -152,7 +153,8 @@ datamtmsbprofesoressbmaterias:{
                             console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                             objeto[lastSegmentText]=x[keys[k]]
                           }
-                          objeto["id"]=x["sbarea.id"]
+                          
+                          objeto["id"]=x["sbareas.id"]
                           objeto.mtmsbprofesoressbareaId=x["id"]
                           Object.keys(objeto).filter(z=>{
                         
@@ -235,6 +237,7 @@ mtmsbmateriassbprofesores:async(parent,args,{db})=>{
                             console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                             objeto[lastSegmentText]=x[keys[k]]
                           }
+                          
                           objeto["id"]=x["sbmaterias.id"]
                           objeto.mtmsbprofesoressbmateriasId=x["id"]
                           Object.keys(objeto).filter(z=>{
@@ -349,6 +352,7 @@ sbmaterias:{
                         console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                         objeto[lastSegmentText]=x[keys[k]]
                       }
+                      
                       objeto["id"]=x["sbcarreras.id"]
                       objeto.mtmsbmateriassbcarrerasId=x["id"]
                       Object.keys(objeto).filter(z=>{
@@ -428,6 +432,7 @@ sbmaterias:{
                         console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                         objeto[lastSegmentText]=x[keys[k]]
                       }
+                      
                       objeto["id"]=x["sbprofesores.id"]
                       objeto.mtmsbmateriassbprofesoresId=x["id"]
                       Object.keys(objeto).filter(z=>{
@@ -458,15 +463,10 @@ sbmaterias:{
                   return products     
                 }
               },
-              Mutation:{
-                
-                
-
-                createsbmaterias:async(parent,args,{db})=>{
+              Mutation:{createsbmaterias:async(parent,args,{db})=>{
                 let product=null
                 let p=null
-                console.log("argsid",args,args.id)
-                if(args.id==undefined){
+                if(args.id==null){
                   product=await db.sbmaterias.create(args)
                   return product
                 }else{
@@ -515,9 +515,31 @@ sbmaterias:{
                       let p
                       try{
                         if(args.hardDelete==true){
-                          const product=await db.sbmaterias.findByPk(args.id)
+                          for(let x=0;x<args.otmCategoryIds.length;x++){
+                            let ke=args.otmCategoryIds[x]
+                            let fi="otmsbmaterias"+ke+"Id"
+                            console.log("resres",
+                              "db."+ke+".update({"+fi+":0},{where:{"+fi+":"+args.id+"}})")
+                            db[ke].update({[fi]:0},{where:{[fi]:args.id}})
+                          }
+                          let table=""
+                          
+                            
+                          for(let x=0;x<args.mtmCategoryIds.length;x++){
+                            if("sbmaterias">args.mtmCategoryIds[x])
+                              table=args.mtmCategoryIds[x]+"_"+"sbmaterias"
+                            else
+                              table="sbmaterias"+"_"+args.mtmCategoryIds[x]
+                            
+                            let mtmvar="mtm"+"sbmaterias"+args.mtmCategoryIds[x]+"Id"
+                            console.log("resres",
+                              "db."+table+".destroy({where:{"+mtmvar+":"+args.id+"}})")
+                            db[table].destroy({where:{[mtmvar]:args.id}})
+                          }
+                         const product=await db.sbarea.findByPk(args.id)
                           product.destroy()
                           return true
+
                         }else{
                           p=await db.sbmaterias.update({
                             [args["parentArg"]]:0,

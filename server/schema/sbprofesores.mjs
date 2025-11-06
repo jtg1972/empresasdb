@@ -16,11 +16,11 @@ mtmsbareasbprofesoresId:Int
 
                 },type datamtmsbmateriassbprofesores{
                   materia:String
-
 mtmsbcarrerassbmaterias:[datamtmsbcarrerassbmaterias]
 otmsbareasbmateriasId:Int
 otmsbmateriassbgrupos:[sbgrupos]
 mtmsbprofesoressbmaterias:[datamtmsbprofesoressbmaterias]
+
 id:Int
 mtmsbmateriassbprofesoresId:Int
 mtmsbprofesoressbmateriasId:Int
@@ -67,7 +67,10 @@ profesorIdProductQuery:Int
               
               getDatasbprofesores(whereClauses:String,sortClauses:String):[sbprofesores]
 removesbprofesores(id:Int,parentArg:String,
-                  hardDelete:Boolean):Boolean!
+                  hardDelete:Boolean,
+                  otmCategoryIds:[String],
+                  mtmCategoryIds:[String]
+                  ):Boolean!
 editsbprofesores(id:Int,
 nombre:String,
 registro:String,

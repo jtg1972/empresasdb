@@ -1,13 +1,17 @@
 
             import {Op} from 'sequelize'
+            import {codifyRuleMtm} from './../utils/whereClauses/index.mjs'
+            import {codifySortRule} from './../utils/whereClauses/index.mjs'
+            import {codifySortRuleMtm} from './../utils/whereClauses/index.mjs'
+            import codifyRule from './../utils/whereClauses/index.mjs'
             export default{
           Query:{
                 sbmaterias_sbprofesores:async(parent,args,{db})=>{
                   const products=await db.sbmaterias_sbprofesores.findAll()
                   return products     
                 }
-              },Mutation:{
-                
+              },
+              Mutation:{
             getonedatamtmsbmateriassbprofesores:async(parent,args,{db})=>{
               try{
                 let product=await db.sbmaterias_sbprofesores.findAll({
@@ -100,8 +104,20 @@
             },
             createdatamtmsbmateriassbprofesores:async(parent,args,{db})=>{
               try{
-                let product=await db.sbmaterias_sbprofesores.create(args)
-                product=product.dataValues
+                let siexiste=await db.sbmaterias_sbprofesores.findAll({where:{
+                  mtmsbprofesoressbmateriasId:args.mtmsbprofesoressbmateriasId,
+                  mtmsbmateriassbprofesoresId:args.mtmsbmateriassbprofesoresId
+
+                },raw:true})
+                let product
+                if(siexiste.length==0){
+                  product=await db.sbmaterias_sbprofesores.create(args)
+                  product=product.dataValues
+                }else{
+                  product=siexiste[0]
+                }
+                
+                
                 let alumno=await db.sbmaterias.findAll({
                   where:{
                     id:args.mtmsbmateriassbprofesoresId
@@ -115,16 +131,27 @@
                   raw:true
                 })
                 console.log("resyovoy",product,alumno,profesor)
-                return {original:{...alumno[0],...product,key:"mtmsbmateriassbprofesores"},
-                copy:{...profesor[0],...product,key:"mtmsbprofesoressbmaterias"}}
+                return {...alumno[0],...product,key:"mtmsbmateriassbprofesores",
+              otherKey:"mtmsbprofesoressbmaterias"}
+                
               }catch(e){
-                console.log("errorjor",e)
+                console.log("error",e)
               }
             },
             createdatamtmsbprofesoressbmaterias:async(parent,args,{db})=>{
               try{
-                let product=await db.sbmaterias_sbprofesores.create(args)
-                product=product.dataValues
+                let siexiste=await db.sbmaterias_sbprofesores.findAll({where:{
+                  mtmsbprofesoressbmateriasId:args.mtmsbprofesoressbmateriasId,
+                  mtmsbmateriassbprofesoresId:args.mtmsbmateriassbprofesoresId
+
+                },raw:true})
+                let product
+                if(siexiste.length==0){
+                  product=await db.sbmaterias_sbprofesores.create(args)
+                  product=product.dataValues
+                }else{
+                  product=siexiste[0]
+                }
                 let alumno=await db.sbprofesores.findAll({
                   where:{
                     id:args.mtmsbprofesoressbmateriasId
@@ -138,10 +165,11 @@
                   raw:true
                 })
                 console.log("resyovoy",product,alumno,profesor)
-                return {original:{...alumno[0],...product,key:"mtmsbprofesoressbmaterias"},
-                copy:{...profesor[0],...product,key:"mtmsbmateriassbprofesores"}}
+                return {...alumno[0],...product,key:"mtmsbprofesoressbmaterias",
+              otherKey:"mtmsbmateriassbprofesores"}
+                
               }catch(e){
-                console.log("errorjor",e)
+                console.log("error",e)
               }
             },editdatamtmsbmateriassbprofesores:async(parent,args,{db})=>{
               let rec=await db.sbmaterias_sbprofesores.update({
@@ -176,21 +204,13 @@
 
 
               return {
-                original:{
                   
                     ...r1,
                     ...r2,
                   
                   key:"mtmsbmateriassbprofesores"
-                },
-                copy:{
-                  
-                    ...r3,
-                    ...r2,
-                  
-                  key:"mtmsbprofesoressbmaterias"
                 }
-              }
+              
             },
             editdatamtmsbprofesoressbmaterias:async(parent,args,{db})=>{
               let rec=await db.sbmaterias_sbprofesores.update({
@@ -224,31 +244,60 @@
               r3=r3[0]
 
               return {
-                original:{
-                  
                     ...r1,
                     ...r2,
                   
                   key:"mtmsbprofesoressbmaterias"
-                },
-                copy:{
-                  
-                    ...r3,
-                    ...r2,
-                  
-                  key:"mtmsbmateriassbprofesores"
-                }
+                
               }
             },
-            
-                createsbmaterias_sbprofesores:async(parent,args,{db})=>{const product=await db.sbmaterias_sbprofesores.create(args)
+            createsbmaterias_sbprofesores:async(parent,args,{db})=>{
+                let product=null
+                let p=null
+                if(args.id==null){
+                  product=await db.sbmaterias_sbprofesores.create(args)
                   return product
-                  
-                },
+                }else{
+                  p=await db.sbmaterias_sbprofesores.update({
+                    [args["parentArg"]]:args[args["parentArg"]],
+                    
+                  },
+                  {
+                  where:{id:args.id}
+                  })
+                }
+                if(p){
+                  const nuevo=await db.sbmaterias_sbprofesores.findByPk(args.id)
+                  return nuevo
+                }
+                return null
+              },
                
                 getDatasbmaterias_sbprofesores:async(parent,args,{db})=>{
-                  const products=await db.sbmaterias_sbprofesores.findAll({raw:true})
+                  let nj={}
                   
+                  if(args.whereClauses!=""){
+                    nj=JSON.parse(args.whereClauses)
+                  }
+                  let condWhere={}
+                  if(nj?.sbmaterias_sbprofesores?.["main"]!=undefined &&
+                  nj?.sbmaterias_sbprofesores?.["main"]!="none")
+                    condWhere=codifyRule(nj,sbmaterias_sbprofesores)
+
+                  let sj={}
+                  if(args?.sortClauses!=undefined)
+                    sj=JSON.parse(args.sortClauses)
+                  let codSort=[]
+                  if(sj!=undefined && sj?.["sbmaterias_sbprofesores"]!=undefined && sj?.["sbmaterias_sbprofesores"]?.[0]!="nosort")
+                    codSort=codifySortRule(sj["sbmaterias_sbprofesores"])
+                  let products=await db.sbmaterias_sbprofesores.findAll({
+                    raw:true,
+                    where:{...condWhere},
+                    order:codSort
+                  })
+                  products=products.map(x=>({
+                    ...x,whereClauses:args.whereClauses,sortClauses:args.sortClauses
+                  }))
                   return products
                 },removesbmaterias_sbprofesores:async(parent,args,{db})=>{
                   

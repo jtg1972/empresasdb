@@ -104,8 +104,20 @@
             },
             createdatamtmsbestudiantessbgrupos:async(parent,args,{db})=>{
               try{
-                let product=await db.sbestudiantes_sbgrupos.create(args)
-                product=product.dataValues
+                let siexiste=await db.sbestudiantes_sbgrupos.findAll({where:{
+                  mtmsbgrupossbestudiantesId:args.mtmsbgrupossbestudiantesId,
+                  mtmsbestudiantessbgruposId:args.mtmsbestudiantessbgruposId
+
+                },raw:true})
+                let product
+                if(siexiste.length==0){
+                  product=await db.sbestudiantes_sbgrupos.create(args)
+                  product=product.dataValues
+                }else{
+                  product=siexiste[0]
+                }
+                
+                
                 let alumno=await db.sbestudiantes.findAll({
                   where:{
                     id:args.mtmsbestudiantessbgruposId
@@ -119,7 +131,8 @@
                   raw:true
                 })
                 console.log("resyovoy",product,alumno,profesor)
-                return {...alumno[0],...product,key:"mtmsbestudiantessbgrupos"}
+                return {...alumno[0],...product,key:"mtmsbestudiantessbgrupos",
+              otherKey:"mtmsbgrupossbestudiantes"}
                 
               }catch(e){
                 console.log("error",e)
@@ -127,8 +140,18 @@
             },
             createdatamtmsbgrupossbestudiantes:async(parent,args,{db})=>{
               try{
-                let product=await db.sbestudiantes_sbgrupos.create(args)
-                product=product.dataValues
+                let siexiste=await db.sbestudiantes_sbgrupos.findAll({where:{
+                  mtmsbgrupossbestudiantesId:args.mtmsbgrupossbestudiantesId,
+                  mtmsbestudiantessbgruposId:args.mtmsbestudiantessbgruposId
+
+                },raw:true})
+                let product
+                if(siexiste.length==0){
+                  product=await db.sbestudiantes_sbgrupos.create(args)
+                  product=product.dataValues
+                }else{
+                  product=siexiste[0]
+                }
                 let alumno=await db.sbgrupos.findAll({
                   where:{
                     id:args.mtmsbgrupossbestudiantesId
@@ -142,7 +165,8 @@
                   raw:true
                 })
                 console.log("resyovoy",product,alumno,profesor)
-                return {...alumno[0],...product,key:"mtmsbgrupossbestudiantes"}
+                return {...alumno[0],...product,key:"mtmsbgrupossbestudiantes",
+              otherKey:"mtmsbestudiantessbgrupos"}
                 
               }catch(e){
                 console.log("error",e)

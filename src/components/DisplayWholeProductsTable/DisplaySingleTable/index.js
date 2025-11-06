@@ -292,14 +292,18 @@ const DisplaySingleTable = ({
       let ncp=categoryProducts
       
       //console.log("indexespo",newRoutesSeg,indexesOtm?.[titulo]?.edit?.length,indexesOtm?.[titulo]?.edit,ncp)
-      
-
+      let rt=""
+   /*if(titulo.startsWith("getData"))
+        rt=titulo.substring(7)*/
+      //else
+        //rt=titulo
+        console.log("iotm",indexesOtm,rt,titulo)
       if(indexesOtm?.[titulo]?.edit?.length>0){
         indexesOtm?.[titulo]?.edit?.forEach(x=>{
           let i=getIndexes(tableIndexes,segmentRoutes)    
-      //console.log("paramsacttab",x,ncp,x.row,titulo,segmentRoutes,newRoutesSeg,i)
-          if(i.length>0 && segmentRoutes.length>0)
-            ncp=simpleUpdateStateHereEdit(ncp,x.row,titulo,segmentRoutes,i)
+      console.log("paramsacttab77",x,ncp,x.row,rt,segmentRoutes,newRoutesSeg,i)
+          //if(i.length>0 && segmentRoutes.length>0)
+            ncp=simpleUpdateStateHereEdit(ncp,x.row,rt,segmentRoutes,i)
         })
       }
       console.log("ncpbien",ncp)
@@ -494,44 +498,57 @@ const DisplaySingleTable = ({
         if(po>=c1.length-1)
           i[po]=undefined
       }*/
-    let st=cp[c1[0]][i[0]]
-    for(let u1=1;u1<c1.length;u1++){
-      console.log("stverif",tit,u1,st,c1,i,c1[u1])//,nameVar1,nameVar2,valueVar1,valueVar2)
-      if(st[c1[u1]]){
-        if(u1<c1.length-1) 
-          st=st[c1[u1]][i[u1]]
-        else{
-          console.log("st[c1]",st[c1[u1]])
-          st[c1[u1]]=st[c1[u1]].map(x=>{
-            if(x.id==reg.id){
-              /*if(tit.startsWith("mtm")){
-                //if(pmtm==false){
-                  let nc={}
-                  let np=false
-                  cf?.forEach(y=>{
-                    if(reg?.[y.name]!=undefined)
-                      nc={...nc,[y.name]:reg[y.name]}
-                    else
-                      np=true
-                      
-                  })
-                  
-                  //nc["id"]=reg["id"]
-                  console.log("cfio",nc,cf,{...reg,...nc},"np",np,tit)
-                  if(!np)
-                    return {...x,...nc}
-                   
-
-              }*/
-              console.log("xreg",{...x,...reg})
-              return {...x,...reg}
-              
-            }else
-              return x
-          })
-          console.log("st[c1]",st[c1[u1]])
-        }
+    let st=[]
+    if(c1.length==1){
+      console.log("entrouuu",cp)
+      cp[c1[0]]=cp[c1[0]].map(x=>{
         
+        if(x.id==reg.id){
+          console.log("entroee",reg,x.id)
+          return {...x,...reg}
+        }
+        return x
+      })
+    }else{
+      st=cp[c1[0]][i[0]]
+      for(let u1=1;u1<c1.length;u1++){
+        console.log("stverif",tit,u1,st,c1,i,c1[u1])//,nameVar1,nameVar2,valueVar1,valueVar2)
+        if(st[c1[u1]]){
+          if(u1<c1.length-1) 
+            st=st[c1[u1]][i[u1]]
+          else{
+            console.log("st[c1]",st[c1[u1]])
+            st[c1[u1]]=st[c1[u1]].map(x=>{
+              if(x.id==reg.id){
+                /*if(tit.startsWith("mtm")){
+                  //if(pmtm==false){
+                    let nc={}
+                    let np=false
+                    cf?.forEach(y=>{
+                      if(reg?.[y.name]!=undefined)
+                        nc={...nc,[y.name]:reg[y.name]}
+                      else
+                        np=true
+                        
+                    })
+                    
+                    //nc["id"]=reg["id"]
+                    console.log("cfio",nc,cf,{...reg,...nc},"np",np,tit)
+                    if(!np)
+                      return {...x,...nc}
+                    
+
+                }*/
+                console.log("xreg",{...x,...reg})
+                return {...x,...reg}
+                
+              }else
+                return x
+            })
+            console.log("st[c1]",st[c1[u1]])
+          }
+          
+        }
       }
     }
   //console.log("entro clusters",c1,i)
@@ -1563,7 +1580,7 @@ dispatch({
                     }
                   })
                 }else{
-                //console.log("Paramsbien ",deleteId)
+                console.log("Paramsbien ",deleteId,products[p]["id"],`${titulo}Id`)
                   delete2({
                     variables:{
                       id:products[p]["id"],
