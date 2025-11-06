@@ -1,13 +1,17 @@
 
             import {Op} from 'sequelize'
+            import {codifyRuleMtm} from './../utils/whereClauses/index.mjs'
+            import {codifySortRule} from './../utils/whereClauses/index.mjs'
+            import {codifySortRuleMtm} from './../utils/whereClauses/index.mjs'
+            import codifyRule from './../utils/whereClauses/index.mjs'
             export default{
           Query:{
                 sbcarreras_sbmaterias:async(parent,args,{db})=>{
                   const products=await db.sbcarreras_sbmaterias.findAll()
                   return products     
                 }
-              },Mutation:{
-                
+              },
+              Mutation:{
             getonedatamtmsbcarrerassbmaterias:async(parent,args,{db})=>{
               try{
                 let product=await db.sbcarreras_sbmaterias.findAll({
@@ -100,43 +104,20 @@
             },
             createdatamtmsbcarrerassbmaterias:async(parent,args,{db})=>{
               try{
-                /*console.log("entro8990")
-
-                let cat1=db.Categories.findAll(
-                  {
-                    where:{
-                    name:"sbcarreras"
-                  },
-                  raw:true
-                })[0]
-                let fields1=db.Fields.findAll({
-                  where:{
-                    category:cat1.id,
-                    dataType:"queryCategory",
-                    relationship:null
-
-                  }
-                })
-                let cat2=db.Categories.findAll(
-                  {
-                    where:{
-                    name:"sbmaterias"
-                  },
-                  raw:true
-                })[0]
-                let fields2=db.Fields.findAll({
-                  where:{
-                    category:cats2.id,
-                    dataType:"queryCategory",
-                    relationship:null
-
-                  }
-                })
-
-                console.log("catresp1",cat1,cat2,fields1.name,fields2.name)*/
-
-                let product=await db.sbcarreras_sbmaterias.create(args)
-                product=product.dataValues
+                let siexiste=await db.sbcarreras_sbmaterias.findAll({where:{
+                  mtmsbmateriassbcarrerasId:args.mtmsbmateriassbcarrerasId,
+                  mtmsbcarrerassbmateriasId:args.mtmsbcarrerassbmateriasId
+                },raw:true})
+                let product
+                if(siexiste.length==0){
+                  product=await db.sbcarreras_sbmaterias.create(args)
+                  product=product.dataValues
+                }else{
+                  product=siexiste[0]
+                }
+                
+                
+                
                 let alumno=await db.sbcarreras.findAll({
                   where:{
                     id:args.mtmsbcarrerassbmateriasId
@@ -150,50 +131,26 @@
                   raw:true
                 })
                 console.log("resyovoy",product,alumno,profesor)
-                return {original:{...alumno[0],...product,key:"mtmsbcarrerassbmaterias"},
-                copy:{...profesor[0],...product,key:"mtmsbmateriassbcarreras"}}
+                return {...alumno[0],...product,key:"mtmsbcarrerassbmaterias",
+              otherKey:"mtmsbmateriassbcarreras"}
+                
               }catch(e){
                 console.log("error",e)
               }
             },
             createdatamtmsbmateriassbcarreras:async(parent,args,{db})=>{
               try{
-                /*console.log("entro8990")
-                let cat1=db.categories.findAll(
-                  {
-                    where:{
-                    name:"sbcarreras"
-                  },
-                  raw:true
-                })[0]
-                let fields1=db.fields.findAll({
-                  where:{
-                    category:cat1.id,
-                    dataType:"queryCategory",
-                    relationship:null
-
-                  }
-                })
-                let cat2=db.categories.findAll(
-                  {
-                    where:{
-                    name:"sbmaterias"
-                  },
-                  raw:true
-                })[0]
-                let fields2=db.fields.findAll({
-                  where:{
-                    category:cats2.id,
-                    dataType:"queryCategory",
-                    relationship:null
-
-                  }
-                })
-
-                console.log("catresp1",cat1,cat2,fields1.name,fields2.name)
-                */
-                let product=await db.sbcarreras_sbmaterias.create(args)
-                product=product.dataValues
+                let siexiste=await db.sbcarreras_sbmaterias.findAll({where:{
+                  mtmsbmateriassbcarrerasId:args.mtmsbmateriassbcarrerasId,
+                  mtmsbcarrerassbmateriasId:args.mtmsbcarrerassbmateriasId
+                },raw:true})
+                let product
+                if(siexiste.length==0){
+                  product=await db.sbcarreras_sbmaterias.create(args)
+                  product=product.dataValues
+                }else{
+                  product=siexiste[0]
+                }
                 let alumno=await db.sbmaterias.findAll({
                   where:{
                     id:args.mtmsbmateriassbcarrerasId
@@ -207,8 +164,9 @@
                   raw:true
                 })
                 console.log("resyovoy",product,alumno,profesor)
-                return {original:{...alumno[0],...product,key:"mtmsbmateriassbcarreras"},
-                copy:{...profesor[0],...product,key:"mtmsbcarrerassbmaterias"}}
+                return {...alumno[0],...product,key:"mtmsbmateriassbcarreras",
+              otherKey:"mtmsbcarrerassbmaterias"}
+                
               }catch(e){
                 console.log("error",e)
               }
@@ -246,21 +204,13 @@ semestre:args.semestre,
 
 
               return {
-                original:{
                   
                     ...r1,
                     ...r2,
                   
                   key:"mtmsbcarrerassbmaterias"
-                },
-                copy:{
-                  
-                    ...r3,
-                    ...r2,
-                  
-                  key:"mtmsbmateriassbcarreras"
                 }
-              }
+              
             },
             editdatamtmsbmateriassbcarreras:async(parent,args,{db})=>{
               let rec=await db.sbcarreras_sbmaterias.update({
@@ -295,31 +245,60 @@ semestre:args.semestre,
               r3=r3[0]
 
               return {
-                original:{
-                  
                     ...r1,
                     ...r2,
                   
                   key:"mtmsbmateriassbcarreras"
-                },
-                copy:{
-                  
-                    ...r3,
-                    ...r2,
-                  
-                  key:"mtmsbcarrerassbmaterias"
-                }
+                
               }
             },
-            
-                createsbcarreras_sbmaterias:async(parent,args,{db})=>{const product=await db.sbcarreras_sbmaterias.create(args)
+            createsbcarreras_sbmaterias:async(parent,args,{db})=>{
+                let product=null
+                let p=null
+                if(args.id==null){
+                  product=await db.sbcarreras_sbmaterias.create(args)
                   return product
-                  
-                },
+                }else{
+                  p=await db.sbcarreras_sbmaterias.update({
+                    [args["parentArg"]]:args[args["parentArg"]],
+                    
+                  },
+                  {
+                  where:{id:args.id}
+                  })
+                }
+                if(p){
+                  const nuevo=await db.sbcarreras_sbmaterias.findByPk(args.id)
+                  return nuevo
+                }
+                return null
+              },
                
                 getDatasbcarreras_sbmaterias:async(parent,args,{db})=>{
-                  const products=await db.sbcarreras_sbmaterias.findAll({raw:true})
+                  let nj={}
                   
+                  if(args.whereClauses!=""){
+                    nj=JSON.parse(args.whereClauses)
+                  }
+                  let condWhere={}
+                  if(nj?.sbcarreras_sbmaterias?.["main"]!=undefined &&
+                  nj?.sbcarreras_sbmaterias?.["main"]!="none")
+                    condWhere=codifyRule(nj,sbcarreras_sbmaterias)
+
+                  let sj={}
+                  if(args?.sortClauses!=undefined)
+                    sj=JSON.parse(args.sortClauses)
+                  let codSort=[]
+                  if(sj!=undefined && sj?.["sbcarreras_sbmaterias"]!=undefined && sj?.["sbcarreras_sbmaterias"]?.[0]!="nosort")
+                    codSort=codifySortRule(sj["sbcarreras_sbmaterias"])
+                  let products=await db.sbcarreras_sbmaterias.findAll({
+                    raw:true,
+                    where:{...condWhere},
+                    order:codSort
+                  })
+                  products=products.map(x=>({
+                    ...x,whereClauses:args.whereClauses,sortClauses:args.sortClauses
+                  }))
                   return products
                 },removesbcarreras_sbmaterias:async(parent,args,{db})=>{
                   

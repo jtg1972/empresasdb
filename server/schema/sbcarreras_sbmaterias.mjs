@@ -14,6 +14,8 @@ mtmsbmateriassbcarrerasId:Int
 		 mtmsbmateriassbcarrerasIdProductQuery:Int
 semestre:Int
 
+              whereClauses:String
+              sortClauses:String
             }
 
             type Query{
@@ -125,10 +127,11 @@ mtmsbmateriassbcarrerasId:Int,
 		 mtmsbmateriassbcarrerasIdProductQuery:Int,
 semestre:Int,
 
+                parentArg:String
                 ):sbcarreras_sbmaterias
               
               
-              getDatasbcarreras_sbmaterias:[sbcarreras_sbmaterias]
+              getDatasbcarreras_sbmaterias(whereClauses:String,sortClauses:String):[sbcarreras_sbmaterias]
 removesbcarreras_sbmaterias(mtmsbcarrerassbmateriasId:Int,mtmsbmateriassbcarrerasId:Int):Boolean
 editsbcarreras_sbmaterias(id:Int,
 mtmsbcarrerassbmateriasId:Int,

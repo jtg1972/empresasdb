@@ -10,13 +10,13 @@ import Sequelize from 'sequelize'
                 type:DataTypes.STRING,
                 defaultValue:""
               },
-		 grupoIdGlobalCatQuery:DataTypes.INTEGER,
-		 grupoIdFinalCatQuery:DataTypes.INTEGER,
-		 grupoIdProductQuery:DataTypes.INTEGER,
 		 otmsbmateriassbgruposId:{
                 type:DataTypes.INTEGER,
                 defaultValue:0
-              }},{sequelize})
+              },
+		 grupoIdGlobalCatQuery:DataTypes.INTEGER,
+		 grupoIdFinalCatQuery:DataTypes.INTEGER,
+		 grupoIdProductQuery:DataTypes.INTEGER},{sequelize})
 }static associate(models){models.sbgrupos.belongsToMany(models.sbestudiantes,{foreignKey:"mtmsbgrupossbestudiantesId",through:"sbestudiantes_sbgrupos"})
 
                   models.sbestudiantes.belongsToMany(models.sbgrupos,{foreignKey:"mtmsbestudiantessbgruposId",through:"sbestudiantes_sbgrupos"})

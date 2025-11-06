@@ -14,7 +14,7 @@ const getManyToManyRelation=(parentCategory,sonCategory,keyFields,categories,cou
   const xr=parentCategory.name.split("_")
   let nn=f1
     
-  console.log("soncatfields",y)
+  //console.log("soncatfields",y)
   let nc=y.map(j=>{
     if(j.dataType=="queryCategory" &&
     j.declaredType=="number"){
@@ -27,7 +27,7 @@ const getManyToManyRelation=(parentCategory,sonCategory,keyFields,categories,cou
 
     }*/
     }else if(j.relationship=="manytomany"){
-      console.log("counters",counters)
+     // console.log("counters",counters)
       const i=categories.filter(c=>c.id==j.relationCategory)[0]
       let u=counters.filter(c=>
         c.name==nn)
@@ -65,7 +65,7 @@ const getMiddleTable=(one,other,categories)=>{
   else
     name=`${one.name}_${other.name}`
   const c=categories.filter(x=>x.name==name)[0]
-  console.log("cc3",c)
+ // console.log("cc3",c)
   if(c)
     return c.fields
   
@@ -156,7 +156,7 @@ export default (category,keyFields,categories,nameMut,nRc,pR)=>{
   //args1.unshift("id:$id")
   args1=args1.join(", ")
 
-  console.log("namemutmtm",nameMut)
+ // console.log("namemutmtm",nameMut)
   let query
   /*if(nameMut!="editdatamtmscmateriassccarreras" &&
   nameMut!="editdatamtmsccarrerasscmaterias")
@@ -172,21 +172,14 @@ export default (category,keyFields,categories,nameMut,nRc,pR)=>{
   query=`
   mutation EditProductoMtm(${args}){
     ${nameMut}(${args1}){
-      original{
         ${campos}
         ${camposPrinc}
-        key
-      }
-      copy{
-        ${campos}
-        ${camposOtro}
-        key
+        
       }
     }
-  }
-`
+  `
 
-  console.log("querymtm",query)
+  //console.log("querymtm",query)
   query=gql`${query}`
   return query
 }

@@ -34,13 +34,13 @@ mtmsbprofesoressbmateriasId:Int
               
               id:Int
 materia:String
-materiaIdGlobalCatQuery:Int
-materiaIdFinalCatQuery:Int
-materiaIdProductQuery:Int
 mtmsbcarrerassbmaterias:[datamtmsbcarrerassbmaterias],
 otmsbareasbmateriasId:Int
 otmsbmateriassbgrupos:[sbgrupos]
 mtmsbprofesoressbmaterias:[datamtmsbprofesoressbmaterias],
+materiaIdGlobalCatQuery:Int
+materiaIdFinalCatQuery:Int
+materiaIdProductQuery:Int
 
               whereClauses:String
               sortClauses:String
@@ -56,11 +56,11 @@ mtmsbprofesoressbmaterias:[datamtmsbprofesoressbmaterias],
               createsbmaterias(
                 id:Int,
 materia:String,
+otmsbareasbmateriasId:Int,
 materiaIdGlobalCatQuery:Int,
 materiaIdFinalCatQuery:Int,
 materiaIdProductQuery:Int
-,otmsbareasbmateriasId:Int,
-
+,
                 parentArg:String
                 ):sbmaterias
               
@@ -70,11 +70,11 @@ removesbmaterias(id:Int,parentArg:String,
                   hardDelete:Boolean):Boolean!
 editsbmaterias(id:Int,
 materia:String,
+otmsbareasbmateriasId:Int,
 materiaIdGlobalCatQuery:Int,
 materiaIdFinalCatQuery:Int,
 materiaIdProductQuery:Int
-,otmsbareasbmateriasId:Int,
-):sbmaterias
+,):sbmaterias
               getsbmaterias(id:Int):sbmaterias
               
             }`

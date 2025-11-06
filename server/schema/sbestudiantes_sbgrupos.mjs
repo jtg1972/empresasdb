@@ -14,6 +14,8 @@ mtmsbestudiantessbgruposId:Int
 		 mtmsbestudiantessbgruposIdFinalCatQuery:Int
 		 mtmsbestudiantessbgruposIdProductQuery:Int
 
+              whereClauses:String
+              sortClauses:String
             }
 
             type Query{
@@ -125,10 +127,11 @@ mtmsbestudiantessbgruposId:Int,
 		 mtmsbestudiantessbgruposIdFinalCatQuery:Int,
 		 mtmsbestudiantessbgruposIdProductQuery:Int,
 
+                parentArg:String
                 ):sbestudiantes_sbgrupos
               
               
-              getDatasbestudiantes_sbgrupos:[sbestudiantes_sbgrupos]
+              getDatasbestudiantes_sbgrupos(whereClauses:String,sortClauses:String):[sbestudiantes_sbgrupos]
 removesbestudiantes_sbgrupos(mtmsbestudiantessbgruposId:Int,mtmsbgrupossbestudiantesId:Int):Boolean
 editsbestudiantes_sbgrupos(id:Int,
 mtmsbgrupossbestudiantesId:Int,

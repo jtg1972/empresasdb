@@ -126,9 +126,11 @@ const NewDetailProduct = () => {
   const [keyFields,setKeyFields]=useState({})
   const [otrotitulo,setOtroTitulo]=useState("")
   const [indexInTable,setIndexInTable]=useState(-1)
-  const toggleEditProduct=(editFields1,c1,ti,par,tit,kf,ot,iit)=>{
+  const [parentFields,setParentFields]=useState({})
+  const [childFields,setChildFields]=useState({})
+  const toggleEditProduct=(editFields1,c1,ti,par,tit,kf,ot,iit,pf,cf)=>{
     setEditFields(editFields1)
-    console.log("c1,",c1)
+    //console.log("c1,",c1)
     setRespCat(c1)
     setTableIndexes(ti)
     setPartials(par)
@@ -137,6 +139,8 @@ const NewDetailProduct = () => {
       setKeyFields(kf)
     setOtroTitulo(ot)
     setIndexInTable(iit)
+    setParentFields(pf)
+    setChildFields(cf)
   //setParentRelation(pr)
     setOpenEditProduct(!openEditProduct)
     
@@ -151,7 +155,9 @@ const NewDetailProduct = () => {
   const [parentRelation,setParentRelation]=useState(-1)
   const [parentCatId,setParentCatId]=useState(-1)
   const [dqIds,setDqIds]=useState([])
-  const toggleNewProduct=(rc,ti,ps,tit,pid,iMtM,relCat,pr,pcid,dataQueryIds)=>{
+  const [parentRecord,setParentRecord]=useState({})
+  const [productsTable,setProductsTable]=useState([])
+  const toggleNewProduct=(rc,ti,ps,tit,pid,iMtM,relCat,pr,pcid,dataQueryIds,parentRec,products)=>{
     //console.log("parentcatIddetprod",pcid)
     setRespCat1(rc)
     setTableIndexes(ti)
@@ -164,6 +170,13 @@ const NewDetailProduct = () => {
     setParentCatId(pcid)
     setOpenNewProduct(!openNewProduct)
     setDqIds(dataQueryIds)
+    setParentRecord(parentRec)
+    setProductsTable(p=>{
+      if(p[tit]!=undefined)
+        p={...p,[tit]:[]}
+      p={...p,[tit]:products}
+      return p
+    })
     
   }
   const [openFilter,setOpenFilter]=useState(false)
@@ -269,7 +282,51 @@ const NewDetailProduct = () => {
   }
   const [varOrderHeadServerCriteria,setVarOrderHeadServerCriteria]=useState({})
   const [openSortCriteriaServerDialog,setOpenSortCriteriaServerDialog]=useState(false)
-
+  const [checkBoxFields,setCheckBoxFields]=useState({})//[currentCategory.name]:{checked:true,real:currentCategory.name}})
+  const [checkBoxDataFields,setCheckBoxDataFields]=useState({})
+  const [updateCategories,setUpdateCategories]=useState({})
+  const [updateCategoriesIds,setUpdateCategoriesIds]=useState({})
+  /*const [openEditProduct,setOpenEditProduct]=useState(false)
+  const toggleEditProduct=(editFields1,c1,ti,par,tit,kf,ot,iit)=>{
+    setEditFields(editFields1)
+    console.log("c1,",c1)
+    setRespCat(c1)
+    setTableIndexes(ti)
+    setPartials(par)
+    setTitulo(tit)
+    if(kf!==undefined)
+      setKeyFields(kf)
+    setOtroTitulo(ot)
+    setIndexInTable(iit)
+  //setParentRelation(pr)
+    setOpenEditProduct(!openEditProduct)
+    
+  }
+  const [tableIndexes,setTableIndexes]=useState({})
+  const [openNewProduct,setOpenNewProduct]=useState("")
+  const toggleNewProduct=(rc,ti,ps,tit,pid,iMtM,relCat,pr,pcid,dataQueryIds)=>{
+    //console.log("parentcatIddetprod",pcid)
+    setRespCat1(rc)
+    setTableIndexes(ti)
+    setPartials(ps)
+    setTitulo(tit)
+    setParentId(pid)
+    setIsManyToMany(iMtM)
+    setRelationCategory(relCat)
+    setParentRelation(pr)
+    setParentCatId(pcid)
+    setOpenNewProduct(!openNewProduct)
+    setDqIds(dataQueryIds)
+    
+  }
+  const [openFilter,setOpenFilter]=useState(false)
+  const toggleFilter=(titles1)=>{
+    if(openFilter==true){
+      setTitles(titles1)
+    }
+    setOpenFilter(!openFilter)
+  }*/
+  
   const {loading,data,error}=useQuery(
     CATEGORIES1
   )
@@ -304,6 +361,21 @@ const NewDetailProduct = () => {
     },
     [loading, data, error]
   )
+
+  useEffect(()=>{
+      setOtmChoicesServerOrder({})
+      
+      setSortServerRules({})
+
+     
+      setCheckBoxFields({})
+      
+      setCheckBoxDataFields({})
+      
+      setUpdateCategories({})
+      setConditionsWhereServer({})
+     
+  },[currentCategory])
   useEffect(
     () => {
       const onCompleted = data1=>{
@@ -374,6 +446,12 @@ const NewDetailProduct = () => {
       setTableIndexes={setTableIndexes}
       indexInTable={indexInTable}
       parentRelation={parentRelation}
+      updateCategoriesIds={updateCategoriesIds}
+      updateCategories={updateCategories}
+      parentFields={parentFields}
+      setParentFields={setParentFields}
+      childFields={childFields}
+      setChildFields={setChildFields}
       />}
 
       <AddMultipleValue
@@ -402,6 +480,12 @@ const NewDetailProduct = () => {
         parentRelation={parentRelation}
         parentCatId={parentCatId}
         dataQueryIds={dqIds}
+        checkBoxDataFields={checkBoxDataFields}
+        updateCategories={updateCategories}
+        updateCategoriesIds={updateCategoriesIds}
+        parentRecord={parentRecord}
+        setParentRecord={setParentRecord}
+        productsTable={productsTable}
       />
       }
       {/*currentCategoryId!==0 &&
@@ -422,8 +506,8 @@ const NewDetailProduct = () => {
         <DisplayTableStatus/>
       }
 
-      {currentCategoryId!==0 &&
-      currentCategory.fields.length>0 &&/* &&
+      {/*currentCategoryId!==0 &&
+      currentCategory.fields.length>0 && 
       tablesStateStatus=="OK" &&
       searchProductsFilter==false &&
       <DisplayWholeProductsTable
@@ -433,8 +517,12 @@ const NewDetailProduct = () => {
       searchProductsFilter={searchProductsFilter}
       setDqIds={setDqIds}
       dqIds={dqIds}
-      />}*/
-      <NewSelectData
+      checkBoxFields={checkBoxFields}
+      setCheckBoxFields={setCheckBoxFields}
+      checkBoxDataFields={checkBoxDataFields}
+      setCheckBoxDataFields={setCheckBoxDataFields}
+      />*/}
+      {currentCategoryId!==0 && <NewSelectData
       toggleOpenWhereStatementNumberServerDialog={toggleOpenWhereStatementNumberServerDialog}
       setOpenWhereStatementNumberServerDialog={setOpenWhereStatementNumberServerDialog}
       openWhereStatementDateNumberDialog={openWhereStatementNumberServerDialog}
@@ -465,6 +553,28 @@ const NewDetailProduct = () => {
       setOtmChoicesServerOrder={setOtmChoicesServerOrder}
       sortRules={sortServerRules}
       setSortRules={setSortServerRules}
+
+      checkBoxFields={checkBoxFields}
+      setCheckBoxFields={setCheckBoxFields}
+      checkBoxDataFields={checkBoxDataFields}
+      setCheckBoxDataFields={setCheckBoxDataFields}
+      
+      toggleEditProduct={toggleEditProduct}
+      toggleNewProduct={toggleNewProduct}
+      toggleFilter={toggleFilter}
+      searchProductsFilter={searchProductsFilter}
+      setDqIds={setDqIds}
+      dqIds={dqIds}
+      updateCategories={updateCategories}
+      setUpdateCategories={setUpdateCategories}
+      updateCategoriesIds={updateCategoriesIds}
+      setUpdateCategoriesIds={setUpdateCategoriesIds}
+      parentRecord={parentRecord}
+      setParentRecord={setParentRecord}
+      parentFields={parentFields}
+      setParentFields={setParentFields}
+      childFields={childFields}
+      setChildFields={setChildFields}
       />}
 
       {currentCategoryId!=0 &&

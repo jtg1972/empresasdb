@@ -1,7 +1,7 @@
 import gql from "graphql-tag"
 
 const getManyToManyRelation=(parentCategory,sonCategory,categories,counters=[])=>{
-  console.log("soncatfields",sonCategory.fields)
+  //console.log("soncatfields",sonCategory.fields)
   let y=[...sonCategory.fields,
   ...getMiddleTable(parentCategory,sonCategory,categories)]
   console.log("yfijoyu",y)
@@ -45,7 +45,7 @@ const getManyToManyRelation=(parentCategory,sonCategory,categories,counters=[])=
   })
 
   nc.push("id")
-  console.log("nc88",nc)
+ // console.log("nc88",nc)
   nc=`mtm${sonCategory.name}${parentCategory.name}{
     ${nc.join("\n")}
   }`
@@ -160,7 +160,7 @@ export default (category,categories)=>{
       }
     }
   `
-  console.log("querynormal5",query)
+ // console.log("querynormal5",query)
   query=gql`${query}`
   return query
 }

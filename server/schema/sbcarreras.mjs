@@ -3,11 +3,11 @@
 
           export default gql`type datamtmsbmateriassbcarreras{
                   materia:String
-
 mtmsbcarrerassbmaterias:[datamtmsbcarrerassbmaterias]
 otmsbareasbmateriasId:Int
 otmsbmateriassbgrupos:[sbgrupos]
 mtmsbprofesoressbmaterias:[datamtmsbprofesoressbmaterias]
+
 id:Int
 mtmsbcarrerassbmateriasId:Int
 mtmsbmateriassbcarrerasId:Int
@@ -21,11 +21,11 @@ semestre:Int
               
               id:Int
 carrera:String
+mtmsbmateriassbcarreras:[datamtmsbmateriassbcarreras],
+otmsbareasbcarrerasId:Int
 carreraIdGlobalCatQuery:Int
 carreraIdFinalCatQuery:Int
 carreraIdProductQuery:Int
-mtmsbmateriassbcarreras:[datamtmsbmateriassbcarreras],
-otmsbareasbcarrerasId:Int
 
               whereClauses:String
               sortClauses:String
@@ -41,11 +41,11 @@ otmsbareasbcarrerasId:Int
               createsbcarreras(
                 id:Int,
 carrera:String,
+otmsbareasbcarrerasId:Int,
 carreraIdGlobalCatQuery:Int,
 carreraIdFinalCatQuery:Int,
 carreraIdProductQuery:Int
-,otmsbareasbcarrerasId:Int,
-
+,
                 parentArg:String
                 ):sbcarreras
               
@@ -55,11 +55,11 @@ removesbcarreras(id:Int,parentArg:String,
                   hardDelete:Boolean):Boolean!
 editsbcarreras(id:Int,
 carrera:String,
+otmsbareasbcarrerasId:Int,
 carreraIdGlobalCatQuery:Int,
 carreraIdFinalCatQuery:Int,
 carreraIdProductQuery:Int
-,otmsbareasbcarrerasId:Int,
-):sbcarreras
+,):sbcarreras
               getsbcarreras(id:Int):sbcarreras
               
             }`

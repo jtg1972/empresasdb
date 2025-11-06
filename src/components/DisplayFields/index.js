@@ -23,7 +23,10 @@ const DisplayFields = ({
   isManyToMany,
   parentCatId,
   category,
-  categoryNameRelDestiny
+  categoryNameRelDestiny,
+  titulo,
+  otrotitulo,
+  productsTable
 }) => {
   const {categories}=useSelector(mapToState)
   //console.log("fieldsdf pid",fields,parentId)
@@ -135,6 +138,9 @@ const DisplayFields = ({
             parentCatId={parentCatId}
             fieldMtm={nnField}
             campoOculto={campoOculto}
+            titulo={titulo}
+            otrotitulo={otrotitulo}
+            productsTable={productsTable}
             />
           }
         
@@ -148,6 +154,9 @@ const DisplayFields = ({
             isManyToMany={isManyToMany}
             parentId={parentId}
             parentCatId={parentCatId}
+            titulo={titulo}
+            otrotitulo={otrotitulo}
+            productsTable={productsTable}
             //fieldMtm={nnField}
             />
           }

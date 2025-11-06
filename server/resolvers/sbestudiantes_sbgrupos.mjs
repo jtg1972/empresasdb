@@ -1,13 +1,17 @@
 
             import {Op} from 'sequelize'
+            import {codifyRuleMtm} from './../utils/whereClauses/index.mjs'
+            import {codifySortRule} from './../utils/whereClauses/index.mjs'
+            import {codifySortRuleMtm} from './../utils/whereClauses/index.mjs'
+            import codifyRule from './../utils/whereClauses/index.mjs'
             export default{
           Query:{
                 sbestudiantes_sbgrupos:async(parent,args,{db})=>{
                   const products=await db.sbestudiantes_sbgrupos.findAll()
                   return products     
                 }
-              },Mutation:{
-                
+              },
+              Mutation:{
             getonedatamtmsbestudiantessbgrupos:async(parent,args,{db})=>{
               try{
                 let product=await db.sbestudiantes_sbgrupos.findAll({
@@ -115,8 +119,8 @@
                   raw:true
                 })
                 console.log("resyovoy",product,alumno,profesor)
-                return {original:{...alumno[0],...product,key:"mtmsbestudiantessbgrupos"},
-                copy:{...profesor[0],...product,key:"mtmsbgrupossbestudiantes"}}
+                return {...alumno[0],...product,key:"mtmsbestudiantessbgrupos"}
+                
               }catch(e){
                 console.log("error",e)
               }
@@ -138,8 +142,8 @@
                   raw:true
                 })
                 console.log("resyovoy",product,alumno,profesor)
-                return {original:{...alumno[0],...product,key:"mtmsbgrupossbestudiantes"},
-                copy:{...profesor[0],...product,key:"mtmsbestudiantessbgrupos"}}
+                return {...alumno[0],...product,key:"mtmsbgrupossbestudiantes"}
+                
               }catch(e){
                 console.log("error",e)
               }
@@ -177,21 +181,13 @@ calificacion:args.calificacion,
 
 
               return {
-                original:{
                   
                     ...r1,
                     ...r2,
                   
                   key:"mtmsbestudiantessbgrupos"
-                },
-                copy:{
-                  
-                    ...r3,
-                    ...r2,
-                  
-                  key:"mtmsbgrupossbestudiantes"
                 }
-              }
+              
             },
             editdatamtmsbgrupossbestudiantes:async(parent,args,{db})=>{
               let rec=await db.sbestudiantes_sbgrupos.update({
@@ -226,31 +222,60 @@ calificacion:args.calificacion,
               r3=r3[0]
 
               return {
-                original:{
-                  
                     ...r1,
                     ...r2,
                   
                   key:"mtmsbgrupossbestudiantes"
-                },
-                copy:{
-                  
-                    ...r3,
-                    ...r2,
-                  
-                  key:"mtmsbestudiantessbgrupos"
-                }
+                
               }
             },
-            
-                createsbestudiantes_sbgrupos:async(parent,args,{db})=>{const product=await db.sbestudiantes_sbgrupos.create(args)
+            createsbestudiantes_sbgrupos:async(parent,args,{db})=>{
+                let product=null
+                let p=null
+                if(args.id==null){
+                  product=await db.sbestudiantes_sbgrupos.create(args)
                   return product
-                  
-                },
+                }else{
+                  p=await db.sbestudiantes_sbgrupos.update({
+                    [args["parentArg"]]:args[args["parentArg"]],
+                    
+                  },
+                  {
+                  where:{id:args.id}
+                  })
+                }
+                if(p){
+                  const nuevo=await db.sbestudiantes_sbgrupos.findByPk(args.id)
+                  return nuevo
+                }
+                return null
+              },
                
                 getDatasbestudiantes_sbgrupos:async(parent,args,{db})=>{
-                  const products=await db.sbestudiantes_sbgrupos.findAll({raw:true})
+                  let nj={}
                   
+                  if(args.whereClauses!=""){
+                    nj=JSON.parse(args.whereClauses)
+                  }
+                  let condWhere={}
+                  if(nj?.sbestudiantes_sbgrupos?.["main"]!=undefined &&
+                  nj?.sbestudiantes_sbgrupos?.["main"]!="none")
+                    condWhere=codifyRule(nj,sbestudiantes_sbgrupos)
+
+                  let sj={}
+                  if(args?.sortClauses!=undefined)
+                    sj=JSON.parse(args.sortClauses)
+                  let codSort=[]
+                  if(sj!=undefined && sj?.["sbestudiantes_sbgrupos"]!=undefined && sj?.["sbestudiantes_sbgrupos"]?.[0]!="nosort")
+                    codSort=codifySortRule(sj["sbestudiantes_sbgrupos"])
+                  let products=await db.sbestudiantes_sbgrupos.findAll({
+                    raw:true,
+                    where:{...condWhere},
+                    order:codSort
+                  })
+                  products=products.map(x=>({
+                    ...x,whereClauses:args.whereClauses,sortClauses:args.sortClauses
+                  }))
                   return products
                 },removesbestudiantes_sbgrupos:async(parent,args,{db})=>{
                   

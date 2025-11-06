@@ -210,11 +210,7 @@ sbgrupos:{
                   return products     
                 }
               },
-              Mutation:{
-                
-                
-
-                createsbgrupos:async(parent,args,{db})=>{
+              Mutation:{createsbgrupos:async(parent,args,{db})=>{
                 let product=null
                 let p=null
                 if(args.id==null){
@@ -293,7 +289,7 @@ sbgrupos:{
                 editsbgrupos:async(parent,args,{db})=>{
               let camposDate=[]
 await db.sbgrupos.update({
-                        id:args["id"],clavedelgrupo:args.clavedelgrupo,grupoId:args.grupoId,otmsbmateriassbgruposId:args.otmsbmateriassbgruposId,mtmsbestudiantessbgrupos:args.mtmsbestudiantessbgrupos,otmsbgrupossbprofesores:args.otmsbgrupossbprofesores,
+                        id:args["id"],clavedelgrupo:args.clavedelgrupo,otmsbmateriassbgruposId:args.otmsbmateriassbgruposId,mtmsbestudiantessbgrupos:args.mtmsbestudiantessbgrupos,grupoId:args.grupoId,otmsbgrupossbprofesores:args.otmsbgrupossbprofesores,
                         ...camposDate
                       },
                       {

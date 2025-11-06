@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import FormButton from "../Forms/FormButton"
 import { deleteProduct, setCategoryProducts, setCurrentCategory } from '../../redux/category/actions'
+import DisplayWholeProductsTable from "../DisplayWholeProductsTable"
 
 const callGetFieldsCategory=(field,categories,checkBoxDataFields={})=>{
   let ui
@@ -50,15 +51,16 @@ let bd
               return x.name
             })
             let restcamps=ny.fields.map(x=>{
-              if((x.declaredType=="number" || x.declaredType=="string")&& x.relationship!="otmdestiny")
+              if((x.declaredType=="number" || x.declaredType=="string"))//&& x.relationship!="otmdestiny")
                 return x.name
               
             })
-            restcamps.push("id")
+            //newcamps.push("id")
+            newcamps=newcamps.join("\n")
             
             restcamps=[...restcamps,...newcamps].join("\n")
             return `mtm${ny.name}${cat[0].name}{\n
-              ${newcamps.join("\n")}
+              ${newcamps}
               ${callGetFieldsCategory(x,categories,checkBoxDataFields)}
               sortClauses
               whereClauses
@@ -125,16 +127,16 @@ const getQueryFromCategory=(p,categories,checkBoxDataFields)=>{
               
               return x.name
             })
-            newcamps.push(`id`)
+            //newcamps.push(`id`)
             let clavePQ=-1
             let restcamps=t1.fields.map(x=>{
-              if((x.declaredType=="string" || x.declaredType=="number")&& x.relationship!="otmdestiny")
+              if((x.declaredType=="string" || x.declaredType=="number"))//&& x.relationship!="otmdestiny")
                 return `'${t1.name}.${x.name}'`
             })
             
             
               
-            restcamps=[...newcamps,...restcamps].join("\n")
+            //restcamps=[...newcamps,...restcamps].join("\n")
               
             return `mtm${t1.name}${p.name}{\n
               ${newcamps.join("\n")}
@@ -162,7 +164,7 @@ const getQueryFromCategory=(p,categories,checkBoxDataFields)=>{
   //q2=q2.join(`\n`)
   query+=q
   query+=`}`
-  console.log("queryprod44",query)
+  console.log("queryprod445",query)
   return gql`${query}`
 }
 const mapToState=({categories})=>({
@@ -171,9 +173,29 @@ const mapToState=({categories})=>({
   categoryProducts:categories.categoryProducts
 })
 const GetDataFromInital=({
-  checkBoxDataFields,
+  
   conditionsWhere,
-  sortClauses
+  sortClauses,
+
+  toggleEditProduct,
+      toggleNewProduct,
+      toggleFilter,
+      searchProductsFilter,
+      setDqIds,
+      dqIds,
+      checkBoxFields,
+      setCheckBoxFields,
+      checkBoxDataFields,
+      setCheckBoxDataFields,
+      updateCategories,
+      updateCategoriesIds,
+      setUpdateCategoriesIds,
+      parentRecord,
+      setParentRecord,
+      parentFields,
+      setParentFields,
+      childFields,
+      setChildFields
 })=>{
   
   const {
@@ -191,7 +213,7 @@ const GetDataFromInital=({
       
     }
   })
-  console.log("stringentrance",JSON.stringify(conditionsWhere),JSON.stringify(sortClauses))
+  //console.log("stringentrance",JSON.stringify(conditionsWhere),JSON.stringify(sortClauses))
   useEffect(()=>{
     getProducts({
       variables:{
@@ -203,6 +225,27 @@ const GetDataFromInital=({
 
   return <div>
     <p>Jorge</p>
+    <DisplayWholeProductsTable
+      toggleEditProduct={toggleEditProduct}
+      toggleNewProduct={toggleNewProduct}
+      toggleFilter={toggleFilter}
+      searchProductsFilter={searchProductsFilter}
+      setDqIds={setDqIds}
+      dqIds={dqIds}
+      checkBoxFields={checkBoxFields}
+      setCheckBoxFields={setCheckBoxFields}
+      checkBoxDataFields={checkBoxDataFields}
+      setCheckBoxDataFields={setCheckBoxDataFields}
+      updateCategories={updateCategories}
+      updateCategoriesIds={updateCategoriesIds}
+      setUpdateCategoriesIds={setUpdateCategoriesIds}
+      parentRecord={parentRecord}
+      setParentRecord={setParentRecord}
+      parentFields={parentFields}
+      setParentFields={setParentFields}
+      childFields={childFields}
+      setChildFields={setChildFields}
+      />  
   </div>
 
 }

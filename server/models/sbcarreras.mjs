@@ -10,13 +10,13 @@ import Sequelize from 'sequelize'
                 type:DataTypes.STRING,
                 defaultValue:""
               },
-		 carreraIdGlobalCatQuery:DataTypes.INTEGER,
-		 carreraIdFinalCatQuery:DataTypes.INTEGER,
-		 carreraIdProductQuery:DataTypes.INTEGER,
 		 otmsbareasbcarrerasId:{
                 type:DataTypes.INTEGER,
                 defaultValue:0
-              }},{sequelize})
+              },
+		 carreraIdGlobalCatQuery:DataTypes.INTEGER,
+		 carreraIdFinalCatQuery:DataTypes.INTEGER,
+		 carreraIdProductQuery:DataTypes.INTEGER},{sequelize})
 }static associate(models){models.sbcarreras.belongsToMany(models.sbmaterias,{foreignKey:"mtmsbcarrerassbmateriasId",through:"sbcarreras_sbmaterias"})
 
                   models.sbmaterias.belongsToMany(models.sbcarreras,{foreignKey:"mtmsbmateriassbcarrerasId",through:"sbcarreras_sbmaterias"})

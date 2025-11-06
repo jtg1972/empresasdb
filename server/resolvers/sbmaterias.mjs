@@ -465,7 +465,8 @@ sbmaterias:{
                 createsbmaterias:async(parent,args,{db})=>{
                 let product=null
                 let p=null
-                if(args.id==null){
+                console.log("argsid",args,args.id)
+                if(args.id==undefined){
                   product=await db.sbmaterias.create(args)
                   return product
                 }else{
@@ -541,7 +542,7 @@ sbmaterias:{
                 editsbmaterias:async(parent,args,{db})=>{
               let camposDate=[]
 await db.sbmaterias.update({
-                        id:args["id"],materia:args.materia,materiaId:args.materiaId,mtmsbcarrerassbmaterias:args.mtmsbcarrerassbmaterias,otmsbareasbmateriasId:args.otmsbareasbmateriasId,otmsbmateriassbgrupos:args.otmsbmateriassbgrupos,mtmsbprofesoressbmaterias:args.mtmsbprofesoressbmaterias,
+                        id:args["id"],materia:args.materia,mtmsbcarrerassbmaterias:args.mtmsbcarrerassbmaterias,otmsbareasbmateriasId:args.otmsbareasbmateriasId,otmsbmateriassbgrupos:args.otmsbmateriassbgrupos,mtmsbprofesoressbmaterias:args.mtmsbprofesoressbmaterias,materiaId:args.materiaId,
                         ...camposDate
                       },
                       {

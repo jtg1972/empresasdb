@@ -18,8 +18,8 @@ import Dialog from '../Dialog'
 import DisplayFields from '../DisplayFields'
 import FormButton from '../Forms/FormButton'
 import getIndexesInverse from '../../gql/updatestatemtm/utils/getIndexesInverse'
+import {typesOtm} from '../../redux/otmupdate/types'
 import types from '../../redux/mtmupdate/types'
-
 /*const mutationEditProduct=(category)=>{
   let args=[]
   let args1=[]
@@ -170,8 +170,10 @@ const EditProduct = ({
   otrotitulo,
   
   setTableIndexes,
-  indexInTable
-
+  indexInTable,
+  updateCategories,
+  updateCategoriesIds,
+  parentFields,
   
 }) => {
   //console.log("CURCAT",curCat)
@@ -437,7 +439,7 @@ const EditProduct = ({
     relMtMC=categories.filter(x=>x.name==nn)[0]
     nC=categories.filter(x=>x.name==nn)[0]
     
-    console.log("prnrc",pR,nRc)
+    //console.log("prnrc",pR,nRc)
     //const path=[`getData${currentCategory.name}`]
     //indexSize=1
     
@@ -501,7 +503,7 @@ const EditProduct = ({
     )
     let id1=reg.original[`${reg.copy?.["key"]}Id`]
     let id2=reg.original[`${reg.original?.["key"]}Id`]
-    dispatch({
+    /*dispatch({
       type:types.ADD_INDEXES_TO_MTMRECORD,
       payload:{
         mtm:titulo,
@@ -535,7 +537,7 @@ const EditProduct = ({
           copy:reg.original
         }
       }
-    })
+    })*/
     /*let cp=categoryProducts
     let st=cp[c1[0]][i[0]]
     for(let u1=1;u1<c1.length;u1++){
@@ -612,18 +614,84 @@ const EditProduct = ({
       getOneMtm({variables:keyFields})
     }
   })*/
+  const rootCat=(tit)=>{
+    let k=Object.keys(updateCategories)
+    for(let i=0;i<k.length;i++){
+      let resp=updateCategories[k[i]]
+      
+      for(let j=0;j<resp.length;j++){
+        if(resp[j]==tit)
+          return k[i]
+      }
+    }
+    return null
+  }
 
   const [editProduct2]=useMutation(MUTATION_EDIT_PRODUCT_MTM,{
     update:(cache,{data})=>{
       const name=`editdatamtm${titulo.substr(3)}`
-      console.log("resu",data[name])
+     console.log("resu",data[name])
       let path=[`getData${currentCategory.name}`]
+      let root=rootCat(titulo)
+      console.log("ucs",root,titulo,curCat.name,updateCategories)
+      let otherRoot=rootCat(otrotitulo)
+      //updateCategories[root].forEach(i=>{
+        // console.log("ucs",updateCategoriesIds,curCat.name,updateCategoriesIds[i],i)
+        //console.log("paramsucs",i,updateCategoriesIds[i],data[name])
+         dispatch({
+           type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
+           payload:{
+             category:titulo,
+             id:"edit",
+             fieldId:`${titulo}Id`,
+             row:data[name],
+             action:"EDIT",
+             //childFields:parentFields?.[i]?.childFields
+           }
+         })
+     //})
+       //console.log("otherRoot",otherRoot,otrotitulo,data[name][otrotitulo])
+      // updateCategories[otherRoot].forEach(i=>{
+        // console.log("ucs",updateCategoriesIds,curCat.name,updateCategoriesIds[i],i)
+        //console.log("paramsucs",i,updateCategoriesIds[i],data[name])
+         dispatch({
+           type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
+           payload:{
+             category:otrotitulo,
+             id:"edit",
+             fieldId:`${titulo}Id`,
+             row:{...data[name],id:data[name][`${otrotitulo}Id`]},
+             action:"EDIT",
+             //childFields:parentFields?.[i]?.parFields
+           }
+         })
+       //})
+      /*dispatch({
+        type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
+        payload:{
+          category:titulo,
+          id:data[name][`${otrotitulo}Id`],
+          fieldId:`${otrotitulo}Id`,
+          row:data[name],
+          action:"EDIT"
+        }
+      })
+      dispatch({
+        type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
+        payload:{
+          category:otrotitulo,
+          id:data[name][`${titulo}Id`],
+          fieldId:`${titulo}Id`,
+          row:{...data[name],id:data[name][`${otrotitulo}Id`]},
+          action:"EDIT"
+        }
+      })*/
 
-      const c=resultPath(currentCategory.fields.filter(x=>
+     /*const c=resultPath(currentCategory.fields.filter(x=>
         x.dataType=="relationship"),titulo,categories,
         path,true)
       const i=getIndexes(tableIndexes,c)
-      console.log("path1",c,i)
+      console.log("path1",c,i)*/
       /*if(c[c.length-2].startsWith("mtm")){
         pivoteTable=titulo
         otherPivoteTable=otrotitulo
@@ -641,7 +709,7 @@ const EditProduct = ({
       const i=getIndexesInverse(deleteRecord,pivoteTable,otherPivoteTable,y,tableIndexes)
       console.log("xxx",deleteRecord,y,i)*/
 
-      let r1=updateClusters(c,i,data[name])
+  //let r1=updateClusters(c,i,data[name])
       //esto si dispatch(setCategoryProducts(r1))
 
       //setAddRecGlobal(()=>data[name])
@@ -657,8 +725,8 @@ const EditProduct = ({
       if(po>=c1.length-1)
         i[po]=undefined
     }
-    console.log("poio",c1,i)
-    console.log("titio",titulo)
+   // console.log("poio",c1,i)
+   // console.log("titio",titulo)
     if(titulo.startsWith("getData")){
       cp[titulo]=cp[titulo].map(x=>{
         console.log("xverio",x.id,reg.id)
@@ -670,7 +738,7 @@ const EditProduct = ({
     }else{
       st=cp[c1[0]][i[0]]
       for(let u1=1;u1<c1.length;u1++){
-        console.log("stverif",st,reg,c1,i,c1[u1])
+       // console.log("stverif",st,reg,c1,i,c1[u1])
         if(st[c1[u1]]){
           if(i[u1]!=undefined) 
             st=st[c1[u1]][i[u1]]
@@ -692,26 +760,47 @@ const EditProduct = ({
 
   const [editProduct1]=useMutation(MUTATION_EDIT_PRODUCT,{
     update:(cache,{data})=>{
-      console.log("entro a mutationeditproductnotmtm")
-      const name=`edit${curCat.name}`
+     //console.log("entro a mutationeditproductnotmtm")
+     let name
+     if(titulo.startsWith("otm"))
+      name=`edit${curCat.name}`
+    else
+    name=`editdatamtm${titulo.substr(3)}`
+    
       /*if(isManyToMany){
         setAddRecGlobal(()=>data[name])
         getGroupMtm({variables:keyFields})
 
       }else{*/
-        console.log("entro a mutationeditproductnotmtm")
+       // console.log("entro a mutationeditproductnotmtm")
         const path=[`getData${currentCategory.name}`]
    
         
 
-        const p=resultPath(currentCategory.fields.filter(x=>
+        /*const p=resultPath(currentCategory.fields.filter(x=>
           x.dataType=="relationship"
-        ),titulo,categories,path,true)
-        const i=getIndexes(tableIndexes,p)
+        ),titulo,categories,path,true)*/
+        //const i=getIndexes(tableIndexes,p)
 
-        const res=simpleUpdateStateHere(categoryProducts,data[name],titulo,p,i)
-        dispatch(setCategoryProducts(res))
+        //const res=simpleUpdateStateHere(categoryProducts,data[name],titulo,p,i)
+        //dispatch(setCategoryProducts(res))
       //}
+      console.log("updacate",updateCategories)
+      updateCategories[curCat.name].forEach(i=>{
+       // console.log("ucs",updateCategoriesIds,curCat.name,updateCategoriesIds[i],i)
+       console.log("paramsucs",i,data[name],parentFields?.[i])
+        dispatch({
+          type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
+          payload:{
+            category:i,
+            id:"edit",
+            fieldId:`${titulo}Id`,
+            row:data[name],
+            action:"EDIT",
+            childFields:parentFields?.[i]?.childFields
+          }
+        })
+      })
     }
   })
 
@@ -760,7 +849,7 @@ const EditProduct = ({
   termina edit mutation antiguo*/
  
   const formButtonClick=()=>{
-    console.log("fields1",editFields)
+   // console.log("fields1",editFields)
     if(!isManyToMany){
       console.log("fields1",editFields)
 
@@ -768,7 +857,7 @@ const EditProduct = ({
         variables:editFields
       })
     }else{
-      console.log("fields1",editFields)
+     // console.log("fields1",editFields)
 
       const n=`${titulo}Id`
       //console.log("nuuu",n,indexInTable,titulo,keyFields)

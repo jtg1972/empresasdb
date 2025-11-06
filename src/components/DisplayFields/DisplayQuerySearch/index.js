@@ -34,43 +34,38 @@ let bd
 
 
 const getQueryFromCategory=(productCategories,categories,rep=0)=>{
-  let query=`mutation GetData {`
+  let query=`mutation GetData($whereClauses:String,$sortClauses:String) {`
   //console.log("productcats",productCategories)
   let fields
-  let q2=productCategories.map(p=>{
-    fields=p.fields.map(x=>{
+  //let q2=productCategories.map(p=>{
+    //fields=
+    fields=productCategories.fields.map(x=>{
       if(x.dataType=="queryCategory"){
           const desc=`\n${x.name}GlobalCatQuery\n 
           ${x.name}FinalCatQuery\n 
           ${x.name}ProductQuery`
-          return desc
+          return ""
       }else if(x.dataType!=="relationship"){
         return x.name
       }
       /*else if(x.dataType=="relationship"){
         const t1=categories.filter(t=>t.id==x.relationCategory)
       
-        if(x.name=="mtmscmateriassccarreras" ||
-        x.name=="mtmsccarrerasscmaterias")
-        return `${x.name}{
-          original{
-          ${callGetFieldsCategory(x,categories)}
-          }
-        }`
-        else 
           return `${x.name}{
           ${callGetFieldsCategory(x,categories)}
-        }`*/
+        }`
+      }*/
       
     })
     fields.unshift("id")
-    const q=`getData${p.name}{
+    const q=`getData${productCategories.name}(whereClauses:$whereClauses,sortClauses:$sortClauses){
       ${fields.length>0 && fields.join(`\n\t\t`)}
+      
     }`
-    return q
-  })
-  q2=q2.join(`\n`)
-  query+=q2
+    
+  
+  //q2=q2.join(`\n`)
+  query+=q
   query+=`}`
   console.log("queryr1",query)
   return gql`${query}`
@@ -89,7 +84,10 @@ const DisplayQuerySearch = ({
   parentId,
   parentCatId,
   fieldMtm,
-  campoOculto
+  campoOculto,
+  titulo,
+  otrotitulo,
+  productsTable
 }) => {
   const [chosenProduct,setChosenProduct]=useState({})
   const {categories}=useSelector(mapToState)
@@ -105,10 +103,10 @@ const DisplayQuerySearch = ({
       return true
     }else return false
   })
-  const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(productCategories,categories)
+  const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(curCat,categories)
   const [getProducts]=useMutation(GET_PRODUCTS_FROM_CATEGORY,{
     update:(cache,{data})=>{
-      //console.log("data:",data)
+      console.log("data:",data)
       setDataTable(data)
       //dispatch(setCategoryProducts(data))
       
@@ -146,7 +144,10 @@ const DisplayQuerySearch = ({
   
 
   useEffect(()=>{
-    getProducts()
+    getProducts({variables:{
+      whereClauses:"{}",
+      sortClauses:"{}"
+    }})
   },[])
   
 
@@ -168,7 +169,7 @@ const DisplayQuerySearch = ({
         />
         {searchResult.length>0 &&
         <DisplaySearchProducts 
-          searchProducts={searchResult}
+          searchProducts={searchResult}//searchResult}
           setChosenProduct={setChosenProduct}
           setFields={setFields}
           fields={fields}
@@ -181,6 +182,9 @@ const DisplayQuerySearch = ({
           fieldMtm={fieldMtm}
           parentCatId={parentCatId}
           campoOculto={campoOculto}
+          titulo={titulo}
+          otrotitulo={otrotitulo}
+          productsTable={productsTable}
         />
 
         

@@ -1,9 +1,9 @@
-import types from "./types"
+import { typesOtm } from "./types"
 
 
 const INITIAL_STATE={
-    routes:{},
-    indexes:{}
+    
+    indexesOtm:{}
 }
 /*GET_ROUTES_OTM
 ADD_INDEXES_TO_OTMRECORD*/
@@ -11,11 +11,9 @@ ADD_INDEXES_TO_OTMRECORD*/
 export default (state=INITIAL_STATE,action)=>{
   console.log("actionplmtm",action.payload)
   switch(action.type){
-    case types.ADD_SEGMENT_TO_ROUTE:
-      return {...state,routes:{...state.routes,[action.payload.segment]:action.payload.route}}
-    case types.GET_ROUTES:
+    case typesOtm.GET_ROUTES_OTM:
       return state
-    case types.ADD_INDEXES_TO_MTMRECORD:
+    case typesOtm.ADD_INDEXES_TO_OTMRECORD:
       /*
         vamos a enviar a redux otm para anadir 
         category:i,
@@ -49,7 +47,12 @@ export default (state=INITIAL_STATE,action)=>{
               action:action.payload.action,
               row:action.payload.row,
               //route:action.payload.route,
-              nameVar:action.payload.fieldId
+              nameVar:action.payload.fieldId,
+              otherId:action.payload.otherId,
+              id:action.payload.id,
+              childFields:action.payload.childFields,
+              firstStage:action.payload.firstStage,
+              otherMtmRel:action.payload.otherMtmRel
               //valueVar1:action.payload.valueVar1,
               //nameVar2:action.payload.nameVar2,
               //valueVar2:action.payload.valueVar2,
@@ -60,16 +63,16 @@ export default (state=INITIAL_STATE,action)=>{
 
       return {
         ...state,
-        indexes:newStateIndexes
+        indexesOtm:newStateIndexes
           
       }
-    case types.DELETE_INDEX_TO_MTMRECORD:
+    case typesOtm.DELETE_INDEX_TO_OTMRECORD:
       return {
         ...state,
-        indexes:{
-          ...state.indexes,
+        indexesOtm:{
+          ...state.indexesOtm,
           [action.payload.category]:{
-            ...state.indexes?.[action.payload.category],
+            ...state.indexesOtm?.[action.payload.category],
             [action.payload.id]:[]
             
           }

@@ -377,7 +377,7 @@ sbcarreras:{
                 editsbcarreras:async(parent,args,{db})=>{
               let camposDate=[]
 await db.sbcarreras.update({
-                        id:args["id"],carrera:args.carrera,carreraId:args.carreraId,mtmsbmateriassbcarreras:args.mtmsbmateriassbcarreras,otmsbareasbcarrerasId:args.otmsbareasbcarrerasId,
+                        id:args["id"],carrera:args.carrera,mtmsbmateriassbcarreras:args.mtmsbmateriassbcarreras,otmsbareasbcarrerasId:args.otmsbareasbcarrerasId,carreraId:args.carreraId,
                         ...camposDate
                       },
                       {

@@ -502,7 +502,8 @@ export default{
                             console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                             objeto[lastSegmentText]=x[keys[k]]
                           }
-                          objeto["id"]=x["${n.name}.id"]
+                          
+                          objeto["id"]=x["${n.name}${!n.name.endsWith("s")?"s":""}.id"]
                           objeto.mtm${respCat.name}${n.name}Id=x["id"]
                           Object.keys(objeto).filter(z=>{
                         
@@ -1037,7 +1038,8 @@ export default{
                         console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                         objeto[lastSegmentText]=x[keys[k]]
                       }
-                      objeto["id"]=x["${respCat.name}.id"]
+                      
+                      objeto["id"]=x["${respCat.name}${!respCat.name.endsWith("s")?"s":""}.id"]
                       objeto.mtm${name}${respCat.name}Id=x["id"]
                       Object.keys(objeto).filter(z=>{
                         
@@ -1120,7 +1122,10 @@ export default{
               getData${name}(whereClauses:String,sortClauses:String):[${name}]\n`
               if(cats1[category].manyToMany==false){
                 content2+=`remove${name}(id:Int,parentArg:String,
-                  hardDelete:Boolean):Boolean!\n`
+                  hardDelete:Boolean,
+                  otmCategoryIds:[String],
+                  mtmCategoryIds:[String]
+                  ):Boolean!\n`
               }else{
                 const split=cats1[category].name.split("_")
                 const fc=split[0]
@@ -1146,7 +1151,8 @@ export default{
           arrMtmDataRes.forEach(i=>{
             content3+=i
           })
-          content3+=arrMtmResolverFinal.join(",\n")+",\n"
+          if(arrMtmResolverFinal.length>0)
+            content3+=arrMtmResolverFinal.join(",\n")+",\n"
           if(oneToManyResolver!=="" || manyToManyResolver!==""){
             content3+=`${name}:{
               ${oneToManyResolver}
@@ -1260,8 +1266,20 @@ export default{
             },
             createdatamtm${parts[0]}${parts[1]}:async(parent,args,{db})=>{
               try{
-                let product=await db.${name}.create(args)
-                product=product.dataValues
+                let siexiste=await db.${name}.findAll({where:{
+                  mtm${parts[1]}${parts[0]}Id:args.mtm${parts[1]}${parts[0]}Id,
+                  mtm${parts[0]}${parts[1]}Id:args.mtm${parts[0]}${parts[1]}Id
+
+                },raw:true})
+                let product
+                if(siexiste.length==0){
+                  product=await db.${name}.create(args)
+                  product=product.dataValues
+                }else{
+                  product=siexiste[0]
+                }
+                
+                
                 let alumno=await db.${parts[0]}.findAll({
                   where:{
                     id:args.mtm${parts[0]}${parts[1]}Id
@@ -1275,7 +1293,8 @@ export default{
                   raw:true
                 })
                 console.log("resyovoy",product,alumno,profesor)
-                return {...alumno[0],...product,key:"mtm${parts[0]}${parts[1]}"}
+                return {...alumno[0],...product,key:"mtm${parts[0]}${parts[1]}",
+              otherKey:"mtm${parts[1]}${parts[0]}"}
                 
               }catch(e){
                 console.log("error",e)
@@ -1283,8 +1302,18 @@ export default{
             },
             createdatamtm${parts[1]}${parts[0]}:async(parent,args,{db})=>{
               try{
-                let product=await db.${name}.create(args)
-                product=product.dataValues
+                let siexiste=await db.${name}.findAll({where:{
+                  mtm${parts[1]}${parts[0]}Id:args.mtm${parts[1]}${parts[0]}Id,
+                  mtm${parts[0]}${parts[1]}Id:args.mtm${parts[0]}${parts[1]}Id
+
+                },raw:true})
+                let product
+                if(siexiste.length==0){
+                  product=await db.${name}.create(args)
+                  product=product.dataValues
+                }else{
+                  product=siexiste[0]
+                }
                 let alumno=await db.${parts[1]}.findAll({
                   where:{
                     id:args.mtm${parts[1]}${parts[0]}Id
@@ -1298,7 +1327,8 @@ export default{
                   raw:true
                 })
                 console.log("resyovoy",product,alumno,profesor)
-                return {...alumno[0],...product,key:"mtm${parts[1]}${parts[0]}"}
+                return {...alumno[0],...product,key:"mtm${parts[1]}${parts[0]}",
+              otherKey:"mtm${parts[0]}${parts[1]}"}
                 
               }catch(e){
                 console.log("error",e)
@@ -1404,11 +1434,12 @@ export default{
 
             
 
-              content3+=`Mutation:{
-                
-                
+              content3+=`Mutation:{`
+              if(helperFunctionsResolvers!="")
+                content3+=helperFunctionsResolvers
+                              
 
-                create${name}:async(parent,args,{db})=>{`
+                content3+=`create${name}:async(parent,args,{db})=>{`
                 /*
                 let product=null
                   let p=null
@@ -1528,14 +1559,69 @@ export default{
                 }
                 */
                   if(cats1[category].manyToMany==false){
-                    
+                    /*
+                    console.log("argsmtmotm",args.mtmCategoryIds,args.otmCategoryIds)
+                          for(let x=0;x<args.otmCategoryIds.length;x++){
+                            console.log("versionpiu",`
+                              db.${args.otmCategoryIds[x]}.update({
+                                otmsbarea${args.otmCategoryIds[x]}Id:0
+                              },{
+                                where:{
+                                  otmsbarea${args.otmCategoryIds[x]}Id:${args.id}
+                                }
+                              })
+                            `)
+                          }
+                          let table=""
+                          
+                            
+                          for(let x=0;x<args.mtmCategoryIds.length;x++){
+                            if("sbarea">args.mtmCategoryIds[x])
+                              table=`${args.mtmCategoryIds[x]}_sbarea`
+                            else
+                              table=`sbarea_${args.mtmCategoryIds[x]}`
+                            
+                            console.log("versionpiu",`
+                              db.${table}.destroy(
+                                where:{
+                                  mtmsbarea${args.mtmCategoryIds[x]}Id:${args.id}
+                                }
+                              )
+                            `)
+                          }
+                          const product=await db.sbarea.findByPk(args.id)
+                          product.destroy()
+                          return true
+                    */
                     content3+=`remove${name}:async(parent,args,{db})=>{
                       let p
                       try{
                         if(args.hardDelete==true){
-                          const product=await db.${name}.findByPk(args.id)
+                          for(let x=0;x<args.otmCategoryIds.length;x++){
+                            let ke=args.otmCategoryIds[x]
+                            let fi="otm${name}"+ke+"Id"
+                            console.log("resres",
+                              "db."+ke+".update({"+fi+":0},{where:{"+fi+":"+args.id+"}})")
+                            db[ke].update({[fi]:0},{where:{[fi]:args.id}})
+                          }
+                          let table=""
+                          
+                            
+                          for(let x=0;x<args.mtmCategoryIds.length;x++){
+                            if("${name}">args.mtmCategoryIds[x])
+                              table=args.mtmCategoryIds[x]+"_"+"${name}"
+                            else
+                              table="${name}"+"_"+args.mtmCategoryIds[x]
+                            
+                            let mtmvar="mtm"+"${name}"+args.mtmCategoryIds[x]+"Id"
+                            console.log("resres",
+                              "db."+table+".destroy({where:{"+mtmvar+":"+args.id+"}})")
+                            db[table].destroy({where:{[mtmvar]:args.id}})
+                          }
+                         const product=await db.sbarea.findByPk(args.id)
                           product.destroy()
                           return true
+
                         }else{
                           p=await db.${name}.update({
                             [args["parentArg"]]:0,

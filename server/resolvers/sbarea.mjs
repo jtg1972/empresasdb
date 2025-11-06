@@ -66,7 +66,8 @@
                             console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                             objeto[lastSegmentText]=x[keys[k]]
                           }
-                          objeto["id"]=x["sbarea.id"]
+                          
+                          objeto["id"]=x["sbareas.id"]
                           objeto.mtmsbprofesoressbareaId=x["id"]
                           Object.keys(objeto).filter(z=>{
                         
@@ -149,6 +150,7 @@ mtmsbmateriassbprofesores:async(parent,args,{db})=>{
                             console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                             objeto[lastSegmentText]=x[keys[k]]
                           }
+                          
                           objeto["id"]=x["sbmaterias.id"]
                           objeto.mtmsbprofesoressbmateriasId=x["id"]
                           Object.keys(objeto).filter(z=>{
@@ -293,6 +295,7 @@ sbarea:{
                         console.log("lastsegkey",lastSegmentText,lastSegmentPos)
                         objeto[lastSegmentText]=x[keys[k]]
                       }
+                      
                       objeto["id"]=x["sbprofesores.id"]
                       objeto.mtmsbareasbprofesoresId=x["id"]
                       Object.keys(objeto).filter(z=>{
@@ -323,11 +326,7 @@ sbarea:{
                   return products     
                 }
               },
-              Mutation:{
-                
-                
-
-                createsbarea:async(parent,args,{db})=>{
+              Mutation:{createsbarea:async(parent,args,{db})=>{
                 let product=null
                 let p=null
                 if(args.id==null){
@@ -379,9 +378,31 @@ sbarea:{
                       let p
                       try{
                         if(args.hardDelete==true){
+                          for(let x=0;x<args.otmCategoryIds.length;x++){
+                            let ke=args.otmCategoryIds[x]
+                            let fi="otmsbarea"+ke+"Id"
+                            console.log("resres",
+                              "db."+ke+".update({"+fi+":0},{where:{"+fi+":"+args.id+"}})")
+                            db[ke].update({[fi]:0},{where:{[fi]:args.id}})
+                          }
+                          let table=""
+                          
+                            
+                          for(let x=0;x<args.mtmCategoryIds.length;x++){
+                            if("sbarea">args.mtmCategoryIds[x])
+                              table=args.mtmCategoryIds[x]+"_"+"sbarea"
+                            else
+                              table="sbarea"+"_"+args.mtmCategoryIds[x]
+                            
+                            let mtmvar="mtm"+"sbarea"+args.mtmCategoryIds[x]+"Id"
+                            console.log("resres",
+                              "db."+table+".destroy({where:{"+mtmvar+":"+args.id+"}})")
+                            db[table].destroy({where:{[mtmvar]:args.id}})
+                          }
                           const product=await db.sbarea.findByPk(args.id)
                           product.destroy()
                           return true
+
                         }else{
                           p=await db.sbarea.update({
                             [args["parentArg"]]:0,

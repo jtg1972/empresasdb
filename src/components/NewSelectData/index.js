@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/client"
 import { checkDocument } from "@apollo/client/utilities"
 import { GraphQLSpecifiedByDirective } from "graphql"
 import gql from "graphql-tag"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { resultPath } from "../../gql/updatestatemtm/utils/getPath"
 import FormButton from "../Forms/FormButton"
@@ -193,8 +193,34 @@ const NewSelectData=({
       setOtmChoicesServerOrder,
       toggleOpenSortCriteriaServerDialog,
       sortRules,
-      setSortRules
+      setSortRules,
+      checkBoxFields,
+      setCheckBoxFields,
+      checkBoxDataFields,
+      setCheckBoxDataFields,
+
+      toggleEditProduct,
+      toggleNewProduct,
+      toggleFilter,
+      searchProductsFilter,
+      setDqIds,
+      dqIds,
+      updateCategories,
+      setUpdateCategories,
+      updateCategoriesIds,
+      setUpdateCategoriesIds,
+      parentRecord,
+      setParentRecord,
+      parentFields,
+      setParentFields,
+      childFields,
+      setChildFields
 })=>{
+
+  useEffect(()=>{
+    if(updateCategories[currentCategory.name]==undefined)
+      setUpdateCategories({...updateCategories,[currentCategory.name]:[`getData${currentCategory.name}`]})
+  })
 
   //toggleOpenSortCriteriaDialog({categoryName:field,otmChoicesSort:otmChoicesOrder[field],sortRules:sortRules,setSortRules:setSortRules})
   const {
@@ -203,31 +229,32 @@ const NewSelectData=({
     //categoryProducts
   }=useSelector(mapToState)
   const [showQuery,setShowQuery]=useState(false)
-  const [checkBoxFields,setCheckBoxFields]=useState({})//[currentCategory.name]:{checked:true,real:currentCategory.name}})
-  const [checkBoxDataFields,setCheckBoxDataFields]=useState({})
+  /*const [checkBoxFields,setCheckBoxFields]=useState({})//[currentCategory.name]:{checked:true,real:currentCategory.name}})
+  const [checkBoxDataFields,setCheckBoxDataFields]=useState({})*/
   const [change,setChange]=useState(false)
+  //const [updateCategories,setUpdateCategories]=useState({[currentCategory.name]:[currentCategory.name]})
   let categoryAlreadyDisplayed=[]
   let counter=0
   console.log("ccat",currentCategory)
   let otmCSOrder={}
-  /*const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(categories.filter(x=>x.name==currentCategory.name)[0],categories,checkBoxDataFields)
-  const [getProducts]=useMutation(GET_PRODUCTS_FROM_CATEGORY,{
+  //const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(categories.filter(x=>x.name==currentCategory.name)[0],categories,checkBoxDataFields)
+  /*const [getProducts]=useMutation(GET_PRODUCTS_FROM_CATEGORY,{
     update:(cache,{data})=>{
       console.log("datamtmboth:",data)
-      //dispatch(setCategoryProducts(data))
+      dispatch(setCategoryProducts(data))
       
     }
   })*/
   console.log("otmcsorder",otmChoicesServerOrder)
 
   const displaySubcategory=(catId,field,routec,prName,relationshipType)=>{
-    console.log("routecoo",prName,relationshipType,field)
+    //console.log("routecoo",prName,relationshipType,field)
     let curCat=categories.filter(x=>x.id==catId)
     //gcbf=setCheckBoxFields
     //gcbdf=setCheckBoxFields
     
     let subVar=""
-    console.log("curcats",curCat)
+    //console.log("curcats",curCat)
     let nmtm
     if(curCat.length==1){
       let active=false
@@ -241,7 +268,7 @@ const NewSelectData=({
         mc=categories.filter(x=>x.name==nmtm)?.[0]
 
       }
-      console.log("mc",mc)
+      //console.log("mc",mc)
       let ocSingle
       let ocShare
       let newFields=[]
@@ -258,7 +285,7 @@ const NewSelectData=({
         newFields=curCat[0].fields
         oc=ordenaCampos(newFields,curCat[0].name)
       }
-      console.log("oc",ocSingle,ocShare)
+      //console.log("oc",ocSingle,ocShare)
       
       return <p>
         {relationshipType!="manytomany" && <div><p style={{textDecoration:"underline"}}>
@@ -379,7 +406,7 @@ const NewSelectData=({
            
            let namej=`${x.name}${++counter}`
           //if(categoryAlreadyDisplayed.includes(x.name))
-            console.log("routecy",routec)
+            //console.log("routecy",routec)
             let eg
           if(gcbf[namej]==undefined){
             gcbf[namej]={checked:false,real:x.name,routec:[]}
@@ -395,7 +422,28 @@ const NewSelectData=({
           
           return <p style={{color:!existegood(gcbf[namej],namej,gcbf)?"red":"white",marginLeft:"0px"}}>
             {title}
-            {existegood(gcbf[namej],namej,gcbf) && <input type="checkbox" checked={gcbf[namej]["checked"]==true} onChange={e=>setCheckBoxState(namej,e,x.relationship,field,x.name,[...routec["routec"],x.name])}/>} {x.name} ({x.relationship})
+            {existegood(gcbf[namej],namej,gcbf) && <input type="checkbox" checked={gcbf[namej]["checked"]==true} 
+            onChange={e=>{
+              setCheckBoxState(namej,e,x.relationship,field,x.name,[...routec["routec"],x.name])
+              let ucPending=updateCategories
+            let mainCat
+            mainCat=categories.filter(io=>
+              io.id==x.relationCategory)[0].name
+            if(e.target.checked){
+              /*console.log("catmaincat",categories.filter(io=>
+                io.id==x.relationCategory)[0].name,x.name)*/
+              
+              //console.log("maincat",x.name,mainCat)
+              
+              if(ucPending?.[mainCat]==undefined)
+                ucPending={...ucPending,[mainCat]:[x.name]}
+              else
+                ucPending={...ucPending,[mainCat]:[...ucPending[mainCat],x.name]}
+            }else
+              ucPending={...ucPending,[mainCat]:[...ucPending[mainCat].filter(y=>y!=x.name)]}
+            setUpdateCategories(ucPending)
+            //console.log("ucpending",ucPending)
+            }}/>} {x.name} ({x.relationship})
             {gcbf?.[namej]?.["checked"]} {namej} {gcbf[namej]["checked"]==true?<p style={{marginLeft:"17px"}}>{displaySubcategory(x.relationCategory,x.name,gcbf[namej],curCat[0].name,x.relationship)}</p>:""}
           </p>
         }
@@ -405,7 +453,7 @@ const NewSelectData=({
            {((index==0 || index==ocSingle?.length) && title)}
             <input type="checkbox" onChange={e=>{
               setOtmChoicesServerOrder(p=>{
-                console.log("etarget",e.target.checked)
+                //console.log("etarget",e.target.checked)
               if(relationshipType!="manytomany"){
                   if(e.target.checked==true){
                     if(p?.[field]==undefined)
@@ -431,7 +479,7 @@ const NewSelectData=({
                     p[field]=p[field].filter(y=>y.name!=x.name)
                   }
                 }
-                console.log("pio",p)
+                //console.log("pio",p)
                 return p
               })
               setCheckBoxState(x.name,e,null,field,x.name)
@@ -440,7 +488,7 @@ const NewSelectData=({
               e.preventDefault()
               
               if(x.declaredType=="number"){
-                console.log("singles",singles,index)
+                //console.log("singles",singles,index)
                 toggleOpenWhereStatementNumberServerDialog({
                   categoryName:field,
                   fieldName:x.name,
@@ -525,7 +573,7 @@ const NewSelectData=({
   let gcbdf={}
 
   const findCheckValue=(cat,nuevo,route)=>{
-    console.log("paramscat",cat,nuevo,route)
+    //console.log("paramscat",cat,nuevo,route)
     let k=Object.keys(gcbf).filter(x=>{
       if(gcbf[x].real==cat && x!=nuevo){
         for(let t=0;t<route.length;t++){
@@ -537,7 +585,7 @@ const NewSelectData=({
         return false
         
     })
-    console.log("catnuevo",k,cat,nuevo,gcbf)
+    //console.log("catnuevo",k,cat,nuevo,gcbf)
     let res
     for(let i=0;i<k.length;i++){
       if(gcbf[k[i]].checked==true)
@@ -553,10 +601,10 @@ const NewSelectData=({
     let ke=Object.keys(gcbf)
     console.log("existegood",name,campo,gcbf)
     let camplimp=limpiaCategoria(name,campo["real"],campo["routec"])
-    console.log("camplimp",camplimp,name)
+    //console.log("camplimp",camplimp,name)
         
     checkIsTrue(camplimp,name)
-    console.log("examinact",gcbf,gcbdf)
+    //console.log("examinact",gcbf,gcbdf)
     let l=Object.keys(gcbf)
     let k=l.filter(x=>{
       if(gcbf[x]["real"]==campo?.["real"] && gcbf?.[x]?.["checked"]==true && x!=name){
@@ -564,7 +612,7 @@ const NewSelectData=({
       }else
         return false
     })
-    console.log("kres",k.length)
+    //console.log("kres",k.length)
     if(k.length>0)
       return false
     return true
@@ -575,21 +623,21 @@ const NewSelectData=({
 
   const encuentraconsec=(cat,route)=>{
     let found=false
-    console.log("catroute",cat,route,gcbf)
+    //console.log("catroute",cat,route,gcbf)
     for(let x=0;x<Object.keys(gcbf).length-1;x++){
-      console.log("paraioio",gcbf,cat,gcbf[Object.keys(gcbf)[x]]["real"],gcbf[Object.keys(gcbf)[x]]["checked"])
+      //console.log("paraioio",gcbf,cat,gcbf[Object.keys(gcbf)[x]]["real"],gcbf[Object.keys(gcbf)[x]]["checked"])
       if(cat==gcbf[Object.keys(gcbf)[x]]["real"]){// && gcbf[Object.keys(gcbf)[x]]["checked"]==true){
-        console.log("paraioio1",gcbf,cat,gcbf[Object.keys(gcbf)[x]]["real"],gcbf[Object.keys(gcbf)[x]]["routec"])
+        //console.log("paraioio1",gcbf,cat,gcbf[Object.keys(gcbf)[x]]["real"],gcbf[Object.keys(gcbf)[x]]["routec"])
 
         for(let y=0;y<gcbf[Object.keys(gcbf)[x]]["routec"].length;y++){
           if(route?.[y]!=gcbf[Object.keys(gcbf)[x]]["routec"][y]){
             found=false
-            console.log("foundoit",found)
+            //console.log("foundoit",found)
 
             break
           }else 
             found=true
-          console.log("foundoit",found)
+         // console.log("foundoit",found)
           
         }
         
@@ -605,7 +653,7 @@ const NewSelectData=({
   const uncheckedAllSons=(category,field,cbf,cbdf,type,simpleField,route)=>{
     
     //let ec=encuentraconsec(category)
-    console.log("enc89",field)
+    //console.log("enc89",field)
     //if(ec!=false){
     //console.log("enc89",ec)
     if(field!=false){
@@ -616,7 +664,7 @@ const NewSelectData=({
       gcbdf={...gcbdf,
         [category]:{...gcbdf[category],otm:[...gcbdf[category]["otm"].filter(x=>x!=simpleField)]}}
     else if(type=="mtm"){
-      console.log("fieldcb",field,category,gcbdf)
+      //console.log("fieldcb",field,category,gcbdf)
       gcbdf={...gcbdf,
         [category]:{...gcbdf[category],mtm:[...gcbdf[category]["mtm"].filter(x=>x!=simpleField)]}}
         
@@ -626,11 +674,11 @@ const NewSelectData=({
    //delete cbf[field]
    //cbdf={...cbdf,
     //[category]:{...cbdf[category],mtm:[...cbdf[category]["mtm"].filter(x=>x!=field)]}}
-    console.log("gcbdfsimplefield",gcbdf,simpleField)
+    //console.log("gcbdfsimplefield",gcbdf,simpleField)
     gcbdf?.[simpleField]?.["otm"].forEach(x=>{
       //cbf={...cbf,[x]:false}
       //delete cbdf[x]
-      console.log("pivej",x)
+     //console.log("pivej",x)
       //cbf={...cbf,[x]:false}
       uncheckedAllSons(simpleField,encuentraconsec(x,[...route,x]),gcbf,gcbdf,"otm",x,[...route,x])
      //cbdf={...cbdf,[x]:{...cbdf[x],fields:[],otm:[]}}
@@ -640,7 +688,7 @@ const NewSelectData=({
     })
     
     gcbdf?.[simpleField]?.["mtm"].forEach(x=>{
-      console.log("pivej",x)
+     // console.log("pivej",x)
 
       //cbf={...cbf,[x]:false}
       //delete cbdf[x]
@@ -659,7 +707,7 @@ const NewSelectData=({
   }
 
   const limpiaCategoria=(field,simpleField,route)=>{
-    console.log("paramslc",field,simpleField,route)
+    //console.log("paramslc",field,simpleField,route)
     let k=Object.keys(gcbf)
     return k.filter(x=>{
       if(gcbf[x]["real"]==simpleField && field!=x){
@@ -679,11 +727,11 @@ const NewSelectData=({
     let ver=true
     for(let x=0;x<arr.length;x++){
       
-      console.log("borrararr",arr[x],gcbf)   
+     // console.log("borrararr",arr[x],gcbf)   
       delete gcbf[arr[x]]
     }
     //gcbf[f]["checked"]=ver
-    console.log("cist",arr,f,gcbf)
+    //console.log("cist",arr,f,gcbf)
     
   }
 
@@ -694,8 +742,8 @@ const NewSelectData=({
     //gcbf=checkBoxFields
     //gcbdf=checkBoxDataFields
     let nkf
-    console.log("paramsver",field,state,relationship,category,simpleField)
-    console.log("statevalue",state.target.value,state,field)
+    //console.log("paramsver",field,state,relationship,category,simpleField)
+    //console.log("statevalue",state.target.value,state,field)
     if(relationship=="onetomany" || relationship=="manytomany"){
       //existe(simpleField)
           //deleteResto(simpleField)
@@ -706,7 +754,7 @@ const NewSelectData=({
     
     
           
-          console.log("fielduuu",gcbf,field,simpleField,category,state.target.checked)
+         // console.log("fielduuu",gcbf,field,simpleField,category,state.target.checked)
 
         
 
@@ -714,7 +762,7 @@ const NewSelectData=({
       
     
       
-      console.log("veagcgf",gcbf)
+      //console.log("veagcgf",gcbf)
       /*if(state.target.checked==false){
       let u=uncheckedAllSons(field,cbf,cbdf)
           cbdf=u[1]
@@ -763,7 +811,7 @@ const NewSelectData=({
   }
     
      
-    console.log("examina",gcbf,gcbdf)
+    //console.log("examina",gcbf,gcbdf)
     setChange(true)
     setCheckBoxFields(gcbf)
     setCheckBoxDataFields(gcbdf)
@@ -781,7 +829,7 @@ const NewSelectData=({
   }
   const deleteResto=(cat,current)=>{
     let keys=Object.keys(gcbf)
-    console.log("catkey",keys,cat,gcbf)
+    //console.log("catkey",keys,cat,gcbf)
     for(let i=0;i<keys.length;i++){
     //console.log("keysoopc",gcbf[Object.keys(gcbf)[i]]["real"],cat,gcbf[Object.keys(gcbf)[i]]["real"]==cat)
       if(gcbf[keys[i]]?.["real"]==cat && current!=keys[i])
@@ -790,10 +838,10 @@ const NewSelectData=({
         gcbf={...gcbf,[keys[i]]:{...gcbf[keys[i]],delete:false}}
       
     }
-    console.log("borrarkeys",gcbf)
+    //console.log("borrarkeys",gcbf)
     let ngcbf={}
     for(let i=0;i<keys.length;i++){
-      console.log("keysoop",keys,cat,gcbf[Object.keys(gcbf)[i]]["real"])
+      //console.log("keysoop",keys,cat,gcbf[Object.keys(gcbf)[i]]["real"])
       if(gcbf[Object.keys(gcbf)[i]]["delete"]==false){
         ngcbf[Object.keys(gcbf)[i]]=gcbf[Object.keys(gcbf)[i]]
         delete ngcbf[Object.keys(gcbf)[i]]["delete"]
@@ -801,7 +849,7 @@ const NewSelectData=({
     }
     gcbf=ngcbf
     
-    console.log("regdel",gcbf)
+    //console.log("regdel",gcbf)
 
 
   }
@@ -818,7 +866,7 @@ const NewSelectData=({
     let dateFields=[]
     let otmFields=[]
     let mtmFields=[]
-    console.log("fieldsoo",fields,cat)
+    //console.log("fieldsoo",fields,cat)
     for(let x=0;x<fields.length;x++){
       let f=fields[x]
       if(f.declaredType=="string")
@@ -863,13 +911,13 @@ const NewSelectData=({
         return -1
     })
     let cong=[...stringFields,...numericFields,...dateFields,...otmFields,...mtmFields]
-    console.log("camposgrupos",cat,cong)
+   // console.log("camposgrupos",cat,cong)
     return cong
   }
 
   const displayWhereClauses=(cat,field,relationshipType,subVar)=>{
     let cc
-    console.log("paramswhere",cat,field,relationshipType,subVar)
+   // console.log("paramswhere",cat,field,relationshipType,subVar)
     if(relationshipType!="manytomany")
       cc=conditionsWhere?.[cat]
     else{
@@ -877,7 +925,7 @@ const NewSelectData=({
         cc=conditionsWhere?.[cat]?.[subVar]
      
     }
-    console.log("cc",conditionsWhere)
+   //console.log("cc",conditionsWhere)
     if(cc){
       let f=cc?.[field]
       if(f){
@@ -983,6 +1031,7 @@ const NewSelectData=({
         //gcbf={[name]:{checked:false,real:x.name}}
       if(x.relationship=="onetomany" ||
       x.relationship=="manytomany"){
+        
         let name=`${x.name}${++counter}`
         
         if(gcbf?.[name]?.["checked"]==true)
@@ -999,20 +1048,41 @@ const NewSelectData=({
           //eg=existegood(gcbf[name],name,gcbf)
         }
         
-        console.log("routec",gcbf[name])
+       // console.log("routec",gcbf[name])
         //deleteResto(x.name,name)  
         
         
         return <p style={{marginLeft:"10px",color:!existegood(gcbf[name],name,gcbf)?"red":"white"}}>
           
-          {existegood(gcbf[name],name,gcbf) && <input type="checkbox" checked={gcbf?.[name]?.["checked"]==true?true:false} onChange={e=>setCheckBoxState(name,e,x.relationship,`${currentCategory.name}`,x.name,[currentCategory.name,x.name])}/>} {x.name} ({x.relationship})
+          {existegood(gcbf[name],name,gcbf) && <input type="checkbox" checked={gcbf?.[name]?.["checked"]==true?true:false} onChange={e=>{
+            setCheckBoxState(name,e,x.relationship,`${currentCategory.name}`,x.name,[currentCategory.name,x.name])
+            let ucPending=updateCategories
+            let mainCat
+            mainCat=categories.filter(io=>
+              io.id==x.relationCategory)[0].name
+            if(e.target.checked){
+              /*console.log("catmaincat",categories.filter(io=>
+                io.id==x.relationCategory)[0].name,x.name)*/
+              
+              //console.log("maincat",x.name,mainCat)
+              
+              if(ucPending?.[mainCat]==undefined)
+                ucPending={...ucPending,[mainCat]:[x.name]}
+              else
+                ucPending={...ucPending,[mainCat]:[...ucPending[mainCat],x.name]}
+            }else
+              ucPending={...ucPending,[mainCat]:[...ucPending[mainCat].filter(y=>y!=x.name)]}
+            setUpdateCategories(ucPending)
+            //console.log("ucpending",ucPending)
+          }}/>} {x.name} ({x.relationship})
+            
           {gcbf?.[name]?.["checked"]} {name}{gcbf?.[name]?.["checked"]==true && <p style={{marginLeft:"17px"}}>{displaySubcategory(x.relationCategory,x.name,gcbf[name],currentCategory.name,x.relationship)}</p>}
         </p>
       }else
         return <p style={{marginLeft:"10px"}}>
           <input type="checkbox" onChange={e=>{
             setOtmChoicesServerOrder(p=>{
-              console.log("etarget",e.target.checked)
+              //console.log("etarget",e.target.checked)
               
                 if(e.target.checked==true){
                   if(p?.[currentCategory.name]==undefined)
@@ -1022,7 +1092,7 @@ const NewSelectData=({
                   p[currentCategory.name]=p[currentCategory.name].filter(y=>y.name!=x.name)
                 }
               
-              console.log("pio",p)
+             // console.log("pio",p)
               return p
             })
             setCheckBoxState(x.name,e,null,`${currentCategory.name}`,x.name)
@@ -1122,7 +1192,7 @@ const codifyRule2=(detail,rule)=>{
   let res2=[]
   let op1=""
   let op2=""
-  console.log("paramesp",detail)
+ // console.log("paramesp",detail)
   /*for(let i=0;i<detai.length;i+=1){
     if(i%2==1){
       //let rule=detail[i+1]
@@ -1177,10 +1247,10 @@ const parseHybrid=(rule,field)=>{
     
   }
   let opInd=0
-  console.log("restotal",res)
+ // console.log("restotal",res)
   let resFinal=""
   for(let i=2;i<rule.length;i+=2){
-    console.log("resopindj6",opInd,res[opInd],res[opInd+1])//
+   // console.log("resopindj6",opInd,res[opInd],res[opInd+1])//
     if(resFinal==""){
       /*if(rule[i]=="not")
         resFinal=`[Op.Not]:[{${res[opInd]}}]`*/
@@ -1276,7 +1346,7 @@ const parseNumber=(rule,field)=>{
   
   }else{
     for(let i=3;i<rule.length;i+=3){
-      console.log("resopind",opInd)
+     //console.log("resopind",opInd)
       
       if(resFinal==""){
         if(rule[i]=="and")
@@ -1307,7 +1377,7 @@ const parseNumber=(rule,field)=>{
     }
   }
   //resFinal="{"+resFinal+"}"
-  console.log("resfinalexnumber",resFinal)
+  //console.log("resfinalexnumber",resFinal)
 
 
   return resFinal
@@ -1366,7 +1436,7 @@ const parseString=(rule,field)=>{
   
   }else{
     for(let i=3;i<rule.length;i+=3){
-      console.log("resopind",opInd)
+      //console.log("resopind",opInd)
       
       if(resFinal==""){
         if(rule[i]=="and")
@@ -1397,14 +1467,14 @@ const parseString=(rule,field)=>{
     }
   }
   //resFinal="{"+resFinal+"}"
-  console.log("resfinalex",resFinal)
+  //console.log("resfinalex",resFinal)
 
 
   return resFinal
 
 }
 const parseDate=(rule)=>{
-  console.log("parseDate",rule)
+ // console.log("parseDate",rule)
   return "parseDate"
 }
 
@@ -1414,17 +1484,17 @@ const opLike=Op.like
 let test={[andSymbol]:[{area:{[opLike]:"%a1"}},{area:{[opLike]:"%a1"}}]}
 
 const codifyRule=(cat,detail,)=>{
-  console.log("typei",detail)
-  console.log("detail",detail,detail["category"])
+ // console.log("typei",detail)
+  //console.log("detail",detail,detail["category"])
   const rule=conditionsWhere?.[detail["category"]]?.[detail?.["field"]][detail?.["rule"]]["rule"]
   let field=detail["field"]
   let type=conditionsWhere?.[detail["category"]]?.[detail?.["field"]]["type"]
-  console.log("rulex",rule,conditionsWhere,detail,field,type)
+ // console.log("rulex",rule,conditionsWhere,detail,field,type)
   let res=[]
-  console.log("Opesc",Op,Op.not)
+ // console.log("Opesc",Op,Op.not)
   
   let test1=JSON.stringify(conditionsWhere)
-  console.log("testi",test1,JSON.parse(test1))//test,test1,JSON.parse(test1))
+ // console.log("testi",test1,JSON.parse(test1))//test,test1,JSON.parse(test1))
   if(type=="hybrid"){
     res=parseHybrid(rule,field)
   }else if(type=="string"){
@@ -1434,7 +1504,7 @@ const codifyRule=(cat,detail,)=>{
   }else if(type=="date")
     res=parseDate(rule,field)
     res="{"+res+"}"
-    console.log("resfinal1",res)/*
+   // console.log("resfinal1",res)/*
   
   /*for(let i=0;i<rule.length;i+=1){
     if(i%2==1){
@@ -1484,7 +1554,7 @@ const codifyRules=()=>{
   let r=Object.keys(k).map(o=>{
     return codifyRule(o,k[o])
   })
-  console.log("codify",k,r)
+ // console.log("codify",k,r)
 }
 
 return <div>
@@ -1500,6 +1570,23 @@ return <div>
     checkBoxDataFields={checkBoxDataFields}
     conditionsWhere={conditionsWhere}
     sortClauses={sortRules}
+
+    toggleEditProduct={toggleEditProduct}
+      toggleNewProduct={toggleNewProduct}
+      toggleFilter={toggleFilter}
+      searchProductsFilter={searchProductsFilter}
+      setDqIds={setDqIds}
+      dqIds={dqIds}
+      updateCategories={updateCategories}
+      updateCategoriesIds={updateCategoriesIds}
+      setUpdateCategoriesIds={setUpdateCategoriesIds}
+      parentRecord={parentRecord}
+      setParentRecord={setParentRecord}
+      parentFields={parentFields}
+      setParentFields={setParentFields}
+      childFields={childFields}
+      setChildFields={setChildFields}
+     
   />}
 </div>
 }

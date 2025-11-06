@@ -14,7 +14,10 @@ const DisplaySearchProducts = ({
   isManyToMany,
   parentId,
   parentCatId,
-  fieldMtm
+  fieldMtm,
+  titulo,
+  otrotitulo,
+  productsTable
 }) => {
   //console.log("fieldMtm",fieldMtm)
   const displayRow=(sc)=>{
@@ -22,13 +25,26 @@ const DisplaySearchProducts = ({
     return values.join(", ")
   }
 
+  const searchInCurrent=(row)=>{
+    for(let x=0;x<productsTable[titulo].length;x++){
+      let c=productsTable[titulo][x]
+      if(c.id==row.id)
+        return false
+    }
+    return true
+  }
+
   return (
     searchProducts.length>0
     &&
     <div className="containerCombo">
       <div className="scrollCombo">
-        {searchProducts.map((sc,i)=>
-        <div 
+        {searchProducts.map((sc,i)=>{
+          const gcqName=`${queryFieldName}GlobalCatQuery`
+          const fcqName=`${queryFieldName}FinalCatQuery`
+          const pName=`${queryFieldName}ProductQuery`
+          console.log("pname",pName,sc,sc.otmsbareasbcarrerasId,titulo,sc[`${titulo}Id`,parentId])
+        return <div 
         className="combo"
         key={i}
         onClick={()=>{
@@ -46,6 +62,7 @@ const DisplaySearchProducts = ({
 
           qcFields.map(q=>{
             const targets=q.targets.split(",")
+            newValues.id=sc.id
             targets.forEach((t,i)=>{
               if(i%2==0){
                 newValues={
@@ -61,6 +78,7 @@ const DisplaySearchProducts = ({
               [gcqName]:queryCategory,
               [fcqName]:sc.catId,
               [pName]:sc.id,
+              id:sc.id,
               
               ...newValues
             
@@ -88,11 +106,14 @@ const DisplaySearchProducts = ({
             })
           }
         }}>
-
-          {displayRow(sc)}
+          
+          {!isManyToMany && sc?.[`${titulo}Id`]==0 && displayRow(sc)}
+          {isManyToMany && (
+            searchInCurrent(sc)) &&
+          displayRow(sc)}
 
         </div>
-        )}
+      })}
       </div>
     </div>
   )

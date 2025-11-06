@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import React,{useState,useEffect} from 'react'
 import { BsPencilFill } from 'react-icons/bs'
 import FormButton from '../../Forms/FormButton'
-import { IoIosRemoveCircleOutline } from 'react-icons/io';
+import { IoIosRemoveCircleOutline, IoMdFunnel } from 'react-icons/io';
 import { useDispatch, useSelector } from 'react-redux';
 import {setCategoryProducts} from '../../../redux/category/actions'
 import { FcLeftDown2 } from 'react-icons/fc';
@@ -20,6 +20,7 @@ import getMutationForDelete from '../../../gql/getMutationForDelete';
 import getMutationForDeleteManyToMany from '../../../gql/getMutationForDeleteManyToMany';
 import types from '../../../redux/mtmupdate/types';
 import { registerables } from 'chart.js';
+import { typesOtm } from '../../../redux/otmupdate/types';
 
 
 /*const getMutationForDelete=(categoryName)=>{
@@ -53,12 +54,13 @@ const getMutationForDeleteManyToMany=(parentRelationId,category,categories)=>{
   return gql`${mutation}`
 
 }*/
-const mapToState=({categories,routes})=>({
+const mapToState=({categories,routes,routesOtm})=>({
   categoryProducts:categories.categoryProducts,
   categories:categories.categories,
   currentCategory:categories.currentCategory,
   mtmRoutes:routes.routes,
   indexes:routes.indexes,
+  indexesOtm:routesOtm.indexesOtm
 })
 
 const DisplaySingleTable = ({
@@ -83,11 +85,18 @@ const DisplaySingleTable = ({
   nameMutationManyToManyData,
   setDqIds,
   dqIds,
+  checkBoxDataFields,
+  updateCategories,
+  updateCategoriesIds,
+      setUpdateCategoriesIds,
+      parentRecord,
+      setParentRecord
   })=>{
     //console.log("productsmain",products)
     //console.log("parentcatid Singletable",parentCatId)
-  console.log("parentRelationdisplaySingletable",parentRelation)
+  
   console.log("segmentRoutes",segmentRoutes)
+  console.log("parrecst",parentRecord)
   const dispatch=useDispatch()
 
   
@@ -100,45 +109,160 @@ const DisplaySingleTable = ({
     currentCategory,
     mtmRoutes,
     indexes,
+    indexesOtm
+    
     
   }=useSelector(mapToState)
-    
+    //console.log("updcat",respCat.name,updateCategories,updateCategories?.[respCat.name])
+    //console.log("paramsact",indexes,titulo,parentId,indexesOtm)
+    //console.log()
+    //console.log("parentRelationdisplaySingletable",parentRelation,categories,categories.filter(x=>x.id==parentRelation)?.[0]?.fields.filter(x=>(x.declaredType=="string" || x.declaredType=="number")),respCat.fields.filter(x=>(x.declaredType=="string" || x.declaredType=="number")))
+  let newRoutesSeg=[]
     useEffect(()=>{
-      if(titulo.startsWith("mtm")){
-        dispatch({
-          type:types.ADD_SEGMENT_TO_ROUTE,
-          payload:{
-            segment:titulo,
-            route:segmentRoutes
-          }
-        })
-        console.log("mtmroutesver",mtmRoutes,parentId)
-      }
-    },[titulo])
+      
+      dispatch({
+        type:types.ADD_SEGMENT_TO_ROUTE,
+        payload:{
+          segment:titulo,
+          route:segmentRoutes
+        }
+      })
+      
+      
+    },[])
+
+    /*useEffect(()=>{
+      console.log("mtmroutesver",mtmRoutes,parentId)
+      actEdit()
+    },[])*/
+    /*
+    dispatch({
+                    type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
+                    payload:{
+                      category:z.name,
+                      id:"delete_main",
+                      action:"DELETE_MAIN",
+                      otherId:deleteId,
+                      firstStage:true,
+                      otherMtmRel
+                    }
+                  })
+    */
     useEffect(()=>{
-      console.log("entrouuuu",indexes?.[titulo]?.[parentId])
+      actEdit()
+    },[indexesOtm?.[titulo]?.edit?.length,parentId])
+  useEffect(()=>{
+    actDelete()
+  },[indexesOtm?.[titulo]?.delete_main?.length,parentId])
+    useEffect(()=>{
+      setUpdateCategoriesIds(x=>{
+        let y=x
+        if(y[titulo]!=undefined)
+          y={...y,[titulo]:0}
+        y={...y,[titulo]:parentId}
+        //console.log("catsids",y)
+        return y
+        
+      })
+    },[parentId])
+    useEffect(()=>{
+      //if(titulo.startsWith("mtm")){
+        
+       
+      //}
+    },[])
+    useEffect(()=>{
+      
       let ncp=categoryProducts
-      console.log("paramsacttab1global",indexes,titulo,parentId,indexes)
+     //console.log("paramsact",indexes,titulo,parentId,indexesOtm)
       parentId=parentId
-      if(indexes?.[titulo]?.[parentId]?.length>0){
-      if(indexes?.[titulo]!=undefined){
-        if(indexes?.[titulo]?.[parentId]!=undefined){
-          indexes?.[titulo]?.[parentId]?.forEach(x=>{
+      let cur
+      //if(titulo.startsWith("otm"))
+        cur=indexesOtm
+      
+       // console.log("entrouuuu",cur,mtmRoutes,indexes,indexesOtm)//?.[titulo]?.[parentId])
+       console.log("curtitulo",cur?.[titulo])
+      if(cur?.[titulo]?.[parentId]?.length>0){
+      if(cur?.[titulo]!=undefined){
+        if(cur?.[titulo]?.[parentId]!=undefined){
+          cur?.[titulo]?.[parentId]?.forEach(x=>{
+            let typeRel
             if(x.action=="ADD"){
-              let i=getIndexes(tableIndexes,mtmRoutes[titulo])
-              console.log("paramsveradd11",ncp,x.row,titulo,mtmRoutes[titulo],i,x.row.original,x.row.copy)
-              if(i.length>0 && mtmRoutes[titulo].length>0)
-              ncp=simpleUpdateStateHere1(ncp,x.row,titulo,mtmRoutes[titulo],i,x.row.original,x.row.copy)
+              let i=getIndexes(tableIndexes,segmentRoutes)
+              
+              console.log("parui",ncp,x.row,titulo,segmentRoutes,i)  
+              if(i.length>0 && segmentRoutes.length>0){
+               ncp=simpleUpdateStateHere1(ncp,x.row,titulo,segmentRoutes,i)
+             }
             }
-            if(x.action=="EDIT"){
+          
+            /*if(x.action=="EDIT"){
               let i=getIndexes(tableIndexes,mtmRoutes[titulo])
               console.log("paramsacttab",ncp,x.row,titulo,mtmRoutes,mtmRoutes[titulo],i,x.row.original,x.row.copy)
               if(i.length>0 && mtmRoutes[titulo].length>0)
-                ncp=simpleUpdateStateHereEdit(ncp,x.row,titulo,mtmRoutes[titulo],i,x.row.original,x.row.copy,x)
+                ncp=simpleUpdateStateHereEdit(ncp,x.row,titulo,mtmRoutes[titulo],i)
+            }*/
+            if(x.action=="DELETE"){
+              let i=getIndexes(tableIndexes,segmentRoutes)
+              //console.log("checbien",i,segmentRoutes)
+              //console.log("paramsacttabdel",ncp,titulo,nameVar1,nameValue1,nameVar2,nameValue2)
+              //console.log("xuio",x)
+              console.log("xyuyu",x)
+              if(i.length>0 && segmentRoutes.length>0)
+            
+                ncp=simpleUpdateStateHereDelete(ncp,x.otherId,titulo,segmentRoutes,i)
+
+            }
+            
+          })
+          dispatch(setCategoryProducts(ncp))
+          if(titulo.startsWith("otm"))
+          dispatch({
+            type:typesOtm.DELETE_INDEX_TO_OTMRECORD,
+            payload:{
+              category:titulo,
+              id:parentId
+            }
+          })
+        
+          
+          
+          
+        }
+      }
+    }
+    },[indexesOtm?.[titulo]?.[parentId]?.length,parentId])
+   /* useEffect(()=>{
+      
+      let ncp=categoryProducts
+      //console.log("paramsact",indexes,titulo,parentId,indexesOtm)
+      parentId=parentId
+      let cur
+      //if(titulo.startsWith("mtm"))
+        cur=indexes
+       // console.log("entrouuuu",cur,mtmRoutes,indexes,indexesOtm)//?.[titulo]?.[parentId])
+      if(cur?.[titulo]?.[parentId]?.length>0){
+      if(cur?.[titulo]!=undefined){
+        if(cur?.[titulo]?.[parentId]!=undefined){
+          cur?.[titulo]?.[parentId]?.forEach(x=>{
+            let typeRel
+            if(x.action=="ADD"){
+              let i=getIndexes(tableIndexes,mtmRoutes?.[titulo])
+              
+             // console.log("parui",ncp,x.row,titulo,mtmRoutes?.[titulo],i)  
+              if(i.length>0 && mtmRoutes?.[titulo]?.length>0){
+               ncp=simpleUpdateStateHere1(ncp,x.row,titulo,segmentRoutes,i)
+              }
+             }
+            if(x.action=="EDIT"){
+              let i=getIndexes(tableIndexes,mtmRoutes[titulo])
+            //  console.log("paramsacttab",ncp,x.row,titulo,mtmRoutes,mtmRoutes[titulo],i,x.row.original,x.row.copy)
+              if(i.length>0 && mtmRoutes[titulo].length>0)
+                ncp=simpleUpdateStateHereEdit(ncp,x.row,titulo,mtmRoutes[titulo],i)
             }
             if(x.action=="DELETE"){
               let i=getIndexes(tableIndexes,mtmRoutes[titulo])
-              console.log("paramsacttabdel",ncp,titulo,mtmRoutes[titulo],i,x.otherId)
+            //  console.log("paramsacttabdel",ncp,titulo,mtmRoutes[titulo],i,x.otherId)
               if(i.length>0 && mtmRoutes[titulo].length>0)
                 ncp=simpleUpdateStateHereDelete(ncp,parentId,x.otherId,titulo,mtmRoutes[titulo],i)
 
@@ -146,20 +270,117 @@ const DisplaySingleTable = ({
             
           })
           dispatch(setCategoryProducts(ncp))
+          
+          
           dispatch({
             type:types.DELETE_INDEX_TO_MTMRECORD,
             payload:{
-              mtm:titulo,
+              category:titulo,
               id:parentId
             }
-          })
+          })  
+
           
           
           
         }
-      }
+     
     }
-    },[indexes?.[titulo]?.[parentId]?.length])
+    }},[indexes?.[titulo]?.[parentId]?.length])*/
+
+    const actEdit=()=>{
+      let ncp=categoryProducts
+      
+      //console.log("indexespo",newRoutesSeg,indexesOtm?.[titulo]?.edit?.length,indexesOtm?.[titulo]?.edit,ncp)
+      
+
+      if(indexesOtm?.[titulo]?.edit?.length>0){
+        indexesOtm?.[titulo]?.edit?.forEach(x=>{
+          let i=getIndexes(tableIndexes,segmentRoutes)    
+      //console.log("paramsacttab",x,ncp,x.row,titulo,segmentRoutes,newRoutesSeg,i)
+          if(i.length>0 && segmentRoutes.length>0)
+            ncp=simpleUpdateStateHereEdit(ncp,x.row,titulo,segmentRoutes,i)
+        })
+      }
+      console.log("ncpbien",ncp)
+      dispatch(setCategoryProducts(ncp))
+      /*dispatch({
+        type:types.ADD_SEGMENT_TO_ROUTE,
+        payload:{
+          segment:titulo,
+          route:segmentRoutes
+        }
+      })*/
+          
+          
+          /*dispatch({
+            type:typesOtm.DELETE_INDEX_TO_OTMRECORD,
+            payload:{
+              category:titulo,
+              id:"edit"
+            }
+          })*/
+    }
+    const actDelete=()=>{
+      let ncp=categoryProducts
+      
+      //console.log("indexespo",newRoutesSeg,indexesOtm?.[titulo]?.edit?.length,indexesOtm?.[titulo]?.edit,ncp)
+      
+
+      if(indexesOtm?.[titulo]?.delete_main?.length>0){
+        indexesOtm?.[titulo]?.delete_main?.forEach(x=>{
+          let i=getIndexes(tableIndexes,segmentRoutes)    
+      //console.log("paramsacttab",x,ncp,x.row,titulo,segmentRoutes,newRoutesSeg,i)
+          if(i.length>0 && segmentRoutes.length>0)
+            ncp=simpleUpdateStateHereDeleteMain(ncp,x.firstStage,x.otherMtmRel,x.otherId,titulo,segmentRoutes,i)
+        })
+      }
+      console.log("ncpbien",ncp)
+      dispatch(setCategoryProducts(ncp))
+      /*let st=cp[c1[0]][i[0]]
+      for(let u1=1;u1<c1.length;u1++){
+
+        if(st[c1[u1]]){
+          if(u1<c1.length-1){ 
+            //console.log("stverif222",st[c1][u1],c1,i,c1[u1],nameVar1,parentId,otherId)
+
+            st=st[c1[u1]][i[u1]]
+          }else{
+           // console.log("stveriffin",st[c1[u1]])
+            st[c1[u1]]=st[c1[u1]].filter(x=>{
+             // console.log("xorig")
+              return x["id"]!=id1 
+              
+            })
+          }
+        }
+      }
+      return cp*/
+    }
+    const simpleUpdateStateHereDeleteMain=(cp,firstStage,otherMtmRel,otherId,titulo,c1,i)=>{
+      let st=cp[c1[0]][i[0]]
+      console.log("entrohum")
+      for(let u1=1;u1<c1.length;u1++){
+
+        if(st[c1[u1]]){
+          if(u1<c1.length-1){ 
+            //console.log("stverif222",st[c1][u1],c1,i,c1[u1],nameVar1,parentId,otherId)
+
+            st=st[c1[u1]][i[u1]]
+          }else{
+           // console.log("stveriffin",st[c1[u1]])
+            st[c1[u1]]=st[c1[u1]].filter(x=>{
+             // console.log("xorig")
+             
+              return x[otherMtmRel]!=otherId 
+              
+            })
+          }
+        }
+      }
+      return cp
+    }
+
 
     const simpleUpdateState=(cp1,titulo,c1,i,deleteId)=>{
       let cp=cp1
@@ -169,10 +390,10 @@ const DisplaySingleTable = ({
           i[po]=undefined
       }
     
-      console.log("titio",titulo)
+      //console.log("titio",titulo)
       if(titulo.startsWith("getData")){
         cp[titulo]=cp[titulo].filter(x=>{
-          console.log("xverio",x.id,deleteId)
+         // console.log("xverio",x.id,deleteId)
           if(x.id==deleteId)
             return false
           else
@@ -181,7 +402,7 @@ const DisplaySingleTable = ({
       }else{
         st=cp[c1[0]][i[0]]
         for(let u1=1;u1<c1.length;u1++){
-          console.log("stverif",c1,i,c1[u1])
+         // console.log("stverif",c1,i,c1[u1])
           if(st[c1[u1]]){
             if(i[u1]!=undefined) 
               st=st[c1[u1]][i[u1]]
@@ -200,26 +421,26 @@ const DisplaySingleTable = ({
       return cp
     
     }
-
-    const simpleUpdateStateHereDelete=(cp,id,otherId,titulo,c1,i)=>{
-      console.log("dataespec2221",cp,otherId,titulo,c1,i)
-      for(let po=0;po<c1?.length;po++){
+//ncp,x.otherId,titulo,segmentRoutes,i
+    const simpleUpdateStateHereDelete=(cp,id1,titulo,c1,i)=>{
+    console.log("dataespec2221",cp,id1,titulo,c1,i)
+     /* for(let po=0;po<c1?.length;po++){
         if(po>=c1?.length-1)
           i[po]=undefined
-      }
+      }*/
       let st=cp[c1[0]][i[0]]
       for(let u1=1;u1<c1.length;u1++){
 
         if(st[c1[u1]]){
-          if(i[u1]!=undefined){ 
+          if(u1<c1.length-1){ 
             //console.log("stverif222",st[c1][u1],c1,i,c1[u1],nameVar1,parentId,otherId)
 
             st=st[c1[u1]][i[u1]]
           }else{
-            console.log("stveriffin",st[c1[u1]])
+           // console.log("stveriffin",st[c1[u1]])
             st[c1[u1]]=st[c1[u1]].filter(x=>{
-              console.log("xorig")
-              return x?.["original"]["id"]!=otherId 
+             // console.log("xorig")
+              return x["id"]!=id1 
               
             })
           }
@@ -227,64 +448,96 @@ const DisplaySingleTable = ({
       }
       return cp
     }
-
-    const simpleUpdateStateHere1=(cp1,reg,titulo,c1,i,copy,original)=>{
+    //ncp,x.row,titulo,mtmRoutes[titulo],i
+    const simpleUpdateStateHere1=(cp1,reg,titulo,c1,i)=>{
       let cp=cp1
       let st
       let bien=false
-      for(let po=0;po<c1?.length;po++){
-        if(po>=c1.length-1)
-          i[po]=undefined
-      }
+      console.log("c1uio",c1,cp[c1[0]])
+      
       st=cp[c1[0]][i[0]]
+      console.log("sr",c1)
+      if(c1.length==1){
+        cp[c1[0]].push(reg)
+      }else{
       for(let u1=1;u1<c1.length;u1++){
         console.log("stverif77",st,reg,c1,i,c1[u1])
 
         if(st[c1[u1]]){
-          if(i[u1]!=undefined) 
+          if(u1<c1.length-1) 
             st=st[c1[u1]][i[u1]]
-          else
-            st[c1[u1]]=[...st[c1[u1]],reg]
+          else{
+            let found=false
+            st[c1[u1]].map(x=>{
+              if(x.id==reg.id){
+                found=true
+                return reg
+              }
+              else
+                return x
+            })
+            if(found==false)
+              st[c1[u1]]=[...st[c1[u1]],reg]
+          
+
+          }
         }
-        
       }
+    }
       return cp
     }
 
-    const simpleUpdateStateHereEdit=(ncp,reg,titulo,c1,i,original,copy,redux)=>{
+    const simpleUpdateStateHereEdit=(ncp,reg,tit,c1,i,cf,pmtm)=>{
+      console.log("regio",reg,tit,c1,i)
       let cp=ncp
-      for(let po=0;po<c1?.length;po++){
+      /*for(let po=0;po<c1?.length;po++){
         if(po>=c1.length-1)
           i[po]=undefined
-      }
+      }*/
     let st=cp[c1[0]][i[0]]
     for(let u1=1;u1<c1.length;u1++){
-      console.log("stverif",redux,st,c1,i,c1[u1])//,nameVar1,nameVar2,valueVar1,valueVar2)
+      console.log("stverif",tit,u1,st,c1,i,c1[u1])//,nameVar1,nameVar2,valueVar1,valueVar2)
       if(st[c1[u1]]){
-        if(i[u1]!=undefined) 
+        if(u1<c1.length-1) 
           st=st[c1[u1]][i[u1]]
         else{
+          console.log("st[c1]",st[c1[u1]])
           st[c1[u1]]=st[c1[u1]].map(x=>{
-            let nameVar1=redux["nameVar1"]
-            let valueVar1=redux["valueVar1"]
-            let nameVar2=redux["nameVar2"]
-            let valueVar2=redux["valueVar2"]
-            console.log("xverif",x,reg)
-            if(x?.["original"]?.[nameVar1]!=valueVar1 
-            || x?.["original"]?.[nameVar2]!=valueVar2)
-              return x
-            else 
-              return reg
+            if(x.id==reg.id){
+              /*if(tit.startsWith("mtm")){
+                //if(pmtm==false){
+                  let nc={}
+                  let np=false
+                  cf?.forEach(y=>{
+                    if(reg?.[y.name]!=undefined)
+                      nc={...nc,[y.name]:reg[y.name]}
+                    else
+                      np=true
+                      
+                  })
+                  
+                  //nc["id"]=reg["id"]
+                  console.log("cfio",nc,cf,{...reg,...nc},"np",np,tit)
+                  if(!np)
+                    return {...x,...nc}
+                   
 
+              }*/
+              console.log("xreg",{...x,...reg})
+              return {...x,...reg}
+              
+            }else
+              return x
           })
+          console.log("st[c1]",st[c1[u1]])
         }
         
       }
     }
-    console.log("entro clusters",c1,i)
+  //console.log("entro clusters",c1,i)
     return cp
   }
-    console.log("mtmroutesver",mtmRoutes,titulo,tableIndexes,parentId,indexes)
+   // console.log("mtmroutesver",mtmRoutes,titulo,tableIndexes,parentId,indexes)
   // console.log("respcatst",respCat)
   //console.log("parentId",parentId)
 
@@ -646,12 +899,61 @@ const formatDate=(d,m,y)=>{
   }
   const makeOtherMtmTable=(cp,id,otherId)=>{
     console.log("parentdelete",{
-      mtm:`mtm${parentCategory.name}${respCat.name}`,
-      id,
-      otherId,
-      action:"DELETE"
+
+
+      type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
+      payload:{
+        category:`mtm${respCat.name}${parentCategory.name}`,
+        id:otherId,
+        action:"DELETE",
+        otherId:id,
+        
+        //categories.filter(x=>x.id==parentRelation)?.[0]?.fields.filter(x=>(x.declaredType=="string" || x.declaredType=="number")),respCat.fields.filter(x=>(x.declaredType=="string" || x.declaredType=="number"))
+
+
+      }},{
+        type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
+        payload:{
+          category:`mtm${parentCategory.name}${respCat.name}`,
+          id,
+          action:"DELETE",
+          otherId,
+          
+          
+  
+  
+        }
+      }
+      )
+      /*displayFields:respCat.fields.filter(x=>(x.declaredType=="string" || x.declaredType=="number"))
+      displayFields:categories.filter(x=>x.id==parentRelation)?.[0]?.fields.filter(x=>(x.declaredType=="string" || x.declaredType=="number"))*/
+    dispatch({
+
+
+      type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
+      payload:{
+        category:`mtm${respCat.name}${parentCategory.name}`,
+        id:otherId,
+        action:"DELETE",
+        otherId:id,
+        
+
+
+      }
     })
     dispatch({
+      type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
+      payload:{
+        category:`mtm${parentCategory.name}${respCat.name}`,
+        id,
+        action:"DELETE",
+        otherId,
+        
+
+
+      }
+    })
+    /*dispatch({
 
 
       type:types.ADD_INDEXES_TO_MTMRECORD,
@@ -676,7 +978,7 @@ const formatDate=(d,m,y)=>{
 
 
       }
-    })
+    })*/
   }
 
   const updateClusters=(c1,i)=>{
@@ -698,54 +1000,174 @@ const formatDate=(d,m,y)=>{
         }
       }
       makeOtherMtmTable(cp,valueVar2,valueVar1)
-      console.log("entro clusters",c1,i)
+     //console.log("entro clusters",c1,i)
       return cp
     
     
   }
 
+  const getRecord=()=>{
+
+  }
+
   const [delete2]=useMutation(DELETE_PRODUCT,{
     update:(cache,{data})=>{
       let n
-      if(!isManyToMany){
+    console.log("datan",data)
+    
+
+    if(!isManyToMany){
         n=`remove${respCat.name}`
       
-      }else{
+    }else{
         parentCategory=categories.filter(x=>
           x.id==parentRelation)[0]
         if(parentCategory.name>respCat.name)
           n=`remove${respCat.name}_${parentCategory.name}`
         else
           n=`remove${parentCategory.name}_${respCat.name}`
-      }
+    }
       if(data[n]==true){
+        let campos
+        let tcampos=[]
+        if(titulo.substring(7)==currentCategory.name){
+          for(let c=0;c<categories.length;c++){
+            campos=categories[c].fields.filter(z=>{
+              if(z.relationCategory==currentCategory.id)
+               console.log("paramsuiyt",currentCategory.id,z.name,z.relationship,z.relationCategory,parseInt(z.relationCategory)==parseInt(currentCategory.id),
+               ((z.relationship=="manytomany" ||
+               z.relationship=="onetomany") && parseInt(z.relationCategory)==parseInt(currentCategory.id)))
+              if((z.relationship=="manytomany" ||
+               z.relationship=="onetomany") && parseInt(z.relationCategory)==parseInt(currentCategory.id)){
+                let otherMtmRel
+                if(z.relationship=="manytomany"){
+                  
+                  otherMtmRel=`mtm${categories[c].name}${currentCategory.name}`
+                  console.log("bothmtm",z.name,otherMtmRel,{
+                    category:z.name,
+                    id:"delete_main",
+                    action:"DELETE_MAIN",
+                    otherId:deleteId,
+                    firstStage:true,
+                    otherMtmRel:`${z.name}Id`
+                  },
+                  {
+                    category:otherMtmRel,
+                    id:"delete_main",
+                    action:"DELETE_MAIN",
+                    otherId:deleteId,
+                    firstStage:true,
+                    otherMtmRel:`${z.name}Id`
+                  })
+                
+                
+                  dispatch({
+                    type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
+                    payload:{
+                      category:z.name,
+                      id:"delete_main",
+                      action:"DELETE_MAIN",
+                      otherId:deleteId,
+                      firstStage:true,
+                      otherMtmRel:`${z.name}Id`
+                    }
+                  })
+                  dispatch({
+                    type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
+                    payload:{
+                      category:otherMtmRel,
+                      id:"delete_main",
+                      action:"DELETE_MAIN",
+                      otherId:deleteId,
+                      firstStage:true,
+                      otherMtmRel:`${z.name}Id`
+                    }
+                  })
+                }else{
+                  dispatch({
+                    type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
+                    payload:{
+                      category:z.name,
+                      id:"delete_main",
+                      action:"DELETE_MAIN",
+                      otherId:deleteId,
+                      firstStage:false,
+                      
+                    }
+                  })
+
+                }
+                  
+                
+                
+              }
+            })
+            tcampos=[...tcampos,...campos]
+
+
+            
+          }
+          let tcampos1=tcampos.map(p=>p.name)
+          tcampos.forEach(i=>{
+
+            console.log("redmention",{
+              category:i.name,
+              relType:i.relationship=="manytomany"?"manytomany":"onetomany",
+              id:"DELETEMAIN",
+              otherId:deleteId,
+              
+
+            })
+          })
+          /*
+dispatch({
+
+
+      type:typesOtm.ADD_INDEXES_TO_OTMRECORD,
+      payload:{
+        category:`mtm${respCat.name}${parentCategory.name}`,
+        id:otherId,
+        action:"DELETE",
+        otherId:id,
+        
+
+
+      }
+    })
+          */
+          console.log("camposver",tcampos1)
+          
+          
+        }
         if(!isManyToMany){
           const path=[`getData${currentCategory.name}`]
+         
           //indexSize=1
-          console.log("titulo45",titulo)
+          //console.log("titulo45",titulo)
           
           const p=resultPath(currentCategory.fields.filter(x=>
           x.dataType=="relationship"),titulo,
           categories,path,true)
           //console.log("path",path)
           
-          const i=getIndexes(tableIndexes,p)
+          const i=getIndexes(tableIndexes,segmentRoutes)
           //console.log("indices",ind)
             
             let us=simpleUpdateState(categoryProducts,titulo,
-              p,i,deleteId)
+              segmentRoutes,i,deleteId)
           //console.log("us",us)
             dispatch(setCategoryProducts(us))
         }else{
-          console.log("entromanytomany")
+          //console.log("entromanytomany")
           let pivoteTable,otherPivoteTable,tablaoriginal
           const path=[`getData${currentCategory.name}`]
           //indexSize=1
-          const c=resultPath(currentCategory.fields.filter(x=>
+          //
+        /*const c=resultPath(currentCategory.fields.filter(x=>
             x.dataType=="relationship"),titulo,categories,
-            path,true)
-          const i=getIndexes(tableIndexes,c)
-          console.log("path1",c,i)
+            path,true)*/
+          const i=getIndexes(tableIndexes,segmentRoutes)
+       console.log("valuevar",valueVar1,valueVar2)
           makeOtherMtmTable(categoryProducts,valueVar2,valueVar1)
           /*if(c[c.length-2].startsWith("mtm")){
             pivoteTable=titulo
@@ -875,8 +1297,8 @@ const formatDate=(d,m,y)=>{
         marginBottom:"10px"
       }}
       onClick={()=>{
-        console.log("parentRelatiion1",parentRelation,dqIds)
-        toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId,isManyToMany,relationCategory,parentRelation,parentCatId,dqIds)
+       // console.log("parentRelatiion1",parentRelation,dqIds)
+        toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId,isManyToMany,relationCategory,parentRelation,parentCatId,dqIds,parentRecord,products)
       
       }
       }
@@ -904,11 +1326,11 @@ const formatDate=(d,m,y)=>{
           </>
 
         }*/
-
+       // console.log("hname",h.name,fieldsNotToDisplay[titulo])
         if(//products[0][h.name]!==undefined
           fieldsNotToDisplay[titulo]!==h.name){
             
-               if (!(h.dataType=="queryCategory" && h.relationship==null) || titulo.startsWith("otm")){
+               if ((h.dataType!="relationship" && !(h.dataType=="queryCategory" && h.relationCategory==null))){ //&& titulo.startsWith("otm")){
                  camp.push(h.name)
                  return <th>{h.name}</th>
                }
@@ -930,6 +1352,7 @@ const formatDate=(d,m,y)=>{
             camp.push(d.name)
           //}
         })
+       // console.log("camp",camp)
         totalFields=[...totalFields,...fields2]
         //console.log("tf camp",totalFields,camp)
         headers=camp.map(f=><th>{f}</th>)
@@ -951,7 +1374,7 @@ const formatDate=(d,m,y)=>{
       let cname=titulo.substr(7)
       let indice=0
       for(let p in products){
-        console.log("producto",products[p])
+       // console.log("producto",products[p])
         let producto={...products[p]}
         let data=[]
         
@@ -975,6 +1398,13 @@ const formatDate=(d,m,y)=>{
               //console.log("indice",indice,e.target.value,titulo)
               //console.log("impser",{...tableIndexes,[titulo]:e.target.value})
               setTableIndexes(ti=>({...ti,[titulo]:m}))
+              setParentRecord(r=>{
+                if(r?.[titulo]==
+                  undefined)
+                  r={...r,[titulo]:{}}
+                r[titulo]=products[p]
+                return r
+              })
               }
 
               
@@ -993,9 +1423,9 @@ const formatDate=(d,m,y)=>{
           
             if(isManyToMany /*&& (titulo=="mtmscmateriassccarreras"
             || titulo=="mtmsccarrerasscmaterias")*/){
-              route=products[p]["original"]
-              console.log("atingen",products[p])
-            }
+              route=products[p]
+            //  console.log("atingen",products[p])
+            } 
             else 
               route=products[p]
           /*let cc=categories.filter(v=>
@@ -1012,7 +1442,7 @@ const formatDate=(d,m,y)=>{
             if(fs.length==1){
               if(fs[0].relationship=="onetomany"){
                 // && Object.keys(route).length>0){
-                console.log("route00",route)
+               // console.log("route00",route)
                 data.push(<td>one to many</td>)
               }else if(fs[0].relationship=="manytomany"){// && Object.keys(route).length>0){
                 if(fs[0].name!==fieldsNotToDisplay[titulo])
@@ -1040,7 +1470,7 @@ const formatDate=(d,m,y)=>{
                 }
               }else if(fs[0].dataType=="queryCategory"){
                 let x=`${camp[c]}ProductQuery`
-                console.log("imp",x,`${products[p][x]}`)
+               // console.log("imp",x,`${products[p][x]}`)
                 //data.push(<td>{products[p][`${products[p][camp[c]]}GlobalCatQuery`]}</td>)
                 //data.push(<td>{products[p][`${products[p][camp[c]]}FinalCatQuery`]}</td>)
                 if(route?.[x]!=undefined){
@@ -1065,7 +1495,7 @@ const formatDate=(d,m,y)=>{
           
           
           if(typeof route=="object" && Object.keys(route).length>0){
-            if(!hasSons(p)){
+            //if(!hasSons(p)){
               data.push(<td><IoIosRemoveCircleOutline
               onClick={()=>{
               if(isManyToMany){
@@ -1086,26 +1516,69 @@ const formatDate=(d,m,y)=>{
 
                 delete2({
                   variables:{
-                    [f1]: parentCatId,
-                    [f2]: route["id"]//products[p]["id"]
+                    [f1]: route[f1],//parentCatId,
+                    [f2]: route[f2]//route["id"]//products[p]["id"]
                   }
                 })
               }else{
                 deleteId=products[p]["id"]
-
-                //console.log("Paramsbien ",deleteId)
-                delete2({
-                  variables:{
-                    id:products[p]["id"]
+                console.log("titulop",titulo.substring(7),currentCategory.name)
+                if(titulo.substring(7)==currentCategory.name){
+                  let otmFields=currentCategory.fields.map(x=>{
+                    if(x.relationship=="onetomany")
+                      return x.relationCategory
+                  }).filter(y=>y!=undefined).map(u=>{
+                    return categories.filter(t=>t.id==u).map(e=>e.name)
+                  })
+                  let otmf=[]
+                  let mtmf=[]
+                  for(let l=0;l<otmFields.length;l++){
+                    otmf=[...otmf,...otmFields[l]]
                   }
-                })
+                  
+                  let mtmFields=currentCategory.fields.map(x=>{
+                    if(x.relationship=="manytomany")
+                      return x.relationCategory
+                  }).filter(y=>y!=undefined).map(u=>{
+                    return categories.filter(t=>t.id==u).map(e=>e.name)
+                  })
+
+                  for(let l=0;l<mtmFields.length;l++){
+                    mtmf=[...mtmf,...mtmFields[l]]
+                  }
+                  
+                  console.log("otmmtmfields",otmf,mtmf,
+                  {
+                    id:products[p]["id"],
+                    hardDelete:true,
+                    otmCategoryIds:otmf,
+                    mtmCategoryIds:mtmf
+                  })
+                  delete2({
+                    variables:{
+                      id:products[p]["id"],
+                      hardDelete:true,
+                      otmCategoryIds:otmf,
+                      mtmCategoryIds:mtmf
+                    }
+                  })
+                }else{
+                //console.log("Paramsbien ",deleteId)
+                  delete2({
+                    variables:{
+                      id:products[p]["id"],
+                      hardDelete:false,
+                      parentArg:`${titulo}Id`
+                    }
+                  })
+                }
               }
             }}
           />
           </td>)
-        }else{
+        /*}else{
           data.push(<td></td>)
-        }
+        }*/
       }
           
         if(typeof route=="object" && Object.keys(route).length>0)
@@ -1181,10 +1654,10 @@ const formatDate=(d,m,y)=>{
             marginBottom:"10px"
           }}
           onClick={()=>{
-            console.log("prodqueryids",prodQueryIds)
+            //console.log("prodqueryids",prodQueryIds)
             setDqIds(prodQueryIds)
             //console.log("parentcadid single table",parentCatId)
-            toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId,isManyToMany,relationCategory,parentRelation,parentCatId,dqIds)}
+            toggleNewProduct(respCat,tableIndexes,partials,titulo,parentId,isManyToMany,relationCategory,parentRelation,parentCatId,dqIds,parentRecord,products)}
           }
           >Add Record of {respCat.name}
           </FormButton>

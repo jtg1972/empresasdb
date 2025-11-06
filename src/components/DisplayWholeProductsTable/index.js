@@ -248,7 +248,20 @@ const DisplayWholeProductsTable = ({
   toggleFilter,
   searchProductsFilter,
   setDqIds,
-  dqIds
+  dqIds,
+  checkBoxFields,
+  setCheckBoxFields,
+  checkBoxDataFields,
+  setCheckBoxDataFields,
+  updateCategories,
+  updateCategoriesIds,
+  setUpdateCategoriesIds,
+  parentRecord,
+  setParentRecord,
+  parentFields,
+      setParentFields,
+      childFields,
+      setChildFields,
   
 }) => {
   let deleteFunctions={}
@@ -265,6 +278,7 @@ const DisplayWholeProductsTable = ({
   
   let deleteId=-1
   let catName
+  //console.log("cproducts",categoryProducts)
 
   const productCategories=categories.filter(c=>{
     if(c.parentCategories.includes(currentCategory.id)
@@ -273,21 +287,21 @@ const DisplayWholeProductsTable = ({
       return true
     }else return false
   })
-  const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(productCategories,categories)
+  /*const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(productCategories,categories)
   const [getProducts]=useMutation(GET_PRODUCTS_FROM_CATEGORY,{
     update:(cache,{data})=>{
       console.log("datamtmboth:",data)
       dispatch(setCategoryProducts(data))
       
     }
-  })
+  })*/
   
 
   catName=currentCategory.name
     
   useEffect(()=>{
     setTableIndexes({})
-    getProducts()
+  //getProducts()
   },[currentCategory])
 
   
@@ -355,18 +369,19 @@ const DisplayWholeProductsTable = ({
       const cat2=categories.filter(c=>c.name==nc)[0]
       const oneToManyCategories=cat2.fields.filter(
         x=>(x.dataType=="relationship" && (x.relationship=="onetomany"
-        || x.relationship=="manytomany"))
+        || x.relationship=="manytomany") && (checkBoxDataFields?.[cat2.name]?.mtm?.includes(x.name) ||
+        checkBoxDataFields?.[cat2.name]?.otm?.includes(x.name)))
       )
       partials.push(cp)
-      displayTableAndRelations(cp,categoryProducts[cp],oneToManyCategories,cat2,partials,-1,false,-1,-1,-1,true,[])
+      displayTableAndRelations(cp,categoryProducts[cp],oneToManyCategories,cat2,partials,-1,false,-1,-1,-1,true,[],true)
       
     })
     
     return allTables
   }
   let mtmVar1,mtmVar2
-  const displayTableAndRelations=(name,prods,otmrelations,cc,partials,pi,isManyToMany=false,relCat,parRel,relCatInd,displayTable=true,segmentMtm)=>{  
-      //console.log("cp[cp]",name,prods,otmrelations,cc)
+  const displayTableAndRelations=(name,prods,otmrelations,cc,partials,pi,isManyToMany=false,relCat,parRel,relCatInd,displayTable=true,segmentMtm,primero)=>{  
+      console.log("cp[cp]",currentCategory.name,name,prods,otmrelations,cc)
       let segmentRoutes
       let parId
       let nameTableManyToMany
@@ -374,8 +389,9 @@ const DisplayWholeProductsTable = ({
       if(cc){
       //console.log("partials",partials)
       let indtable=tableIndexes[name]
+      console.log("pindtable",prods[indtable])
       //console.log("ti,name",tableIndexes,name,tableIndexes[name])
-    
+      
       if(indtable>=0){
         parId=prods[indtable]?.id
       }else{
@@ -412,9 +428,26 @@ const DisplayWholeProductsTable = ({
         mutMtmData=getMutationManyToManyData(catQMtM,nameFieldKey,relCatObj.name,nameFieldKeyToDisplay)
         nameMutationManyToManyData=`${catQMtM.name}By${relCatObj.name}Id`
       }
-      console.log("verifyy",name,mtmVar1,mtmVar2)
+     // console.log("verifyy",name,mtmVar1,mtmVar2)
       segmentRoutes=[...segmentMtm,name]
-      displayTable && (isManyToMany && !manyToManyAlreadyDone.includes(mtmVar2)) /*&& !manyToManyAlreadyDone.includes(mtmVar1))*/ && allTables.push(<DisplaySingleTable
+      if(isManyToMany){
+        setParentFields(e=>{
+          if(e?.[name]==undefined)
+            e={...e,[name]:{
+              parFields:[],
+              childFields:[]
+            }}
+            console.log("ventil",parRel,cc)
+            e[name]["parFields"]=categories.filter(x=>x.id==parRel)[0].fields.filter(y=>(y.declaredType=="string" || y.declaredType=="number"))
+            e[name]["childFields"]=cc.fields.filter(y=>(y.declaredType=="string" || y.declaredType=="number"))
+            console.log("ventil",e)
+            return e
+        })
+       
+      }
+      displayTable && isManyToMany &&
+        //checkBoxDataFields?.[currentCategory.name]?.mtm?.includes(nameTableManyToMany)) &&
+        allTables.push(<DisplaySingleTable //!manyToManyAlreadyDone.includes(mtmVar2)) /*&& !manyToManyAlreadyDone.includes(mtmVar1))*/ && allTables.push(<DisplaySingleTable
         titulo={name}
         segmentRoutes={segmentRoutes}
         products={prods}
@@ -434,10 +467,22 @@ const DisplayWholeProductsTable = ({
         nameFieldKey={nameFieldKey}
         nameFieldKeyToDisplay={nameFieldKeyToDisplay}
         nameMutationManyToManyData={nameMutationManyToManyData}
+        setDqIds={setDqIds}
+        dqIds={dqIds}
+        checkBoxDataFields={checkBoxDataFields}
+        updateCategories={updateCategories}
+        updateCategoriesIds={updateCategoriesIds}
+      setUpdateCategoriesIds={setUpdateCategoriesIds}
+      parentRecord={parentRecord} 
+      setParentRecord={setParentRecord}  
+      parentFields={parentFields}
+      setParentFields={setParentFields}
         />
         )
 
-        displayTable && !isManyToMany && allTables.push(<DisplaySingleTable
+        displayTable && !isManyToMany && 
+          //checkBoxDataFields?.[currentCategory.name]?.otm?.includes(name) &&
+          allTables.push(<DisplaySingleTable
           titulo={name}
           segmentRoutes={segmentRoutes}
           products={prods}
@@ -459,13 +504,19 @@ const DisplayWholeProductsTable = ({
           nameMutationManyToManyData={nameMutationManyToManyData}
           setDqIds={setDqIds}
           dqIds={dqIds}
-          />
+          checkBoxDataFields={checkBoxDataFields}
+          updateCategories={updateCategories}
+          updateCategoriesIds={updateCategoriesIds}
+      setUpdateCategoriesIds={setUpdateCategoriesIds}
+      parentRecord={parentRecord} 
+      setParentRecord={setParentRecord}  
+      />
           )
       }
-      if(isManyToMany)
+      /*if(isManyToMany)
         if(!manyToManyAlreadyDone.includes(name))
           manyToManyAlreadyDone.push(name)
-      if(!isManyToMany){  
+      if(!isManyToMany){  */
       let relationNames=[]
       otmrelations.forEach(y=>{
         const respCat=categories.filter(o=>o.id==y.relationCategory)[0]
@@ -473,13 +524,21 @@ const DisplayWholeProductsTable = ({
 
         const otmcats=respCat.fields.filter(
           x=>{
-            console.log("xerror",x)
+         //   console.log("xerror",x,checkBoxDataFields,y.name,checkBoxDataFields[y.name])
             //relationNames.push(x.name)
             if(x.dataType=="relationship" && (x.relationship=="onetomany" ||
-            x.relationship=="manytomany") && !manyToManyAlreadyDone.includes(nameTableManyToMany))
+            x.relationship=="manytomany") && (
+            checkBoxDataFields?.[x.name]?.mtm?.includes(x.name) ||
+            checkBoxDataFields?.[x.name]?.otm?.includes(x.name)
+            ))//!manyToManyAlreadyDone.includes(nameTableManyToMany))
               relationNames.push(x.name)
+            /*console.log("cbfilt",checkBoxDataFields,currentCategory.name,checkBoxDataFields?.[currentCategory.name]?.mtm?.includes(y.name/*nameTableManyToMany),nameTableManyToMany,
+            checkBoxDataFields?.[currentCategory.name]?.otm?.includes(x.name),y.name
+            )*/
             return (x.dataType=="relationship" && (x.relationship=="onetomany"
-            || x.relationship=="manytomany") && !manyToManyAlreadyDone.includes(nameTableManyToMany))
+            || x.relationship=="manytomany") &&
+            (checkBoxDataFields?.[y.name]?.mtm?.includes(x.name) ||
+            checkBoxDataFields?.[y.name]?.otm?.includes(x.name)))//!manyToManyAlreadyDone.includes(nameTableManyToMany)) //!manyToManyAlreadyDone.includes(nameTableManyToMany))
           }
         )
         const otmClusters=prods?.map(e=>{
@@ -488,6 +547,7 @@ const DisplayWholeProductsTable = ({
           return ""
         }
           )
+          //console.log("otmcluesters",otmClusters,otmcats)
         for(let i in otmClusters){
           //console.log("tableindex",tableIndexes[cc.name],cc.name)
           //console.log("yname",y)
@@ -508,12 +568,13 @@ const DisplayWholeProductsTable = ({
               cc.id,
               prods[tableIndexes[name]].id,
               displayTable=tableIndexes[name]>=0,
-              segmentRoutes
+              segmentRoutes,
+              false
             )
           }  
         }
       })
-      }
+      //}
       return allTables
       
   }

@@ -45,7 +45,10 @@ area:String,
               
               getDatasbarea(whereClauses:String,sortClauses:String):[sbarea]
 removesbarea(id:Int,parentArg:String,
-                  hardDelete:Boolean):Boolean!
+                  hardDelete:Boolean,
+                  otmCategoryIds:[String],
+                  mtmCategoryIds:[String]
+                  ):Boolean!
 editsbarea(id:Int,
 area:String,
 ):sbarea

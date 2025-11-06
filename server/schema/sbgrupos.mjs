@@ -21,11 +21,11 @@ mtmsbestudiantessbgruposId:Int
               
               id:Int
 clavedelgrupo:String
+otmsbmateriassbgruposId:Int
+mtmsbestudiantessbgrupos:[datamtmsbestudiantessbgrupos],
 grupoIdGlobalCatQuery:Int
 grupoIdFinalCatQuery:Int
 grupoIdProductQuery:Int
-otmsbmateriassbgruposId:Int
-mtmsbestudiantessbgrupos:[datamtmsbestudiantessbgrupos],
 otmsbgrupossbprofesores:[sbprofesores]
 
               whereClauses:String
@@ -42,11 +42,11 @@ otmsbgrupossbprofesores:[sbprofesores]
               createsbgrupos(
                 id:Int,
 clavedelgrupo:String,
+otmsbmateriassbgruposId:Int,
 grupoIdGlobalCatQuery:Int,
 grupoIdFinalCatQuery:Int,
 grupoIdProductQuery:Int
-,otmsbmateriassbgruposId:Int,
-
+,
                 parentArg:String
                 ):sbgrupos
               
@@ -56,11 +56,11 @@ removesbgrupos(id:Int,parentArg:String,
                   hardDelete:Boolean):Boolean!
 editsbgrupos(id:Int,
 clavedelgrupo:String,
+otmsbmateriassbgruposId:Int,
 grupoIdGlobalCatQuery:Int,
 grupoIdFinalCatQuery:Int,
 grupoIdProductQuery:Int
-,otmsbmateriassbgruposId:Int,
-):sbgrupos
+,):sbgrupos
               getsbgrupos(id:Int):sbgrupos
               
             }`
