@@ -286,7 +286,7 @@ sbestudiantes:{
                               "db."+table+".destroy({where:{"+mtmvar+":"+args.id+"}})")
                             db[table].destroy({where:{[mtmvar]:args.id}})
                           }
-                         const product=await db.sbarea.findByPk(args.id)
+                         const product=await db.sbestudiantes.findByPk(args.id)
                           product.destroy()
                           return true
 
