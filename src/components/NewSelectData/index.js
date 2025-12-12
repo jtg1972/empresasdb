@@ -214,7 +214,10 @@ const NewSelectData=({
       parentFields,
       setParentFields,
       childFields,
-      setChildFields
+      setChildFields,
+      setShowMakeStory,
+      showQuery,
+      setShowQuery
 })=>{
 
   useEffect(()=>{
@@ -228,7 +231,7 @@ const NewSelectData=({
     categories,
     //categoryProducts
   }=useSelector(mapToState)
-  const [showQuery,setShowQuery]=useState(false)
+  //const [showQuery,setShowQuery]=useState(false)
   /*const [checkBoxFields,setCheckBoxFields]=useState({})//[currentCategory.name]:{checked:true,real:currentCategory.name}})
   const [checkBoxDataFields,setCheckBoxDataFields]=useState({})*/
   const [change,setChange]=useState(false)
@@ -1566,6 +1569,13 @@ return <div>
     setChange(false)
     }
   }>Get Data</FormButton>}
+  {showQuery && !change &&
+  <FormButton style={{background:"white",color:"black",width:"auto",marginTop:"15px",marginBottom:"15px"}}
+  onClick={()=>{
+    setShowMakeStory(true)
+  }}
+  >Make your story</FormButton> }
+
   {showQuery && !change && <GetDataFromInital
     checkBoxDataFields={checkBoxDataFields}
     conditionsWhere={conditionsWhere}

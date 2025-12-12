@@ -39,7 +39,11 @@ const mapToState=({categories})=>({
   categoryProducts:categories.categoryProducts
 })
 
-const Reports=()=>{
+const Reports=({
+  checkBoxDataFields,
+  checkBoxFields
+})=>{
+  console.log("checkbox",checkBoxDataFields,checkBoxFields)
   const {
     currentCategory,
     categories,
@@ -47,7 +51,7 @@ const Reports=()=>{
   }=useSelector(mapToState)
   const [openDialog,setOpenDialog]=useState(false)
   const toggleDialog=()=>{setOpenDialog(!openDialog)}
-  const [showFields,setShowFields]=useState(false)
+  const [showFields,setShowFields]=useState(true)
   const [fieldsShown,setFieldsShown]=useState([])
   const [otmChoices,setOtmChoices]=useState({})
   const[firstCatNormalFields,setFirstCatNormalFields]=useState([])
@@ -189,7 +193,7 @@ const Reports=()=>{
   let displayedMtm=[]
   //const [parentCategories,setParentCategories]=useState({})
   useEffect(()=>{
-    setShowFields(false)
+    setShowFields(true)
     setFieldsShown([])
   },[currentCategory])
  let sonOtmChoices={}
@@ -219,37 +223,102 @@ const Reports=()=>{
   }
 
   const clearMtmChoicesSons=(name,padre,sonMtmChoices)=>{
-    sonMtmChoices={...sonMtmChoices,[name]:{normal:[],compositeFields:[]}}
+    sonMtmChoices={...sonMtmChoices,[name]:{normal:[],compositeFields:[],father:"",son:"",otm:[],mtm:[]}}
     return sonMtmChoices
   }
-
+//checkReviewMtmData(e,c.name,false,cat.name,field,mainCat,c.declaredType,c.relationship,true,null,father,son,c.dataType)
   const checkReviewMtmData=(e,name1,otm=false,padre,nameMtm,mainCat=false,declaredType,otmdestiny="",cf=false,dcf={},father,son,dataType)=>{
+    let mtmCPartial=mtmChoices
+    if(otmdestiny=="onetomany" && !e.target.checked){
+      //clearOtmChoicesSons(name,padre)
+      sonOtmChoices=otmChoices
+      clearOtmChoicesSons(name1,padre,{...otmChoices})
+      setOtmChoices(sonOtmChoices)
+    }
+    let sonMtmChoices
+    if(otmdestiny=="manytomany" && !e.target.checked){
+      sonMtmChoices=mtmChoices
+      clearMtmChoicesSons(name1,padre,{...sonMtmChoices})
+      setMtmChoices(sonMtmChoices)
+    }
+    if(e.target.checked){
+      ////console.log("otmchoices",otm,mainCat)
+      ////console.log("arr",[...fieldsShown,name1])
+      if(otmdestiny=="onetomany" || otmdestiny=="manytomany")
+        setFieldsShown(x=>([...x,name1]))
+    
+    if(mtmCPartial?.[nameMtm]==undefined){
+      setMtmChoices(e=>({
+        ...e,
+        [nameMtm]:{
+          compositeFields:[],
+          normal:[],
+          father,
+          son,
+          mtm:[],
+          otm:[]
+        }
+      }))
+    }
+  }
+
+      
     if(e.target.checked==true){
       
       if(cf==true){
-        setMtmChoices(j=>{
-          console.log("mtmdata",{...j,[nameMtm]:{...j[nameMtm],father,son,compositeFields:[...j[nameMtm]["compositeFields"],dcf]}})
-          return {...j,[nameMtm]:{...j[nameMtm],father,son,compositeFields:[...j[nameMtm]["compositeFields"],dcf]}}
+        setOtmChoices(j=>{
+          console.log("mtmdata",{...j,[nameMtm]:{...j[nameMtm],compositeFields:[...j[nameMtm]["compositeFields"],dcf]}})
+          return {...j,[nameMtm]:{...j[nameMtm],compositeFields:[...j[nameMtm]["compositeFields"],dcf]}}
         })
-      }else 
-        setMtmChoices(j=>{
-          console.log("mtmdata",{...j,[nameMtm]:{...j[nameMtm],father,son,normal:[...j[nameMtm]["normal"],{name1,type:declaredType}]}})
-          return ({...j,[nameMtm]:{...j[nameMtm],father,son,normal:[...j[nameMtm]["normal"],{name1,type:declaredType,dataType}]}})
-        })
+      }else{
+        if(otmdestiny=="onetomany"){
+          setOtmChoices(j=>{
+            console.log("mtmdata",{...j,[nameMtm]:{...j[nameMtm],otm:[...j[nameMtm]["otm"],dcf]}})
+            return {...j,[nameMtm]:{...j[nameMtm],otm:[...j[nameMtm]["otm"],name1]}}
+          })
+        }else if(otmdestiny=="manytomany"){
+          setOtmChoices(j=>{
+            console.log("mtmdata",{...j,[nameMtm]:{...j[nameMtm],mtm:[...j[nameMtm]["mtm"],name1]}})
+            return {...j,[nameMtm]:{...j[nameMtm],mtm:[...j[nameMtm]["mtm"],name1]}}
+          })
+        }else{
+
+          setOtmChoices(j=>{
+            console.log("mtmdata",{...j,[nameMtm]:{...j[nameMtm],father,son,normal:[...j[nameMtm]["normal"],{name1,type:declaredType}]}})
+            return ({...j,[nameMtm]:{...j[nameMtm],father,son,normal:[...j[nameMtm]["normal"],{name1,type:declaredType,dataType}]}})
+          })
+        }
+      }
     }else{
+      if(otmdestiny=="onetomany" || otmdestiny=="manytomany")
+        setFieldsShown(x=>x.filter(r=>r!==name1))
       if(cf==true)
         setMtmChoices(j=>{
           console.log("mtmdata",{...j,[nameMtm]:{...j[nameMtm],father,son,compositeFields:[...j[nameMtm]["compositeFields"].filter(x=>x.name1!=name1)]}})
-          return ({...j,[nameMtm]:{...j[nameMtm],father,soncompositeFields:[...j[nameMtm]["compositeFields"].filter(x=>x.name1!=name1)]}})
+          return ({...j,[nameMtm]:{...j[nameMtm],compositeFields:[...j[nameMtm]["compositeFields"].filter(x=>x.name1!=name1)]}})
         })
-      else
-        setMtmChoices(e=>({...e,[nameMtm]:{...e[nameMtm],father,son,normal:[...e[nameMtm]["normal"].filter(u=>u.name1!==name1)]}}))
+      else{
+        if(otmdestiny=="onetomany"){
+          setMtmChoices(j=>{
+            console.log("mtmdata",{...j,[nameMtm]:{...j[nameMtm],otm:[...j[nameMtm]["otm"].filter(x=>x!=name1)]}})
+            return {...j,[nameMtm]:{...j[nameMtm],otm:[...j[nameMtm]["otm"].filter(x=>x!=name1)]}}
+          })
+        }else if(otmdestiny=="manytomany"){
+          setMtmChoices(j=>{
+            console.log("mtmdata",{...j,[nameMtm]:{...j[nameMtm],mtm:[...j[nameMtm]["mtm"].filter(u=>u.name1!=name1)]}})
+            return {...j,[nameMtm]:{...j[nameMtm],mtm:[...j[nameMtm]["mtm"].filter(x=>x!=name1)]}}
+          })
+        }else
+
+          setMtmChoices(e=>({...e,[nameMtm]:{...e[nameMtm],father,son,normal:[...e[nameMtm]["normal"].filter(u=>u.name1!==name1)]}}))
+
+      }
     }
   }
 
 
 
-  const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false,dcf={},isMtm=false)=>{
+  const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false,dcf={},isMtm=false,father,son)=>{
     let pc=parentCategories[name1]
     if(parentIdentifiers?.[pc]?.["fieldCompOrNormalType"]=="normal" ||
     parentIdentifiers?.[pc]?.["fieldCompOrNormalType"]=="composite")
@@ -263,11 +332,11 @@ const Reports=()=>{
       setOtmChoices(sonOtmChoices)
     }
     let sonMtmChoices
-    if(isMtm && !e.target.checked){
+    /*if(isMtm && !e.target.checked){
       sonMtmChoices=mtmChoices
       clearMtmChoicesSons(name1,padre,{...sonMtmChoices})
       setMtmChoices(sonMtmChoices)
-    }
+    }*/
     if(e.target.checked){
       ////console.log("otmchoices",otm,mainCat)
       ////console.log("arr",[...fieldsShown,name1])
@@ -280,88 +349,179 @@ const Reports=()=>{
         let  nu={[n]:{otm:[],mtm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]}}
         if(firstCatNormalFields[n]==undefined)
           setFirstCatNormalFields(e=>({...e,...nu}))
-        if(otm){
-          setFirstCatNormalFields(o=>({...o,[n]:{...o[n],otm:[...o[n]["otm"],name1]}}))
-          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[],mtm:[]}}))
-        }else if(otmdestiny=="otmdestiny"){
+        /*if(otm || isMtm){
+          //setFirstCatNormalFields(o=>({...o,[n]:{...o[n],otm:[...o[n]["otm"],name1]}}))
+          if(otmChoices[name1]==undefined || isMtm)
+            setOtmChoices(e=>{
+              e=({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[],mtm:[],father,son}})
+              console.log("repite",e)
+              return e
+            })
+        }*/
+      
+       
+         /*if(otmdestiny=="otmdestiny"){
           setFirstCatNormalFields(o=>({...o,[n]:{...o[n],otmdestiny:[...o[n]["otmdestiny"],name1]}}))
 
 
-          setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[],mtm:[]}}))
-        }else if(cf==true){
-          setFirstCatNormalFields(o=>({...o,[n]:{...o[n],compositeFields:[...o[n]["compositeFields"],dcf]}}))
-        }else if(isMtm==true){
+          //setOtmChoices(e=>({...e,[name1]:{otm:[],normal:[],options:[],otmdestiny:[],compositeFields:[],mtm:[]}}))
+        }*/if(cf==true){
+          setFirstCatNormalFields(o=>{
+            o=({...o,[n]:{...o[n],compositeFields:[...o[n]["compositeFields"],dcf]}})
+            console.log("repite",o)
+            return o
+          })
+          
+        }else if(otm==true){
+          setFirstCatNormalFields(o=>{
+            console.log("verstatefcnm",{...o,[n]:{...o[n],otm:[...o[n]["otm"],name1]}})
+            o=({...o,[n]:{...o[n],otm:[...o[n]["otm"],name1]}})
+            console.log("repite",o)
+            return o
+
+          })
+          setOtmChoices(e=>{
+            console.log("verestate",{...e,[name1]:{normal:[],compositeFields:[]}})
+            e=({...e,[name1]:{normal:[{type:"key",name1:`${name1}Id`}],compositeFields:[],otm:[],mtm:[],options:[],otmdestiny:[`${name1}Id`]}})
+            console.log("repite",e)
+            return e
+          })
+        }
+        
+        else if(isMtm==true){
           setFirstCatNormalFields(o=>{
             console.log("verstatefcnm",{...o,[n]:{...o[n],mtm:[...o[n]["mtm"],name1]}})
-            return ({...o,[n]:{...o[n],mtm:[...o[n]["mtm"],name1]}})
+            o=({...o,[n]:{...o[n],mtm:[...o[n]["mtm"],name1]}})
+            console.log("repite",o)
+            return o
+
           })
-          setMtmChoices(e=>{
-            console.log("verestate",{...e,[name1]:{normal:[],compositeFields:[]}})
-            return ({...e,[name1]:{normal:[],compositeFields:[]}})
+          setOtmChoices(e=>{
+            console.log("verestate",{...e,[name1]:{normal:[{type:"number",name1:father},{type:"number",name1:son}],compositeFields:[],otm:[],mtm:[],options:[],otmdestiny:[],father,son}})
+            e=({...e,[name1]:{normal:[{type:"key",name1:father},{type:"key",name1:son}],compositeFields:[],otm:[],mtm:[],options:[],otmdestiny:[],father,son}})
+            console.log("repite",e)
+            return e
           })
         }
         else{
           //setFirstCatNormalFields(o=>({...o,[n]:{...o[n],normal:[...o[n]["normal"],name1]}}))
-          setFirstCatNormalFields(o=>({...o,[n]:{...o[n],normal:[...o[n]["normal"],{type:declaredType,name1}]}}))
+          setFirstCatNormalFields(o=>{
+            o=({...o,[n]:{...o[n],normal:[...o[n]["normal"],{type:declaredType,name1}]}})
+            console.log("repite",o)
+            return o
+
+          })
         }
         console.log("")
       }
       if(mainCat==false){
         setAllCompFieldsCluster(compFieldsArray[nameOtm])
-
-        if(otm){  
-          
-          
-          setOtmChoices(e=>({...e,[name1]:{otm:[],mtm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]},[nameOtm]:{...e[nameOtm],otm:[...e[nameOtm]["otm"],name1]}}))
-        
-        }else if(otmdestiny=="otmdestiny"){
-          setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],otmdestiny:[...e[nameOtm]["otmdestiny"],name1]}}))
-        }else if(cf==true){
-          setOtmChoices(o=>({...o,[nameOtm]:{...o[nameOtm],compositeFields:[...o[nameOtm]["compositeFields"],dcf]}}))
-        }else if(isMtm){
+        if(isMtm){
+          //setFirstCatNormalFields(o=>({...o,[n]:{...o[n],otm:[...o[n]["otm"],name1]}}))
+          //if(otmChoices[nameOtm]==undefined)
           setOtmChoices(o=>{
-            console.log("verstatefcnm",{...o,[nameOtm]:{...o[nameOtm],mtm:[...o[nameOtm]["mtm"],name1]}})
-            return ({...o,[nameOtm]:{...o[nameOtm],mtm:[...o[nameOtm]["mtm"],name1]}})
+            //console.log("verstatefcnm",{...o,[n]:{...o[n],mtm:[...o[n]["mtm"],name1]}})
+            o=({...o,[nameOtm]:{...o[nameOtm],mtm:[...o[nameOtm]["mtm"],name1]}})
+            console.log("repite12",o)
+            return o
+
           })
-          setMtmChoices(e=>({...e,[name1]:{normal:[],compositeFields:[]}}))
+            setOtmChoices(e=>{
+              e={...e,[name1]:{normal:[{type:"key",name1:father},{type:"key",name1:son}],options:[],otmdestiny:[],compositeFields:[],mtm:[],otm:[],father,son}}
+              console.log("repite12",e)//{...e,[name1]:{...e[name1],normal:[...e[name1]["normal"],{type:"number",name1:father},{type:"number",name1:son}],options:[],otmdestiny:[],compositeFields:[],mtm:[],father,son}})
+              return e//({...e,[name1]:{normal:[{type:"number",name1:father},{type:"number",name1:son}],options:[],otmdestiny:[],compositeFields:[],mtm:[],father,son}})
+            })
         }
+        else if(otm){
+          //setFirstCatNormalFields(o=>({...o,[n]:{...o[n],otm:[...o[n]["otm"],name1]}}))
+          //if(otmChoices[nameOtm]==undefined)
+          setOtmChoices(o=>{
+            //console.log("verstatefcnm",{...o,[n]:{...o[n],mtm:[...o[n]["mtm"],name1]}})
+            o=({...o,[nameOtm]:{...o[nameOtm],otm:[...o[nameOtm]["otm"],name1]}})
+            console.log("repite12",o)
+            return o
+
+          })
+            setOtmChoices(e=>{
+              e={...e,[name1]:{...e[name1],normal:[{type:"key",name1:`${name1}Id`}],options:[],otmdestiny:[`${name1}Id`],compositeFields:[],mtm:[],otm:[]}}
+              console.log("repite12",e)//{...e,[name1]:{...e[name1],normal:[...e[name1]["normal"],{type:"number",name1:father},{type:"number",name1:son}],options:[],otmdestiny:[],compositeFields:[],mtm:[],father,son}})
+              return ({...e,[name1]:{...e[name1],normal:[{type:"key",name1:`${name1}Id`}],options:[],otmdestiny:[`${name1}Id`],compositeFields:[],mtm:[],otm:[]}})
+            })
         
+        //let  nu={[name1]:{otm:[],mtm:[],normal:[],options:[],otmdestiny:[],compositeFields:[]}}
+        
+        /*if((otm || isMtm) && otmChoices[name1]==undefined)
+          setOtmChoices(e=>({...e,...nu}))*/
+
+        //setAllCompFieldsCluster(compFieldsArray[nameOtm])
+
+      }else if(otmdestiny=="otmdestiny"){
+          setOtmChoices(e=>{
+            e=({...e,[nameOtm]:{...e[nameOtm],otmdestiny:[...e[nameOtm]["otmdestiny"],name1]}})
+            console.log("repite",e)
+            return e
+
+          })
+        }else if(cf==true){
+          console.log("cp7698",name1,nameOtm,otmChoices)
+          setOtmChoices(o=>{
+            o=({...o,[nameOtm]:{...o[nameOtm],compositeFields:[...o[nameOtm]["compositeFields"],dcf]}})
+            console.log("repite",o)
+            return o
+
+          })
+        }
         else{
           
-          setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"],{name1,type:declaredType}]}}))
+          setOtmChoices(e=>{
+            e=({...e,[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"],{name1,type:declaredType}]}})
+            console.log("repite",e)
+            return e
+
+          })
         }
       }
       
     }else{
       ////console.log("arr",fieldsShown.filter(x=>x!==name1))
-      if(otm==true)
+      if(otm==true || isMtm==true)
         setFieldsShown(x=>x.filter(r=>r!==name1))
       if(mainCat){
         const n=`getData${padre}`
         if(otm){
           setFirstCatNormalFields(e=>{
             e={...e,[n]:{...e[n],otm:[...e[n]["otm"].filter(x=>x!==name1)]}}
+            console.log("repite",e)
+
             return e
           })
         }else if(otmdestiny=="otmdestiny"){
           setFirstCatNormalFields(e=>{
             e={...e,[n]:{...e[n],otmdestiny:[...e[n]["otmdestiny"].filter(x=>x.name1!==name1)]}}
+            console.log("repite",e)
+
             return e
           })
         }else if(cf==true){
           setFirstCatNormalFields(e=>{
             e={...e,[n]:{...e[n],compositeFields:[...e[n]["compositeFields"].filter(x=>x.name1!==name1)]}}
+            console.log("repite",e)
+
             return e
           })
         }else if(isMtm){
           setFirstCatNormalFields(e=>{
             e={...e,[n]:{...e[n],mtm:[...e[n]["mtm"].filter(x=>x!==name1)]}}
+            console.log("repite",e)
+
             return e
           })
         }
         else{
           setFirstCatNormalFields(e=>{
             e={...e,[n]:{...e[n],normal:[...e[n]["normal"].filter(x=>x.name1!==name1)]}}
+            console.log("repite",e)
+
             return e
           })
         }
@@ -374,19 +534,34 @@ const Reports=()=>{
           setOtmChoices(e=>({...e,[name1]:{normal:[],otm:[],otmdestiny:[]},[nameOtm]:{...e[nameOtm],otm:[...e[nameOtm]["otm"].filter(u=>u!==name1)]}}))
         
         }else if(otmdestiny=="otmdestiny"){
-          setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],otmdestiny:[...e[nameOtm]["otmdestiny"].filter(u=>u.name1!==name1)]}}))
+          setOtmChoices(e=>{
+            e=({...e,[nameOtm]:{...e[nameOtm],otmdestiny:[...e[nameOtm]["otmdestiny"].filter(u=>u.name1!==name1)]}})
+            console.log("repite",e)
+            return e
+          })
         }else if(cf==true){
           setOtmChoices(e=>{
             e={...e,[nameOtm]:{...e[nameOtm],compositeFields:[...e[nameOtm]["compositeFields"].filter(x=>x.name1!==name1)]}}
+            console.log("repite",e)
+
             return e
           })
         }else if(isMtm){  
           
           
-          setOtmChoices(e=>({...e,[name1]:{normal:[],otm:[],otmdestiny:[]},[nameOtm]:{...e[nameOtm],mtm:[...e[nameOtm]["mtm"].filter(u=>u!==name1)]}}))
+          setOtmChoices(e=>{
+            e=({...e,[name1]:{normal:[],otm:[],otmdestiny:[]},[nameOtm]:{...e[nameOtm],mtm:[...e[nameOtm]["mtm"].filter(u=>u!==name1)]}})
+            console.log("repite",e)
+            return e
+          })
         
         }else{
-          setOtmChoices(e=>({...e,[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"].filter(u=>u.name1!==name1)]}}))
+          setOtmChoices(e=>{
+            e=({...e,[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"].filter(u=>u.name1!==name1)]}})
+            console.log("repite",e)
+            return e
+
+          })
         }
       }
 
@@ -396,8 +571,11 @@ const Reports=()=>{
     }
   }
   const isChecked=(name)=>{
-    if(fieldsShown.filter(x=>x==name).length==1)
+    if(fieldsShown.filter(x=>x==name).length==1){ 
+      console.log("ischecked",true,name)
       return true
+    }
+    console.log("ischecked",false,name)
     return false
   }
 
@@ -519,17 +697,18 @@ const Reports=()=>{
   }
   
   const displayAncestorsCats=(trackCatPath,ntm="")=>{
-    console.log("trackCatPath",trackCatPath)
+    console.log("trackCatPath",ntm,trackCatPath)
     let output=[]
     let ns=otmChoicesOrder
     
     
     for(let l in trackCatPath){
       let correctOtmMtm
-      if(otmChoices[trackCatPath[trackCatPath.length-1]])
+    //if(otmChoices[trackCatPath[trackCatPath.length-1]])
+      //if(!ntm.startsWith("mtm"))
         correctOtmMtm=otmChoices[trackCatPath[trackCatPath.length-1]]
-      else
-        correctOtmMtm=mtmChoices[trackCatPath[trackCatPath.length-1]]
+      //else
+        //correctOtmMtm=mtmChoices[trackCatPath[trackCatPath.length-1]]
 
       if(l<trackCatPath.length-1){
         if(partialOtmChoicesStatistics[trackCatPath[l]]==undefined)
@@ -571,7 +750,7 @@ const Reports=()=>{
               
               
           {/*otmChoices[trackCatPath[trackCatPath.length-1]]*/
-          correctOtmMtm?.normal.map(x=>{
+          correctOtmMtm?.normal?.map(x=>{
 
             if(x.type=="number" && x.dataType!="queryCategory"){
               
@@ -730,7 +909,7 @@ const Reports=()=>{
       }})}
           
           {/*otmChoices[trackCatPath[trackCatPath.length-1]]?*/
-          correctOtmMtm.compositeFields.map(x=>{
+          correctOtmMtm?.compositeFields?.map(x=>{
             if(x.type=="number"){
               
 
@@ -966,7 +1145,12 @@ const Reports=()=>{
   }
   
   const displayMenuMtm=(field,cat,nameOtm,mainCat,trackCatPath)=>{
+    console.log("catprop",cat.fields,field,cat.fields.filter(x=>x.name==field)[0])
     let res=cat.fields.filter(x=>x.name==field)[0]
+    let catD=res.relationCategory
+    
+    let catDestiny=categories.filter(x=>x.id==catD)[0]
+    console.log("prompther",cat,field,catDestiny)
     let otmSide=categories.filter(x=>x.id==res.relationCategory)[0]
     let tableName
     //console.log("field cat",field,cat,cat.name,cat.fields.filter(x=>x.name==field),fields)
@@ -976,7 +1160,7 @@ const Reports=()=>{
       tableName=`${cat.name}_${otmSide.name}`
 
     let otmSideFields=otmSide.fields.filter(x=>{
-      if(x.declaredType=="string" || x.declaredType=="number")
+      //if(x.declaredType=="string" || x.declaredType=="number")
         return true
     })
     let son=`mtm${otmSide.name}${cat.name}Id`
@@ -990,9 +1174,76 @@ const Reports=()=>{
     fields=[...fields,...mtmData]
     console.log("field cat",field,cat,cat.name,cat.fields.filter(x=>x.name==field),fields)
     console.log("tcp",trackCatPath)
+    if(isChecked(nameOtm)){
+    let oc=ordenaCampos(fields,field)
+    let name=nameOtm
     return <div style={{margin:"0",marginLeft:"10px"}}>
-      {fields.map(c=>{
-        if(c.declaredType=="number" || c.declaredType=="date" ||
+      {oc.map(x=>{
+        let c=fields.filter(i=>i.name==x)[0]
+        
+        console.log("cnamerel",c.name,c.relationship)
+        if(c.relationship=="onetomany"){
+          if(checkBoxDataFields?.[field]?.["otm"].includes(c.name)){
+            if(parentCategories[c.name]==undefined)
+              parentCategories={...parentCategories,[`${c.name}`]:field}
+            console.log("pc22",parentCategories)
+            return <>
+              <input type="checkbox" 
+              style={{marginRight:"5px", color:"white"}}
+              onChange={(e)=>{
+                //checkReviewMtmData(e,c.name,false,cat.name,field/*nameOtm*/,mainCat,c.declaredType,c.relationship,false,null,father,son,c.dataType)
+                //checkReviewMtmData(e,c.name,true,cat.name,nameOtm,mainCat)
+                checkReview(e,c.name,true,cat.name,nameOtm,false)
+              }}
+              />
+              <a style={{color:"green"}}>{c.name}</a>
+              <br/>
+              {isChecked(c.name) && displayMenu(c.name,catDestiny.name,[...trackCatPath,c.name])}
+            </>
+          }else
+            return ""
+        }else if(c.relationship=="manytomany"){
+          let nameTableMtm=""
+          console.log("vermtm",checkBoxDataFields[field],c.name)
+          if(checkBoxDataFields?.[field]?.["mtm"].includes(c.name)){
+
+            if(parentCategories[c.name]==undefined)
+              parentCategories={...parentCategories,[`${c.name}`]:field}
+            
+            //emp
+            //let otmS=categories.filter(x=>x.id==c.relationCategory)[0]
+            console.log("pc22",parentCategories,c.name,otmSide.name,cat.name)
+            let tableName
+            let pad=categories.filter(x=>x.name==cat.name)[0]
+            //console.log("field cat",field,cat,cat.name,cat.fields.filter(x=>x.name==field),fields)
+            if(pad.name>otmSide.name)
+              tableName=`${otmSide.name}_${cat.name}`
+            else
+              tableName=`${cat.name}_${otmSide.name}`
+        
+            let op=categories.filter(x=>x.id==c.relationCategory)[0].name
+            let op1=categories.filter(x=>x.id==c.category)[0].name
+            let son=`mtm${op}${op1}Id`
+            let father=`mtm${op1}${op}Id`
+            console.log("sonfather",c.name,son,father)
+            //term
+            return <>
+              <input type="checkbox" 
+              style={{marginRight:"5px", color:"white"}}
+              onChange={(e)=>{
+                //e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false,dcf={},isMtm=false
+                //checkReview(e,c.name,false,cat.name,nameOtm,mainCat,"","",false,{},true)
+                //checkReviewMtmData(e,c.name,false,cat.name,field/*nameOtm*/,mainCat,c.declaredType,c.relationship,false,null,father,son,c.dataType)
+                checkReview(e,c.name,false,cat.name,nameOtm,false,"","",false,{},true,father,son)
+              }}
+              />
+              <a style={{color:"green"}}>{c.name}</a>
+              <br/>
+              {isChecked(c.name) && displayMenuMtm(c.name,catDestiny,c.name /*nameOtm*/,mainCat,[...trackCatPath,c.name])}
+            </>
+          }else
+            return ""
+        }else if(c.declaredType=="number" || c.declaredType=="date" ||
         c.declaredType=="string")
           pivote={...pivote,[field]:[...pivote[field],{name1:c.name,type:c.declaredType}]}
       return (c.declaredType=="date" &&
@@ -1004,7 +1255,7 @@ const Reports=()=>{
               doWorkSort(e.target.checked,c.name,field,field,"number")
   
 
-            checkReviewMtmData(e,c.name,false,cat.name,field/*nameOtm*/,mainCat,c.declaredType,c.relationship,true,null,father,son,c.dataType)
+              checkReview(e,c.name,false,cat.name,nameOtm,false,c.declaredType,c.relationship)
           }}/>
     
           <span style={{marginRight:"10px"}}>{c.name}Date</span>
@@ -1044,8 +1295,7 @@ const Reports=()=>{
         doWorkSort(e.target.checked,c.name,field,field,"number")
 
 
-      checkReviewMtmData(e,c.name,false,cat.name,field/*nameOtm*/,mainCat,c.declaredType,c.relationship,null,null,father,son,c.dataType)
-    }}/>
+        checkReview(e,c.name,false,cat.name,nameOtm,false,c.declaredType,c.relationship)    }}/>
     
         <span style={{marginRight:"10px"}}>{c.name}Number</span>
         
@@ -1083,8 +1333,7 @@ const Reports=()=>{
             doWorkSort(e.target.checked,c.name,`getData${currentCategory.name}`,`getData${currentCategory.name}`,"string")
           else
             doWorkSort(e.target.checked,c.name,nameOtm,nameOtm,"string")
-          checkReviewMtmData(e,c.name,false,cat.name,field/*nameOtm*/,mainCat,c.declaredType,c.relationship,null,null,father,son,c.dataType)
-          }}/>
+          checkReview(e,c.name,false,cat.name,nameOtm,false,c.declaredType,c.relationship)          }}/>
     
         <span style={{marginRight:"10px"}}>{c.name}String</span>
         {isReadyToWhereMtm(field,c.name,false) &&
@@ -1111,11 +1360,11 @@ const Reports=()=>{
         
         {c.name!==`${nameOtm}Id` && displayWhereClauses(nameOtm,c.name)}
         </p>
-    )
     
-    })}
     
-    {displayAncestorsCats(trackCatPath,field,field)}
+    )})}
+    {displayAncestorsCats(trackCatPath,nameOtm,cat.name)}
+    {/*displayAncestorsCats(trackCatPath,field,field)*/}
     
         <a style={{textDecoration:"underline"}}
         onClick={e=>{
@@ -1150,7 +1399,7 @@ const Reports=()=>{
           e.preventDefault()
           toggleOpenSortCriteriaDialog({categoryName:field,otmChoicesSort:otmChoicesOrder[field],sortRules:sortRules,setSortRules:setSortRules})
         }}>Add Order Criteria</a>
-
+  {/*field.startsWith("otm") && displayCurCategory(catDestiny,false,false,field,false,trackCatPath)*/}
 <FormButton style={{
         textAlign:"left",
         textDecoration:"underline",
@@ -1172,8 +1421,8 @@ const Reports=()=>{
               //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
               doWorkSort(e.target.checked,d.name1,field,field,"number")
 
-              checkReviewMtmData(e,d.name1,false,"",field,false,true,"",true,d,father,son,d.dataType)
-            }}
+            checkReview(e,d.name1,false,cat.name,"",false,false,"",true,d)            
+          }}
             />
             <a style={{color:"yellow", marginRight:"10px"}}
             onClick={()=>{
@@ -1208,8 +1457,7 @@ const Reports=()=>{
               //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
               doWorkSort(e.target.checked,d.name1,field,field,"number")
 
-              checkReviewMtmData(e,d.name1,false,"",field,false,true,"",true,d,father,son,displayCategoryHeaders.dataType)
-            }}
+              checkReview(e,d.name1,false,cat.name,field,false,false,"",true,d)            }}
             />
             <a style={{color:"yellow", marginRight:"10px"}}
             onClick={()=>{
@@ -1244,7 +1492,7 @@ const Reports=()=>{
             //const checkReview=(e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false)=>{
             doWorkSort(e.target.checked,d.name1,field,field,"string")
 
-            checkReviewMtmData(e,d.name1,false,"",field,false,true,"",true,d,father,son,d.dataType)
+            checkReview(e,d.name1,false,cat.name,field,false,false,"",true,d)
           }}
           />
           <a style={{color:"yellow",marginRight:"10px"}}
@@ -1267,79 +1515,274 @@ const Reports=()=>{
           </p>
           
 }</>})}
+{(parentIdentifiers?.[parentCategories?.[name]]?.["fieldCompOrNormalType"]=="normal" || 
+        parentIdentifiers?.[parentCategories?.[name]]?.["fieldCompOrNormalType"]=="composite") &&
+      displayParentIdentifier(name,name,"parentIdentifier",
+parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
+{parentIdentifiers?.[parentCategories?.[name]]?.["fieldCompOrNormalType"]=="none" &&
+displayParentIdentifierNull(name,name,"parentIdentifier",
+parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
+  
+      <FormButton style={{
+        textAlign:"left",
+        textDecoration:"underline",
+        marginLeft:0,
+        paddingLeft:0
+      }} onClick={()=>{
+        ////console.log("click")
+        setOtmCategoryFields(pivote[name])
+
+        toggleOtmIdFieldsDialog(name)
+      }}>Add field to identify parent in child relationships</FormButton>
+    
+    
+
     
       
       
     
     </div>
-
+    }else{
+      delete otmChoices[nameOtm]
+    }
     
 
   }
 
+  //(cat,primero,space=true,nameOtm="",mainCat=false,trackCatPath,isMtm,mtmFields)=>{
+  const displayMenu=(nameOtm,padre,trackCatPath)=>{
+    
+    let partialName=`otm${padre}`
+    let lengthName=partialName.length
+    let  destCatName=nameOtm.slice(lengthName)
+    let cat=categories.filter(c=>c.name==destCatName)[0]
 
-  const displayMenu=(name,padre,trackCatPath)=>{
-    ////console.log("name",name)
-    const partialName=`otm${padre}`
-    const lengthName=partialName.length
-    const destCatName=name.slice(lengthName)
-    const catDestiny=categories.filter(c=>c.name==destCatName)[0]
+    let catId=categories.filter(x=>x.name==padre)[0]
+    console.log("namepadre",nameOtm,padre,catId)//,cat.fields)
+    let f=catId.fields.filter(x=>x.name==nameOtm)[0].relationCategory
+    cat=categories.filter(x=>x.id==f)[0]
+  //cat=categories.filter(x=>x.id==catId)[0] 
     //console.log("trackcatpath",trackCatPath)
     ////console.log("dcn",destCatName,catDestiny)
+    let name=nameOtm
     
-    if(isChecked(name)){
+   
+    if(isChecked(nameOtm)){
+      let of=ordenaCampos(cat.fields)
       return (
     <div style={{marginLeft:"10px",width:"100%",marginBottom:"10px"}}>
-      <div style={{display:"flex"}}>
-        <input 
-        type="checkbox" 
-        style={{marginRight:"10px"}}
-        onChange={(e)=>{
-          if(e.target.checked){
-            
-            setOtmChoices(e=>({...e,[name]:{...e[name],options:[...e[name]["options"],"1"]}}))
-          }else{
-            ////console.log("res11",{...otmChoices,[name]:{...otmChoices[name],normal:[...otmChoices[name]["normal"],"1"]}})
-            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["options"].filter(
-              x=>x!=="1")]}}))
-          }
-
-        }}/>
+      
      
-        <p>Number of Sons List</p>
-      </div>
-      <div style={{display:"flex", flexDirection:"row",alignItems:"start"}}>
-        <input 
-        type="checkbox" 
-        style={{marginRight:"10px"}}
-        onChange={(e)=>{
-          if(e.target.checked){
-            
-            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["options"],"2"]}}))
-          }else{
-            ////console.log("res11",{...otmChoices,[name]:{...otmChoices[name],normal:[...otmChoices[name]["normal"],"1"]}})
-            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["options"].filter(
-              x=>x!=="2")]}}))
+        {of?.map(fr=>{
+          let c=cat?.fields?.filter(y=>y.name==fr)[0]
+          if(c.relationship=="onetomany"){
+            if(checkBoxDataFields?.[name]?.["otm"].includes(c.name)){
+              if(parentCategories[c.name]==undefined)
+                parentCategories={...parentCategories,[`${c.name}`]:padre}
+              console.log("pc22",parentCategories)
+              return <>
+                <input type="checkbox" 
+                style={{marginRight:"5px", color:"white"}}
+                onChange={(e)=>{
+                  checkReview(e,c.name,true,cat.name,nameOtm,false)
+                }}
+                />
+                <a style={{color:"green"}}>{c.name}</a>
+                <br/>
+                {isChecked(c.name) && displayMenu(c.name,cat.name,[...trackCatPath,c.name])}
+              </>
+            }else
+              return ""
+          }else if(c.relationship=="manytomany"){
+            let nameTableMtm=""
+            if(checkBoxDataFields?.[name]?.["mtm"].includes(c.name)){
+              //emp
+              let otmSide=categories.filter(x=>x.id==c.relationCategory)[0]
+              let tableName
+              let pad=categories.filter(x=>x.name==padre)[0]
+              //console.log("field cat",field,cat,cat.name,cat.fields.filter(x=>x.name==field),fields)
+              //if(pad.name>otmSide.name)
+                //tableName=`${otmSide.name}_${pad.name}`
+              //else
+                //tableName=`${pad.name}_${otmSide.name}`
+                let op=categories.filter(x=>x.id==c.relationCategory)[0].name
+                let op1=categories.filter(x=>x.id==c.category)[0].name
+                let son=`mtm${op}${op1}Id`
+                let father=`mtm${op1}${op}Id`
+                console.log("sonfatherbien",c.name,son,father)
+              
+              
+              //term
+              if(parentCategories[c.name]==undefined)
+                parentCategories={...parentCategories,[`${c.name}`]:padre}
+              console.log("pc22i",parentCategories,c.name,son,father)
+              return <>
+                <input type="checkbox" 
+                style={{marginRight:"5px", color:"white"}}
+                onChange={(e)=>{
+                  //e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false,dcf={},isMtm=false
+                  checkReview(e,c.name,false,cat.name,nameOtm,false,"","",false,{},true,father,son)
+                }}
+                />
+                <a style={{color:"green"}}>{c.name}</a>
+                <br/>
+                {isChecked(c.name) && displayMenuMtm(c.name,cat,c.name /*nameOtm*/,false,[...trackCatPath,c.name])}
+              </>
+            }else
+              return ""
           }
-        }}/>
-        <p style={{flex:1}}>Total and Percentage of Parents Regarding Ranges of Total of Sons</p>
-      </div>
-      <div style={{display:"flex",flexDirection:"row",alignItems:"start"}}>
-        <input 
-        type="checkbox" 
-        style={{marginRight:"10px"}}
-        onChange={(e)=>{
-          if(e.target.checked){
-            
-            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["options"],"3"]}}))
-          }else{
-            ////console.log("res11",{...otmChoices,[name]:{...otmChoices[name],normal:[...otmChoices[name]["normal"],"1"]}})
-            setOtmChoices(e=>({...e,[name]:{...e[name],normal:[...e[name]["options"].filter(
-              x=>x!=="3")]}}))
+          if(nameOtm!==""){
+            if(pivote?.[nameOtm]==undefined)
+              pivote={...pivote,[nameOtm]:[]}
+            pivote={
+              ...pivote,[nameOtm]:[...pivote[nameOtm],{name1:c.name,type:c.declaredType}]
+            }
           }
-        }}/>
-        <p>Total and Percentage of Parents Regarding Conditions of Son Atributes</p>
-      </div>
+          else{
+            if(pivote?.[`getData${currentCategory.name}`]==undefined)
+              pivote={
+              ...pivote,[`getData${currentCategory.name}`]:[]
+              }  
+            pivote={
+            ...pivote,[`getData${currentCategory.name}`]:[...pivote[`getData${currentCategory.name}`],{name1:c.name,type:c.declaredType}]
+            }
+          }
+         
+          //setAllFieldsByOtm(pivote)
+  
+            return <>
+              {c.declaredType=="date" &&
+                <p>
+                  <input type="checkbox" 
+                  style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
+                  onChange={(e)=>{
+                    if(nameOtm=="")
+                      doWorkSort(e.target.checked,c.name,`getData${currentCategory.name}`,`getData${currentCategory.name}`,"number")
+                    else 
+                      doWorkSort(e.target.checked,c.name,nameOtm,nameOtm,"number")
+  
+  
+                    checkReview(e,c.name,false,cat.name,nameOtm,false,c.declaredType,c.relationship)
+                  }}/>
+            
+                  <span style={{marginRight:"10px"}}>{c.name}Date</span>
+                
+                  {(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
+                  isReadyToWhere(nameOtm,c.name,false)) && 
+                  <a  
+                  style={{textDecoration:"underline"}} 
+                  onClick={(e)=>{
+                    e.preventDefault()
+                    if(nameOtm==""){
+                      toggleOpenWhereStatementDateDialog({
+                        categoryName:`getData${currentCategory.name}`,
+                        fieldName:c.name,
+                        segment:`getData${currentCategory.name}`,
+                      })
+                
+                    }else{
+                      toggleOpenWhereStatementDateDialog({
+                        categoryName:nameOtm,
+                        fieldName:c.name,
+                        segment:nameOtm
+                      })
+                    }
+                  }}>Add where condition
+                  </a>
+                  }
+  
+                  {c.name!==`${nameOtm}Id` && displayWhereClauses(nameOtm,c.name)} 
+                </p>
+              }
+              {c.declaredType=="number" &&
+              <p style={{marginBottom:"0px"}}>
+                <input type="checkbox" 
+            style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
+            onChange={(e)=>{
+              if(nameOtm=="")
+                doWorkSort(e.target.checked,c.name,`getData${currentCategory.name}`,`getData${currentCategory.name}`,"number")
+              else 
+                doWorkSort(e.target.checked,c.name,nameOtm,nameOtm,"number")
+  
+  
+              checkReview(e,c.name,false,cat.name,nameOtm,false,c.declaredType,c.relationship)
+            }}/>
+            
+                <span style={{marginRight:"10px"}}>{c.name}Number</span>
+                
+                {(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
+                isReadyToWhere(nameOtm,c.name,false)) && <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  if(nameOtm==""){
+                      toggleOpenWhereStatementNumberDialog({
+                        categoryName:`getData${currentCategory.name}`,
+                        fieldName:c.name,
+                        segment:`getData${currentCategory.name}`,
+                      })
+                
+                  }else{
+                    toggleOpenWhereStatementNumberDialog({
+                      categoryName:nameOtm,
+                      fieldName:c.name,
+                      segment:nameOtm
+                    })
+                  }
+                }
+              }>Add where condition</a>}
+  
+              {c.name!==`${nameOtm}Id` && displayWhereClauses(nameOtm,c.name)}
+              </p>
+            }
+            {c.declaredType=="string" &&
+              <p style={{marginBottom:"0px"}}>
+                <input type="checkbox" 
+                style={{marginLeft:"0px",marginRight:"5px",color:"white"}}
+                 onChange={(e)=>{
+                  if(nameOtm=="")
+                    doWorkSort(e.target.checked,c.name,`getData${currentCategory.name}`,`getData${currentCategory.name}`,"string")
+                  else
+                    doWorkSort(e.target.checked,c.name,nameOtm,nameOtm,"string")
+                  checkReview(e,c.name,false,cat.name,nameOtm,false,c.declaredType,c.relationship)
+                  }}/>
+            
+                <span style={{marginRight:"10px"}}>{c.name}String</span>
+                {(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
+                isReadyToWhere(nameOtm,c.name,false)) &&
+                <a 
+                style={{textDecoration:"underline",color:"white"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  if(nameOtm==""){
+                      toggleOpenWhereStatementStringDialog({
+                        categoryName:`getData${currentCategory.name}`,
+                        fieldName:c.name,
+                        segment:`getData${currentCategory.name}`
+                      })
+                
+                  }else{
+                    toggleOpenWhereStatementStringDialog({
+                      categoryName:nameOtm,
+                      fieldName:c.name,
+                      segment:nameOtm
+                    })
+                  }
+                }}>Add where condition</a>
+                
+                }
+                {c.name!==`${nameOtm}Id` && displayWhereClauses(nameOtm,c.name)}
+                
+              
+            
+              
+              
+            </p>
+            }
+          </>
+        })
+
+      }
       <a style={{textDecoration:"underline"}}
       onClick={e=>{
         e.preventDefault()
@@ -1372,7 +1815,7 @@ const Reports=()=>{
           e.preventDefault()
           toggleOpenSortCriteriaDialog({categoryName:name,otmChoicesSort:otmChoicesOrder[name],sortRules:sortRules,setSortRules:setSortRules})
         }}>Add Order Criteria</a>
-      {displayCurCategory(catDestiny,false,false,name,false,trackCatPath)}
+      {/*displayCurCategory(catDestiny,false,false,name,false,trackCatPath)*/}
       <FormButton style={{
         textAlign:"left",
         textDecoration:"underline",
@@ -1455,9 +1898,10 @@ const Reports=()=>{
           }
           x
           {displayWhereClauses(name,d.name1)}
-          </p>
+        </p>}
           
-}</>})}
+        
+      </>})}
 {(parentIdentifiers?.[parentCategories?.[name]]?.["fieldCompOrNormalType"]=="normal" || 
         parentIdentifiers?.[parentCategories?.[name]]?.["fieldCompOrNormalType"]=="composite") &&
       displayParentIdentifier(name,name,"parentIdentifier",
@@ -1506,13 +1950,13 @@ const isReadyToWhereMtm=(otm,busca,comp=false)=>{
 const isReadyToWhere=(otm,busca,comp=false)=>{
   let res=[]
   if(comp==false)
-    return otmChoices[otm]?.normal.filter(x=>{
+    return otmChoices?.[otm]?.normal?.filter(x=>{
       if(x.name1==busca)
         return true
       return false
     }).length>=1?true:false
   else if (comp==true){
-    return otmChoices[otm]?.compositeFields.filter(x=>{
+    return otmChoices?.[otm]?.compositeFields?.filter(x=>{
       if(x.name1==busca)
         return true
       return false
@@ -1530,7 +1974,7 @@ const isReadyToWhereFirst=(otm,busca,comp=false)=>{
       //console.log("istwf",false)
       return false
     }).length>=1?true:false)*/
-    return firstCatNormalFields[otm]?.normal.filter(x=>{
+    return firstCatNormalFields?.[otm]?.normal?.filter(x=>{
       if(x.name1==busca){
         //console.log("istwf",true)
         return true
@@ -1540,7 +1984,7 @@ const isReadyToWhereFirst=(otm,busca,comp=false)=>{
     }).length>=1?true:false
 
   }else if (comp==true){
-    return firstCatNormalFields[otm]?.compositeFields.filter(x=>{
+    return firstCatNormalFields?.[otm]?.compositeFields?.filter(x=>{
       if(x.name1==busca)
         return true
       return false
@@ -1710,60 +2154,145 @@ const displayWhereClauses=(cat,field,seg="")=>{
 
 }
 
+const ordenaCampos=(fields,cat)=>{
+  let stringFields=[]
+  let numericFields=[]
+  let dateFields=[]
+  let otmFields=[]
+  let mtmFields=[]
+  //console.log("fieldsoo",fields,cat)
+  for(let x=0;x<fields?.length;x++){
+    let f=fields[x]
+    if(f.declaredType=="string")
+      stringFields.push(f.name)
+    else if(f.declaredType=="number" && f.relationship!="otmdestiny" && f.dataType!="queryCategory")
+      numericFields.push(f.name)
+    else if(f.declaredType=="date")
+      dateFields.push(f.name)
+    else if(f.relationship=="onetomany")
+      otmFields.push(f.name)
+    else if(f.relationship=="manytomany")
+      mtmFields.push(f.name)
+  }
+  stringFields=stringFields.sort((a,b)=>{
+    if(a>b)
+      return 1
+    else 
+      return -1
+  })
+  numericFields=numericFields.sort((a,b)=>{
+    if(a>b)
+      return 1
+    else 
+      return -1
+  })
+  dateFields=dateFields.sort((a,b)=>{
+    if(a>b)
+      return 1
+    else 
+      return -1
+  })
+  otmFields=otmFields.sort((a,b)=>{
+    if(a>b)
+      return 1
+    else 
+      return -1
+  })
+  mtmFields=mtmFields.sort((a,b)=>{
+    if(a>b)
+      return 1
+    else 
+      return -1
+  })
+  let cong=[...stringFields,...numericFields,...dateFields,...otmFields,...mtmFields]
+ // console.log("camposgrupos",cat,cong)
+  return cong
+}
 
 
-const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackCatPath)=>{
+
+const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackCatPath,isMtm,mtmFields)=>{
   let fieldsSingle=[]
   let pc=""
-  
+  let validate=""
   if(nameOtm==""){
-    pc=`getData${currentCategory.name}`
+    pc=`getData${currentCategory?.name}`
+    validate=currentCategory?.name
   }else{
     pc=nameOtm
+    validate=nameOtm
   }
-  if(pivote[`getData${currentCategory.name}`]==undefined)
-    pivote={...pivote,[`getData${currentCategory.name}`]:[]}
+  if(pivote[`getData${currentCategory?.name}`]==undefined)
+    pivote={...pivote,[`getData${currentCategory?.name}`]:[]}
   if(pivote[nameOtm]==undefined)
      pivote={...pivote,[nameOtm]:[]}
-  console.log("Catmessage",cat.name,nameOtm,mainCat,parentCategories,parentCategories?.[nameOtm])
-  if(cat && showFields){  
+  console.log("Catmessage",cat?.name,nameOtm,mainCat,parentCategories,parentCategories?.[nameOtm])
+  if(cat && showFields){ 
+    let of
+    //if(!isMtm) 
+      of=ordenaCampos(cat?.fields,cat?.name)
+    
     return (
     <div style={{marginLeft:space?"10px":"0px",width:primero?"50%":"100%"}}>
       <p>HOla</p>
-      {fieldsSingle=cat?.fields?.map(c=>{
+      {of?.map(fr=>{
+        let c=cat?.fields?.filter(y=>y.name==fr)[0]
         if(c.relationship=="onetomany"){
-          if(parentCategories[c.name]==undefined)
-            parentCategories={...parentCategories,[`${c.name}`]:pc}
-          console.log("pc22",parentCategories)
-          return <>
-            <input type="checkbox" 
-            style={{marginRight:"5px", color:"white"}}
-            onChange={(e)=>{
-              checkReview(e,c.name,true,cat.name,nameOtm,mainCat)
-            }}
-            />
-            <a style={{color:"green"}}>{c.name}</a>
-            <br/>
-            {isChecked(c.name) && displayMenu(c.name,cat.name,[...trackCatPath,c.name])}
-          </>
+          if(checkBoxDataFields?.[validate]?.["otm"].includes(c.name)){
+            if(parentCategories[c.name]==undefined)
+              parentCategories={...parentCategories,[`${c.name}`]:pc}
+            console.log("pc22",parentCategories)
+            return <>
+              <input type="checkbox" 
+              style={{marginRight:"5px", color:"white"}}
+              onChange={(e)=>{
+                checkReview(e,c.name,true,cat.name,nameOtm,mainCat)
+              }}
+              />
+              <a style={{color:"green"}}>{c.name}</a>
+              <br/>
+              {isChecked(c.name) && displayMenu(c.name,cat.name,[...trackCatPath,c.name])}
+            </>
+          }else
+            return ""
         }else if(c.relationship=="manytomany"){
           let nameTableMtm=""
+          if(checkBoxDataFields?.[validate]?.["mtm"].includes(c.name)){
 
-          if(parentCategories[c.name]==undefined)
-            parentCategories={...parentCategories,[`${c.name}`]:pc}
-          console.log("pc22",parentCategories)
-          return <>
-            <input type="checkbox" 
-            style={{marginRight:"5px", color:"white"}}
-            onChange={(e)=>{
-              //e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false,dcf={},isMtm=false
-              checkReview(e,c.name,false,cat.name,nameOtm,mainCat,"","",false,{},true)
-            }}
-            />
-            <a style={{color:"green"}}>{c.name}</a>
-            <br/>
-            {isChecked(c.name) && displayMenuMtm(c.name,cat,c.name /*nameOtm*/,mainCat,[...trackCatPath,c.name])}
-          </>
+            if(parentCategories[c.name]==undefined)
+              parentCategories={...parentCategories,[`${c.name}`]:pc}
+            console.log("pc22",parentCategories)
+            //emp
+            let otmSide=categories.filter(x=>x.id==c.relationCategory)[0]
+            let tableName
+            //let pad=categories.filter(x=>x.name==padre)[0]
+            //console.log("field cat",field,cat,cat.name,cat.fields.filter(x=>x.name==field),fields)
+            if(currentCategory.name>otmSide.name)
+              tableName=`${otmSide.name}_${currentCategory.name}`
+            else
+              tableName=`${currentCategory.name}_${otmSide.name}`
+            let op=categories.filter(x=>x.id==c.relationCategory)[0].name
+            let op1=categories.filter(x=>x.id==c.category)[0].name
+            let son=`mtm${op}${op1}Id`
+            let father=`mtm${op1}${op}Id`
+            console.log("sonfather",c.name,son,father)
+          
+            //term
+
+            return <>
+              <input type="checkbox" 
+              style={{marginRight:"5px", color:"white"}}
+              onChange={(e)=>{
+                //e,name1,otm=false,padre,nameOtm,mainCat=false,declaredType,otmdestiny="",cf=false,dcf={},isMtm=false
+                checkReview(e,c.name,false,cat.name,nameOtm,mainCat,"","",false,{},true,father,son)
+              }}
+              />
+              <a style={{color:"green"}}>{c.name}</a>
+              <br/>
+              {isChecked(c.name) && displayMenuMtm(c.name,cat,c.name,mainCat,[...trackCatPath,c.name])}
+            </>
+          }else
+            return ""
         }
         if(nameOtm!=="")
           pivote={
@@ -1905,9 +2434,16 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             
           </p>
           }
-          </>
+        </>
+      })
+    }
 
-      })}
+    {/*nameOtm.startsWith("mtm") && displayMenuMtm(displayMenu(nameOtm,cat.name,[...trackCatPath,nameOtm]))*/}
+      
+      
+        
+
+      
       {displayAncestorsCats(trackCatPath,nameOtm,cat.name)}
 
       {primero && fieldsSingle && <div>
@@ -1953,7 +2489,8 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
           e.preventDefault()
           toggleOpenSortCriteriaDialog({categoryName:`getData${currentCategory.name}`,otmChoicesSort:otmChoicesOrder[`getData${currentCategory.name}`],sortRules:sortRules,setSortRules:setSortRules})
         }}>Add Order Criteriafirst</a>}
-      {primero && fieldsSingle && (<><FormButton style={{
+        <br/>
+      {primero && fieldsSingle && (<><a style={{
           textAlign:"left",
           textDecoration:"underline",
           marginLeft:0,
@@ -1962,7 +2499,8 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
           setOtmCategoryFields(pivote[`getData${currentCategory.name}`])
           toggleCompositeFieldDialog(`getData${currentCategory.name}`)
           ////console.log("click")
-        }}>Add composite field</FormButton>
+        }}>Add composite field</a>
+        <br/>
         {compFieldsArray[`getData${currentCategory.name}`]?.map(d=>{
           //const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false)=>{
 
@@ -2049,7 +2587,8 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
         {pivote[`getData${currentCategory.name}`]?.map(d=>{
           <p>{d.name1}</p>
         })}
-        <FormButton style={{
+        
+        <a style={{
           textAlign:"left",
           textDecoration:"underline",
           marginLeft:0,
@@ -2058,7 +2597,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             ////console.log("click")
             //setOtmCategoryFields(pivote[`getData${currentCategory.name}`])
             toggleOtmIdFieldsDialog(`getData${currentCategory.name}`)
-        }}>Add field to identify parent in child relationships</FormButton>
+        }}>Add field to identify parent in child relationships</a>
           </>)
       
 
@@ -2086,6 +2625,7 @@ const calculateGrandRoutes=(grandsRoute,nameCluster)=>{
   otmChoices?.[nameCluster]?.["mtm"]?.map(l=>{
     console.log("lll",l)
     routes[l]=[...grandsRoute,l]
+    routes={...routes,...calculateGrandRoutes(routes[l],l)}
    
     
     
@@ -2101,6 +2641,7 @@ const calculateRoutes=(parentsRoute)=>{
   let data=categoryProducts[parentNodeName]
   let routes={}
   let otmMtm=[]
+  console.log("fcnf",firstCatNormalFields[parentNodeName])
 
   if(firstCatNormalFields[parentNodeName]["otm"].length>0){
     let sons=firstCatNormalFields[parentNodeName]["otm"].map(l=>{
@@ -2108,20 +2649,30 @@ const calculateRoutes=(parentsRoute)=>{
       routes={...routes,...calculateGrandRoutes(routes[l],l)}
       
     })
+ /*let sons=firstCatNormalFields[parentNodeName]["mtm"].map(l=>{
+      routes[l]=[...parentsRoute,l]
+      routes={...routes,...calculateGrandRoutes(routes[l],l)}
+      
+    })*/
   } 
-    console.log("hui",firstCatNormalFields[parentNodeName]["mtm"])
+    //console.log("hui1",firstCatNormalFields[parentNodeName]["mtm"])
 
     if(firstCatNormalFields?.[parentNodeName]?.["mtm"]?.length>0){
     
       let sonsMtm=firstCatNormalFields[parentNodeName]["mtm"].map(l=>{
         routes[l]=[...parentsRoute,l]
+        routes={...routes,...calculateGrandRoutes(routes[l],l)}
       })
+     /* let sonsMtm=firstCatNormalFields[parentNodeName]["mtm"].map(l=>{
+        routes[l]=[...parentsRoute,l]
+        routes={...routes,...calculateGrandRoutes(routes[l],l)}
+      })*/
     }
   
   if(firstCatNormalFields[parentNodeName]["otm"].length==0 && firstCatNormalFields[parentNodeName]["mtm"].length==0)
    return {[parentNodeName]:[parentNodeName]}
     
-   console.log("hui",routes)
+   console.log("huifinal",routes)
    return routes
 
 
@@ -2419,14 +2970,15 @@ const getNumericVariablesSonCategories=(current,categoryfields)=>{
 const getTotalsOfSonNumericVariables=(oavTotals,data,routeStep,r,eachIndex)=>{
   let final=[]
   //if(Object.keys(oavTotals).length>0){
-    console.log("step441",oavTotals,data,routeStep,r,eachIndex)
+    console.log("step441",oavTotals,data,routeStep,r,eachIndex,r,r[eachIndex],otmChoices)
     data?.forEach(y=>{
       //if(verifyMeetWithConditionsBySegmentBaseLevel(r,eachIndex,y)){
-        if(r[eachIndex].startsWith("otm"))
+        console.log("step44",r[eachIndex],oavTotals,y)  
+      //if(r[eachIndex].startsWith("otm"))
           final=[...final,y.id]
-        else
-          final=[...final,`${y["original"][mtmChoices[r[eachIndex]]["son"]]}-${y["original"][mtmChoices[r[eachIndex]]["father"]]}`]
-        console.log("step44",r[eachIndex],final,oavTotals)
+       // else
+         // final=[...final,`${y[otmChoices[r[eachIndex]]["son"]]}-${y[otmChoices[r[eachIndex]]["father"]]}`]
+        //console.log("step44",r[eachIndex],final,oavTotals,y)
         Object.keys(oavTotals).forEach(p=>{
           const nn=p.substring(0,p.length-5)
           let oo=buscaCompField(compFieldsArray[routeStep],nn)
@@ -2529,11 +3081,14 @@ const getNormalFieldsOfEachIndex=(object,step,x)=>{
   //if(indice==(doneLd[r[eachIndex]].len-1))
     //doneLd[r[eachIndex]].done=true
   let newId
-  if(step.startsWith("otm") || step.startsWith("getData"))
-    normalFields={id:x["id"],...normalFields}
-  else if(step.startsWith("mtm")){
-    newId=`${x[mtmChoices[step]["son"]]}-${x[mtmChoices[step]["father"]]}`
-    normalFields={id:newId,...normalFields}
+  if(step.startsWith("otm") || step.startsWith("getData")){
+    console.log("checabien",step,x,otmChoices[step])
+    normalFields={id:x["id"],parentId:x?.[otmChoices?.[step]?.["otmdestiny"]?.[0]],...normalFields}
+  }else if(step.startsWith("mtm")){
+    console.log("checabienmtm",step,x,otmChoices[step],x[otmChoices[step]["father"]])
+    normalFields={...normalFields,id:x["id"],parentId:x[otmChoices[step]["father"]]}
+    //newId=`${x[otmChoices[step]["son"]]}-${x[otmChoices[step]["father"]]}`
+    //normalFields={id:newId,...normalFields}
   }
   console.log("stepio",step,newId)
   
@@ -2874,7 +3429,7 @@ const verifyMeetWithConditionsBySegmentBaseLevel=(r,eachIndex,x)=>{
 }
 
 const getLevelData1=(eachStopData,r,eachIndex)=>{
-  console.log("r eachindexgl BIEN",r, eachIndex,conditionsWhere)
+  console.log("r eachindexgl BIEN",r,eachIndex,conditionsWhere)
   let current=initializeVarsGld(r,eachIndex)
   let fieldId=""
   let newData=[]
@@ -2893,7 +3448,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
   eachStopData.map((x,indice)=>{
     //console.log("xxxx",x)
     //if(verifyMeetWithConditionsBySegmentBaseLevel(r,eachIndex,x)==true || verifyMeetWithConditionsBySegmentBaseLevel(r,eachIndex,x)=="pending"){
-
+      console.log("newData",eachStopData)
       let ui=[...doneLd[r[eachIndex]].nodeDone]
       
       if([...ui].includes(x["id"]))
@@ -2905,7 +3460,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
       
       newData=x[r[eachIndex+1]]
       let oavTotals=getNumericVariablesSonCategories(current,otmChoices[r[eachIndex+1]])    
-      console.log("ot55",oavTotals)
+      console.log("ot55",oavTotals,x,newData)
       let otherAccVars=[]
       console.log("curr",current)
       //if(current!=="undefinedtotal")
@@ -2916,15 +3471,15 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
       let normalFields
       if(r[eachIndex]==`getData${currentCategory.name}`)
         normalFields=getNormalFieldsOfEachIndex(firstCatNormalFields[r[eachIndex]],r[eachIndex],x)
-      else if(r[eachIndex].startsWith("mtm"))
-        normalFields=getNormalFieldsOfEachIndex(mtmChoices[r[eachIndex]],r[eachIndex],x["original"])
+      /*else if(r[eachIndex].startsWith("mtm"))
+        normalFields=getNormalFieldsOfEachIndex(mtmChoices[r[eachIndex]],r[eachIndex],x["original"])*/
       else
         normalFields=getNormalFieldsOfEachIndex(otmChoices[r[eachIndex]],r[eachIndex],x)
       let nId
       if(r[eachIndex].startsWith("otm") || r[eachIndex].startsWith("getData"))
         nId=x.id
       else if(r[eachIndex].startsWith("mtm"))
-        nId=normalFields["id"]
+        nId=x["id"]
       if(eachIndex==0){
         totalRoutes={
           ...totalRoutes,
@@ -2932,13 +3487,20 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
             ...totalRoutes[r[eachIndex]],
             [current]:{
               ...totalRoutes[r[eachIndex]][current],
-              [nId]:{
-                normalData:{},
-                total:0,
-                keys:[],
+              //data:[
+                //...totalRoutes[r[eachIndex]][current]["data"],
+                /*{
+                  normalData:{},
+                  total:0,
+                  keys:[],
+                  ...otherAccVars[0]
+                }*/
+
+              //]
+           
                 
-                ...otherAccVars[0]
-              }
+                
+              
             }
           }
         }
@@ -2949,14 +3511,17 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
             ...totalRoutes[r[eachIndex]],
             [current]:{
               ...totalRoutes[r[eachIndex]][current],
-              [nId]:{
-                normalData:{},
-                total:0,
-                keys:[],
-                parentIdentifier:"",
-                parentCategory:"",
-                ...otherAccVars[0]
-              }
+              //data:[
+                //...totalRoutes[r[eachIndex]][current]["data"],
+                /*{
+                  normalData:{},
+                  total:0,
+                  keys:[],
+                  parentIdentifier:"",
+                  parentCategory:"",
+                  ...otherAccVars[0]
+                }*/
+              //]
             }
           }
         }
@@ -2982,45 +3547,141 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
             ...totalRoutes[r[eachIndex]],
             [current]:{
               ...totalRoutes[r[eachIndex]][current],
-              [nId]:{
-                ...totalRoutes[r[eachIndex]][current][x.id],
-                normalData:{...normalFields},
-                total:otherAccVars[1].length,
-                  /*?[...Object.keys(otherAccVars[0])].length:
-                  totalRoutes[r[eachIndex]][current][x.id]["total"]+[...Object.keys(otherAccVars[0])].length,*/
-                keys:otherAccVars[1].length!==0?otherAccVars[1]:[],
-                
-                ...otherAccVars[0]
-              }
+              
+              /*data:[
+                {...totalRoutes[r[eachIndex]][current][x.id],
+                  normalData:{...normalFields},
+                  total:otherAccVars[1].length,
+                    
+                  keys:otherAccVars[1].length!==0?otherAccVars[1]:[],
+                  
+                  ...otherAccVars[0]
+                }
+              ]*/
+              
             }
               
           }
         }
+        if(totalRoutes[r[eachIndex]][current]["data"]==undefined)
+          totalRoutes[r[eachIndex]][current]={...totalRoutes[r[eachIndex]][current],data:[]}
+        let inserta=false
+        /*if(current.startsWith("mtm")){
+          console.log("verificatrad",current)
+          for(let i=0;totalRoutes[r[eachIndex]][current]["data"].length;i++){
+            
+            let pp=totalRoutes[r[eachIndex]][current]["data"][i]
+            /*console.log("verificatrad",current,
+            pp["normalData"][otmChoices[current]["father"]]==normalFields[otmChoices[current]["father"]],
+            pp["normalData"][otmChoices[current]["father"]],
+            normalFields[otmChoices[current]["father"]],
+            pp["normalData"][otmChoices[current]["son"]]==normalFields[otmChoices[current]["son"]],
+            pp["normalData"][otmChoices[current]["son"]],
+            normalFields[otmChoices[current]["son"]])
+            if(!pp["normalData"][otmChoices[current]["father"]]==normalFields[otmChoices[current]["father"]] ||
+            !pp["normalData"][otmChoices[current]["son"]]==normalFields[otmChoices[current]["son"]])
+              inserta=true
+          }
+        }else if(current.startsWith("otm")){
+          console.log("verificatrad",current)
+          for(let i=0;totalRoutes[r[eachIndex]][current]["data"].length;i++){
+            let pp=totalRoutes[r[eachIndex]][current]["data"][i]
+            if(!pp["normalData"]["id"]==normalFields["id"])
+              inserta=true
+          }
+        }else{
+          console.log("verificatrad",current)
+          inserta=true
+        }
+        if(inserta)*/
+        totalRoutes[r[eachIndex]][current]["data"].push({
+          normalData:{...normalFields},
+          total:otherAccVars[1].length,
+            
+          keys:otherAccVars[1].length!==0?otherAccVars[1]:[],
+          
+          ...otherAccVars[0]
+        }
+        )
       }else{
         fieldId=normalFields[`${r[eachIndex]}Id`]
         console.log("checkver",r[eachIndex-1],r[eachIndex],fieldId,parentIdField,totalRoutes)
-        totalRoutes={
+        
+     totalRoutes={
           ...totalRoutes,
           [r[eachIndex]]:{
             ...totalRoutes[r[eachIndex]],
             [current]:{
               ...totalRoutes[r[eachIndex]][current],
-              [nId]:{
+              
+              /*data:[{
                 ...totalRoutes[r[eachIndex]][current][x.id],
                 normalData:{...normalFields,
                   parentIdentifier:totalRoutes[r[eachIndex-1]][`${r[eachIndex]}total`]?.[fieldId]?.["normalData"]?.[parentIdField],
                   //parentCategory:r[eachIndex-1]
                 },
                 total:otherAccVars[1].length,
-                  /*?[...Object.keys(otherAccVars[0])].length:
-                  totalRoutes[r[eachIndex]][current][x.id]["total"]+[...Object.keys(otherAccVars[0])].length,*/
+                  
                 keys:otherAccVars[1].length!==0?otherAccVars[1]:[],
                 //parentIdentifier:totalRoutes[r[eachIndex-1]][`${r[eachIndex]}total`]?.[fieldId]?.["normalData"]?.[parentIdField],
                 ...otherAccVars[0]
               }
+              ]*/
             }
               
           }
+        }
+        let inserta=true
+        if(totalRoutes[r[eachIndex]][current]["data"]==undefined)
+          totalRoutes[r[eachIndex]][current]={...totalRoutes[r[eachIndex]][current],data:[]}
+        if(r[eachIndex].startsWith("mtm")){
+          console.log("vertotalmtm",totalRoutes[r[eachIndex]][current]["data"],normalFields,r[eachIndex],current,otmChoices?.[r?.[eachIndex]])
+          console.log("verificatrad",current,totalRoutes[r[eachIndex]][current]["data"],r[eachIndex],otmChoices[r[eachIndex]],normalFields)
+          for(let i=0;i<totalRoutes[r[eachIndex]][current]["data"].length;i++){
+            
+            let pp=totalRoutes?.[r?.[eachIndex]]?.[current]?.["data"]?.[i]
+            /*console.log("verificatrad",current,
+            pp["normalData"][otmChoices[current]["father"]]==normalFields[otmChoices[current]["father"]],
+            pp["normalData"][otmChoices[current]["father"]],
+            normalFields[otmChoices[current]["father"]],
+            pp["normalData"][otmChoices[current]["son"]]==normalFields[otmChoices[current]["son"]],
+            pp["normalData"][otmChoices[current]["son"]],
+            normalFields[otmChoices[current]["son"]])*/
+            console.log("otmopt",otmChoices[r[eachIndex]],current,pp)
+            if(pp!=undefined){
+              if(pp?.["normalData"]?.[otmChoices?.[r?.[eachIndex]]?.["father"]]==normalFields?.[otmChoices?.[r?.[eachIndex]]["father"]] &&
+              pp?.["normalData"]?.[otmChoices?.[r?.[eachIndex]]?.["son"]]==normalFields?.[otmChoices?.[r?.[eachIndex]]?.["son"]]){
+                inserta=false
+                break
+              }
+              console.log("poiuy",pp?.["normalData"]?.[otmChoices?.[r?.[eachIndex]]?.["father"]],r[eachIndex])
+            }
+          }
+        }else if(r[eachIndex].startsWith("otm")){
+          console.log("vertotal",totalRoutes[r[eachIndex]][current]["data"],normalFields)
+          for(let i=0;i<totalRoutes[r[eachIndex]][current]["data"].length;i++){
+            let pp=totalRoutes?.[r?.[eachIndex]]?.[current]?.["data"]?.[i]
+            console.log("verificatrad",r[eachIndex],/*pp["normalData"]*/totalRoutes[r[eachIndex]][current]["data"])
+
+            if(pp?.["normalData"]!=undefined)
+              if(pp["normalData"]["id"]==normalFields["id"]){
+                inserta=false
+                break
+              }
+          }
+        }
+        if(inserta){
+          totalRoutes[r[eachIndex]][current]["data"].push({
+            normalData:{...normalFields,
+              parentIdentifier:totalRoutes[r[eachIndex-1]][`${r[eachIndex]}total`]?.[fieldId]?.["normalData"]?.[parentIdField],
+            //parentCategory:r[eachIndex-1]
+            },
+            total:otherAccVars[1].length,
+            
+            keys:otherAccVars[1].length!==0?otherAccVars[1]:[],
+          //parentIdentifier:totalRoutes[r[eachIndex-1]][`${r[eachIndex]}total`]?.[fieldId]?.["normalData"]?.[parentIdField],
+            ...otherAccVars[0]
+          })
         }
       }
       console.log("xxx",totalRoutes)
@@ -3925,7 +4586,7 @@ const updateUpperLevel=(routeIndex,son,routes,numericVariables,routeIndexBase)=>
   //routeIndex=routeIndex-1
   console.log("finalObj11",finalObject,routes[routeIndex],routes[routeIndex+1])
   if(routeIndex>=0){
-  let mainArray=totalRoutes[routes[routeIndex]][`${routes[routeIndex+1]}total`]
+  let mainArray=totalRoutes[routes[routeIndex]][`${routes[routeIndex+1]}total`]["data"]
 
   let sonIds=[]
   let nv
@@ -3942,7 +4603,7 @@ const updateUpperLevel=(routeIndex,son,routes,numericVariables,routeIndexBase)=>
   }
   console.log("nv44",nv,mainArray,sonIds,finalObject,routes[routeIndex],son)
     
-  let dataPrev=totalRoutes[routes[routeIndex+1]][`${routes[routeIndex+2]}total`]
+  let dataPrev=totalRoutes[routes[routeIndex+1]][`${routes[routeIndex+2]}total`]["data"]
   let variables= {}
 
   if(finalObject[routes[routeIndex]]==undefined)
@@ -4052,14 +4713,14 @@ const getNumericFields=(cat)=>{
     })
 
   }else if(cat.startsWith("mtm")){
-    mtmChoices?.[cat]?.["normal"].forEach(x=>{
+    otmChoices?.[cat]?.["normal"].forEach(x=>{
       console.log("veryu",x.dataType,x.type)
       if(x.type=="number" && x.dataType!="queryCategory")
         res["normal"].push(x.name1)
 
     })
     console.log("resnormal",res["normal"])
-    mtmChoices?.[cat]?.["compositeFields"].forEach(x=>{
+    otmChoices?.[cat]?.["compositeFields"].forEach(x=>{
       if(x.type=="number")
         res["compositeFields"].push(x.name1)
     })
@@ -4092,7 +4753,7 @@ const updateNumericFields=(key,cat,nf,obj,terminal,first)=>{
       if(finalObject[key][cat][k[i]]==undefined){
         //if(verifyMeetWithConditionsBySegmentBaseLeve1(key,obj[k[i]].normalData)){
       
-          finalObject[key][cat]={...finalObject[key][cat],[k[i]]:{...finalObject[key][cat][k[i]],/*...obj[k[i]].normalData,*/keys:obj[k[i]].keys/*[`${cat}keys`]:obj[k[i]].keys*/}}
+          finalObject[key][cat]={...finalObject[key][cat],[k[i]]:{...finalObject[key][cat][k[i]],...obj[k[i]].normalData,keys:obj[k[i]].keys/*[`${cat}keys`]:obj[k[i]].keys*/}}
       
           if(nf.normal.length>0)
           for(let x=0;x<nf.normal.length;x++){
@@ -4105,6 +4766,10 @@ const updateNumericFields=(key,cat,nf,obj,terminal,first)=>{
           finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${cat}TotalCount`]:0}
         //}
       }
+    }
+    for(let i=0;i<k.length;i++){
+      finalObject[key][cat]={...finalObject[key][cat],[k[i]]:{...finalObject[key][cat][k[i]],parentId:finalObject?.[key]?.[key]?.[k[i]].parentId,/*...obj[k[i]].normalData,*/keys:obj[k[i]].keys/*[`${cat}keys`]:obj[k[i]].keys*/}}
+      console.log("remember",finalObject[key][cat][k[i]],finalObject[key][key])
     }
     //getTotalsOfNumericVariables(finalObject[cat],finalObject[key][cat],cat)
 
@@ -4137,12 +4802,14 @@ const initializeOtherFinalObjectVariables=(key,cat,obj,next,first)=>{
   let k=Object.keys(obj)
   let nf=getNumericFields(cat)  
   let temp=totalRoutes[cat][next]
-
+  console.log("entroposible")
   //if(!isLast(cat)){
     for(let i=0;i<k.length;i++){
-      if(finalObject[key][cat][k[i]]==undefined)
+      if(finalObject[key][cat]?.[k[i]]==undefined){
         //if(verifyMeetWithConditionsBySegmentBaseLeve1(key,obj[k[i]].normalData)){
-          finalObject[key][cat]={...finalObject[key][cat],[k[i]]:{...finalObject[key][cat][k[i]]/*,...obj[k[i]].normalData*/,keys:obj[k[i]].keys/*,[`keys${cat}`]:obj[k[i]].keys}*/}}
+          finalObject[key][cat]={...finalObject[key][cat],[k[i]]:{...finalObject[key][cat][k[i]],...obj[k[i]].normalData,keys:obj[k[i]].keys,/*parentId:finalObject?.[key]?.[key]?.[k?.[i]]?.parentId/*,[`keys${cat}`]:obj[k[i]].keys}*/}}
+          console.log("finalvar",finalObject[key][cat][k[i]],finalObject[key][key])
+      }
         console.log("alyu",finalObject[key][cat])
             if(nf.normal.length>0)
             for(let x=0;x<nf.normal.length;x++){
@@ -4205,7 +4872,7 @@ const updateNumericFieldsRoot=(key,cat,obj,next,first)=>{
       if(finalObject[key][key]?.[k[i]]==undefined){
         //if(verifyMeetWithConditionsBySegmentBaseLeve1(key,obj[k[i]].normalData)){
           finalObject[key][key]={...finalObject[key][key],[k[i]]:{...finalObject[key][key][k[i]],...obj[k[i]].normalData,keys:obj[k[i]].keys}}
-      
+          console.log("revisabien",finalObject[key][key][k[i]],obj[k[i]],key)
     
          /*for(let x=0;x<nf.normal.length;x++){
             finalObject[key][key][k[i]]={...finalObject[key][key][k[i]],[`${nf.normal[x]}tota}
@@ -4226,6 +4893,7 @@ let realGrandTotals={}
 
 //getTotalsOfNumericVariables(finalObject[cat],finalObject[trueKey],cat)
 const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
+  //console.log("catmainkey",cat,mainKey)
   if(realGrandTotals[mainKey]==undefined)
     realGrandTotals[mainKey]={}
   if(realGrandTotals[mainKey][cat]==undefined)
@@ -4236,31 +4904,69 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
 
 //a1 es la categoria hija inmediata, y a2 es la categoria superior inmediata
   let doneMain=[]
+  let arrCheckDoneKeys={}
   Object.keys(a1).forEach(p=>{
-    
+    //let pnuev=a1[p]["id"]
+
+    console.log("a1a2primero",a1,p,a2,a1[p])
     //p son las claves de la categoria inferior
-    let x=Object.keys(a1[p])
+    // si let x=Object.keys(a1[p])
+    let x1=Object.keys(a1[p]).map(y=>a1[p][y]["id"])
+    let x=[]
+    let ind=[]
+    let sete=new Set(x1)
+    x1.forEach((o,index)=>{
+      //if(!x.includes(o)){
+        x.push(o)
+        ind.push(index)
+      //}
+    })
+    console.log("indexx",a1[p],x,ind)
+    //x=Object.keys(a1[p])
+    //console.log("setarr",x1,sete)
+      //let xnuev=x.map(i=>i.id)
+    console.log("a1ver",a1,p,a1[p],a1[p]["id"],x)
     /*if(accumulatedValues[p]==undefined)
       accumulatedValues[p]={}*/
     //x son los ids de la categoria inferior
     
-    
+    if(arrCheckDoneKeys[p]==undefined)
+      arrCheckDoneKeys={...arrCheckDoneKeys,[p]:{}}
     for(let m1=0;m1<x.length;m1++){
+    
       
       Object.keys(a2[p]).forEach(o=>{
+        if(arrCheckDoneKeys[p][o]==undefined)
+          arrCheckDoneKeys[p]={...arrCheckDoneKeys[p],[p]:[]}
         ////console.log("m1",a2[o].keys,x[m1],a2[o].keys.includes(parseInt(x[m1])))
+        console.log("a1a2ver",a1,p,a2)
         let cond
         let keyTransform=x[m1]
-        if(!Number.isInteger(x[m1])){
+        /*if(!Number.isInteger(x[m1])){
           keyTransform=x[m1]
-          cond=a2[p][o].keys.map(x=>x.toString()).includes(keyTransform)
-          console.log("ppppmtm",typeof x[m1],p,a2[p][o].keys,keyTransform,cond,a1[p],a2[p][o].keys.includes(keyTransform))
+          if(o!="data"){
+            cond=a2[p][o].keys.map(x=>x.toString()).includes(keyTransform)
+            console.log("ppppmtm",typeof x[m1],p,a2[p][o].keys,keyTransform,cond,a1[p],a2[p][o].keys.includes(keyTransform))
+          }
 
-        }else{
+        }else{*/
           keyTransform=x[m1]
-          cond=a2[p][o].keys.includes(keyTransform)
-        }
-        console.log("a2orig",a2[p][o].keys,x[m1],p,cond)
+          //if(p.startsWith("otm") || (p.startsWith("mtm") && a1?.[p]?.[ind[m1]]?.parentId==undefined))
+           // cond=a2[p][o].keys.includes(keyTransform)
+          console.log("paramscheck",a1[p][ind[m1]].parentId,a2[p][o].id)
+          //if(p.startsWith("mtm") && a1?.[p]?.[ind[m1]]?.parentId!=undefined)
+          if(a1[p][ind[m1]].parentId>0)
+            cond=a2[p][o].keys.includes(keyTransform) && a1[p][ind[m1]].parentId==a2[p][o].id
+          else{
+            cond=a2[p][o].keys.includes(keyTransform) //&& a1[p][ind[m1]].id==a2[p][o].id
+            console.log("a2checa",a2[p][o].keys,keyTransform,cond)
+          }
+          //if(p=="mtmsbcarrerassbmaterias" && mainKey=="getDatasbarea"){
+            console.log("uiiui",keyTransform,a2[p][o].keys,cond,a2[p][o].keys.includes(keyTransform),a1[p][ind[m1]].parentId==a2[p][o].id,a1[p][ind[m1]].parentId,a2[p][o].id)
+            console.log("awp09",a2[p][o],p,a1[p][ind[m1]])
+          //}
+        //}
+        console.log("a2orig",a2[p][o]["id"],a2[p][o].keys,x[m1],p,cond,a1[p][ind[m1]].parentId)
         if(cond==true){//a2[p][o].keys.includes(x[m1])){//parseInt(x[m1]))){
           /*if(accumulatedValues[p][o]==undefined)
             accumulatedValues[p][o]={}*/
@@ -4295,23 +5001,106 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
           
           let nf=getNumericFields(p)
           //console.log("m1",nf)
-          //if(cat!=p){
+          
+           if(a2[p][o]?.["uniqueIndexes"]==undefined)
+              a2[p][o]={...a2[p][o],uniqueIndexes:[]}
+            if(a2[p][o]?.["realUniqueIndexes"]==undefined)
+              a2[p][o]={...a2[p][o],realUniqueIndexes:[]}
+            
+            if(a1?.[p]?.[ind?.[m1]]?.["uniqueIndexes"]==undefined)
+              a1[p][ind[m1]]["uniqueIndexes"]=[]
+            if(a1[p][ind[m1]]?.["realUniqueIndexes"]==undefined)
+            a1[p][ind[m1]]["realUniqueIndexes"]=[]
+            
+            if(isLast(cat) || p==cat){
+              a2[p][o]["uniqueIndexes"]=[...a2[p][o]["uniqueIndexes"],`${x[m1]}/${a1[p][ind[m1]].parentId}`]
+              a2[p][o]["realUniqueIndexes"]=[...a2[p][o]["realUniqueIndexes"],`${x[m1]}/${a1[p][ind[m1]].parentId}`]
+            }
+            else{
+              a2[p][o]["uniqueIndexes"]=[...a2[p][o]["uniqueIndexes"],...a1[p][ind[m1]]["uniqueIndexes"]]
+              for(let u=0;u<a1[p][ind[m1]]["realUniqueIndexes"].length;u++){
+                if(!a2[p][o]["realUniqueIndexes"].includes(`${a1[p][ind[m1]]["realUniqueIndexes"][u]}`))
+                  a2[p][o]["realUniqueIndexes"]=[...a2[p][o]["realUniqueIndexes"],`${a1[p][ind[m1]]["realUniqueIndexes"][u]}`]
+              }
+            }
+            //}
+            /*if(!a1?.[p]?.[ind?.[m1]]?.["realUniqueIndexes"].includes(x[m1])){
+              a2?.[p]?.[o]?.["realUniqueIndexes"].push(x[m1])
+            }*/
+            /*if(!isLast(cat) && p!=cat){
+              if(!a2[p][o]["uniqueIndexes"].includes(x[m1]))
+                st=a1[p][ind[m1]]["uniqueIndexes"]
+            }*/
             if(nf.normal.length>0){
             for(let j1=0;j1<nf.normal.length;j1++){
               /*if(accumulatedValues[p][o][nf["normal"][j1]]==undefined)
                 accumulated[cat][p][o][nf["normal"][j1]]=[]*/
-              console.log("m1",a2,o,a2[p],a2[p][o],a1,p,x[m1],nf["normal"][j1],`${nf["normal"][j1]}total`,isLast(p),a1[p],a1[p][x[m1]],a1[p][x[m1]][nf["normal"]],a1[p][x[m1]][nf["normal"][j1]],a1[p][x[m1]][`${nf["normal"][j1]}total`],a2[p][o][`${nf["normal"][j1]}total`])
+              //console.log("m1",a2,o,a2[p],a2[p][o],a1,p,x[m1],nf["normal"][j1],`${nf["normal"][j1]}total`,isLast(p),a1[p],a1[p][x[m1]],a1[p][x[m1]][nf["normal"]],a1[p][x[m1]][nf["normal"][j1]],a1[p][x[m1]][`${nf["normal"][j1]}total`],a2[p][o][`${nf["normal"][j1]}total`])
               if(isLast(cat) || p==cat){
               
                 let st=0
-                console.log("prob",a1[p][keyTransform][nf["normal"][j1]],nf["normal"][j1])
-                if(a1[p][keyTransform][nf["normal"][j1]]!=null && a1[p][keyTransform][nf["normal"][j1]]!=undefined){
-                  st=a1[p][keyTransform][nf["normal"][j1]]
+                //console.log("prob",a1[p][keyTransform][nf["normal"][j1]],nf["normal"][j1])
+                let varp1=ind[m1]//Object.keys(a1[p]).filter(u=>a1[p][u]["id"]==keyTransform)[0]
+                //console.log("verfiuio",varp1,keyTransform,a1[p][varp1])
+                //si if(a1[p][keyTransform][nf["normal"][j1]]!=null && a1[p][keyTransform][nf["normal"][j1]]!=undefined){
+                
+                if(a1[p][varp1][nf["normal"][j1]]!=null && a1[p][varp1][nf["normal"][j1]]!=undefined){
+                  st=a1[p][varp1][nf["normal"][j1]]
+                  if(p=="mtmsbmateriassbcarreras")
+                    console.log("fijofijo1",p,varp1,st)
+                
                 }
+                if(a2[p][o]?.[`${nf["normal"][j1]}UniqueTotalArray`]==undefined)
+                  a2[p][o]={...a2[p][o],[`${nf["normal"][j1]}UniqueTotalArray`]:[]}
+                if(a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`]==undefined){
+                  a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`]=[]
+                }
+                /*if(a2[p][o]["realUniqueIndexes"].includes(x[m1]) &&
+                !a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`].includes(x[m1])){
+                  a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`]=[...a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`],st]
+                  if(a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`]==undefined)
+                    a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`]=[]
+                    a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`].push(x[m1])
+
+                  
+                }*/
                 a2[p][o][`${nf["normal"][j1]}total`]+=st
+                if(o==8){
+                  console.log("pivpiv",a2[p][o][`${nf["normal"][j1]}total`],st,ind[m1])
+                }
+
+                /*nuevo
+                if(a2[p][o]?.["uniqueIndexes"]==undefined)
+                  a2[p][o]={...a2[p][0],uniqueIndexes:[]}
+                a2[p][o]["uniqueIndexes"]=[...a2[p][o]["uniqueIndexes"],x[m1]]  
+                //term nuevo
+                if(a2[p][o]?.["realUniqueIndexes"]==undefined)
+                  a2[p][o]={...a2[p][0],realUniqueIndexes:[]}
+                a2[p][o]["realUniqueIndexes"]=[...a2[p][o]["realUniqueIndexes"],x[m1]]  
+               */ 
+
+
                 if(a2[p][o][`${nf["normal"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["normal"][j1]}Acummulated`]==null)
                   a2[p][o][`${nf["normal"][j1]}Acummulated`]=[]
+                
                 a2[p][o][`${nf["normal"][j1]}Acummulated`].push(st)
+                //if(m1==x.length-1){
+                  /*console.log("realUnVer",a2[p][o]["realUniqueIndexes"],a2[p][o]["uniqueIndexes"],a2[p][o][`${nf["normal"][j1]}Acummulated`])
+                  for(let pp=0;pp<a2[p][o]["realUniqueIndexes"].length;pp++){
+                    let toSearch=a2[p][o]["realUniqueIndexes"][pp]
+                    for(let pq=0;pq<a2[p][o]["uniqueIndexes"].length;pq++){
+                      let lookFine=a2[p][o]["uniqueIndexes"][pq]
+                      console.log("tosearch",p,toSearch,lookFine)
+                      if(toSearch==lookFine){
+                        let valRight=a2[p][o][`${nf["normal"][j1]}Acummulated`][pq]
+                        console.log("valRight",valRight)
+                        a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`]=[...a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`],valRight]
+                        break;
+                      }
+                    }
+                  }*/
+               // }
+
                 /*if(realGrandTotals[mainKey][p]==undefined)
                   realGrandTotals[mainKey][p]={}
                   if(realGrandTotals[p]==undefined)
@@ -4331,7 +5120,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
               
               }else{
                 let st=0
-                console.log("prob",a1[p][keyTransform][`${nf["normal"][j1]}total`],nf["normal"][j1])
+                //console.log("prob",a1[p][keyTransform][`${nf["normal"][j1]}total`],nf["normal"][j1])
                 
                 /*if(a1[p][keyTransform][`${nf["normal"][j1]}total`]!=null && a1[p][keyTransform][`${nf["normal"][j1]}total`]!=undefined){
                   if(p.startsWith("otm"))
@@ -4343,13 +5132,36 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                       st=a1[p][keyTransform][`${nf["normal"][j1]}total`]
                   }
                 }*/
-                st=a1[p][keyTransform][`${nf["normal"][j1]}total`]
+                let varp2=ind[m1]//Object.keys(a1[p]).filter(i=>a1[p][i]["id"]==keyTransform)[0]
+                st=a1[p][varp2][`${nf["normal"][j1]}total`]
                 a2[p][o][`${nf["normal"][j1]}total`]+=st
                 if(a2[p][o][`${nf["normal"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["normal"][j1]}Acummulated`]==null)
                   a2[p][o][`${nf["normal"][j1]}Acummulated`]=[]
-                if(a1[p][keyTransform][`${nf["normal"][j1]}Acummulated`]==undefined || a1[p][keyTransform][`${nf["normal"][j1]}Acummulated`]==null)
-                  a1[p][keyTransform][`${nf["normal"][j1]}Acummulated`]=[]
-                /*if(realGrandTotals[mainKey][p]==undefined)
+                if(a1[p][varp2][`${nf["normal"][j1]}Acummulated`]==undefined || a1[p][varp2][`${nf["normal"][j1]}Acummulated`]==null)
+                  a1[p][varp2][`${nf["normal"][j1]}Acummulated`]=[]
+                if(a1[p][varp2][`${nf["normal"][j1]}AcummulatedUnique`]==undefined)
+                  a1[p][varp2][`${nf["normal"][j1]}AcummulatedUnique`]=[]
+                if(a2[p][o][`${nf["normal"][j1]}AcummulatedUnique`]==undefined)
+                  a2[p][o][`${nf["normal"][j1]}AcummulatedUnique`]=[]
+                
+                if(a2[p][o]?.[`${nf["normal"][j1]}UniqueTotalArray`]==undefined)
+                  a2[p][o]={...a2[p][o],[`${nf["normal"][j1]}UniqueTotalArray`]:[]}
+                if(a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`]==undefined){
+                  a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`]=[]
+                }
+                
+               //for(let pp=0;pp<a1[p][varp2]["realUniqueIndexes"].length;pp++){
+                  /*  if(!a2[p][o]["realUniqueIndexes"].includes(a1[p][varp2]["realUniqueIndexes"][pp]) &&
+                    !a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`].includes(x[m1])){
+                      a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`]=[...a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`],a1[p][varp2][`${nf["normal"][j1]}UniqueTotalArray`]]
+                    if(a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`]==undefined)
+                      a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`]=[]
+                      a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`].push(x[m1])
+                    }*/
+                 
+                 
+                
+                  /*if(realGrandTotals[mainKey][p]==undefined)
                   realGrandTotals[mainKey][p]={}
                
                 if(realGrandTotals[mainKey][p]?.[`${nf["normal"][j1]}total`]==undefined)
@@ -4358,13 +5170,45 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 
                 a2[p][o][`${nf["normal"][j1]}Acummulated`]=[
                   ...a2[p][o][`${nf["normal"][j1]}Acummulated`],
-                  ...a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]
-                
+                  //...a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]
+                  ...a1[p][varp2][`${nf["normal"][j1]}Acummulated`]
                 ]
+                //if(m1==x.length-1){
+                  //console.log("realUnVer",a2[p][o]["realUniqueIndexes"],a2[p][o]["uniqueIndexes"],a2[p][o][`${nf["normal"][j1]}Acummulated`])
+
+                 /*for(let pp=0;pp<a2[p][o]["realUniqueIndexes"].length;pp++){
+                    let toSearch=a2[p][o]["realUniqueIndexes"][pp]
+                    for(let pq=0;pq<a2[p][o]["uniqueIndexes"].length;pq++){
+                      let lookFine=a2[p][o]["uniqueIndexes"][pq]
+                      console.log("tosearch",p,toSearch,lookFine)
+                      if(toSearch==lookFine){
+                        let valRight=a2[p][o][`${nf["normal"][j1]}Acummulated`][pq]
+                        console.log("valright",valRight)
+                        a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`]=[...a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`],valRight]
+                        break
+
+                      }
+                    }
+                  //}
+                }*/
+
+                
+              /*if(a2[p][o]?.[`${nf["normal"][j1]}UniqueTotalArray`]==undefined)
+                a2[p][o]={...a2[p][o],[`${nf["normal"][j1]}UniqueTotalArray`]:[]}
+              
+              if(!arrCheckDoneKeys[p][p].includes(x[m1])){
+                a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`]=[
+                  ...a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`],
+                  //...a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]
+                  st
+
+                ]
+                arrCheckDoneKeys[p][p].push(x[m1])
+              }*/
                 if(a2[p][o][`${nf["normal"][j1]}AcummulatedSonBy${cat}`]==undefined || a2[p][o][`${nf["normal"][j1]}AcummulatedSonBy${cat}`]==null)
                   a2[p][o][`${nf["normal"][j1]}AcummulatedSonBy${cat}`]=[]
-                if(a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]==undefined || a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]==null)
-                  a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]=[]
+                if(a1?.[p]?.[varp2]?.[`${nf["normal"]?.[j1]}Acummulated`]==undefined || a1?.[p]?.[varp2]?.[`${nf["normal"]?.[j1]}Acummulated`]==null)
+                  a1[p][varp2][`${nf["normal"][j1]}Acummulated`]=[]
                 
                 a2[p][o][`${nf["normal"][j1]}AcummulatedSonBy${cat}`].push(st)
 
@@ -4377,12 +5221,12 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
             if(nf.compositeFields.length>0){ 
             for(let j1=0;j1<nf.compositeFields.length;j1++){
               
-              console.log("m1",a2,o,a2[p],a2[p][o],a1,p,x[m1],nf["compositeFields"][j1],`${nf["compositeFields"][j1]}total`,isLast(p),a1[p],a1[p][x[m1]],a1[p][x[m1]][nf["compositeFields"]],a1[p][x[m1]][nf["compositeFields"][j1]],a1[p][x[m1]][`${nf["compositeFields"][j1]}total`],a2[p][o][`${nf["compositeFields"][j1]}total`])
-              console.log("catprim",cat,p)
+             // console.log("m1",a2,o,a2[p],a2[p][o],a1,p,x[m1],nf["compositeFields"][j1],`${nf["compositeFields"][j1]}total`,isLast(p),a1[p],a1[p][x[m1]],a1[p][x[m1]][nf["compositeFields"]],a1[p][x[m1]][nf["compositeFields"][j1]],a1[p][x[m1]][`${nf["compositeFields"][j1]}total`],a2[p][o][`${nf["compositeFields"][j1]}total`])
+              //console.log("catprim",cat,p)
               if((isLast(cat) || cat==p)){
               
                 let st=0
-                console.log("prob",a1[p][keyTransform][nf["compositeFields"][j1]],nf["compositeFields"][j1])
+                //console.log("prob",a1[p][keyTransform][nf["compositeFields"][j1]],nf["compositeFields"][j1])
                 /*if((a1[p][x[m1]][nf["compositeFields"][j1]]!=null && a1[p][keyTransform][nf["compositeFields"][j1]]!=undefined) ||
                 (a1[p][x[m1]][`${nf["compositeFields"][j1]}total`]!=null && a1[p][keyTransform][`${nf["compositeFields"][j1]}total`]!=undefined)){
                   if(p.startsWith("otm"))
@@ -4397,9 +5241,11 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                   
                   console.log("st77",st)
                 }*/
-                st=a1[p][keyTransform][`${nf["compositeFields"][j1]}`]
+                let varp1=ind[m1]
+                st=a1[p][varp1][`${nf["compositeFields"][j1]}`]
 
-                  
+                if(a2[p][o]?.[`${nf["compositeFields"][j1]}UniqueTotalArray`]==undefined)
+                  a2[p][o]={...a2[p][o],[`${nf["compositeFields"][j1]}UniqueTotalArray`]:[]}                  
                   
                 a2[p][o][`${nf["compositeFields"][j1]}total`]+=st
                 console.log("paramsioio",p,o,keyTransform,a2[p][o][`${nf["compositeFields"][j1]}total`])
@@ -4425,7 +5271,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
               }else{
                 console.log("jorgejorgetoro")
                 let st=0
-                console.log("prob",a1[p][keyTransform][`${nf["compositeFields"][j1]}total`],nf["compositeFields"][j1])
+               // console.log("prob",a1[p][varp2][`${nf["compositeFields"][j1]}total`],nf["compositeFields"][j1])
                 
                 /*if((a1[p][keyTransform][`${nf["compositeFields"][j1]}total`]!=null && a1[p][keyTransform][`${nf["compositeFields"][j1]}total`]!=undefined) ||
                 (a1[p][keyTransform][`${nf["compositeFields"][j1]}`]!=null && a1[p][keyTransform][`${nf["compositeFields"][j1]}`]!=undefined)){
@@ -4439,9 +5285,12 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                   }
                   console.log("st77",st)
                 }*/
-                console.log("paramsioio",p,o,x[keyTransform],a2[p][o][`${nf["compositeFields"][j1]}total`])
+                if(a2[p][o]?.[`${nf["compositeFields"][j1]}UniqueTotalArray`]==undefined)
+                  a2[p][o]={...a2[p][o],[`${nf["compositeFields"][j1]}UniqueTotalArray`]:[]}
 
-                st=a1[p][keyTransform][`${nf["compositeFields"][j1]}total`]
+                console.log("paramsioio",p,o,x[keyTransform],a2[p][o][`${nf["compositeFields"][j1]}total`])
+                let varp3=ind[m1]
+                st=a1[p][varp3][`${nf["compositeFields"][j1]}total`]
                 console.log("entroaqui88",a1)
                 a2[p][o][`${nf["compositeFields"][j1]}total`]+=st
                 console.log("suma",a2[p][o][`${nf["compositeFields"][j1]}total`])
@@ -4452,21 +5301,21 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                   realGrandTotals[mainKey][p][`${nf["compositeFields"][j1]}total`]=0
                 
                 realGrandTotals[mainKey][p]={...realGrandTotals[mainKey][p],[`${nf["compositeFields"][j1]}total`]:realGrandTotals[mainKey][p][`${nf["compositeFields"][j1]}total`]+st}*/
-                if(a1[p][keyTransform][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]==null)
-                  a1[p][keyTransform][`${nf["compositeFields"][j1]}Acummulated`]=[]
+                if(a1[p][varp3][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a1[p][varp3][`${nf["compositeFields"][j1]}Acummulated`]==null)
+                  a1[p][varp3][`${nf["compositeFields"][j1]}Acummulated`]=[]
 
                 if(a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]==null)
                   a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]=[]
                 
                 a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]=[
                   ...a2[p][o][`${nf["compositeFields"][j1]}Acummulated`],
-                  ...a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]
+                  ...a1[p][varp3][`${nf["compositeFields"][j1]}Acummulated`]
                 ]
 
-                if(a2[p][o][`${nf["compositeFields"][j1]}AcummulatedSonBy${cat}`]==undefined || a2[p][o][`${nf["normal"][j1]}AcummulatedSonBy${cat}`]==null)
+                if(a2[p][o]?.[`${nf["compositeFields"][j1]}AcummulatedSonBy${cat}`]==undefined || a2[p][o]?.[`${nf["compositeFields"][j1]}AcummulatedSonBy${cat}`]==null)
                   a2[p][o][`${nf["compositeFields"][j1]}AcummulatedSonBy${cat}`]=[]
-                if(a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]==null)
-                  a1[p][x[m1]][`${nf["compositeFields"][j1]}Acummulated`]=[]
+                if(a1[p][varp3]?.[`${nf["compositeFields"][j1]}Acummulated`]==undefined || a1[p][x[m1]]?.[`${nf["compositeFields"][j1]}Acummulated`]==null)
+                  a1[p][varp3][`${nf["compositeFields"][j1]}Acummulated`]=[]
                 
                 a2[p][o][`${nf["compositeFields"][j1]}AcummulatedSonBy${cat}`].push(st)
 
@@ -4474,10 +5323,21 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
               }
             }
             }
+            
             if(isLast(cat) || p==cat){
+              console.log("a2pp5",a2[p][o])
+              if(a2?.[p]?.[o]?.[`${p}TotalCount`]==undefined)
+                a2[p][o][`${p}TotalCount`]=0  
               a2[p][o][`${p}TotalCount`]++
-            }else
-              a2[p][o][`${p}TotalCount`]+=a1[p][x[m1]][`${p}TotalCount`]
+            }else{
+              console.log("a2pp5",a2[p][o])
+              let varp3=Object.keys(a1[p]).filter(o=>a1[p][o]["id"]==keyTransform)[0]
+
+              if(a2?.[p]?.[o]?.[`${p}TotalCount`]==undefined)
+                a2[p][o][`${p}TotalCount`]=0  
+              a2[p][o][`${p}TotalCount`]+=a1[p][varp3][`${p}TotalCount`]
+            }
+              
           }
           /*else{
             for(let j1=0;j1<nf.normal.length;j1++){
@@ -4512,6 +5372,102 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
 
   
   })
+
+  Object.keys(a1).forEach(p=>{
+    Object.keys(a2[p]).forEach(o=>{
+      let nf=getNumericFields(p)
+      if(nf.normal.length>0){
+        for(let j1=0;j1<nf.normal.length;j1++){
+          if(isLast(cat) || p==cat){
+            if(a2[p][o]["realUniqueIndexes"]!=undefined){
+              for(let pp=0;pp<a2[p][o]["realUniqueIndexes"].length;pp++){
+                let toSearch=a2[p][o]["realUniqueIndexes"][pp]
+                for(let pq=0;pq<a2[p][o]["uniqueIndexes"].length;pq++){
+                  let lookFine=a2[p][o]["uniqueIndexes"][pq]
+                  console.log("tosearch",p,toSearch,lookFine)
+                  if(toSearch==lookFine){
+                    if(a2[p][o]?.[`${nf["normal"][j1]}UniqueTotal`]==undefined)
+                      a2[p][o][`${nf["normal"][j1]}UniqueTotal`]=0 
+                    let valRight=a2[p][o][`${nf["normal"][j1]}Acummulated`][pq]
+                    console.log("valRight",valRight)
+                    a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`]=[...a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`],valRight]
+                    a2[p][o][`${nf["normal"][j1]}UniqueTotal`]=a2[p][o][`${nf["normal"][j1]}UniqueTotal`]+valRight
+                    break;
+                  }
+                }
+              }
+            }
+          }else{
+            if(a2[p][o]["realUniqueIndexes"]!=undefined){
+              for(let pp=0;pp<a2[p][o]["realUniqueIndexes"].length;pp++){
+                let toSearch=a2[p][o]["realUniqueIndexes"][pp]
+                for(let pq=0;pq<a2[p][o]["uniqueIndexes"].length;pq++){
+                  let lookFine=a2[p][o]["uniqueIndexes"][pq]
+                  console.log("tosearch",p,toSearch,lookFine)
+                  if(toSearch==lookFine){
+                    if(a2[p][o]?.[`${nf["normal"][j1]}UniqueTotal`]==undefined)
+                      a2[p][o][`${nf["normal"][j1]}UniqueTotal`]=0 
+                    let valRight=a2[p][o][`${nf["normal"][j1]}Acummulated`][pq]
+                    console.log("valright",valRight)
+                    a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`]=[...a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`],valRight]
+                    a2[p][o][`${nf["normal"][j1]}UniqueTotal`]=a2[p][o][`${nf["normal"][j1]}UniqueTotal`]+valRight
+                    break
+
+                  }
+                }
+              //}
+              }
+            }
+          }
+        }
+        for(let j1=0;j1<nf.compositeFields.length;j1++){
+          if(isLast(cat) || p==cat){
+            if(a2[p][o]["realUniqueIndexes"]!=undefined){
+              for(let pp=0;pp<a2[p][o]["realUniqueIndexes"].length;pp++){
+                let toSearch=a2[p][o]["realUniqueIndexes"][pp]
+                for(let pq=0;pq<a2[p][o]["uniqueIndexes"].length;pq++){
+                  let lookFine=a2[p][o]["uniqueIndexes"][pq]
+                  console.log("tosearch",p,toSearch,lookFine)
+                  if(toSearch==lookFine){
+                    if(a2[p][o]?.[`${nf["compositeFields"][j1]}UniqueTotal`]==undefined)
+                      a2[p][o][`${nf["compositeFields"][j1]}UniqueTotal`]=0 
+                    let valRight=a2[p][o][`${nf["compositeFields"][j1]}Acummulated`][pq]
+                    console.log("valRight",valRight)
+                    a2[p][o][`${nf["compositeFields"][j1]}UniqueTotalArray`]=[...a2[p][o][`${nf["compositeFields"][j1]}UniqueTotalArray`],valRight]
+                    a2[p][o][`${nf["compositeFields"][j1]}UniqueTotal`]=a2[p][o][`${nf["compositeFields"][j1]}UniqueTotal`]+valRight
+                    break;
+                  }
+                }
+              }
+            }
+          }else{
+            if(a2[p][o]["realUniqueIndexes"]!=undefined){
+              for(let pp=0;pp<a2[p][o]["realUniqueIndexes"].length;pp++){
+                let toSearch=a2[p][o]["realUniqueIndexes"][pp]
+                for(let pq=0;pq<a2[p][o]["uniqueIndexes"].length;pq++){
+                  let lookFine=a2[p][o]["uniqueIndexes"][pq]
+                  console.log("tosearch",p,toSearch,lookFine)
+                  if(toSearch==lookFine){
+                    if(a2[p][o]?.[`${nf["compositeFields"][j1]}UniqueTotal`]==undefined)
+                      a2[p][o][`${nf["compositeFields"][j1]}UniqueTotal`]=0 
+                    let valRight=a2[p][o][`${nf["compositeFields"][j1]}Acummulated`][pq]
+                    console.log("valright",valRight)
+                    a2[p][o][`${nf["compositeFields"][j1]}UniqueTotalArray`]=[...a2[p][o][`${nf["compositeFields"][j1]}UniqueTotalArray`],valRight]
+                    a2[p][o][`${nf["compositeFields"][j1]}UniqueTotal`]=a2[p][o][`${nf["compositeFields"][j1]}UniqueTotal`]+valRight
+                    break
+
+                  }
+                }
+              //}
+              }
+            }
+          }
+        }
+      }
+    })
+  })
+
+
   let nf=getNumericFields(cat)
   
   
@@ -4600,7 +5556,7 @@ const initializeFinalObjectVariables=(key,cat,next,first)=>{
   
     let others=Object.keys(finalObject?.[cat]).forEach(l=>{
       console.log("comprob",totalRoutes,l,totalRoutes[cat][l],totalRoutes[key][`${cat}total`])
-      initializeOtherFinalObjectVariables(key,l,totalRoutes[key][`${cat}total`],cat,first)
+      initializeOtherFinalObjectVariables(key,l,totalRoutes[key][`${cat}total`]["data"],cat,first)
       /*Object.keys(totalRoutes[cat].[l]).forEach(i=>{
       for(let u=0;u<i.length;u++){
       //let j=`${i[u]}total`
@@ -4631,7 +5587,7 @@ const updateFinalObject=(data,key,cat,terminal,next,first)=>{
   let data1,k
   if(!isLast(key)){
     //k=Object.keys(totalRoutes[key])[0]
-    data1=totalRoutes[key][`${cat}total`]
+    data1=totalRoutes[key][`${cat}total`]["data"]
     console.log("keynotterminal",cat,next,data1,key,next,first)
     updateNumericFieldsRoot(key,cat,data1,next,first)
     updateNumericFields(key,cat,nf,data1,terminal,first)
@@ -4641,18 +5597,22 @@ const updateFinalObject=(data,key,cat,terminal,next,first)=>{
 }
 
 const updateTerminalFinalObject=(data,cat)=>{
-  let res={}
+  let res=[]
+  //if(res[cat]==undefined)
+    //res[cat]=[]
   console.log("alert1",data)
   if(finalObject[cat]==undefined)
-    finalObject={...finalObject,[cat]:{[cat]:{}}}
-  Object.keys(data).forEach(u=>{
-    console.log("alert22",verifyMeetWithConditionsBySegmentBaseLeve1(cat,data[u].normalData))
-    if(verifyMeetWithConditionsBySegmentBaseLeve1(cat,data[u].normalData)){
-      res={[cat]:{...res[cat],[data[u].normalData.id]:{...data[u].normalData}}}
+    finalObject={...finalObject,[cat]:{[cat]:[]}}
+  data.forEach(u=>{
+    console.log("alert22"/*,verifyMeetWithConditionsBySegmentBaseLeve1(cat,u.normalData)*/,u)
+    //if(verifyMeetWithConditionsBySegmentBaseLeve1(cat,data[u].normalData)){
+      //res={[cat]:[...res[cat],{...data[u].normalData}]}
+      //res.push(u.normalData)
+      res=[...res,{...u.normalData}]
       console.log("res444",res)
-    }
+    //}
   })
-  finalObject={...finalObject,[cat]:res}
+  finalObject={...finalObject,[cat]:{[cat]:res}}
   console.log("fobjnew",finalObject)
   
 
@@ -4665,17 +5625,17 @@ const getSegmentData=(key,cat,ultimo,next,first)=>{
  
     if(isLast(cat)){
       data=totalRoutes[cat]["undefinedtotal"]
-      console.log("dataend",data)
-      updateTerminalFinalObject(data,cat)
+      console.log("dataend",data["data"])
+      updateTerminalFinalObject(data["data"],cat)
 
     }else{
       let k=Object.keys(totalRoutes[cat])[0]
-      data=totalRoutes[cat][next]
+      data=totalRoutes[cat][next]["data"]
 
     }
     //console.log("datafinal",key,cat,isLast(cat),totalRoutes[key][`${cat}total`],next)
     if(!isLast(key))
-      updateFinalObject(totalRoutes[key][`${cat}total`],key,cat,false,next,first)
+    updateFinalObject(totalRoutes[key][`${cat}total`]["data"],key,cat,false,next,first)
     else
       console.log("ju")
       //updateFinalObject(totalRoutes[key]["undefinedtotal"],key,cat,true,next)
@@ -4695,17 +5655,24 @@ const getSegmentsData=(key,cats,j)=>{
   }
 }
 
-const calculateMedia=(data,field,arrayName,variableName)=>{
+const calculateMedia=(data,field,arrayName,variableName,arrayNameUnique,variableNameUnique)=>{
   let cero=0
+  console.log("datamedia",data)
   Object.keys(data).forEach(y=>{
     if(data[y]?.[variableName]==undefined)
       data[y][variableName]=cero
-    }
-  )
+    
+    if(data[y]?.[variableNameUnique]==undefined)
+      data[y][variableNameUnique]=cero
+    
+
+  })
   Object.keys(data).forEach(y=>{
     let values=data[y]?.[arrayName]
+    let valuesUnique=data[y]?.[arrayNameUnique]
     console.log("arraynamemedia",arrayName,values)
     let media=0
+    let mediaUnique=0
     if(values!=undefined && values?.length>0){
       values.forEach(x=>media+=x)
       media=media/values.length
@@ -4713,24 +5680,39 @@ const calculateMedia=(data,field,arrayName,variableName)=>{
         data[y][variableName]=media
     }else
       data[y][variableName]=0
-    
+    if(valuesUnique!=undefined && valuesUnique?.length>0){
+      valuesUnique.forEach(x=>mediaUnique+=x)
+      mediaUnique=mediaUnique/valuesUnique.length
+      //if(data[y][variableName]==undefined)
+        data[y][variableNameUnique]=mediaUnique
+    }else
+      data[y][variableNameUnique]=0
+  
   })
  
 }
-const problem=(data,field,arrayName,variableName)=>{
+const problem=(data,field,arrayName,variableName,arrayNameUnique,variableNameUnique)=>{
   let sortedValues
   let median
+  let sortedValuesUnique
+  let medianUnique
   let cero=0
   Object.keys(data).forEach(y=>{
     if(data[y]?.[variableName]==undefined)
       data[y][variableName]=cero.toFixed(2)
-    }
-  )
+    if(data[y]?.[variableNameUnique]==undefined)
+      data[y][variableNameUnique]=cero.toFixed(2)
+    
+
+  })
   Object.keys(data).forEach(y=>{
     sortedValues=data[y]?.[arrayName]
+    sortedValuesUnique=data[y]?.[arrayNameUnique]
+
     console.log("arraynamemedia",arrayName,sortedValues)
 
     median=0
+    medianUnique=0
     if(sortedValues!=undefined && sortedValues?.length>0){
       sortedValues.sort((a,b)=>a-b)
       console.log("sortedValues",sortedValues)
@@ -4748,6 +5730,25 @@ const problem=(data,field,arrayName,variableName)=>{
         data[y][variableName]=0
         data[y][`${arrayName}minimum`]=0
         data[y][`${arrayName}maximum`]=0
+    }
+
+    if(sortedValuesUnique!=undefined && sortedValuesUnique?.length>0){
+      sortedValuesUnique.sort((a,b)=>a-b)
+      console.log("sortedValues",sortedValues)
+      let length=sortedValuesUnique.length
+      if(length%2==1){
+        medianUnique=sortedValuesUnique[Math.floor(length/2)]
+      }else{
+        medianUnique=(sortedValuesUnique[(length/2)-1]+sortedValuesUnique[(length/2)])/2
+      }
+      //if(data[y][variableName]==undefined)
+        data[y][variableNameUnique]=medianUnique
+        data[y][`${arrayName}Uniqueminimum`]=sortedValuesUnique[0]
+        data[y][`${arrayName}Uniquemaximum`]=sortedValuesUnique[sortedValuesUnique.length-1]
+    }else{
+        data[y][variableNameUnique]=0
+        data[y][`${arrayName}Uniqueminimum`]=0
+        data[y][`${arrayName}Uniquemaximum`]=0
     }
     
   })
@@ -4825,19 +5826,19 @@ const getStatistics=(data,cat,order)=>{
       if(y.startsWith("otm")){
         arr=otmChoices[y]
       }else if(y.startsWith("mtm"))
-        arr=mtmChoices[y]
+        arr=otmChoices[y]
         arr.normal.forEach(x=>{
           if(x.type=="number"){
             console.log("tttt",data[y],x.name1)
-            calculateMedia(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Media`)
-            problem(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Median`)
+            calculateMedia(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Media`,`${x.name1}UniqueTotalArray`,`${x.name1}UniqueMedia`)
+            problem(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Median`,`${x.name1}UniqueTotalArray`,`${x.name1}UniqueMedian`)
           }
         })
         arr.compositeFields.forEach(x=>{
           if(x.type=="number"){
             console.log("tttt",data[y],x.name1)
-            calculateMedia(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Media`)
-            problem(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Median`)
+            calculateMedia(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Media`,`${x.name1}UniqueTotalArray`,`${x.name1}UniqueMedia`)
+            problem(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Median`,`${x.name1}UniqueTotalArray`,`${x.name1}UniqueMedian`)
           }
         })
       }
@@ -4872,7 +5873,7 @@ const getStatistics=(data,cat,order)=>{
                       if(g.startsWith("otm")){
                         arr=otmChoices[g]
                       }else if(g.startsWith("mtm"))
-                        arr=mtmChoices[g]
+                        arr=otmChoices[g]
                       
                       console.log("ggg",g)
                       arr.normal.forEach(x=>{
@@ -4977,7 +5978,7 @@ const calculateMediaAndMediansOfRecords=(category)=>{
           if(y.startsWith("otm")){
             arr=otmChoices[y]
           }else if(y.startsWith("mtm"))
-            arr=mtmChoices[y]
+            arr=otmChoices[y]
         
           arr.normal.forEach(i=>{
             if(i.type=="number"){
@@ -5034,7 +6035,7 @@ const calculateMediaAndMediansOfRecords=(category)=>{
           if(y.startsWith("otm")){
             arr=otmChoices[y]
           }else if(y.startsWith("mtm"))
-            arr=mtmChoices[y]
+            arr=otmChoices[y]
         
           arr.normal.forEach(i=>{
             if(i.type=="number"){
@@ -5088,7 +6089,7 @@ const calculateMediaAndMediansOfRecords=(category)=>{
           if(y.startsWith("otm")){
             arr=otmChoices[y]
           }else if(y.startsWith("mtm"))
-            arr=mtmChoices[y]
+            arr=otmChoices[y]
         
           arr.normal.forEach(i=>{
             if(i.type=="number"){
@@ -5173,7 +6174,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
           if(y.startsWith("otm"))
             arr=otmChoices[y]
           else if(y.startsWith("mtm"))
-            arr=mtmChoices[y]
+            arr=otmChoices[y]
           arr.normal.forEach(i=>{
             if(i.type=="number"){
               finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
@@ -5199,7 +6200,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
           if(y.startsWith("otm")){
             arr=otmChoices[y]
           }else if(y.startsWith("mtm"))
-            arr=mtmChoices[y]
+            arr=otmChoices[y]
           
           arr.normal.forEach(i=>{
             if(i.type=="number"){
@@ -5225,7 +6226,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
           if(y.startsWith("otm")){
             arr=otmChoices[y]
           }else if(y.startsWith("mtm"))
-            arr=mtmChoices[y]
+            arr=otmChoices[y]
         
           arr.normal.forEach(i=>{
             if(i.type=="number"){
@@ -5267,6 +6268,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
     trueKey=Object.keys(order[i])[0]
     
     cats=order[i][trueKey]
+    console.log("truekey1",trueKey,cats)
     getSegmentsData(trueKey,cats,i)
   }
   console.log("parcial2222",finalObject)
@@ -5310,13 +6312,15 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
         
   
     }
-    getStatistics(finalObject[trueKey],trueKey,order)
+    console.log("finalobject88",finalObject)
+  
+   getStatistics(finalObject[trueKey],trueKey,order)
     
-    verifyMeetWithConditionsBySegmentBaseLevel2(trueKey,finalObject[trueKey])
+   //verifyMeetWithConditionsBySegmentBaseLevel2(trueKey,finalObject[trueKey])
 
   }
 
-  for(let i=order.length-1;i>=0;i--){
+/*  for(let i=order.length-1;i>=0;i--){
     trueKey=Object.keys(order[i])[0]
     cats=order[i][trueKey]
     for(let j=0;j<cats.length;j+=2){
@@ -6390,6 +7394,7 @@ const getSubsetsBlock=(order,y)=>{
   />
 }
 const getDataReportTest=(routes,finalRoutes)=>{
+  console.log("routesfinalroutes",routes,finalRoutes)
   const root=`getData${currentCategory.name}`
   totalRoutes={}
   //for(let i=0;i<finalRoutes.length;i++){
@@ -6404,7 +7409,7 @@ const getDataReportTest=(routes,finalRoutes)=>{
     }
     let y=findTheLowerLevelCategory1(getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])),[],getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])))
 
-    console.log("yfinal",y)
+    console.log("yfinal",totalRoutes,y)
     getInverseTraverseSonTotalsWithConditionsWhereRoutes1(routes,finalRoutes,y)
     let order=getOrderToPrintTables(y)
     console.log("ordertoprinttables",order,y)
@@ -6660,7 +7665,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
       console.log("otmchoices22",otmChoices[segment])
       let arr
     if(category.startsWith("mtm"))
-      arr=mtmChoices[category]
+      arr=otmChoices[category]
     else if(category.startsWith("otm"))
       arr=otmChoices[category]
       let normal=arr.normal.length
@@ -6695,7 +7700,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     let temp=[]
     let arr
     if(segment.startsWith("mtm"))
-      arr=mtmChoices[segment]
+      arr=otmChoices[segment]
     else if(segment.startsWith("otm"))
       arr=otmChoices[segment]
     let normal=arr.normal.filter(x=>{
@@ -6912,7 +7917,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
       }else{
         let arr
         if(category.startsWith("mtm"))
-          arr=mtmChoices[category]
+          arr=otmChoices[category]
         else if(category.startsWith("otm"))
           arr=otmChoices[category]
         len=1+arr.normal.length+
@@ -6963,7 +7968,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
   }else{
     let arr
     if(a.startsWith("mtm"))
-      arr=mtmChoices[a]
+      arr=otmChoices[a]
     else if(a.startsWith("otm"))
       arr=otmChoices[a]
       let lastIndexNumber=-1
@@ -7728,9 +8733,9 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
   )
 }
   return <div className="reports">
-    <BreadCrumb toggleDialog={toggleDialog}/>
-    {openDialog && 
-    <SearchSubcategories
+    {/*<BreadCrumb toggleDialog={toggleDialog}/>*/}
+    {/*openDialog && 
+    SearchSubcategories
       open={openDialog}
       toggleDialog={toggleDialog}/>}
     <FormButton
@@ -7739,7 +8744,7 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
         ////console.log("Add new report")
       }}>
       Add New Report
-    </FormButton>
+    </FormButton>*/}
     <AddCompositeField
       open={openCompositeFieldDialog}
       toggleDialog={toggleCompositeFieldDialog}
@@ -7876,14 +8881,15 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
     
     {showFields 
     && 
-    displayCurCategory(currentCategory,true,true,"",true,[`getData${currentCategory.name}`])
+    displayCurCategory(currentCategory,true,true,"",true,[`getData${currentCategory?.name}`])
     }
-    <FormButton onClick={()=>{
+    <FormButton style={{width:"100px",marginTop:"15px",marginBottom:"15px",background:"white",color:"black"}}
+    onClick={()=>{
         
         beginReport(true,"")
         
         
-    }}>Show Report</FormButton>
+    }}>Show Story</FormButton>
 
     {/*reportShow && beginReport(true,"")*/}
     {reportShow}

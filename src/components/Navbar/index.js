@@ -21,7 +21,7 @@ const Navbar = () => {
         <ul className="nav-menu active">
           <li>
             <Link 
-            to="/categories/1"
+            to="/categories"
             className="nav-links">
               Products
             </Link>

@@ -28,6 +28,7 @@ import { ViewWhereStatementStringServerDialog } from '../components/ViewWhereSta
 import { ViewWhereStatementHybridServerDialog } from '../components/ViewWhereStatementHybridServerDialog'
 import { ViewMainWhereConditionServer } from '../components/ViewMainWhereConditionServer'
 import { SortCriteriaServerDialog } from '../components/SortCriteriaServerDialog'
+import Reports from './Reports/reportindexv1'
 
 const SELECT_CATEGORY=gql`
   query selectCategory($id:Int!){
@@ -282,51 +283,14 @@ const NewDetailProduct = () => {
   }
   const [varOrderHeadServerCriteria,setVarOrderHeadServerCriteria]=useState({})
   const [openSortCriteriaServerDialog,setOpenSortCriteriaServerDialog]=useState(false)
-  const [checkBoxFields,setCheckBoxFields]=useState({})//[currentCategory.name]:{checked:true,real:currentCategory.name}})
+
+   const [checkBoxFields,setCheckBoxFields]=useState({})//[currentCategory.name]:{checked:true,real:currentCategory.name}})
   const [checkBoxDataFields,setCheckBoxDataFields]=useState({})
   const [updateCategories,setUpdateCategories]=useState({})
   const [updateCategoriesIds,setUpdateCategoriesIds]=useState({})
-  /*const [openEditProduct,setOpenEditProduct]=useState(false)
-  const toggleEditProduct=(editFields1,c1,ti,par,tit,kf,ot,iit)=>{
-    setEditFields(editFields1)
-    console.log("c1,",c1)
-    setRespCat(c1)
-    setTableIndexes(ti)
-    setPartials(par)
-    setTitulo(tit)
-    if(kf!==undefined)
-      setKeyFields(kf)
-    setOtroTitulo(ot)
-    setIndexInTable(iit)
-  //setParentRelation(pr)
-    setOpenEditProduct(!openEditProduct)
-    
-  }
-  const [tableIndexes,setTableIndexes]=useState({})
-  const [openNewProduct,setOpenNewProduct]=useState("")
-  const toggleNewProduct=(rc,ti,ps,tit,pid,iMtM,relCat,pr,pcid,dataQueryIds)=>{
-    //console.log("parentcatIddetprod",pcid)
-    setRespCat1(rc)
-    setTableIndexes(ti)
-    setPartials(ps)
-    setTitulo(tit)
-    setParentId(pid)
-    setIsManyToMany(iMtM)
-    setRelationCategory(relCat)
-    setParentRelation(pr)
-    setParentCatId(pcid)
-    setOpenNewProduct(!openNewProduct)
-    setDqIds(dataQueryIds)
-    
-  }
-  const [openFilter,setOpenFilter]=useState(false)
-  const toggleFilter=(titles1)=>{
-    if(openFilter==true){
-      setTitles(titles1)
-    }
-    setOpenFilter(!openFilter)
-  }*/
-  
+  const [showMakeStory,setShowMakeStory]=useState(false)
+  const [showQuery,setShowQuery]=useState(false)
+
   const {loading,data,error}=useQuery(
     CATEGORIES1
   )
@@ -406,7 +370,10 @@ const NewDetailProduct = () => {
  
   return (loading?"Loading":
   error?"Error: "+error:(
-    <div className="detailedProduct">
+    //!showMakeStory?(
+    <div>
+    <div className="detailedProduct"
+    style={{display:showMakeStory?"none":"block"}}>
       <BreadCrumb 
  
         open={openDialog}
@@ -522,7 +489,8 @@ const NewDetailProduct = () => {
       checkBoxDataFields={checkBoxDataFields}
       setCheckBoxDataFields={setCheckBoxDataFields}
       />*/}
-      {currentCategoryId!==0 && <NewSelectData
+      {currentCategoryId}
+      {currentCategoryId!=0 && <NewSelectData
       toggleOpenWhereStatementNumberServerDialog={toggleOpenWhereStatementNumberServerDialog}
       setOpenWhereStatementNumberServerDialog={setOpenWhereStatementNumberServerDialog}
       openWhereStatementDateNumberDialog={openWhereStatementNumberServerDialog}
@@ -575,6 +543,9 @@ const NewDetailProduct = () => {
       setParentFields={setParentFields}
       childFields={childFields}
       setChildFields={setChildFields}
+      setShowMakeStory={setShowMakeStory}
+      showQuery={showQuery}
+      setShowQuery={setShowQuery}
       />}
 
       {currentCategoryId!=0 &&
@@ -685,7 +656,22 @@ const NewDetailProduct = () => {
 
       
     </div>
-  ))
+    <div style={{display:showMakeStory?"block":"none"}}>
+      <FormButton 
+      style={{background:"white",color:"black",width:"200px",marginLeft:"15px",marginTop:"15px",marginBottom:"15px"}}
+        onClick={()=>{
+          setShowMakeStory(false)
+        }}
+      >Select or Manipulate Data</FormButton>
+      <Reports
+      checkBoxFields={checkBoxFields}
+      checkBoxDataFields={checkBoxDataFields}
+      />
+    </div>
+  
+  
+ 
+  </div>))
 }
 
 
