@@ -21,7 +21,7 @@ import { ViewMainWhereCondition } from '../../components/ViewMainWhereCondition'
 import { ViewCompositeFieldDialog } from '../../components/ViewCompositeFieldDialog'
 import { SubsetDialog } from '../../components/SubsetDialog'
 import { SortCriteriaDialog } from '../../components/SortCriteriaDialog'
-import { FcAnswers, FcNightLandscape } from 'react-icons/fc'
+import { FcAnswers, FcElectricalSensor, FcNightLandscape, FcRotateToLandscape } from 'react-icons/fc'
 import { updateLocale } from 'moment'
 import { VariablesAreInputTypesRule } from 'graphql'
 import { isInlineFragment, resultKeyNameFromField } from '@apollo/client/utilities'
@@ -189,6 +189,9 @@ const Reports=({
   const [finalObjectToSubsets,setFinalObjectToSubsets]=useState({})
   const [subsetsData,setSubsetsData]=useState({})
   const [mtmChoices,setMtmChoices]=useState({})
+  const [selectAll,setSelectAll]=useState({})
+  const [selectAllSegment,setSelectAllSegment]=useState({})
+  const [selectAllFields,setSelectAllFields]=useState({})
   let parentCategories={}
   let displayedMtm=[]
   //const [parentCategories,setParentCategories]=useState({})
@@ -591,6 +594,29 @@ const Reports=({
   
 
   }
+  const onCheckStatisticGeneralVariableNew=(ar,vari,stat,value,sp,p)=>{
+    let spf={
+  
+    }
+    let sps={}
+    spf=otmChoicesStatistics
+    if(otmChoicesStatistics?.[sp]==undefined)
+      spf={...spf,[sp]:{}}
+    else
+      spf={...spf,[sp]:{...otmChoicesStatistics[sp]}}
+    if(otmChoicesStatistics?.[sp]?.[p]==undefined)
+      spf={...spf,[sp]:{...spf[sp],[p]:{}}}
+    else
+      spf={...spf,[sp]:{...spf[sp],[p]:{...otmChoicesStatistics[sp][p]}}}
+    
+    spf={...spf,[sp]:{...spf[sp],[p]:{...spf[sp][p],[vari]:{[`${p}TotalCount`]:value}}}}
+     
+    let res=spf
+    console.log("resggg",res)
+    return spf
+   //setOtmChoicesStatistics(spf)
+  }
+
   const onCheckStatisticGeneralVariable=(ar,vari,stat,value,sp,p)=>{
     let spf={
   
@@ -695,6 +721,198 @@ const Reports=({
                 
             </select>
   }
+
+  const selectAllStatistics=(trackCatPath,nameOtm,cat)=>{
+    let stats=otmChoicesStatistics
+    let resp,resp1
+    console.log("verifica",trackCatPath,nameOtm,cat,otmChoicesStatistics)
+    for(let i=0;i<Object.keys(stats).length;i++){
+      resp=stats[Object.keys(stats)[i]]?.[nameOtm]
+      if(resp!=undefined){
+        //let general=resp["general"]
+        for(let q=0;q<Object.keys(resp).length;q++){
+          resp1=resp[Object.keys(resp)[q]]
+          console.log("resp1",resp1)
+          for(let p=0;p<Object.keys(resp1).length;p++){
+            //onCheckStatisticVariable("",resp1,resp1[Object.keys(resp1)[p]],true,"","","number")
+            resp1[Object.keys(resp1)[p]]=true
+          }
+        }
+
+      }
+
+
+      
+    }
+    console.log("stats",stats)
+    setOtmChoicesStatistics(stats)
+
+  }
+
+  const unselectAllStatistics=(trackCatPath,nameOtm,cat)=>{
+    console.log("verifica",trackCatPath,nameOtm,cat,otmChoicesStatistics)
+  }
+  const selectAllStats=(part,general,totalCount,b,p1,p2)=>{
+    return onCheckStatisticGeneralVariableNew(part,general,totalCount,b,p1,p2)
+  }
+  const unselectAllStats=(part,general,totalCount,b,p1,p2)=>{
+    return onCheckStatisticGeneralVariableNew(part,general,totalCount,b,p1,p2)
+  }
+
+  const initializeStatisticsVariables=(trackCatPath,ntm,catSegField,nameO,value1,segVar)=>{
+    let otmVar=otmChoicesStatistics
+    for(let l in trackCatPath){
+      let correctOtmMtm
+    //if(otmChoices[trackCatPath[trackCatPath.length-1]])
+      //if(!ntm.startsWith("mtm"))
+        correctOtmMtm=otmChoices[trackCatPath[trackCatPath.length-1]]
+      //else
+        //correctOtmMtm=mtmChoices[trackCatPath[trackCatPath.length-1]]
+
+      if(l<trackCatPath.length-1){
+    
+      if(otmVar?.[trackCatPath[l]]==undefined)
+      otmVar={...otmVar,[trackCatPath[l]]:{}}
+          if(otmVar?.[trackCatPath[l]]?.[ntm]==undefined)
+          otmVar[trackCatPath[l]]={...otmVar[trackCatPath[l]],[ntm]:{}}
+          if(otmVar[trackCatPath[l]][ntm]?.["general"]==undefined)
+          otmVar[trackCatPath[l]][ntm]={...otmVar[trackCatPath[l]][ntm],general:{}}
+          if(otmVar[trackCatPath[l]][ntm]["general"]?.[`totalCount`]==undefined)
+          otmVar[trackCatPath[l]][ntm]["general"][`totalCount`]=false
+          console.log("selectAll",selectAll,catSegField,nameO,value1)
+          if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l])) && value1==true){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false))
+            otmVar[trackCatPath[l]][ntm]["general"][`totalCount`]=true
+            doWorkSort(true,`${ntm}TotalCount`,trackCatPath[l],ntm,"number")
+
+          }
+            //onCheckStatisticGeneralVariable(part,`general`,"totalCount",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+          else if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l])) && value1==false){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false)
+            otmVar[trackCatPath[l]][ntm]["general"][`totalCount`]=false
+            doWorkSort(false,`${ntm}TotalCount`,trackCatPath[l],ntm,"number")
+
+          }
+
+          /*else{
+            newHook[trackCatPath[l]][ntm]["general"][`totalCount`]=otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.["general"]?.["totalCount"]//?otmChoicesStatistics[ntm][trackCatPath[l]]["general"]["totalCount"]:false
+          }*/
+          console.log("selectall",selectAll,selectAllSegment,selectAllFields)
+
+          correctOtmMtm?.normal?.map(x=>{
+            if(otmVar[trackCatPath[l]][ntm]?.[x.name1]===undefined){
+              if(x.name1=="calificacion" || x.name1=="incomingyear")
+                console.log("entroconsole",otmVar,trackCatPath[l],ntm,x.name1)
+                otmVar[trackCatPath[l]][ntm]={...otmVar[trackCatPath[l]][ntm],[x.name1]:{}}
+            }
+            if(otmVar[trackCatPath[l]][ntm][x.name1]?.[`total`]===undefined)
+              otmVar[trackCatPath[l]][ntm][x.name1]={...otmVar[trackCatPath[l]][ntm][x.name1],[`total`]:true}
+            if(otmVar[trackCatPath[l]][ntm][x.name1]?.[`percentage`]===undefined){
+            otmVar[trackCatPath[l]][ntm][x.name1]={...otmVar[trackCatPath[l]][ntm][x.name1],[`percentage`]:false}
+            
+
+            }
+            if(otmVar[trackCatPath[l]][ntm][x.name1]?.[`media`]===undefined)
+            otmVar[trackCatPath[l]][ntm][x.name1]={...otmVar[trackCatPath[l]][ntm][x.name1],[`media`]:false}
+            if(otmVar[trackCatPath[l]][ntm][x.name1]?.[`median`]===undefined)
+            otmVar[trackCatPath[l]][ntm][x.name1]={...otmVar[trackCatPath[l]][ntm][x.name1],[`median`]:false}
+            if(otmVar[trackCatPath[l]][ntm][x.name1]?.[`minimum`]===undefined)
+            otmVar[trackCatPath[l]][ntm][x.name1]={...otmVar[trackCatPath[l]][ntm][x.name1],[`minimum`]:false}
+            if(otmVar[trackCatPath[l]][ntm][x.name1]?.[`maximum`]===undefined)
+            otmVar[trackCatPath[l]][ntm][x.name1]={...otmVar[trackCatPath[l]][ntm][x.name1],[`maximum`]:false}
+              console.log("saf",selectAllFields,ntm,trackCatPath[l],selectAllFields?.[ntm]?.[trackCatPath[l]]?.[x.name1])
+            if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l]) || (catSegField=="field" && nameO==x.name1 && trackCatPath[l]==segVar)) && value1==true){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false))
+              otmVar[trackCatPath[l]][ntm][x.name1][`total`]=true
+              otmVar[trackCatPath[l]][ntm][x.name1][`percentage`]=true
+              otmVar[trackCatPath[l]][ntm][x.name1][`media`]=true
+              otmVar[trackCatPath[l]][ntm][x.name1][`median`]=true
+              otmVar[trackCatPath[l]][ntm][x.name1][`minimum`]=true
+              otmVar[trackCatPath[l]][ntm][x.name1][`maximum`]=true
+              doWorkSort(true,`${x.name}total`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name}Media`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name}Median`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name}Acummulatedminimum`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
+              console.log("entrotodotrue",trackCatPath[l],ntm,x.name1,otmVar)
+
+            }else if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l]) || (catSegField=="field" && nameO==x.name1 && trackCatPath[l]==segVar)) && value1==false){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false))
+          
+              otmVar[trackCatPath[l]][ntm][x.name1][`total`]=false
+              otmVar[trackCatPath[l]][ntm][x.name1][`percentage`]=false
+              otmVar[trackCatPath[l]][ntm][x.name1][`media`]=false
+              otmVar[trackCatPath[l]][ntm][x.name1][`median`]=false
+              otmVar[trackCatPath[l]][ntm][x.name1][`minimum`]=false
+              otmVar[trackCatPath[l]][ntm][x.name1][`maximum`]=false
+              doWorkSort(false,`${x.name}total`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name}Media`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name}Median`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name}Acummulatedminimum`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
+              console.log("entrotodofalse",trackCatPath[l],ntm,x.name1,otmVar)
+
+            }
+            
+            
+            console.log("newHook",otmVar)
+          })
+          correctOtmMtm?.compositeFields?.map(x=>{
+            if(otmVar[trackCatPath[l]][ntm]?.[x.name1]===undefined){
+              if(x.name1=="calificacion" || x.name1=="incomingyear")
+                console.log("entroconsole",otmVar,trackCatPath[l],ntm,x.name1)
+                otmVar[trackCatPath[l]][ntm]={...otmVar[trackCatPath[l]][ntm],[x.name1]:{}}
+            }
+            if(otmVar[trackCatPath[l]][ntm][x.name1]?.[`total`]===undefined)
+            otmVar[trackCatPath[l]][ntm][x.name1]={...otmVar[trackCatPath[l]][ntm][x.name1],[`total`]:true}
+        
+            if(otmVar[trackCatPath[l]][ntm][x.name1]?.[`percentage`]===undefined)
+            otmVar[trackCatPath[l]][ntm][x.name1]={...otmVar[trackCatPath[l]][ntm][x.name1],[`percentage`]:false}
+            if(otmVar[trackCatPath[l]][ntm][x.name1]?.[`media`]===undefined)
+            otmVar[trackCatPath[l]][ntm][x.name1]={...otmVar[trackCatPath[l]][ntm][x.name1],[`media`]:false}
+            if(otmVar[trackCatPath[l]][ntm][x.name1]?.[`median`]===undefined)
+            otmVar[trackCatPath[l]][ntm][x.name1]={...otmVar[trackCatPath[l]][ntm][x.name1],[`median`]:false}
+            if(otmVar[trackCatPath[l]][ntm][x.name1]?.[`minimum`]===undefined)
+            otmVar[trackCatPath[l]][ntm][x.name1]={...otmVar[trackCatPath[l]][ntm][x.name1],[`minimum`]:false}
+            if(otmVar[trackCatPath[l]][ntm][x.name1]?.[`maximum`]===undefined)
+            otmVar[trackCatPath[l]][ntm][x.name1]={...otmVar[trackCatPath[l]][ntm][x.name1],[`maximum`]:false}
+              console.log("saf",selectAllFields,ntm,trackCatPath[l],selectAllFields?.[ntm]?.[trackCatPath[l]]?.[x.name1])
+            if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l]) || (catSegField=="field" && nameO==x.name1 && trackCatPath[l]==segVar)) && value1==true){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false))
+              otmVar[trackCatPath[l]][ntm][x.name1][`total`]=true
+              otmVar[trackCatPath[l]][ntm][x.name1][`percentage`]=true
+              otmVar[trackCatPath[l]][ntm][x.name1][`media`]=true
+              otmVar[trackCatPath[l]][ntm][x.name1][`median`]=true
+              otmVar[trackCatPath[l]][ntm][x.name1][`minimum`]=true
+              otmVar[trackCatPath[l]][ntm][x.name1][`maximum`]=true
+              doWorkSort(true,`${x.name}total`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name}Media`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name}Median`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name}Acummulatedminimum`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
+              console.log("entrotodotrue",trackCatPath[l],ntm,x.name1,otmVar)
+
+            }else if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l]) || (catSegField=="field" && nameO==x.name1 && trackCatPath[l]==segVar)) && value1==false){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false))
+          
+              otmVar[trackCatPath[l]][ntm][x.name1][`total`]=false
+              otmVar[trackCatPath[l]][ntm][x.name1][`percentage`]=false
+              otmVar[trackCatPath[l]][ntm][x.name1][`media`]=false
+              otmVar[trackCatPath[l]][ntm][x.name1][`median`]=false
+              otmVar[trackCatPath[l]][ntm][x.name1][`minimum`]=false
+              otmVar[trackCatPath[l]][ntm][x.name1][`maximum`]=false
+              doWorkSort(false,`${x.name}total`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name}Media`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name}Median`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name}Acummulatedminimum`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
+              console.log("entrotodofalse",trackCatPath[l],ntm,x.name1,otmVar)
+
+            }
+            
+            
+            console.log("newHook",otmVar)
+          })
+      }
+    }
+    console.log("otmVar",otmVar)
+    setOtmChoicesStatistics({...otmVar})
+    
+  }
   
   const displayAncestorsCats=(trackCatPath,ntm="")=>{
     console.log("trackCatPath",ntm,trackCatPath)
@@ -717,22 +935,156 @@ const Reports=({
           partialOtmChoicesStatistics[trackCatPath[l]]={...partialOtmChoicesStatistics[trackCatPath[l]],[trackCatPath[trackCatPath.length-1]]:{}}  
         let part=partialOtmChoicesStatistics[trackCatPath[l]][trackCatPath[trackCatPath.length-1]]
         //nitializeVariablesStatistics(partialOtmChoicesStatistics[trackCatPath[l]][trackCatPath[trackCatPath.length-1]])
+        let newHook=otmChoicesStatistics
+        let selectAllTemp=selectAll
+        
+        /*if(otmChoicesStatistics?.[trackCatPath[l]]==undefined)
+        otmChoicesStatistics={...otmChoicesStatistics,[trackCatPath[l]]:{}}
+        if(otmChoicesStatistics?.[trackCatPath[l]]?.[ntm]==undefined)
+        otmChoicesStatistics[trackCatPath[l]]={...otmChoicesStatistics[trackCatPath[l]],[ntm]:{}}
+        if(otmChoicesStatistics[trackCatPath[l]][ntm]?.["general"]==undefined)
+        otmChoicesStatistics[trackCatPath[l]][ntm]={...otmChoicesStatistics[trackCatPath[l]][ntm],general:{}}
+        if(otmChoicesStatistics[trackCatPath[l]][ntm]["general"]?.[`totalCount`]==undefined)
+        otmChoicesStatistics[trackCatPath[l]][ntm]["general"][`totalCount`]=false
+        console.log("selectAll",selectAll)
+        if(selectAll[ntm]===true || selectAllSegment?.[ntm]?.[trackCatPath[l]]===true){
+          otmChoicesStatistics[trackCatPath[l]][ntm]["general"][`totalCount`]=true
+          //onCheckStatisticGeneralVariable(part,`general`,"totalCount",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+        }else if(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false)
+        otmChoicesStatistics[trackCatPath[l]][ntm]["general"][`totalCount`]=false
+        
+        console.log("selectall",selectAll,selectAllSegment,selectAllFields)
+
+        correctOtmMtm?.normal?.map(x=>{
+          if(otmChoicesStatistics[trackCatPath[l]][ntm]?.[x.name1]===undefined){
+            if(x.name1=="calificacion" || x.name1=="incomingyear")
+              console.log("entroconsole",otmChoicesStatistics,trackCatPath[l],ntm,x.name1)
+            otmChoicesStatistics[trackCatPath[l]][ntm]={...otmChoicesStatistics[trackCatPath[l]][ntm],[x.name1]:{}}
+          }
+          if(otmChoicesStatistics[trackCatPath[l]][ntm][x.name1]?.[`total`]===undefined)
+          otmChoicesStatistics[trackCatPath[l]][ntm][x.name1]={...newHook[trackCatPath[l]][ntm][x.name1],[`total`]:false}
+          if(otmChoicesStatistics[trackCatPath[l]][ntm][x.name1]?.[`percentage`]===undefined)
+          otmChoicesStatistics[trackCatPath[l]][ntm][x.name1]={...newHook[trackCatPath[l]][ntm][x.name1],[`percentage`]:false}
+          if(otmChoicesStatistics[trackCatPath[l]][ntm][x.name1]?.[`media`]===undefined)
+          otmChoicesStatistics[trackCatPath[l]][ntm][x.name1]={...newHook[trackCatPath[l]][ntm][x.name1],[`media`]:false}
+          if(otmChoicesStatistics[trackCatPath[l]][ntm][x.name1]?.[`median`]===undefined)
+          otmChoicesStatistics[trackCatPath[l]][ntm][x.name1]={...newHook[trackCatPath[l]][ntm][x.name1],[`median`]:false}
+          if(otmChoicesStatistics[trackCatPath[l]][ntm][x.name1]?.[`minimum`]===undefined)
+          otmChoicesStatistics[trackCatPath[l]][ntm][x.name1]={...newHook[trackCatPath[l]][ntm][x.name1],[`minimum`]:false}
+          if(otmChoicesStatistics[trackCatPath[l]][ntm][x.name1]?.[`maximum`]===undefined)
+          otmChoicesStatistics[trackCatPath[l]][ntm][x.name1]={...newHook[trackCatPath[l]][ntm][x.name1],[`maximum`]:false}
+            console.log("saf",selectAllFields,ntm,trackCatPath[l],selectAllFields?.[ntm]?.[trackCatPath[l]]?.[x.name1])
+          if(selectAllFields?.[ntm]===true || selectAllSegment?.[ntm]?.[trackCatPath[l]]===true || selectAllFields?.[ntm]?.[trackCatPath[l]]?.[x.name1]===true){
+            otmChoicesStatistics[trackCatPath[l]][ntm][x.name1][`total`]=true
+            otmChoicesStatistics[trackCatPath[l]][ntm][x.name1][`percentage`]=true
+            otmChoicesStatistics[trackCatPath[l]][ntm][x.name1][`media`]=true
+            otmChoicesStatistics[trackCatPath[l]][ntm][x.name1][`median`]=true
+            otmChoicesStatistics[trackCatPath[l]][ntm][x.name1][`minimum`]=true
+            otmChoicesStatistics[trackCatPath[l]][ntm][x.name1][`maximum`]=true
+            console.log("entrotodotrue",trackCatPath[l],ntm,x.name1,newHook)
+
+          }else if(selectAll?.[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false || selectAllFields?.[ntm]?.[trackCatPath[l]]?.[x.name1]===false){
+        
+            otmChoicesStatistics[trackCatPath[l]][ntm][x.name1][`total`]=false 
+            otmChoicesStatistics[trackCatPath[l]][ntm][x.name1][`percentage`]=false
+            otmChoicesStatistics[trackCatPath[l]][ntm][x.name1][`media`]=false
+            otmChoicesStatistics[trackCatPath[l]][ntm][x.name1][`median`]=false
+            otmChoicesStatistics[trackCatPath[l]][ntm][x.name1][`minimum`]=false
+            otmChoicesStatistics[trackCatPath[l]][ntm][x.name1][`maximum`]=false
+            console.log("entrotodofalse",trackCatPath[l],ntm,x.name1,newHook)
+
+          }
+          
+          console.log("newHook",newHook)
+        })*/
+
+        /*correctOtmMtm?.compositeFields?.map(x=>{
+          if(newHook[trackCatPath[l]][ntm]?.[x.name1]==undefined)
+            newHook[trackCatPath[l]][ntm]={...newHook[trackCatPath[l]][ntm],[x.name1]:{}}
+          if(newHook[trackCatPath[l]][ntm][x.name1]?.[`total`]==undefined)
+            newHook[trackCatPath[l]][ntm][x.name1]={...newHook[trackCatPath[l]][ntm][x.name1],[`total`]:false}
+          if(newHook[trackCatPath[l]][ntm][x.name1]?.[`percentage`]==undefined)
+            newHook[trackCatPath[l]][ntm][x.name1]={...newHook[trackCatPath[l]][ntm][x.name1],[`percentage`]:false}
+          if(newHook[trackCatPath[l]][ntm][x.name1]?.[`media`]==undefined)
+            newHook[trackCatPath[l]][ntm][x.name1]={...newHook[trackCatPath[l]][ntm][x.name1],[`media`]:false}
+          if(newHook[trackCatPath[l]][ntm][x.name1]?.[`median`]==undefined)
+            newHook[trackCatPath[l]][ntm][x.name1]={...newHook[trackCatPath[l]][ntm][x.name1],[`median`]:false}
+          if(newHook[trackCatPath[l]][ntm][x.name1]?.[`minimum`]==undefined)
+            newHook[trackCatPath[l]][ntm][x.name1]={...newHook[trackCatPath[l]][ntm][x.name1],[`minimum`]:false}
+          if(newHook[trackCatPath[l]][ntm][x.name1]?.[`maximum`]==undefined)
+            newHook[trackCatPath[l]][ntm][x.name1]={...newHook[trackCatPath[l]][ntm][x.name1],[`maximum`]:false}
+            console.log("saf",selectAllFields,ntm,trackCatPath[l],selectAllFields?.[ntm]?.[trackCatPath[l]]?.[x.name1])
+          if((selectAll?.[ntm]!=undefined && selectAll[ntm]===true) || (selectAllSegment?.[ntm]?.[trackCatPath[l]]!=undefined && selectAllSegment?.[ntm]?.[trackCatPath[l]]===true) || (selectAllFields?.[ntm]?.[trackCatPath[l]]?.[x.name1]!=undefined && selectAllFields?.[ntm]?.[trackCatPath[l]]?.[x.name1]===true)){
+            newHook[trackCatPath[l]][ntm][x.name1][`total`]=true
+            newHook[trackCatPath[l]][ntm][x.name1][`percentage`]=true
+            newHook[trackCatPath[l]][ntm][x.name1][`media`]=true
+            newHook[trackCatPath[l]][ntm][x.name1][`median`]=true
+            newHook[trackCatPath[l]][ntm][x.name1][`minimum`]=true
+            newHook[trackCatPath[l]][ntm][x.name1][`maximum`]=true
+            console.log("entrotodotrue",trackCatPath[l],ntm)
+          }else if((selectAll?.[ntm]!=undefined && selectAll[ntm]===false) || (selectAllSegment?.[ntm]?.[trackCatPath[l]]!=undefined && selectAllSegment?.[ntm]?.[trackCatPath[l]]===false) || (selectAllFields?.[ntm]?.[trackCatPath[l]]?.[x.name1]!=undefined && selectAllFields?.[ntm]?.[trackCatPath[l]]?.[x.name1]===false)){
+        
+             newHook[trackCatPath[l]][ntm][x.name1][`total`]=false 
+             newHook[trackCatPath[l]][ntm][x.name1][`percentage`]=false
+             newHook[trackCatPath[l]][ntm][x.name1][`media`]=false
+            newHook[trackCatPath[l]][ntm][x.name1][`median`]=false
+            newHook[trackCatPath[l]][ntm][x.name1][`minimum`]=false
+            newHook[trackCatPath[l]][ntm][x.name1][`maximum`]=false
+            console.log("entrotodofalse",trackCatPath[l],ntm)
+          }else{
+            newHook[trackCatPath[l]][ntm][x.name1][`total`]=otmChoicesStatistics?.[ntm]?.[trackCatPath?.[l]]?.[x.name1]?.["total"]?otmChoicesStatistics[ntm][trackCatPath[l]][x.name1]["total"]:false
+            newHook[trackCatPath[l]][ntm][x.name1][`percentage`]=otmChoicesStatistics?.[ntm]?.[trackCatPath?.[l]]?.[x.name1]?.["percentage"]?otmChoicesStatistics[ntm][trackCatPath[l]][x.name1]["percentage"]:false
+            newHook[trackCatPath[l]][ntm][x.name1][`media`]=otmChoicesStatistics?.[ntm]?.[trackCatPath?.[l]]?.[x.name1]?.["media"]?otmChoicesStatistics[ntm][trackCatPath[l]][x.name1]["media"]:false
+           newHook[trackCatPath[l]][ntm][x.name1][`median`]=otmChoicesStatistics?.[ntm]?.[trackCatPath[l]]?.[x.name1]?.["median"]?otmChoicesStatistics[ntm][trackCatPath[l]][x.name1]["median"]:false
+           newHook[trackCatPath[l]][ntm][x.name1][`minimum`]=otmChoicesStatistics?.[ntm]?.[trackCatPath?.[l]]?.[x.name1]?.["maximum"]?otmChoicesStatistics[ntm][trackCatPath[l]][x.name1]["maximum"]:false
+           newHook[trackCatPath[l]][ntm][x.name1][`maximum`]=otmChoicesStatistics?.[ntm]?.[trackCatPath?.[l]]?.[x.name1]["minimum"]?otmChoicesStatistics[ntm][trackCatPath[l]][x.name1]["minimum"]:false
+           console.log("entrotodonada",trackCatPath[l],ntm)
+          }
+          console.log("newHook",newHook)
+        })*/
+        //selectAllTemp={...selectAllTemp,[ntm]:"normal"}
+
+        
+          //onCheckStatisticGeneralVariable(part,`general`,"totalCount",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+
         output.push(<div>
           <p style={{color:"orange"}}>{trackCatPath[l]}</p>
+          <a onClick={(e)=>{
+            e.preventDefault()
+            initializeStatisticsVariables(trackCatPath,ntm,"seg",trackCatPath[l],true)  
+            
+
+          }}>Select All Segment</a>
+          <a onClick={(e)=>{
+            e.preventDefault()
+            initializeStatisticsVariables(trackCatPath,ntm,"seg",trackCatPath[l],false)  
+
+          }}>Unselect All Segment</a>
           <input type="checkbox" 
+
+            checked={newHook?.[trackCatPath?.[l]]?.[ntm]?.["general"]?.[`totalCount`]}
+               
+
+
               onChange={e=>{
-                console.log("ever",e)
+                //setOtmChoicesStatistics(newHook)
+                
+                console.log("ever",ntm,selectAll,otmChoicesStatistics,otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.["general"]?.[`${ntm}TotalCount`],ntm,trackCatPath[l])
                 doWorkSort(e.target.checked,`${ntm}TotalCount`,trackCatPath[l],ntm,"number")
-                if(e.target.checked==true){
+                if(e.target.checked==true){// && selectAll[ntm]!=false){
+                  console.log("entrocase1")
                   onCheckStatisticGeneralVariable(part,`general`,"totalCount",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
                   
                 }
-                else{
+                else if(e.target.checked==false){// && selectAll[ntm]!=true){
+                  console.log("entrocase2")
                   onCheckStatisticGeneralVariable(part,`general`,"totalCount",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
                 }
                 console.log("everi",otmChoicesStatistics)
-
-              }}/> Total Count <a  
+                
+              }}
+              
+              /> Total Count <a  
               style={{textDecoration:"underline"}} onClick={
                 (e)=>{
                   e.preventDefault()
@@ -749,19 +1101,39 @@ const Reports=({
             
               
               
-          {/*otmChoices[trackCatPath[trackCatPath.length-1]]*/
+          {//otmChoices[trackCatPath[trackCatPath.length-1]]
           correctOtmMtm?.normal?.map(x=>{
 
             if(x.type=="number" && x.dataType!="queryCategory"){
               
               return <div><span style={{marginRight:"10px"}}>{x.name1}total</span>
+             <a onClick={e=>{
+               e.preventDefault()
+               initializeStatisticsVariables(trackCatPath,ntm,"field",x.name1,true,trackCatPath[l])   
+             }}>Select All Field</a>
+             <a onClick={e=>{
+               e.preventDefault()
+               initializeStatisticsVariables(trackCatPath,ntm,"field",x.name1,false,trackCatPath[l])  
+             }}>Unselect All Field</a>
              
              <br/><input type="checkbox" 
+              checked={otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`total`]}
               onChange={e=>{
-                console.log("ever",e)
+                console.log("ever",e,otmChoicesStatistics)
                 doWorkSort(e.target.checked,`${x.name1}total`,trackCatPath[l],ntm,"number")
-                
-                console.log("everi",otmChoicesStatistics)
+                /*if(e.target.checked==true){// && selectAll[ntm]!=false){
+                  console.log("entrocase1")
+                  onCheckStatisticVariable(part,x.name1,"total",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                  
+                }
+                else if(e.target.checked==false){// && selectAll[ntm]!=true){
+                  console.log("entrocase2")
+                  onCheckStatisticVariable(part,x.name1,"total",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                }
+                setSelectAll({})
+                setSelectAllSegment({})
+                setSelectAllFields({})
+                console.log("everi",otmChoicesStatistics)*/
 
               }}/> {x.name1}total <a  
               style={{textDecoration:"underline"}} onClick={
@@ -778,30 +1150,36 @@ const Reports=({
             {displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}
          
               <br/><input type="checkbox" 
+                checked={otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`percentage`]}
               onChange={e=>{
                 console.log("ever",e)
                 doWorkSort(e.target.checked,`%${x.name1}`,trackCatPath[l],ntm)
-                if(e.target.checked==true)
+                if(e.target.checked==true)// && selectAll[ntm]!=false)
                   onCheckStatisticVariable(part,x.name1,"percentage",true,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
-                else
+                else if(e.target.checked==false)// && selectAll[ntm]!=true)
                   onCheckStatisticVariable(part,x.name1,"percentage",false,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
-                
-                console.log("everi",otmChoicesStatistics)
+                  setSelectAll({})
+                  setSelectAllSegment({})
+                  setSelectAllFields({})
 
               }}/> Percentage 
          
 
 
               <br/><input type="checkbox"
+              checked={otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`media`]}
               onChange={e=>{
                 console.log("ever",e)
                 doWorkSort(e.target.checked,`${x.name1}Media`,trackCatPath[l],ntm,"number")
 
-                if(e.target.checked==true)
+                if(e.target.checked==true)// && selectAll[ntm]!=false)
                   onCheckStatisticVariable(part,x.name1,"media",true,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
-                else
+                else if(e.target.checked==false)// && selectAll[ntm]!=true)
                   onCheckStatisticVariable(part,x.name1,"media",false,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
-                
+                setSelectAll(e=>({}))
+                setSelectAllSegment({})
+                setSelectAllFields({})
+
                 console.log("everi",otmChoicesStatistics) 
                
               }}/> Media <a  
@@ -819,15 +1197,19 @@ const Reports=({
               <br/>{displayWhereClauses(trackCatPath[l],`${x.name1}Media`,ntm,"number")}
               
               <input type="checkbox"
+              checked={otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`median`]}
               onChange={e=>{
                 console.log("ever",e)
                 doWorkSort(e.target.checked,`${x.name1}Median`,trackCatPath[l],ntm,"number")
 
-                if(e.target.checked==true)
+                if(e.target.checked==true)// && selectAll[ntm]!=false)
                   onCheckStatisticVariable(part,x.name1,"median",true,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
-                else
+                else if(e.target.checked==false)// && selectAll[ntm]!=true)
                   onCheckStatisticVariable(part,x.name1,"median",false,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
-                
+                  setSelectAll({})
+                  setSelectAllSegment({})
+                  setSelectAllFields({})
+
                 console.log("everi",otmChoicesStatistics) 
               }}/> Median <a  
               style={{textDecoration:"underline"}} onClick={
@@ -843,15 +1225,19 @@ const Reports=({
               }>xAdd where condition</a>
               <br/>{displayWhereClauses(trackCatPath[l],`${x.name1}Median`,ntm)}
               <input type="checkbox"
+              checked={otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`minimum`]}
               onChange={e=>{
                 console.log("ever",e)
                 doWorkSort(e.target.checked,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm,"number")
 
-                if(e.target.checked==true)
+                if(e.target.checked==true)// && selectAll[ntm]!=false)
                   onCheckStatisticVariable(part,x.name1,"minimum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
-                else
+                else if(e.target.checked==false)// && selectAll[ntm]!=true)
                   onCheckStatisticVariable(part,x.name1,"minimum",false,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
-                
+                  setSelectAll({})
+                  setSelectAllSegment({})
+                  setSelectAllFields({})
+
                 console.log("everi",otmChoicesStatistics) 
               }}/> Minimum <a  
               style={{textDecoration:"underline"}} onClick={
@@ -867,15 +1253,19 @@ const Reports=({
               }>xAdd where condition</a> 
               {displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedminimum`,ntm)}
               <br/><input type="checkbox"
+              checked={otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`maximum`]}
               onChange={e=>{
                 console.log("ever",e)
                 doWorkSort(e.target.checked,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
 
-                if(e.target.checked==true)
+                if(e.target.checked==true)// && selectAll[ntm]!=false)
                   onCheckStatisticVariable(part,x.name1,"maximum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
-                else
+                else if(e.target.checked==false)// && selectAll[ntm]!=true)
                   onCheckStatisticVariable(part,x.name1,"maximum",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
-                
+                  setSelectAll({})
+                  setSelectAllSegment({})
+                  setSelectAllFields({})
+
                 console.log("everi",otmChoicesStatistics) 
               }}/> Maximum <a  
               style={{textDecoration:"underline"}} onClick={
@@ -891,19 +1281,7 @@ const Reports=({
               }>xAdd where condition</a><br/>
               {displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedaximum`,ntm)}
               
-              {/*<a  
-              style={{textDecoration:"underline"}} onClick={
-                (e)=>{
-                  e.preventDefault()
-                  //console.log("bit1",trackCatPath[l],ntm,`${x.name1}total`)
-                  toggleOpenWhereStatementNumberDialog({
-                    categoryName:trackCatPath[l],
-                    fieldName:`${x.name1}total`,
-                    segment:ntm
-                  })
-                }
-              }>xAdd where condition</a> 
-            {displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}*/}
+              
               </div>
           
       }})}
@@ -913,7 +1291,18 @@ const Reports=({
             if(x.type=="number"){
               
 
-            return <div><span style={{marginRight:"10px"}}>{x.name1}total</span>
+            return <div>
+              <span style={{marginRight:"10px"}}>{x.name1}total</span>
+             <a onClick={e=>{
+               e.preventDefault()
+               initializeStatisticsVariables(trackCatPath,ntm,"field",x.name1,true,trackCatPath[l])   
+             }}>Select All Field</a>
+             <a onClick={e=>{
+               e.preventDefault()
+               initializeStatisticsVariables(trackCatPath,ntm,"field",x.name1,false,trackCatPath[l])  
+             }}>Unselect All Field</a>
+             
+              <span style={{marginRight:"10px"}}>{x.name1}total</span>
               {/*<span style={{marginRight:"10px"}}>{x.name1}total</span>
             <br/><input type="checkbox" 
               onChange={e=>{
@@ -938,12 +1327,24 @@ const Reports=({
                 }
               }>xAdd where condition</a>
             <p>{displayWhereClauses(trackCatPath[l],`${x.name1}Maximum`,ntm)}</p>*/}    
-            <br/><input type="checkbox" 
+            <br/><input type="checkbox"
+            checked={newHook?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`total`]} 
               onChange={e=>{
                 console.log("ever",e)
                 doWorkSort(e.target.checked,`${x.name1}total`,trackCatPath[l],ntm,"number")
-                
-                console.log("everi",otmChoicesStatistics)
+                /*if(e.target.checked==true){// && selectAll[ntm]!=false){
+                  console.log("entrocase1")
+                  onCheckStatisticVariable(part,x.name1,"total",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                  
+                }
+                else if(e.target.checked==false){// && selectAll[ntm]!=true){
+                  console.log("entrocase2")
+                  onCheckStatisticVariable(part,x.name1,"total",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
+                }
+                setSelectAll({})
+                setSelectAllSegment({})
+                setSelectAllFields({})
+                console.log("everi",otmChoicesStatistics)*/
 
               }}/> {x.name1}total <a  
               style={{textDecoration:"underline"}} onClick={
@@ -960,6 +1361,8 @@ const Reports=({
               
          
             <input type="checkbox"
+                        checked={newHook?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`percentage`]} 
+
             onChange={e=>{
               console.log("ever",e)
               doWorkSort(e.target.checked,`%${x.name1}`,trackCatPath[l],ntm,"number")
@@ -968,11 +1371,15 @@ const Reports=({
                 onCheckStatisticVariable(part,x.name1,"percentage",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
               else
                 onCheckStatisticVariable(part,x.name1,"percentage",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
-              
+                setSelectAll({})
+                setSelectAllSegment({})
+                setSelectAllFields({})
               console.log("everi",otmChoicesStatistics) 
             }}
             /> Percentage 
             <br/><input type="checkbox"
+            checked={newHook?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`media`]} 
+
             onChange={e=>{
               console.log("ever",e)
               doWorkSort(e.target.checked,`${x.name1}Media`,trackCatPath[l],ntm,"number")
@@ -981,7 +1388,9 @@ const Reports=({
                 onCheckStatisticVariable(part,x.name1,"media",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
               else
                 onCheckStatisticVariable(part,x.name1,"media",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
-              
+                setSelectAll({})
+                setSelectAllSegment({})
+                setSelectAllFields({})
               console.log("everi",otmChoicesStatistics) 
             }}/> Media <a  
             style={{textDecoration:"underline"}} onClick={
@@ -997,6 +1406,8 @@ const Reports=({
             }>xAdd where condition</a><br/>
             {displayWhereClauses(trackCatPath[l],`${x.name1}Media`,ntm)}
             <input type="checkbox"
+              checked={newHook?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`median`]} 
+
             onChange={e=>{
               console.log("ever",e)
               doWorkSort(e.target.checked,`${x.name1}Median`,trackCatPath[l],ntm,"number")
@@ -1005,7 +1416,9 @@ const Reports=({
                 onCheckStatisticVariable(part,x.name1,"median",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
               else
                 onCheckStatisticVariable(part,x.name1,"median",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
-              
+                setSelectAll({})
+                setSelectAllSegment({})
+                setSelectAllFields({})
               console.log("everi",otmChoicesStatistics) 
             }}/> Median <a  
             style={{textDecoration:"underline"}} onClick={
@@ -1021,6 +1434,8 @@ const Reports=({
             }>xAdd where condition</a>
             {displayWhereClauses(trackCatPath[l],`${x.name1}Median`,ntm)}
             <br/><input type="checkbox"
+                checked={newHook?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`minimum`]} 
+
             onChange={e=>{
               console.log("ever",e)
               doWorkSort(e.target.checked,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm,"number")
@@ -1029,7 +1444,9 @@ const Reports=({
                 onCheckStatisticVariable(part,x.name1,"minimum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
               else
                 onCheckStatisticVariable(part,x.name1,"minimum",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
-              
+                setSelectAll({})
+                setSelectAllSegment({})
+                setSelectAllFields({})
               console.log("everi",otmChoicesStatistics) 
             }}/> Minimum <a  
             style={{textDecoration:"underline"}} onClick={
@@ -1045,6 +1462,8 @@ const Reports=({
             }>xAdd where condition</a>
             {displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedminimum`,ntm)}
             <br/><input type="checkbox"
+              checked={newHook?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`maximum`]} 
+
             onChange={e=>{
               console.log("ever",e)
               doWorkSort(e.target.checked,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
@@ -1053,7 +1472,9 @@ const Reports=({
                 onCheckStatisticVariable(part,x.name1,"maximum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
               else
                 onCheckStatisticVariable(part,x.name1,"maximum",false,trackCatPath[l],trackCatPath[trackCatPath.length-1])
-              
+                setSelectAll({})
+                setSelectAllSegment({})
+                setSelectAllFields({})
               console.log("everi",otmChoicesStatistics) 
             }}
             /> Maximum <a  
@@ -1363,6 +1784,22 @@ const Reports=({
     
     
     )})}
+    <a onClick={(e)=>{
+        e.preventDefault()
+       initializeStatisticsVariables(trackCatPath,nameOtm,"cat",nameOtm,true)
+          
+        
+        //unselectAllStatistics(trackCatPath,nameOtm,cat.name)
+      }}>Select All</a>
+       
+      <br/>
+      <a onClick={(e)=>{
+        e.preventDefault()
+        initializeStatisticsVariables(trackCatPath,nameOtm,"cat",nameOtm,false)
+        //unselectAllStatistics(trackCatPath,nameOtm,cat.name)
+      }}>Unselect All</a>
+       
+      
     {displayAncestorsCats(trackCatPath,nameOtm,cat.name)}
     {/*displayAncestorsCats(trackCatPath,field,field)*/}
     
@@ -1783,6 +2220,18 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
         })
 
       }
+      {nameOtm} {cat.name} 
+      <a onClick={(e)=>{
+        e.preventDefault()
+        setSelectAll(j=>{return {...j,[nameOtm]:true}})
+        //selectAllStatistics(trackCatPath,nameOtm,cat.name)
+      }}>Select All</a>
+      <a onClick={(e)=>{
+        e.preventDefault()
+        setSelectAll(j=>{return {...j,[nameOtm]:false}})
+        //unselectAllStatistics(trackCatPath,nameOtm,cat.name)
+      }}>Unselect All</a>
+      {displayAncestorsCats(trackCatPath,nameOtm,cat.name)}
       <a style={{textDecoration:"underline"}}
       onClick={e=>{
         e.preventDefault()
@@ -1792,6 +2241,7 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
         )
         }
       }
+      
       >Add main where condition</a><br/>
       {(conditionsWhere[name]?.["main"]==undefined || typeof conditionsWhere[name]?.["main"]!=="object")?<p>none</p>:
       <p onClick={()=>toggleOpenViewMainWhereConditionDialog({categoryName:name,
@@ -2440,7 +2890,16 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
 
     {/*nameOtm.startsWith("mtm") && displayMenuMtm(displayMenu(nameOtm,cat.name,[...trackCatPath,nameOtm]))*/}
       
-      
+    <a onClick={(e)=>{
+        e.preventDefault()
+        setSelectAll(j=>{return {...j,[nameOtm]:true}})
+        //selectAllStatistics(trackCatPath,nameOtm,cat.name)
+      }}>Select All</a>
+      <a onClick={(e)=>{
+        e.preventDefault()
+        setSelectAll(j=>{return {...j,[nameOtm]:false}})
+        //unselectAllStatistics(trackCatPath,nameOtm,cat.name)
+      }}>Unselect All</a>
         
 
       
@@ -5376,6 +5835,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
   Object.keys(a1).forEach(p=>{
     Object.keys(a2[p]).forEach(o=>{
       let nf=getNumericFields(p)
+      console.log("numfields",nf)
       if(a2?.[p]?.[o]?.[`${p}UniqueTotalCount`]==undefined)
         a2[p][o][`${p}UniqueTotalCount`]=0  
       if(a2[p][o]?.["realUniqueIndexes"]!=undefined)
@@ -5425,7 +5885,10 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
             }
           }
         }
+      }
+      if(nf.compositeFields.length>0){
         for(let j1=0;j1<nf.compositeFields.length;j1++){
+          
           if(isLast(cat) || p==cat){
             if(a2[p][o]["realUniqueIndexes"]!=undefined){
               for(let pp=0;pp<a2[p][o]["realUniqueIndexes"].length;pp++){
@@ -5524,11 +5987,15 @@ const getCategoriesGrandTotals=(category)=>{
           st=finalObject[category][y][u][nf.normal[j1]]
           if(finalObject[category][y][u]?.[`${nf.normal[j1]}UniqueTotal`]!=undefined)
             st1=finalObject[category][y][u][`${nf.normal[j1]}UniqueTotal`]
+          else 
+            st1=0
         }
         else{
           st=finalObject[category][y][u][`${nf.normal[j1]}total`]
-          if(finalObject[category][y][u][`${nf.normal[j1]}UniqueTotal`])
+          if(finalObject[category][y][u][`${nf.normal[j1]}UniqueTotal`]!=undefined)
             st1=finalObject[category][y][u][`${nf.normal[j1]}UniqueTotal`]
+          else
+            st1=0
         }
 
         realGrandTotals1[category][y]={...realGrandTotals1[category][y],
@@ -5548,6 +6015,8 @@ const getCategoriesGrandTotals=(category)=>{
         else{
           st=finalObject[category][y][u][`${nf.compositeFields[j1]}total`]
           if(finalObject[category][y][u][`${nf.compositeFields[j1]}UniqueTotal`]==undefined)
+            st1=0
+          else
             st1=finalObject[category][y][u][`${nf.compositeFields[j1]}UniqueTotal`]
         }
         realGrandTotals1[category][y]={...realGrandTotals1[category][y],
@@ -6299,6 +6768,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
           
           firstCatNormalFields[y].normal.forEach(i=>{
             if(i.type=="number"){
+              console.log("gerger",finalObject?.[category]?.[y]?.[u]?.[i.name1],realGrandTotals1[category][y][`${i.name1}total`])
               finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
@@ -6334,7 +6804,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
 
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]=[]
-              realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
+              realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]!=undefined?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
               //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               
             }
@@ -6351,7 +6821,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
 
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]=[]
-              realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`])
+              realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]!=undefined?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
             }
           })
         }
@@ -6365,7 +6835,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
           
           arr.normal.forEach(i=>{
             if(i.type=="number"){
-              finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
+              finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               finalObject[category][y][u][`%${i.name1}Unique`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}UniqueTotal`]!=undefined && realGrandTotals1[category][y][`${i.name1}UniqueTotal`]>0)?(finalObject[category][y][u][`${i.name1}UniqueTotal`]/realGrandTotals1[category][y][`${i.name1}UniqueTotal`])*100:0
               //((finalObject[category][y][u][`${i.name1}`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
@@ -7836,13 +8306,26 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
       theresOtmDestiny=otmdestiny>0 
       if(theresNormal)
       result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].normal.map((q,index)=>{
-        
-          return <th style={{borderRight:(realSegmentLast==category && normal-1==index && !theresComposite)?"none":"1px solid white"}}>{q.name1}</th>
+          let percNumberRow=""
+          if(q.type=="number")
+            percNumberRow=<th style={{borderRight:(realSegmentLast==category && normal-1==index && !theresComposite)?"none":"1px solid white"}}>{`%${q.name1}`}</th>
+          if(percNumberRow=="")
+            return <th style={{borderRight:(realSegmentLast==category && normal-1==index && !theresComposite)?"none":"1px solid white"}}>{q.name1}</th>
+          else
+          return [<th style={{borderRight:(realSegmentLast==category && normal-1==index && !theresComposite)?"1px solid white":"1px solid white"}}>{q.name1}</th>,percNumberRow]
       }
       )]
       if(theresComposite)
-      result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.map((q,index)=>
-        <th style={{borderRight:(realSegmentLast==category && composite-1==index)?"none":"1px solid white"}}>{q.name1}</th>
+      result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.map((q,index)=>{
+        let percNumberRow=""
+        if(q.type=="number")
+           percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"1px solid white":"1px solid white"}}>{`%${q.name1}`}</td>
+        if(percNumberRow=="")
+          return <th style={{borderRight:(realSegmentLast==category && composite-1==index && !theresOtmDestiny)?"none":"1px solid white"}}>{q.name1}</th>
+        else
+          return [<th style={{borderRight:(realSegmentLast==category && composite-1==index && !theresOtmDestiny)?"1px solid white":"1px solid white"}}>{q.name1}</th>,percNumberRow]
+       
+      }
       )]
       /*if(theresOtmDestiny)
       result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].otmdestiny.map((q,index)=>
@@ -7866,12 +8349,26 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
       theresComposite=composite>0  
       theresOtmDestiny=otmdestiny>0
       if(theresNormal)   
-      result=[...result,...arr.normal.map((q,index)=>
-        <th style={{borderRight:(realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny))?"none":"1px solid white"}}>{q.name1}</th>
-      )]
+      result=[...result,...arr.normal.map((q,index)=>{
+        let percNumberRow=""
+        if(q.type=="number")
+           percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid white"}}>{`%${q.name1}`}</td>
+        if(percNumberRow=="")
+          return <th style={{borderRight:(realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny))?"none":"1px solid white"}}>{q.name1}</th>
+        else
+          return [<th style={{borderRight:(realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny))?"1px solid white":"1px solid white"}}>{q.name1}</th>,percNumberRow]
+
+      })]
       if(theresComposite)
-      result=[...result,...arr.compositeFields.map((q,index)=>
-        <th style={{borderRight:(realSegmentLast==category && composite-1==index && !theresOtmDestiny)?"none":"1px solid white"}}>{q.name1}</th>
+      result=[...result,...arr.compositeFields.map((q,index)=>{
+        let percNumberRow=""
+        if(q.type=="number")
+           percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"1px solid black":"1px solid black"}}>{`%${q.name1}`}</td>
+        if(percNumberRow=="")
+          return <th style={{borderRight:(realSegmentLast==category && composite-1==index && !theresOtmDestiny)?"none":"1px solid white"}}>{q.name1}</th>
+        else
+        return [<th style={{borderRight:(realSegmentLast==category && composite-1==index && !theresOtmDestiny)?"1px solid white":"1px solid white"}}>{q.name1}</th>,percNumberRow]
+      }
       )]
       if(theresOtmDestiny==true)
       result=[...result,...arr.otmdestiny.map((q,index)=>
@@ -7936,8 +8433,8 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
           
           //if(otmChoicesStatistics[category][segment][q.name1][ji]==true){
             
-            temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid white"}}>{ji}</th>)
-            temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid white"}}>{ji}Unique</th>)
+            temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}</th>)
+            temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}Unique</th>)
           //}
         })
 
@@ -7968,9 +8465,11 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
         otmStatisticsArray.forEach((ji,i44)=>{
           //if(otmChoicesStatistics[category][segment][q.name1][ji]==true){
             //if(ji=="media")
+            if(ji!="totalCount"){
               console.log("mediainfo",q.name1,realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1),realSegmentLast,segment,lastIndexNumberComposite,index,i44,otmStatisticsArray.length-1)
-            temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1))===true?"none":"1px solid white"}}>{ji}</th>)
-            temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1))===true?"none":"1px solid white"}}>{ji}</th>)
+            temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1))===true?"1px solid white":"1px solid white"}}>{ji}</th>)
+            temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1))===true?"1px solid white":"1px solid white"}}>{ji}Unique</th>)
+            }
 
           //}
         })
@@ -7983,7 +8482,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
   
   if(realSegmentLast!==segment){ 
     if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
-      if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`${segment}TotalCount`]==true){
+      if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`totalCount`]==true){
 
         result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>,
         <th style={{borderRight:"1px solid white"}}>{`%${segment}TotalCount`}</th>,
@@ -7995,7 +8494,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
       result=[...result,...temp]
     }
     else{
-      if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`${segment}TotalCount`]==true){
+      if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`totalCount`]==true){
 
         result=[<th style={{borderRight:"none"}}>{`${segment}TotalCount`}</th>,
         <th style={{borderRight:"none"}}>{`%${segment}TotalCount`}</th>,
@@ -8005,7 +8504,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     }
   }else{
     if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
-      if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`${segment}TotalCount`]==true){
+      if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`totalCount`]==true){
 
         result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>,
         <th style={{borderRight:"1px solid white"}}>{`%${segment}TotalCount`}</th>,
@@ -8015,7 +8514,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
       }else
         result=[...result,...temp]
     }
-    else if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`${segment}TotalCount`]==true){
+    else if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`totalCount`]==true){
     
       result=[<th style={{/*borderRight:"none"*/borderRight:"none"}}>{`${segment}TotalCount`}</th>,
       <th style={{/*borderRight:"none"*/borderRight:"none"}}>{`%${segment}TotalCount`}</th>,
@@ -8109,13 +8608,26 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
           
           }else
             disp=data[y][q.name1]
-          return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "none":"1px solid black"}}>{disp}</td>
+          let percDataRow=""
+          if(q.type=="number")
+            percDataRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "1px solid black":"1px solid black"}}>{(data[y][`%${q.name1}`]).toFixed(2)}</td>
+          if(percDataRow=="")
+            return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "1px solid black":"1px solid black"}}>{disp}</td>
+          else
+            return [<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "1px solid black":"1px solid black"}}>{disp}</td>,percDataRow]
         })]
       }
         if(theresComposite)
-        result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",overflow:"normal",borderRight:realSegmentLast==category && index==composite-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}`]}</td>
-        )]
+        result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.map((q,index)=>{
+          let percNumberRow=""
+          if(q.type=="number")
+            percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"1px solid black":"1px solid black"}}>{(data[y][`%${q.name1}`]).toFixed(2)}</td>
+          if(percNumberRow=="")
+            return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",overflow:"normal",borderRight:realSegmentLast==category && index==composite-1?"1px solid black":"1px solid black"}}>{data?.[y]?.[`${q.name1}`]}</td>
+          else 
+            return [<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",overflow:"normal",borderRight:realSegmentLast==category && index==composite-1?"1px solid black":"1px solid black"}}>{data?.[y]?.[`${q.name1}`]}</td>,percNumberRow]
+
+        })]
         /*if(theresOtmDestiny)
         result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].otmdestiny.map((q,index)=>
         <td style={{color:"black",background:"white",borderRight:realSegmentLast==category && index==otmdestiny-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}`]}</td>
@@ -8149,12 +8661,27 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
           
           }else
             disp=data[y][q.name1]
-          return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{disp}</td>
+          let percNumberRow=""
+          if(q.type=="number")
+           percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{(data[y][`%${q.name1}`]).toFixed(2)}</td>
+          if(percNumberRow=="")
+            return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{disp}</td>
+          else
+            return [<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"1px solid black":"1px solid black"}}>{disp}</td>,percNumberRow]
+
         }
         )]
         if(theresComposite)
-        result=[...result,...arr.compositeFields.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
+        result=[...result,...arr.compositeFields.map((q,index)=>{
+          let percNumberRow=""
+          if(q.type=="number")
+            percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{(data[y][`%${q.name1}`]).toFixed(2)}</td>
+          if(percNumberRow=="")
+            return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
+          else
+           return [<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"1px solid black":"1px solid black"}}>{data[y][`${q.name1}`]}</td>,percNumberRow]
+
+        }
         )]
       
       
@@ -8214,7 +8741,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
 
             
               let pmay=ji[0].toUpperCase()+ji.substring(1)
-              
+              if(ji!=="totalCount"){
               //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
               if(ji=="percentage"){
                 temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}`])?"0.00":data[y][`%${q.name1}`].toFixed(2)}</td>)  
@@ -8230,7 +8757,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
                 temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}${pmay}`]==undefined?"0.00":data[y][`${q.name1}${pmay}`].toFixed(2)}</td>)
                 temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}${pmay}Unique`]==undefined?"0.00":data[y][`${q.name1}${pmay}Unique`].toFixed(2)}</td>)
               }
-
+            }
             
           })
         }
@@ -8251,10 +8778,12 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
             }
           }
           temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumberComposite==index && realSegmentLast==a && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data[y][`${q.name1}total`].toFixed(2)}</td>)
+          temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumberComposite==index && realSegmentLast==a && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data[y][`${q.name1}UniqueTotal`]!=undefined?data[y][`${q.name1}UniqueTotal`].toFixed(2):"0.00"}</td>)
           //Object.keys(otmChoicesStatistics[category][a][q.name1])
           otmStatisticsArray.forEach((ji,i44)=>{
             //if(otmChoicesStatistics[category][a][q.name1][ji]==true){
               let pmay=ji[0].toUpperCase()+ji.substring(1)
+              if(ji!="totalCount"){
               //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
               //temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`]}</td>)
               if(ji=="percentage"){
@@ -8272,6 +8801,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
                 temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y][`${q.name1}${pmay}Unique`]==undefined?"0.00":data?.[y][`${q.name1}${pmay}Unique`]?.toFixed(2)}</td>)
               }
             //}
+              }
           })
         }
         ///return ""
@@ -8281,7 +8811,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
 
       if(realSegmentLast!==a){ 
         if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
-          if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
+          if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`totalCount`]==true){
 
             result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}</td>,
             <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}</td>,
@@ -8293,7 +8823,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
           }
         }
         else{
-          if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
+          if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`totalCount`]==true){
 
             result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}</td>,
             <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}</td>,
@@ -8303,7 +8833,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
         }
       }else{
         if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
-          if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
+          if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`totalCount`]==true){
 
             result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}</td>,
             <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}</td>,
@@ -8314,7 +8844,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
             result=[...result,temp]
         }
         else
-          if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
+          if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`totalCount`]==true){
 
             result=[<td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}</td>,
             <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}</td>,
