@@ -798,6 +798,7 @@ const Reports=({
           console.log("selectall",selectAll,selectAllSegment,selectAllFields)
 
           correctOtmMtm?.normal?.map(x=>{
+            if(x.type=="number"){
             if(otmVar[trackCatPath[l]][ntm]?.[x.name1]===undefined){
               if(x.name1=="calificacion" || x.name1=="incomingyear")
                 console.log("entroconsole",otmVar,trackCatPath[l],ntm,x.name1)
@@ -826,11 +827,12 @@ const Reports=({
               otmVar[trackCatPath[l]][ntm][x.name1][`median`]=true
               otmVar[trackCatPath[l]][ntm][x.name1][`minimum`]=true
               otmVar[trackCatPath[l]][ntm][x.name1][`maximum`]=true
-              doWorkSort(true,`${x.name}total`,trackCatPath[l],ntm,"number")
-              doWorkSort(true,`%${x.name}Media`,trackCatPath[l],ntm,"number")
-              doWorkSort(true,`%${x.name}Median`,trackCatPath[l],ntm,"number")
-              doWorkSort(true,`%${x.name}Acummulatedminimum`,trackCatPath[l],ntm,"number")
-              doWorkSort(true,`%${x.name}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}total`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name1}`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}Media`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}Median`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
               console.log("entrotodotrue",trackCatPath[l],ntm,x.name1,otmVar)
 
             }else if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l]) || (catSegField=="field" && nameO==x.name1 && trackCatPath[l]==segVar)) && value1==false){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false))
@@ -841,19 +843,21 @@ const Reports=({
               otmVar[trackCatPath[l]][ntm][x.name1][`median`]=false
               otmVar[trackCatPath[l]][ntm][x.name1][`minimum`]=false
               otmVar[trackCatPath[l]][ntm][x.name1][`maximum`]=false
-              doWorkSort(false,`${x.name}total`,trackCatPath[l],ntm,"number")
-              doWorkSort(false,`%${x.name}Media`,trackCatPath[l],ntm,"number")
-              doWorkSort(false,`%${x.name}Median`,trackCatPath[l],ntm,"number")
-              doWorkSort(false,`%${x.name}Acummulatedminimum`,trackCatPath[l],ntm,"number")
-              doWorkSort(false,`%${x.name}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}total`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name1}`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}Media`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}Median`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
               console.log("entrotodofalse",trackCatPath[l],ntm,x.name1,otmVar)
 
             }
             
-            
+          }
             console.log("newHook",otmVar)
           })
           correctOtmMtm?.compositeFields?.map(x=>{
+            if(x.type=="number"){
             if(otmVar[trackCatPath[l]][ntm]?.[x.name1]===undefined){
               if(x.name1=="calificacion" || x.name1=="incomingyear")
                 console.log("entroconsole",otmVar,trackCatPath[l],ntm,x.name1)
@@ -880,11 +884,12 @@ const Reports=({
               otmVar[trackCatPath[l]][ntm][x.name1][`median`]=true
               otmVar[trackCatPath[l]][ntm][x.name1][`minimum`]=true
               otmVar[trackCatPath[l]][ntm][x.name1][`maximum`]=true
-              doWorkSort(true,`${x.name}total`,trackCatPath[l],ntm,"number")
-              doWorkSort(true,`%${x.name}Media`,trackCatPath[l],ntm,"number")
-              doWorkSort(true,`%${x.name}Median`,trackCatPath[l],ntm,"number")
-              doWorkSort(true,`%${x.name}Acummulatedminimum`,trackCatPath[l],ntm,"number")
-              doWorkSort(true,`%${x.name}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}total`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name1}`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}Media`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}Median`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
               console.log("entrotodotrue",trackCatPath[l],ntm,x.name1,otmVar)
 
             }else if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l]) || (catSegField=="field" && nameO==x.name1 && trackCatPath[l]==segVar)) && value1==false){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false))
@@ -895,15 +900,16 @@ const Reports=({
               otmVar[trackCatPath[l]][ntm][x.name1][`median`]=false
               otmVar[trackCatPath[l]][ntm][x.name1][`minimum`]=false
               otmVar[trackCatPath[l]][ntm][x.name1][`maximum`]=false
-              doWorkSort(false,`${x.name}total`,trackCatPath[l],ntm,"number")
-              doWorkSort(false,`%${x.name}Media`,trackCatPath[l],ntm,"number")
-              doWorkSort(false,`%${x.name}Median`,trackCatPath[l],ntm,"number")
-              doWorkSort(false,`%${x.name}Acummulatedminimum`,trackCatPath[l],ntm,"number")
-              doWorkSort(false,`%${x.name}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}total`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name1}`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}Media`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}Median`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
               console.log("entrotodofalse",trackCatPath[l],ntm,x.name1,otmVar)
 
             }
-            
+          }
             
             console.log("newHook",otmVar)
           })
@@ -925,6 +931,7 @@ const Reports=({
     //if(otmChoices[trackCatPath[trackCatPath.length-1]])
       //if(!ntm.startsWith("mtm"))
         correctOtmMtm=otmChoices[trackCatPath[trackCatPath.length-1]]
+        console.log("correctOtm",correctOtmMtm)
       //else
         //correctOtmMtm=mtmChoices[trackCatPath[trackCatPath.length-1]]
 
@@ -1054,12 +1061,12 @@ const Reports=({
             initializeStatisticsVariables(trackCatPath,ntm,"seg",trackCatPath[l],true)  
             
 
-          }}>Select All Segment</a>
+          }}>Select All Segment</a>&nbsp;-&nbsp;
           <a onClick={(e)=>{
             e.preventDefault()
             initializeStatisticsVariables(trackCatPath,ntm,"seg",trackCatPath[l],false)  
 
-          }}>Unselect All Segment</a>
+          }}>Unselect All Segment</a><br/>
           <input type="checkbox" 
 
             checked={newHook?.[trackCatPath?.[l]]?.[ntm]?.["general"]?.[`totalCount`]}
@@ -1103,14 +1110,14 @@ const Reports=({
               
           {//otmChoices[trackCatPath[trackCatPath.length-1]]
           correctOtmMtm?.normal?.map(x=>{
-
-            if(x.type=="number" && x.dataType!="queryCategory"){
+            console.log("corotm",correctOtmMtm)
+            if(x.type=="number"){
               
-              return <div><span style={{marginRight:"10px"}}>{x.name1}total</span>
+              return <div><span style={{marginRight:"10px"}}>{x.name1}total</span><br/>
              <a onClick={e=>{
                e.preventDefault()
                initializeStatisticsVariables(trackCatPath,ntm,"field",x.name1,true,trackCatPath[l])   
-             }}>Select All Field</a>
+             }}>Select All Field</a>&nbsp;-&nbsp;
              <a onClick={e=>{
                e.preventDefault()
                initializeStatisticsVariables(trackCatPath,ntm,"field",x.name1,false,trackCatPath[l])  
@@ -1598,7 +1605,7 @@ const Reports=({
     if(isChecked(nameOtm)){
     let oc=ordenaCampos(fields,field)
     let name=nameOtm
-    return <div style={{margin:"0",marginLeft:"10px"}}>
+    return <div style={{margin:"0",marginLeft:"19px"}}>
       {oc.map(x=>{
         let c=fields.filter(i=>i.name==x)[0]
         
@@ -1790,9 +1797,8 @@ const Reports=({
           
         
         //unselectAllStatistics(trackCatPath,nameOtm,cat.name)
-      }}>Select All</a>
-       
-      <br/>
+      }}>Select All</a>  
+      &nbsp;-&nbsp;
       <a onClick={(e)=>{
         e.preventDefault()
         initializeStatisticsVariables(trackCatPath,nameOtm,"cat",nameOtm,false)
@@ -1835,18 +1841,19 @@ const Reports=({
         onClick={e=>{
           e.preventDefault()
           toggleOpenSortCriteriaDialog({categoryName:field,otmChoicesSort:otmChoicesOrder[field],sortRules:sortRules,setSortRules:setSortRules})
-        }}>Add Order Criteria</a>
-  {/*field.startsWith("otm") && displayCurCategory(catDestiny,false,false,field,false,trackCatPath)*/}
-<FormButton style={{
+        }}>Add Order Criteria</a><br/>
+  <a style={{
         textAlign:"left",
         textDecoration:"underline",
         marginLeft:0,
-        paddingLeft:0
-      }} onClick={()=>{
+        paddingLeft:0,
+        marginTop:0
+      }} onClick={(e)=>{
+        e.preventDefault()
         ////console.log("click",otmChoices[name]["normal"])
         setOtmCategoryFields(pivote[field])
         toggleCompositeFieldDialog(field)
-      }}>Add composite field</FormButton>
+      }}>Add composite field</a>
       {compFieldsArray[field]?.map(d=>{
           return <>
           {d.type=="date" && /*<p>
@@ -1959,18 +1966,19 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
 {parentIdentifiers?.[parentCategories?.[name]]?.["fieldCompOrNormalType"]=="none" &&
 displayParentIdentifierNull(name,name,"parentIdentifier",
 parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
-  
-      <FormButton style={{
+    <br/>
+      <a style={{
         textAlign:"left",
         textDecoration:"underline",
         marginLeft:0,
         paddingLeft:0
-      }} onClick={()=>{
+      }} onClick={(e)=>{
+        e.preventDefault()
         ////console.log("click")
         setOtmCategoryFields(pivote[name])
 
         toggleOtmIdFieldsDialog(name)
-      }}>Add field to identify parent in child relationships</FormButton>
+      }}>Add field to identify parent in child relationships</a>
     
     
 
@@ -2007,7 +2015,7 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
     if(isChecked(nameOtm)){
       let of=ordenaCampos(cat.fields)
       return (
-    <div style={{marginLeft:"10px",width:"100%",marginBottom:"10px"}}>
+    <div style={{marginLeft:"19px",width:"100%",marginBottom:"0px"}}>
       
      
         {of?.map(fr=>{
@@ -2220,17 +2228,20 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
         })
 
       }
-      {nameOtm} {cat.name} 
       <a onClick={(e)=>{
         e.preventDefault()
-        setSelectAll(j=>{return {...j,[nameOtm]:true}})
-        //selectAllStatistics(trackCatPath,nameOtm,cat.name)
+       initializeStatisticsVariables(trackCatPath,nameOtm,"cat",nameOtm,true)
+          
+        
+        //unselectAllStatistics(trackCatPath,nameOtm,cat.name)
       }}>Select All</a>
+      &nbsp;-&nbsp;
       <a onClick={(e)=>{
         e.preventDefault()
-        setSelectAll(j=>{return {...j,[nameOtm]:false}})
+        initializeStatisticsVariables(trackCatPath,nameOtm,"cat",nameOtm,false)
         //unselectAllStatistics(trackCatPath,nameOtm,cat.name)
       }}>Unselect All</a>
+    
       {displayAncestorsCats(trackCatPath,nameOtm,cat.name)}
       <a style={{textDecoration:"underline"}}
       onClick={e=>{
@@ -2242,7 +2253,7 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
         }
       }
       
-      >Add main where condition</a><br/>
+      >Add main where condition</a>
       {(conditionsWhere[name]?.["main"]==undefined || typeof conditionsWhere[name]?.["main"]!=="object")?<p>none</p>:
       <p onClick={()=>toggleOpenViewMainWhereConditionDialog({categoryName:name,
         segment:conditionsWhere[name]?.["main"]?.["segment"],
@@ -2265,17 +2276,19 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
           e.preventDefault()
           toggleOpenSortCriteriaDialog({categoryName:name,otmChoicesSort:otmChoicesOrder[name],sortRules:sortRules,setSortRules:setSortRules})
         }}>Add Order Criteria</a>
+        <br/>
       {/*displayCurCategory(catDestiny,false,false,name,false,trackCatPath)*/}
-      <FormButton style={{
+      <a style={{
         textAlign:"left",
         textDecoration:"underline",
         marginLeft:0,
         paddingLeft:0
-      }} onClick={()=>{
+      }} onClick={(e)=>{
+        e.preventDefault()
         ////console.log("click",otmChoices[name]["normal"])
         setOtmCategoryFields(pivote[name])
         toggleCompositeFieldDialog(name)
-      }}>Add composite field</FormButton>
+      }}>Add composite field</a>
       {compFieldsArray[name]?.map(d=>{
           return <>
           {d.type=="date" && <p>
@@ -2359,18 +2372,19 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
 {parentIdentifiers?.[parentCategories?.[name]]?.["fieldCompOrNormalType"]=="none" &&
 displayParentIdentifierNull(name,name,"parentIdentifier",
 parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
-  
-      <FormButton style={{
+    <br/>
+      <a style={{
         textAlign:"left",
         textDecoration:"underline",
         marginLeft:0,
         paddingLeft:0
-      }} onClick={()=>{
+      }} onClick={(e)=>{
+        e.preventDefault()
         ////console.log("click")
         setOtmCategoryFields(pivote[name])
 
         toggleOtmIdFieldsDialog(name)
-      }}>Add field to identify parent in child relationships</FormButton>
+      }}>Add field to identify parent in child relationships</a>
     </div>
     )
     }else{
@@ -2590,7 +2604,7 @@ const displayWhereClauses=(cat,field,seg="")=>{
           }
         }
       })
-    return cls.length>0?<div>{cls}</div>:<br/>
+    return cls.length>0?<div style={{marginTop:"0px",marginBottom:"0px"}}>{cls}</div>:<br/>
     }
   /*}else{
     if(conditionsWhere[nc]?.[ns]?.[field]!==undefined)
@@ -2683,7 +2697,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
       of=ordenaCampos(cat?.fields,cat?.name)
     
     return (
-    <div style={{marginLeft:space?"10px":"0px",width:primero?"50%":"100%"}}>
+    <div style={{margin:"0px",marginLeft:space?"10px":"0px",width:primero?"50%":"100%"}}>
       <p>HOla</p>
       {of?.map(fr=>{
         let c=cat?.fields?.filter(y=>y.name==fr)[0]
@@ -2890,21 +2904,6 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
 
     {/*nameOtm.startsWith("mtm") && displayMenuMtm(displayMenu(nameOtm,cat.name,[...trackCatPath,nameOtm]))*/}
       
-    <a onClick={(e)=>{
-        e.preventDefault()
-        setSelectAll(j=>{return {...j,[nameOtm]:true}})
-        //selectAllStatistics(trackCatPath,nameOtm,cat.name)
-      }}>Select All</a>
-      <a onClick={(e)=>{
-        e.preventDefault()
-        setSelectAll(j=>{return {...j,[nameOtm]:false}})
-        //unselectAllStatistics(trackCatPath,nameOtm,cat.name)
-      }}>Unselect All</a>
-        
-
-      
-      {displayAncestorsCats(trackCatPath,nameOtm,cat.name)}
-
       {primero && fieldsSingle && <div>
         <a style={{textDecoration:"underline"}}
         onClick={e=>{
@@ -2916,7 +2915,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
           })
           
           }
-        }>Add main where condition</a><br/>
+        }>Add main where condition</a>
         <p onClick={()=>toggleOpenViewMainWhereConditionDialog({categoryName:`getData${currentCategory.name}`})}></p>
         {(conditionsWhere[`getData${currentCategory.name}`]?.["main"]==undefined || typeof conditionsWhere[`getData${currentCategory.name}`]?.["main"]!=="object")?<p>none</p>:
       <p onClick={()=>toggleOpenViewMainWhereConditionDialog({categoryName:`getData${currentCategory.name}`,
@@ -5364,9 +5363,10 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
 //a1 es la categoria hija inmediata, y a2 es la categoria superior inmediata
   let doneMain=[]
   let arrCheckDoneKeys={}
+  let idsAlreadyDone=[]
   Object.keys(a1).forEach(p=>{
     //let pnuev=a1[p]["id"]
-
+    
     console.log("a1a2primero",a1,p,a2,a1[p])
     //p son las claves de la categoria inferior
     // si let x=Object.keys(a1[p])
@@ -5391,10 +5391,13 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
     
     if(arrCheckDoneKeys[p]==undefined)
       arrCheckDoneKeys={...arrCheckDoneKeys,[p]:{}}
-    for(let m1=0;m1<x.length;m1++){
     
+    for(let m1=0;m1<x.length;m1++){
       
+      if(m1==0)
+        idsAlreadyDone=[]  
       Object.keys(a2[p]).forEach(o=>{
+         
         if(arrCheckDoneKeys[p][o]==undefined)
           arrCheckDoneKeys[p]={...arrCheckDoneKeys[p],[p]:[]}
         ////console.log("m1",a2[o].keys,x[m1],a2[o].keys.includes(parseInt(x[m1])))
@@ -5511,6 +5514,8 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 }
                 if(a2[p][o]?.[`${nf["normal"][j1]}UniqueTotalArray`]==undefined)
                   a2[p][o]={...a2[p][o],[`${nf["normal"][j1]}UniqueTotalArray`]:[]}
+                  if(a2[p][o]?.[`${nf["normal"][j1]}NoRepeatUniqueTotalArray`]==undefined)
+                  a2[p][o]={...a2[p][o],[`${nf["normal"][j1]}NoRepeatUniqueTotalArray`]:[]}
                 if(a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`]==undefined){
                   a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`]=[]
                 }
@@ -5541,8 +5546,19 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
 
                 if(a2[p][o][`${nf["normal"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["normal"][j1]}Acummulated`]==null)
                   a2[p][o][`${nf["normal"][j1]}Acummulated`]=[]
+
+                  if(a2[p][o][`${nf["normal"][j1]}NoRepeatAcummulated`]==undefined || a2[p][o][`${nf["normal"][j1]}NoRepeatAcummulated`]==null)
+                    a2[p][o][`${nf["normal"][j1]}NoRepeatAcummulated`]=[]
+                
                 
                 a2[p][o][`${nf["normal"][j1]}Acummulated`].push(st)
+                console.log("idadone",p,varp1,a1[p][varp1],idsAlreadyDone,a1[p][varp1]["id"],a2,p,o)
+                
+                /*if(!idsAlreadyDone.includes(a1[p][varp1]["id"] && o==a2[p].length-1)){
+                  a2[p][o][`${nf["normal"][j1]}NoRepeatAcummulated`].push(st)
+                  idsAlreadyDone.push(a1[p][varp1]["id"])
+                }*/
+                  
                 //if(m1==x.length-1){
                   /*console.log("realUnVer",a2[p][o]["realUniqueIndexes"],a2[p][o]["uniqueIndexes"],a2[p][o][`${nf["normal"][j1]}Acummulated`])
                   for(let pp=0;pp<a2[p][o]["realUniqueIndexes"].length;pp++){
@@ -5594,17 +5610,34 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 let varp2=ind[m1]//Object.keys(a1[p]).filter(i=>a1[p][i]["id"]==keyTransform)[0]
                 st=a1[p][varp2][`${nf["normal"][j1]}total`]
                 a2[p][o][`${nf["normal"][j1]}total`]+=st
+
                 if(a2[p][o][`${nf["normal"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["normal"][j1]}Acummulated`]==null)
                   a2[p][o][`${nf["normal"][j1]}Acummulated`]=[]
+                if(a2[p][o][`${nf["normal"][j1]}NoRepeatAcummulated`]==undefined || a2[p][o][`${nf["normal"][j1]}NoRepeatAcummulated`]==null)
+                  a2[p][o][`${nf["normal"][j1]}NoRepeatAcummulated`]=[]
+
                 if(a1[p][varp2][`${nf["normal"][j1]}Acummulated`]==undefined || a1[p][varp2][`${nf["normal"][j1]}Acummulated`]==null)
                   a1[p][varp2][`${nf["normal"][j1]}Acummulated`]=[]
+                if(a1[p][varp2][`${nf["normal"][j1]}NoRepeatAcummulated`]==undefined || a1[p][varp2][`${nf["normal"][j1]}NoRepeatAcummulated`]==null)
+                  a1[p][varp2][`${nf["normal"][j1]}NoRepeatAcummulated`]=[]
+
                 if(a1[p][varp2][`${nf["normal"][j1]}AcummulatedUnique`]==undefined)
                   a1[p][varp2][`${nf["normal"][j1]}AcummulatedUnique`]=[]
+
+                if(a1[p][varp2][`${nf["normal"][j1]}NoRepeatAcummulatedUnique`]==undefined)
+                  a1[p][varp2][`${nf["normal"][j1]}NoRepeatAcummulatedUnique`]=[]
+
                 if(a2[p][o][`${nf["normal"][j1]}AcummulatedUnique`]==undefined)
                   a2[p][o][`${nf["normal"][j1]}AcummulatedUnique`]=[]
+                  if(a2[p][o][`${nf["normal"][j1]}NoRepeatAcummulatedUnique`]==undefined)
+                  a2[p][o][`${nf["normal"][j1]}NoRepeatAcummulatedUnique`]=[]
+                
                 
                 if(a2[p][o]?.[`${nf["normal"][j1]}UniqueTotalArray`]==undefined)
                   a2[p][o]={...a2[p][o],[`${nf["normal"][j1]}UniqueTotalArray`]:[]}
+                  if(a2[p][o]?.[`${nf["normal"][j1]}NoRepeatUniqueTotalArray`]==undefined)
+                  a2[p][o]={...a2[p][o],[`${nf["normal"][j1]}NoRepeatUniqueTotalArray`]:[]}
+
                 if(a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`]==undefined){
                   a2[p][o][`${nf["normal"][j1]}UniqueTotalArrayDone`]=[]
                 }
@@ -5632,6 +5665,16 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                   //...a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]
                   ...a1[p][varp2][`${nf["normal"][j1]}Acummulated`]
                 ]
+                /*if(!idsAlreadyDone.includes(a1[p][varp2]["id"] && o==a2[p].length-1)){
+                  a2[p][o][`${nf["normal"][j1]}NoRepeatAcummulated`]=[
+                    ...a2[p][o][`${nf["normal"][j1]}NoRepeatAcummulated`],
+                    //...a1[p][x[m1]][`${nf["normal"][j1]}Acummulated`]
+                    ...a1[p][varp2][`${nf["normal"][j1]}NoRepeatAcummulated`]
+                  ]
+                  
+                  //idsAlreadyDone.push(a1[p][varp2]["id"])
+                }*/
+
                 //if(m1==x.length-1){
                   //console.log("realUnVer",a2[p][o]["realUniqueIndexes"],a2[p][o]["uniqueIndexes"],a2[p][o][`${nf["normal"][j1]}Acummulated`])
 
@@ -5826,6 +5869,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
         //}
         
       })
+      
     }
     //doneMain=[...doneMain,o]
 
@@ -5974,7 +6018,7 @@ const getCategoriesGrandTotals=(category)=>{
     if(realGrandTotals1[category]?.[y]==undefined)
       realGrandTotals1[category][y]={}
 
-                  
+    let idAlreadyDone=[]             
     Object.keys(finalObject[category][y]).forEach(u=>{
       for(let j1=0;j1<nf.normal.length;j1++){
         if(realGrandTotals1[category][y]?.[`${nf["normal"][j1]}total`]==undefined)
@@ -6001,7 +6045,31 @@ const getCategoriesGrandTotals=(category)=>{
         realGrandTotals1[category][y]={...realGrandTotals1[category][y],
           [`${nf["normal"][j1]}total`]:realGrandTotals1[category][y][`${nf["normal"][j1]}total`]+st,
           [`${nf["normal"][j1]}UniqueTotal`]:realGrandTotals1[category][y]?.[`${nf["normal"][j1]}UniqueTotal`]+st1
-      }
+        }
+        if(category!=y){
+          if(realGrandTotals1[category][y][`${nf["normal"][j1]}NoRepeatTotal`]==undefined)
+            realGrandTotals1[category][y]={...realGrandTotals1[category][y],[`${nf["normal"][j1]}NoRepeatTotal`]:0}
+          if(realGrandTotals1[category][y][`${nf["normal"][j1]}NoRepeatUniqueTotal`]==undefined)
+            realGrandTotals1[category][y]={...realGrandTotals1[category][y],[`${nf["normal"][j1]}NoRepeatUniqueTotal`]:0}
+  
+        //empieza fragmento donde los ids no son los mismos
+          if(!idAlreadyDone.includes(finalObject[category][y][u]?.["id"])){
+            realGrandTotals1[category][y]={...realGrandTotals1[category][y],
+              [`${nf["normal"][j1]}NoRepeatTotal`]:realGrandTotals1[category][y][`${nf["normal"][j1]}NoRepeatTotal`]+st,
+              [`${nf["normal"][j1]}NoRepeatUniqueTotal`]:realGrandTotals1[category][y]?.[`${nf["normal"][j1]}NoRepeatUniqueTotal`]+st1
+            }
+        
+            //idAlreadyDone.push(finalObject[category][y][u]?.["id"])
+        
+          }
+        }
+      
+
+      
+
+
+      //termina fragmento donde los ids no son los mismos
+
       }
       for(let j1=0;j1<nf.compositeFields.length;j1++){
         if(realGrandTotals1[category][y]?.[`${nf["compositeFields"][j1]}total`]==undefined)
@@ -6024,18 +6092,33 @@ const getCategoriesGrandTotals=(category)=>{
           [`${nf["compositeFields"][j1]}UniqueTotal`]:realGrandTotals1[category][y][`${nf["compositeFields"][j1]}UniqueTotal`]+st1
         }
       }
-
+      if(!idAlreadyDone.includes(finalObject[category][y][u]?.["id"]))
+       idAlreadyDone.push(finalObject[category][y][u]?.["id"])
     })
+    idAlreadyDone=[]
     Object.keys(finalObject[category][y]).forEach(u=>{
       if(realGrandTotals1[category][y]?.[`${y}TotalCount`]==undefined)
         realGrandTotals1[category][y][`${y}TotalCount`]=0
+      if(realGrandTotals1[category][y]?.[`${y}NoRepeatTotalCount`]==undefined)
+        realGrandTotals1[category][y][`${y}NoRepeatTotalCount`]=0
+
+
       if(realGrandTotals1[category][y]?.[`${y}TotalCountArray`]==undefined)
         realGrandTotals1[category][y][`${y}TotalCountArray`]=[]
+      if(realGrandTotals1[category][y]?.[`${y}NoRepeatTotalCountArray`]==undefined)
+        realGrandTotals1[category][y][`${y}NoRepeatTotalCountArray`]=[]
+
 
         if(realGrandTotals1[category][y]?.[`${y}TotalCountUnique`]==undefined)
-        realGrandTotals1[category][y][`${y}TotalCountUnique`]=0
+          realGrandTotals1[category][y][`${y}TotalCountUnique`]=0
+        if(realGrandTotals1[category][y]?.[`${y}NoRepeatTotalCountUnique`]==undefined)
+          realGrandTotals1[category][y][`${y}NoRepeatTotalCountUnique`]=0
+
+
       if(realGrandTotals1[category][y]?.[`${y}TotalCountArrayUnique`]==undefined)
         realGrandTotals1[category][y][`${y}TotalCountArrayUnique`]=[]
+        if(realGrandTotals1[category][y]?.[`${y}NoRepeatTotalCountArrayUnique`]==undefined)
+        realGrandTotals1[category][y][`${y}NoRepeatTotalCountArrayUnique`]=[]
       
       realGrandTotals1[category][y][`${y}TotalCount`]=realGrandTotals1[category][y][`${y}TotalCount`]+finalObject[category][y][u][`${y}TotalCount`]
       realGrandTotals1[category][y][`${y}TotalCountArray`].push(finalObject[category][y][u][`${y}TotalCount`])
@@ -6043,9 +6126,23 @@ const getCategoriesGrandTotals=(category)=>{
       realGrandTotals1[category][y][`${y}TotalCountUnique`]=realGrandTotals1[category][y][`${y}TotalCountUnique`]+finalObject[category][y][u][`${y}UniqueTotalCount`]
       realGrandTotals1[category][y][`${y}TotalCountArrayUnique`].push(finalObject[category][y][u][`${y}UniqueTotalCount`])
 
+      if(!idAlreadyDone.includes(finalObject[category][y][u]["id"])){
+        realGrandTotals1[category][y][`${y}NoRepeatTotalCount`]=realGrandTotals1[category][y][`${y}NoRepeatTotalCount`]+finalObject[category][y][u][`${y}TotalCount`]
+        realGrandTotals1[category][y][`${y}NoRepeatTotalCountArray`].push(finalObject[category][y][u][`${y}TotalCount`])
+
+        realGrandTotals1[category][y][`${y}NoRepeatTotalCountUnique`]=realGrandTotals1[category][y][`${y}NoRepeatTotalCountUnique`]+finalObject[category][y][u][`${y}UniqueTotalCount`]
+        realGrandTotals1[category][y][`${y}NoRepeatTotalCountArrayUnique`].push(finalObject[category][y][u][`${y}UniqueTotalCount`])
+        idAlreadyDone.push(finalObject[category][y][u][`id`])
+        
+      }
+
+
     })
+    
     realGrandTotals1?.[category]?.[y]?.[`${y}TotalCountArray`]?.sort((a,b)=>a-b)
+    realGrandTotals1?.[category]?.[y]?.[`${y}NoRepeatTotalCountArray`]?.sort((a,b)=>a-b)
     realGrandTotals1?.[category]?.[y]?.[`${y}TotalCountArrayUnique`]?.sort((a,b)=>a-b)
+    realGrandTotals1?.[category]?.[y]?.[`${y}NoRepeatTotalCountArrayUnique`]?.sort((a,b)=>a-b)
   })
   console.log("realgt",realGrandTotals1)
 }
@@ -6487,14 +6584,20 @@ const calculateMediaAndMediansOfRecords=(category)=>{
             
         }else{
           let total=0
-          
+          let totalA=0
           let median=0
+          let medianA=0
           let arr
+          let arrA
 
           let total1=0
+          let total1A=0
           let median1=0
+          let median1A=0
           let arr1
-       
+          let arr1A
+
+          
           if(y.startsWith("otm")){
             arr=otmChoices[y]
           }else if(y.startsWith("mtm"))
@@ -6503,23 +6606,45 @@ const calculateMediaAndMediansOfRecords=(category)=>{
           arr.normal.forEach(i=>{
             if(i.type=="number"){
               total=0
+              totalA=0
               total1=0
+              total1A=0
+              
               let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
+              let sortedValuesA=realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`].sort((a,b)=>a-b)
               let sortedValues1=realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`].sort((a,b)=>a-b)
+              let sortedValues1A=realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`].sort((a,b)=>a-b)
+              
               sortedValues=sortedValues.map(x=>{
                 if(x==undefined || x==null)
                   return 0
                 return x
               })
+              sortedValuesA=sortedValuesA.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
+
               sortedValues1=sortedValues1.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
+              sortedValues1A=sortedValues1A.map(x=>{
                 if(x==undefined || x==null)
                   return 0
                 return x
               }) 
               sortedValues.forEach(i=>total=total+i)
+              sortedValuesA.forEach(i=>totalA=totalA+i)
               sortedValues1.forEach(i=>total1=total1+i)
+              sortedValues1A.forEach(i=>total1A=total1A+i)
+              
               realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMedia`]=(totalA/sortedValuesA.length)
               realGrandTotals1[category][y][`${i.name1}MediaUnique`]=(total1/sortedValues1.length)
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMediaUnique`]=(total1A/sortedValues1A.length)
               
 
               if(sortedValues.length%2==1){
@@ -6527,13 +6652,26 @@ const calculateMediaAndMediansOfRecords=(category)=>{
               }else{
                 median=((sortedValues[(sortedValues.length/2)-1]+sortedValues[(sortedValues.length/2)])/2)
               }
+              if(sortedValuesA.length%2==1){
+                medianA=(sortedValuesA[Math.floor(sortedValuesA.length/2)])
+              }else{
+                medianA=((sortedValuesA[(sortedValuesA.length/2)-1]+sortedValuesA[(sortedValuesA.length/2)])/2)
+              }
+
               if(sortedValues1.length%2==1){
                 median1=(sortedValues1[Math.floor(sortedValues1.length/2)])
               }else{
                 median1=((sortedValues1[(sortedValues1.length/2)-1]+sortedValues1[(sortedValues1.length/2)])/2)
               }
+              if(sortedValues1A.length%2==1){
+                median1A=(sortedValues1A[Math.floor(sortedValues1A.length/2)])
+              }else{
+                median1A=((sortedValues1A[(sortedValues1A.length/2)-1]+sortedValues1A[(sortedValues1A.length/2)])/2)
+              }
               realGrandTotals1[category][y][`${i.name1}Median`]=median
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMedian`]=medianA
               realGrandTotals1[category][y][`${i.name1}MedianUnique`]=median1
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMedianUnique`]=median1A
 
             }
           })
@@ -6541,10 +6679,19 @@ const calculateMediaAndMediansOfRecords=(category)=>{
             if(i.type=="number"){
             
               let total=0
+              let totalA=0
               let total1=0
+              let total1A=0
               let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
+              let sortedValuesA=realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`].sort((a,b)=>a-b)
               let sortedValues1=realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`].sort((a,b)=>a-b)
+              let sortedValues1A=realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`].sort((a,b)=>a-b)
               sortedValues=sortedValues.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
+              sortedValuesA=sortedValuesA.map(x=>{
                 if(x==undefined || x==null)
                   return 0
                 return x
@@ -6554,12 +6701,23 @@ const calculateMediaAndMediansOfRecords=(category)=>{
                   return 0
                 return x
               })
+              sortedValues1A=sortedValues1A.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
               let median=0
+              let medianA=0
               let median1=0
+              let median1A=0
               sortedValues.forEach(i=>total=total+i)
+              sortedValuesA.forEach(i=>totalA=totalA+i)
               sortedValues1.forEach(i=>total1=total1+i)
+              sortedValues1A.forEach(i=>total1A=total1A+i)
               realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMedia`]=(totalA/sortedValuesA.length)
               realGrandTotals1[category][y][`${i.name1}MediaUnique`]=(total1/sortedValues1.length)
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMediaUnique`]=(total1A/sortedValues1A.length)
               
 
               if(sortedValues.length%2==1){
@@ -6567,13 +6725,25 @@ const calculateMediaAndMediansOfRecords=(category)=>{
               }else{
                 median=((sortedValues[(sortedValues.length/2)-1]+sortedValues[(sortedValues.length/2)])/2)
               }
+              if(sortedValuesA.length%2==1){
+                medianA=(sortedValuesA[Math.floor(sortedValuesA.length/2)])
+              }else{
+                medianA=((sortedValuesA[(sortedValuesA.length/2)-1]+sortedValuesA[(sortedValuesA.length/2)])/2)
+              }
               if(sortedValues1.length%2==1){
                 median1=(sortedValues1[Math.floor(sortedValues1.length/2)])
               }else{
                 median1=((sortedValues1[(sortedValues1.length/2)-1]+sortedValues1[(sortedValues1.length/2)])/2)
               }
+              if(sortedValues1A.length%2==1){
+                median1A=(sortedValues1A[Math.floor(sortedValues1A.length/2)])
+              }else{
+                median1A=((sortedValues1A[(sortedValues1A.length/2)-1]+sortedValues1A[(sortedValues1A.length/2)])/2)
+              }
               realGrandTotals1[category][y][`${i.name1}Median`]=median
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMedian`]=medianA
               realGrandTotals1[category][y][`${i.name1}MedianUnique`]=median1
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMedianUnique`]=median1A
             }
             
           })
@@ -6676,12 +6846,23 @@ const calculateMediaAndMediansOfRecords=(category)=>{
           arr.normal.forEach(i=>{
             if(i.type=="number"){
               let total=0
+              let totalA=0
               let median=0
+              let medianA=0
               let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
+              let sortedValuesA=realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`].sort((a,b)=>a-b)
               let total1=0
+              let total1A=0
               let median1=0
+              let median1A=0
               let sortedValues1=realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`].sort((a,b)=>a-b)
+              let sortedValues1A=realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`].sort((a,b)=>a-b)
               sortedValues=sortedValues.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
+              sortedValuesA=sortedValuesA.map(x=>{
                 if(x==undefined || x==null)
                   return 0
                 return x
@@ -6691,36 +6872,67 @@ const calculateMediaAndMediansOfRecords=(category)=>{
                   return 0
                 return x
               })
+              sortedValues1A=sortedValues1A.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
               sortedValues.forEach(i=>total=total+i)
+              sortedValuesA.forEach(i=>totalA=totalA+i)
               sortedValues1.forEach(i=>total1=total1+i)
+              sortedValues1A.forEach(i=>total1A=total1A+i)
               realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMedia`]=(totalA/sortedValuesA.length)
               realGrandTotals1[category][y][`${i.name1}MediaUnique`]=(total1/sortedValues1.length)
-              
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMediaUnique`]=(total1A/sortedValues1A.length)
 
               if(sortedValues.length%2==1){
                 median=(sortedValues[Math.floor(sortedValues.length/2)])
               }else{
                 median=((sortedValues[(sortedValues.length/2)-1]+sortedValues[(sortedValues.length/2)])/2)
               }
+              if(sortedValuesA.length%2==1){
+                medianA=(sortedValuesA[Math.floor(sortedValuesA.length/2)])
+              }else{
+                medianA=((sortedValuesA[(sortedValuesA.length/2)-1]+sortedValuesA[(sortedValuesA.length/2)])/2)
+              }
               if(sortedValues1.length%2==1){
                 median1=(sortedValues1[Math.floor(sortedValues1.length/2)])
               }else{
                 median1=((sortedValues1[(sortedValues1.length/2)-1]+sortedValues1[(sortedValues1.length/2)])/2)
               }
+              if(sortedValues1A.length%2==1){
+                median1A=(sortedValues1A[Math.floor(sortedValues1A.length/2)])
+              }else{
+                median1A=((sortedValues1A[(sortedValues1A.length/2)-1]+sortedValues1A[(sortedValues1A.length/2)])/2)
+              }
               realGrandTotals1[category][y][`${i.name1}Median`]=median
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMedian`]=medianA
               realGrandTotals1[category][y][`${i.name1}MedianUnique`]=median1
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMedianUnique`]=median1A
             }
           })
           arr.compositeFields.forEach(i=>{
             if(i.type=="number"){
               let total=0
+              let totalA=0
               let median=0
+              let medianA=0
               let sortedValues=realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].sort((a,b)=>a-b)
+              let sortedValuesA=realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`].sort((a,b)=>a-b)
 
               let total1=0
+              let total1A=0
               let median1=0
+              let median1A=0
               let sortedValues1=realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`].sort((a,b)=>a-b)
+              let sortedValues1A=realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`].sort((a,b)=>a-b)
               sortedValues=sortedValues.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
+              sortedValuesA=sortedValuesA.map(x=>{
                 if(x==undefined || x==null)
                   return 0
                 return x
@@ -6730,10 +6942,19 @@ const calculateMediaAndMediansOfRecords=(category)=>{
                   return 0
                 return x
               })
+              sortedValues1A=sortedValues1A.map(x=>{
+                if(x==undefined || x==null)
+                  return 0
+                return x
+              })
               sortedValues.forEach(i=>total=total+i)
+              sortedValuesA.forEach(i=>totalA=totalA+i)
               sortedValues1.forEach(i=>total1=total1+i)
+              sortedValues1A.forEach(i=>total1A=total1A+i)
               realGrandTotals1[category][y][`${i.name1}Media`]=(total/sortedValues.length)
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMedia`]=(totalA/sortedValuesA.length)
               realGrandTotals1[category][y][`${i.name1}MediaUnique`]=(total1/sortedValues1.length)
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMediaUnique`]=(total1A/sortedValues1A.length)
               
 
               if(sortedValues.length%2==1){
@@ -6741,13 +6962,25 @@ const calculateMediaAndMediansOfRecords=(category)=>{
               }else{
                 median=((sortedValues[(sortedValues.length/2)-1]+sortedValues[(sortedValues.length/2)])/2)
               }
+              if(sortedValuesA.length%2==1){
+                medianA=(sortedValuesA[Math.floor(sortedValuesA.length/2)])
+              }else{
+                medianA=((sortedValuesA[(sortedValuesA.length/2)-1]+sortedValuesA[(sortedValuesA.length/2)])/2)
+              }
               if(sortedValues1.length%2==1){
                 median1=(sortedValues1[Math.floor(sortedValues1.length/2)])
               }else{
                 median1=((sortedValues1[(sortedValues1.length/2)-1]+sortedValues1[(sortedValues1.length/2)])/2)
               }
+              if(sortedValues1A.length%2==1){
+                median1A=(sortedValues1A[Math.floor(sortedValues1A.length/2)])
+              }else{
+                median1A=((sortedValues1A[(sortedValues1A.length/2)-1]+sortedValues1A[(sortedValues1A.length/2)])/2)
+              }
               realGrandTotals1[category][y][`${i.name1}Median`]=median
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMedian`]=medianA
               realGrandTotals1[category][y][`${i.name1}MedianUnique`]=median1
+              realGrandTotals1[category][y][`${i.name1}NoRepeatMedianUnique`]=median1A
             }
           })
         }
@@ -6762,6 +6995,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
   Object.keys(realGrandTotals1[category]).forEach((y,p)=>{
     if(p==0)
       tableTotalRecords[category]=Object.keys(finalObject[category][y]).length
+    let idAlreadyDone=[]
     Object.keys(finalObject[category][y]).forEach(u=>{
       if(category==`getData${currentCategory.name}`){
         if(y==`getData${currentCategory.name}`){
@@ -6787,8 +7021,16 @@ const calculatePercentageOverGrandTotal=(category)=>{
           let arr
           finalObject[category][y][u][`%${y}TotalCount`]=finalObject?.[category]?.[y]?.[u]?.[`${y}TotalCount`]!=undefined && realGrandTotals1[category][y][`${y}TotalCount`]>0?
           finalObject?.[category]?.[y]?.[u]?.[`${y}TotalCount`]/realGrandTotals1[category][y][`${y}TotalCount`]:0
+
+          finalObject[category][y][u][`%${y}NoRepeatTotalCount`]=finalObject?.[category]?.[y]?.[u]?.[`${y}TotalCount`]!=undefined && realGrandTotals1[category][y][`${y}NoRepeatTotalCount`]>0?
+          finalObject?.[category]?.[y]?.[u]?.[`${y}TotalCount`]/realGrandTotals1[category][y][`${y}NoRepeatTotalCount`]:0
+
           finalObject[category][y][u][`%${y}TotalCountUnique`]=finalObject?.[category]?.[y]?.[u]?.[`${y}UniqueTotalCount`]!=undefined && realGrandTotals1[category][y][`${y}TotalCountUnique`]>0?
           finalObject?.[category]?.[y]?.[u]?.[`${y}UniqueTotalCount`]/realGrandTotals1[category][y][`${y}TotalCountUnique`]:0
+
+          finalObject[category][y][u][`%${y}NoRepeatTotalCountUnique`]=finalObject?.[category]?.[y]?.[u]?.[`${y}UniqueTotalCount`]!=undefined && realGrandTotals1[category][y][`${y}NoRepeatTotalCountUnique`]>0?
+          finalObject?.[category]?.[y]?.[u]?.[`${y}UniqueTotalCount`]/realGrandTotals1[category][y][`${y}NoRepeatTotalCountUnique`]:0
+
           if(y.startsWith("otm"))
             arr=otmChoices[y]
           else if(y.startsWith("mtm"))
@@ -6797,14 +7039,29 @@ const calculatePercentageOverGrandTotal=(category)=>{
             if(i.type=="number"){
               finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               finalObject[category][y][u][`%${i.name1}Unique`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}UniqueTotal`]!=undefined && realGrandTotals1[category][y][`${i.name1}UniqueTotal`]>0)?(finalObject[category][y][u][`${i.name1}UniqueTotal`]/realGrandTotals1[category][y][`${i.name1}UniqueTotal`])*100:0
+
+              finalObject[category][y][u][`%${i.name1}NoRepeat`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}NoRepeatTotal`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}NoRepeatTotal`])*100:0
+              finalObject[category][y][u][`%${i.name1}NoRepeatUnique`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}UniqueTotal`]!=undefined && realGrandTotals1[category][y][`${i.name1}NoRepeatUniqueTotal`]>0)?(finalObject[category][y][u][`${i.name1}UniqueTotal`]/realGrandTotals1[category][y][`${i.name1}NoRepeatUniqueTotal`])*100:0
               //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
+              
+              if(!idAlreadyDone.includes(finalObject[category][y][u][`id`])){
+                if(realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`]==undefined)
+                  realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`]=[]
+                realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
+              }
 
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]!=undefined?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
+
+              if(!idAlreadyDone.includes(finalObject[category][y][u][`id`])){
+                if(realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`]==undefined)
+                  realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`]=[]
+                realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]!=undefined?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
+              }
               //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               
             }
@@ -6814,14 +7071,30 @@ const calculatePercentageOverGrandTotal=(category)=>{
 
               finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               finalObject[category][y][u][`%${i.name1}Unique`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}UniqueTotal`]!=undefined && realGrandTotals1[category][y][`${i.name1}UniqueTotal`]>0)?(finalObject[category][y][u][`${i.name1}UniqueTotal`]/realGrandTotals1[category][y][`${i.name1}UniqueTotal`])*100:0
+
+              finalObject[category][y][u][`%${i.name1}NoRepeat`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}NoRepeatTotal`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}NoRepeatTotal`])*100:0
+              finalObject[category][y][u][`%${i.name1}NoRepeatUnique`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}UniqueTotal`]!=undefined && realGrandTotals1[category][y][`${i.name1}NoRepeatUniqueTotal`]>0)?(finalObject[category][y][u][`${i.name1}UniqueTotal`]/realGrandTotals1[category][y][`${i.name1}NoRepeatUniqueTotal`])*100:0
               //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
+              
+              if(!idAlreadyDone.includes(finalObject[category][y][u][`id`])){
+                if(realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`]==undefined)
+                  realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`]=[]
+                realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
+              }
+                
 
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]!=undefined?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
+
+              if(!idAlreadyDone.includes(finalObject[category][y][u][`id`])){
+                if(realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`]==undefined)
+                  realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`]=[]
+                realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]!=undefined?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
+              }
             }
           })
         }
@@ -6837,28 +7110,59 @@ const calculatePercentageOverGrandTotal=(category)=>{
             if(i.type=="number"){
               finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               finalObject[category][y][u][`%${i.name1}Unique`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}UniqueTotal`]!=undefined && realGrandTotals1[category][y][`${i.name1}UniqueTotal`]>0)?(finalObject[category][y][u][`${i.name1}UniqueTotal`]/realGrandTotals1[category][y][`${i.name1}UniqueTotal`])*100:0
+
+              finalObject[category][y][u][`%${i.name1}NoRepeat`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}`]!=undefined && realGrandTotals1[category][y][`${i.name1}NoRepeatTotal`]>0)?(finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}NoRepeatTotal`])*100:0
+              finalObject[category][y][u][`%${i.name1}NoRepeatUnique`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}UniqueTotal`]!=undefined && realGrandTotals1[category][y][`${i.name1}NoRepeatUniqueTotal`]>0)?(finalObject[category][y][u][`${i.name1}UniqueTotal`]/realGrandTotals1[category][y][`${i.name1}NoRepeatUniqueTotal`])*100:0
+
               //((finalObject[category][y][u][`${i.name1}`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][i.name1])
 
+              if(!idAlreadyDone.includes(finalObject[category][y][u][`id`])){
+                if(realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`]==undefined)
+                  realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`]=[]
+                realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`].push(finalObject[category][y][u][i.name1])
+              }
+
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
+
+              if(!idAlreadyDone.includes(finalObject[category][y][u][`id`])){
+                if(realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`]==undefined)
+                  realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`]=[]
+                realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
+              }
             }
           })
           arr.compositeFields.forEach(i=>{
             if(i.type=="number"){
               finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
-              finalObject[category][y][u][`%${i.name1}Unique`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}UniqueTotal`]!=undefined && realGrandTotals1[category][y][`${i.name1}UniqueTotal`]>0)?(finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
+              finalObject[category][y][u][`%${i.name1}Unique`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}UniqueTotal`]!=undefined && realGrandTotals1[category][y][`${i.name1}UniqueTotal`]>0)?(finalObject[category][y][u][`${i.name1}UniqueTotal`]/realGrandTotals1[category][y][`${i.name1}UniqueTotal`])*100:0
+
+              finalObject[category][y][u][`%${i.name1}NoRepeat`]=(finalObject?.[category]?.[y]?.[u]?.[i.name1]!=undefined && realGrandTotals1[category][y][`${i.name1}NoRepeatTotal`]>0)?(finalObject[category][y][u][i.name1]/realGrandTotals1[category][y][`${i.name1}NoRepeatTotal`])*100:0
+              finalObject[category][y][u][`%${i.name1}NoRepeatUnique`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}UniqueTotal`]!=undefined && realGrandTotals1[category][y][`${i.name1}NoRepeatUniqueTotal`]>0)?(finalObject[category][y][u][`${i.name1}UniqueTotal`]/realGrandTotals1[category][y][`${i.name1}NoRepeatUniqueTotal`])*100:0
               //((finalObject[category][y][u][`${i.name1}`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][i.name1])
 
+              if(!idAlreadyDone.includes(finalObject[category][y][u][`id`])){
+                if(realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`]==undefined)
+                  realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`]=[]
+                realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`].push(finalObject[category][y][u][i.name1])
+              }
+
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
+
+              if(!idAlreadyDone.includes(finalObject[category][y][u][`id`])){
+                if(realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`]==undefined)
+                  realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`]=[]
+                realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
+              }
             }
           })
         }else{
@@ -6866,11 +7170,21 @@ const calculatePercentageOverGrandTotal=(category)=>{
           finalObject[category][y][u][`%${y}TotalCount`]=0.00
           finalObject[category][y][u][`%${y}TotalCountUnique`]=0.00
           
+          finalObject[category][y][u][`%${y}NoRepeatTotalCount`]=0.00
+          finalObject[category][y][u][`%${y}NoRepeatTotalCountUnique`]=0.00
+          
           finalObject[category][y][u][`%${y}TotalCount`]=finalObject?.[category]?.[y]?.[u]?.[`${y}TotalCount`]!=undefined && realGrandTotals1[category][y][`${y}TotalCount`]!=undefined?
           finalObject?.[category]?.[y]?.[u]?.[`${y}TotalCount`]/realGrandTotals1[category][y][`${y}TotalCount`]:0
         
+          finalObject[category][y][u][`%${y}NoRepeatTotalCount`]=finalObject?.[category]?.[y]?.[u]?.[`${y}TotalCount`]!=undefined && realGrandTotals1[category][y][`${y}NoRepeatTotalCount`]!=undefined?
+          finalObject?.[category]?.[y]?.[u]?.[`${y}TotalCount`]/realGrandTotals1[category][y][`${y}NoRepeatTotalCount`]:0
+        
           finalObject[category][y][u][`%${y}TotalCountUnique`]=finalObject?.[category]?.[y]?.[u]?.[`${y}UniqueTotalCount`]!=undefined && realGrandTotals1[category][y][`${y}TotalCountUnique`]!=undefined?
           finalObject?.[category]?.[y]?.[u]?.[`${y}UniqueTotalCount`]/realGrandTotals1[category][y][`${y}TotalCountUnique`]:0
+
+          finalObject[category][y][u][`%${y}NoRepeatTotalCountUnique`]=finalObject?.[category]?.[y]?.[u]?.[`${y}UniqueTotalCount`]!=undefined && realGrandTotals1[category][y][`${y}NoRepeatTotalCountUnique`]!=undefined?
+          finalObject?.[category]?.[y]?.[u]?.[`${y}UniqueTotalCount`]/realGrandTotals1[category][y][`${y}NoRepeatTotalCountUnique`]:0
+        
         
           if(y.startsWith("otm")){
             arr=otmChoices[y]
@@ -6881,34 +7195,67 @@ const calculatePercentageOverGrandTotal=(category)=>{
             if(i.type=="number"){
               finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               finalObject[category][y][u][`%${i.name1}Unique`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}UniqueTotal`]!=undefined && realGrandTotals1[category][y][`${i.name1}UniqueTotal`]>0)?(finalObject[category][y][u][`${i.name1}UniqueTotal`]/realGrandTotals1[category][y][`${i.name1}UniqueTotal`])*100:0
+
+              finalObject[category][y][u][`%${i.name1}NoRepeat`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}NoRepeatTotal`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}NoRepeatTotal`])*100:0
+              finalObject[category][y][u][`%${i.name1}NoRepeatUnique`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}UniqueTotal`]!=undefined && realGrandTotals1[category][y][`${i.name1}NoRepeatUniqueTotal`]>0)?(finalObject[category][y][u][`${i.name1}UniqueTotal`]/realGrandTotals1[category][y][`${i.name1}NoRepeatUniqueTotal`])*100:0
               //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
 
+              if(!idAlreadyDone.includes(finalObject[category][y][u][`id`])){
+                if(realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`]==undefined)
+                  realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`]=[]
+                realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
+              }
+
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
+
+              if(!idAlreadyDone.includes(finalObject[category][y][u][`id`])){
+
+                if(realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`]==undefined)
+                  realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`]=[]
+                realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
+              }
             }
           })
           arr.compositeFields.forEach(i=>{
             if(i.type=="number"){
               finalObject[category][y][u][`%${i.name1}`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}total`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100:0
               finalObject[category][y][u][`%${i.name1}Unique`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}UniqueTotal`]!=undefined && realGrandTotals1[category][y][`${i.name1}UniqueTotal`]>0)?(finalObject[category][y][u][`${i.name1}UniqueTotal`]/realGrandTotals1[category][y][`${i.name1}UniqueTotal`])*100:0
+
+              finalObject[category][y][u][`%${i.name1}NoRepeat`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][y][`${i.name1}NoRepeatTotal`]>0)?(finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}NoRepeatTotal`])*100:0
+              finalObject[category][y][u][`%${i.name1}NoRepeatUnique`]=(finalObject?.[category]?.[y]?.[u]?.[`${i.name1}UniqueTotal`]!=undefined && realGrandTotals1[category][y][`${i.name1}NoRepeatUniqueTotal`]>0)?(finalObject[category][y][u][`${i.name1}UniqueTotal`]/realGrandTotals1[category][y][`${i.name1}NoRepeatUniqueTotal`])*100:0
               //((finalObject[category][y][u][`${i.name1}total`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArray`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
 
+              if(!idAlreadyDone.includes(finalObject[category][y][u][`id`])){
+                if(realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`]==undefined)
+                  realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`]=[]
+                realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArray`].push(finalObject[category][y][u][`${i.name1}total`])
+              }
+
               if(realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]==undefined)
                 realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`]=[]
               realGrandTotals1[category][y][`${i.name1}AccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
+
+              if(!idAlreadyDone.includes(finalObject[category][y][u][`id`])){
+                if(realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`]==undefined)
+                  realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`]=[]
+                realGrandTotals1[category][y][`${i.name1}NoRepeatAccumulatedArrayUnique`].push(finalObject[category][y][u][`${i.name1}UniqueTotal`]?finalObject[category][y][u][`${i.name1}UniqueTotal`]:0)
+              }
             }
           })
         }
         
 
       }
+      if(!idAlreadyDone.includes(finalObject[category][y][u][`id`]))
+        idAlreadyDone.push(finalObject[category][y][u][`id`])
     })
 
   })
@@ -8432,9 +8779,19 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
         otmStatisticsArray.forEach((ji,i44)=>{
           
           //if(otmChoicesStatistics[category][segment][q.name1][ji]==true){
+            if(ji!=="total"){
             
             temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}</th>)
+            if(ji=="percentage")
+              temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}NoRepeat</th>)
             temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}Unique</th>)
+            if(ji=="percentage")
+              temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}NoRepeatUnique</th>)
+            //temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}NoRepeat</th>)
+            
+              
+
+            }//
           //}
         })
 
@@ -8465,10 +8822,14 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
         otmStatisticsArray.forEach((ji,i44)=>{
           //if(otmChoicesStatistics[category][segment][q.name1][ji]==true){
             //if(ji=="media")
-            if(ji!="totalCount"){
-              console.log("mediainfo",q.name1,realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1),realSegmentLast,segment,lastIndexNumberComposite,index,i44,otmStatisticsArray.length-1)
-            temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1))===true?"1px solid white":"1px solid white"}}>{ji}</th>)
-            temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && i44==(otmStatisticsArray.length-1))===true?"1px solid white":"1px solid white"}}>{ji}Unique</th>)
+            if(ji!="total"){
+              temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}</th>)
+              if(ji=="percentage")
+                temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}NoRepeat</th>)
+              temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}Unique</th>)
+              if(ji=="percentage")
+                temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}NoRepeatUnique</th>)
+              
             }
 
           //}
@@ -8486,8 +8847,10 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
 
         result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>,
         <th style={{borderRight:"1px solid white"}}>{`%${segment}TotalCount`}</th>,
+        <th style={{borderRight:"1px solid white"}}>{`%${segment}NoRepeatTotalCount`}</th>,
         <th style={{borderRight:"1px solid white"}}>{`${segment}UniqueTotalCount`}</th>,
         <th style={{borderRight:"1px solid white"}}>{`%${segment}UniqueTotalCount`}</th>,
+        <th style={{borderRight:"1px solid white"}}>{`%${segment}NoRepeatUniqueTotalCount`}</th>,
         ...result,...temp]
 
       }else
@@ -8498,8 +8861,10 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
 
         result=[<th style={{borderRight:"none"}}>{`${segment}TotalCount`}</th>,
         <th style={{borderRight:"none"}}>{`%${segment}TotalCount`}</th>,
+        <th style={{borderRight:"none"}}>{`%${segment}NoRepeatTotalCount`}</th>,
         <th style={{borderRight:"none"}}>{`${segment}UniqueTotalCount`}</th>,
-        <th style={{borderRight:"none"}}>{`%${segment}UniqueTotalCount`}</th>]
+        <th style={{borderRight:"none"}}>{`%${segment}UniqueTotalCount`}</th>,
+        <th style={{borderRight:"none"}}>{`%${segment}NoRepeatUniqueTotalCount`}</th>]
       }
     }
   }else{
@@ -8508,8 +8873,10 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
 
         result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>,
         <th style={{borderRight:"1px solid white"}}>{`%${segment}TotalCount`}</th>,
+        <th style={{borderRight:"1px solid white"}}>{`%${segment}NoRepeatTotalCount`}</th>,
         <th style={{borderRight:"1px solid white"}}>{`${segment}UniqueTotalCount`}</th>,
         <th style={{borderRight:"1px solid white"}}>{`%${segment}UniqueTotalCount`}</th>,
+        <th style={{borderRight:"1px solid white"}}>{`%${segment}NoRepeatUniqueTotalCount`}</th>,
         ...result,...temp]
       }else
         result=[...result,...temp]
@@ -8518,8 +8885,10 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     
       result=[<th style={{/*borderRight:"none"*/borderRight:"none"}}>{`${segment}TotalCount`}</th>,
       <th style={{/*borderRight:"none"*/borderRight:"none"}}>{`%${segment}TotalCount`}</th>,
+      <th style={{/*borderRight:"none"*/borderRight:"none"}}>{`%${segment}NoRepeatTotalCount`}</th>,
       <th style={{/*borderRight:"none"*/borderRight:"none"}}>{`${segment}UniqueTotalCount`}</th>,
-      <th style={{/*borderRight:"none"*/borderRight:"none"}}>{`%${segment}UniqueTotalCount`}</th>]
+      <th style={{/*borderRight:"none"*/borderRight:"none"}}>{`%${segment}UniqueTotalCount`}</th>,
+      <th style={{/*borderRight:"none"*/borderRight:"none"}}>{`%${segment}NoRepeatUniqueTotalCount`}</th>]
     }
   }
     /*if(theresOtmDestiny)
@@ -8741,11 +9110,13 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
 
             
               let pmay=ji[0].toUpperCase()+ji.substring(1)
-              if(ji!=="totalCount"){
+              if(ji!=="total"){
               //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
               if(ji=="percentage"){
                 temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}`])?"0.00":data[y][`%${q.name1}`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}NoRepeat`])?"0.00":data[y][`%${q.name1}NoRepeat`].toFixed(2)}</td>)  
                 temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}Unique`])?"0.00":data[y][`%${q.name1}Unique`].toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}NoRepeatUnique`])?"0.00":data[y][`%${q.name1}NoRepeatUnique`].toFixed(2)}</td>)  
               }else if(ji=="minimum"){
                 temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}Acummulatedminimum`]==undefined?"0.00":data?.[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}</td>)  
                 temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}AcummulatedUniqueminimum`]==undefined?"0.00":data?.[y]?.[`${q.name1}AcummulatedUniqueminimum`].toFixed(2)}</td>)  
@@ -8783,12 +9154,14 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
           otmStatisticsArray.forEach((ji,i44)=>{
             //if(otmChoicesStatistics[category][a][q.name1][ji]==true){
               let pmay=ji[0].toUpperCase()+ji.substring(1)
-              if(ji!="totalCount"){
+              if(ji!="total"){
               //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
               //temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`]}</td>)
               if(ji=="percentage"){
                 temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}`])?"0.00":data?.[y]?.[`%${q.name1}`]?.toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}NoRepeat`])?"0.00":data?.[y]?.[`%${q.name1}NoRepeat`]?.toFixed(2)}</td>)  
                 temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}Unique`])?"0.00":data?.[y]?.[`%${q.name1}Unique`]?.toFixed(2)}</td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}NoRepeatUnique`])?"0.00":data?.[y]?.[`%${q.name1}NoRepeatUnique`]?.toFixed(2)}</td>)  
 
               }else if(ji=="minimum"){
                 temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}Acummulatedminimum`]==undefined?"0.00":data?.[y]?.[`${q.name1}Acummulatedminimum`]?.toFixed(2)}</td>) 
@@ -8815,8 +9188,10 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
 
             result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}</td>,
             <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}</td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCount`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCount`]*100).toFixed(2)}</td>,
             <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}UniqueTotalCount`]==undefined?"0.00":data[y][`${a}UniqueTotalCount`]}</td>,
             <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}TotalCountUnique`]*100).toFixed(2)}</td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCountUnique`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCountUnique`]*100).toFixed(2)}</td>,
             ...result,...temp]
           }else{
             result=[...result,...temp]
@@ -8827,8 +9202,10 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
 
             result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}</td>,
             <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}</td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCount`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCount`]*100).toFixed(2)}</td>,
             <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}UniqueTotalCount`]==undefined?"0.00":data[y][`${a}UniqueTotalCount`]}</td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}TotalCountUnique`]*100).toFixed(2)}</td>]
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}TotalCountUnique`]*100).toFixed(2)}</td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCountUnique`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCountUnique`]*100).toFixed(2)}</td>]
           }
         }
       }else{
@@ -8837,8 +9214,10 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
 
             result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}</td>,
             <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}</td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCount`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCount`]*100).toFixed(2)}</td>,
             <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}UniqueTotalCount`]==undefined?"0.00":data[y][`${a}UniqueTotalCount`]}</td>,
             <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}TotalCountUnique`]*100).toFixed(2)}</td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCountUnique`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCountUnique`]*100).toFixed(2)}</td>,
             ...result,...temp]
           }else
             result=[...result,temp]
@@ -8848,8 +9227,10 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
 
             result=[<td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}</td>,
             <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}</td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCount`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCount`]*100).toFixed(2)}</td>,
              <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}UniqueTotalCount`]==undefined?"0.00":data[y][`${a}UniqueTotalCount`]}</td>,
-             <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}TotalCountUnique`]*100).toFixed(2)}</td>]
+             <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}TotalCountUnique`]*100).toFixed(2)}</td>,
+             <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCountUnique`]*100).toFixed(2)}</td>]
       }
     }
       
@@ -8953,6 +9334,15 @@ const displayCategoryFields=(seg,data,cond)=>{
       <td>{isNaN(calMedian(data[seg]?.[`${seg}TotalCountArray`]))?"0.00":calMedian(data[seg]?.[`${seg}TotalCountArray`])?.toFixed(2)}</td>
     </tr>)
     lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
+    countArray.push(<tr style={{background:"white",color:"black",margin:0,padding:0,background:lastColor}}>
+    <td style={{borderRight:"1px solid black"}}>{`${seg}NoRepeatTotalCount`}</td>
+    <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}NoRepeatTotalCount`]==undefined?"0.00":data?.[seg]?.[`${seg}NoRepeatTotalCount`]?.toFixed(2)}</td>
+    <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}NoRepeatTotalCountArray`]?.[0]==undefined?"0.00":data[seg]?.[`${seg}NoRepeatTotalCountArray`]?.[0].toFixed(2)}</td>
+    <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}NoRepeatTotalCountArray`]?.[data?.[seg]?.[`${seg}NoRepeatTotalCountArray`].length-1]==undefined?"0.00":(data[seg]?.[`${seg}NoRepeatTotalCountArray`]?.[data[seg]?.[`${seg}NoRepeatTotalCountArray`].length-1].toFixed(2))}</td>
+    <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${seg}NoRepeatTotalCount`]/data?.[seg]?.[`${seg}NoRepeatTotalCountArray`]?.length)?"0.00":(data[seg]?.[`${seg}NoRepeatTotalCount`]/data[seg]?.[`${seg}NoRepeatTotalCountArray`]?.length)?.toFixed(2)}</td>
+    <td>{isNaN(calMedian(data[seg]?.[`${seg}NoRepeatTotalCountArray`]))?"0.00":calMedian(data[seg]?.[`${seg}NoRepeatTotalCountArray`])?.toFixed(2)}</td>
+    </tr>)
+    lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
     countArray.push(<tr style={{background:lastColor,color:"black",margin:0,padding:0,background:lastColor}}>
       <td style={{borderRight:"1px solid black"}}>{`${seg}TotalCountUnique`}</td>
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}TotalCountUnique`]==undefined?"0.00":data?.[seg]?.[`${seg}TotalCountUnique`]?.toFixed(2)}</td>
@@ -8961,10 +9351,21 @@ const displayCategoryFields=(seg,data,cond)=>{
       <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${seg}TotalCountUnique`]/data?.[seg]?.[`${seg}TotalCountArrayUnique`]?.length)?"0.00":(data[seg]?.[`${seg}TotalCountUnique`]/data[seg]?.[`${seg}TotalCountArrayUnique`]?.length)?.toFixed(2)}</td>
       <td>{isNaN(calMedian(data[seg]?.[`${seg}TotalCountArrayUnique`]))?"0.00":calMedian(data[seg]?.[`${seg}TotalCountArrayUnique`])?.toFixed(2)}</td>
     </tr>)
+
+lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
+countArray.push(<tr style={{background:lastColor,color:"black",margin:0,padding:0,background:lastColor}}>
+  <td style={{borderRight:"1px solid black"}}>{`${seg}NoRepeatTotalCountUnique`}</td>
+  <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}NoRepeatTotalCountUnique`]==undefined?"0.00":data?.[seg]?.[`${seg}NoRepeatTotalCountUnique`]?.toFixed(2)}</td>
+  <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]?.[0]==undefined?"0.00":data[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]?.[0].toFixed(2)}</td>
+  <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]?.[data?.[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`].length-1]==undefined?"0.00":(data[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]?.[data[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`].length-1].toFixed(2))}</td>
+  <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${seg}NoRepeatTotalCountUnique`]/data?.[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]?.length)?"0.00":(data[seg]?.[`${seg}NoRepeatTotalCountUnique`]/data[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]?.length)?.toFixed(2)}</td>
+  <td>{isNaN(calMedian(data[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]))?"0.00":calMedian(data[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`])?.toFixed(2)}</td>
+</tr>)
     
   }
   let normalArray=[]
   let n=nf.normal.map((x,index)=>{
+    normalArray=[]
     lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
     normalArray.push(<tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
       <td style={{borderRight:"1px solid black"}}>{x}</td>
@@ -8974,7 +9375,25 @@ const displayCategoryFields=(seg,data,cond)=>{
       <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}Media`])?"0.00":data[seg]?.[`${x}Media`]?.toFixed(2)}</td>
       <td>{isNaN(data[seg]?.[`${x}Median`])?"0.00":data?.[seg]?.[`${x}Median`]?.toFixed(2)}</td>
     </tr>)
+
+/*normalArray.push(<tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
+<td style={{borderRight:"1px solid black"}}>{`${x}NoRepeat`}</td>
+<td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatTotal`]==undefined?"0.00":data[seg]?.[`${x}NoRepeatTotal`]?.toFixed(2)}</td>
+<td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[0]==undefined?"0.00":data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[0]?.toFixed(2)}</td>
+<td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.length-1]==undefined?"0.00":(data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.length-1]?.toFixed(2))}</td>
+<td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}NoRepeatMedia`])?"0.00":data[seg]?.[`${x}NoRepeatMedia`]?.toFixed(2)}</td>
+<td>{isNaN(data[seg]?.[`${x}NoRepeatMedian`])?"0.00":data?.[seg]?.[`${x}NoRepeatMedian`]?.toFixed(2)}</td>
+</tr>)*/
     if(cond){
+      lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
+      normalArray.push(<tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
+<td style={{borderRight:"1px solid black"}}>{`${x}NoRepeat`}</td>
+<td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatTotal`]==undefined?"0.00":data[seg]?.[`${x}NoRepeatTotal`]?.toFixed(2)}</td>
+<td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[0]==undefined?"0.00":data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[0]?.toFixed(2)}</td>
+<td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.length-1]==undefined?"0.00":(data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.length-1]?.toFixed(2))}</td>
+<td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}NoRepeatMedia`])?"0.00":data[seg]?.[`${x}NoRepeatMedia`]?.toFixed(2)}</td>
+<td>{isNaN(data[seg]?.[`${x}NoRepeatMedian`])?"0.00":data?.[seg]?.[`${x}NoRepeatMedian`]?.toFixed(2)}</td>
+</tr>)
     lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
     
     normalArray.push(<tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
@@ -8985,13 +9404,23 @@ const displayCategoryFields=(seg,data,cond)=>{
     <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}MediaUnique`])?"0.00":data[seg]?.[`${x}MediaUnique`]?.toFixed(2)}</td>
     <td>{isNaN(data[seg]?.[`${x}MedianUnique`])?"0.00":data?.[seg]?.[`${x}MedianUnique`]?.toFixed(2)}</td>
     </tr>)
+    lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
+    
+    normalArray.push(<tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
+    <td style={{borderRight:"1px solid black"}}>{`${x}NoRepeatUnique`}</td>
+    <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatUniqueTotal`]==undefined?"0.00":data[seg]?.[`${x}NoRepeatUniqueTotal`]?.toFixed(2)}</td>
+    <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[0]==undefined?"0.00":data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[0]?.toFixed(2)}</td>
+    <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.length-1]==undefined?"0.00":(data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.length-1]?.toFixed(2))}</td>
+    <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}NoRepeatMediaUnique`])?"0.00":data[seg]?.[`${x}NoRepeatMediaUnique`]?.toFixed(2)}</td>
+    <td>{isNaN(data[seg]?.[`${x}NoRepeatMedianUnique`])?"0.00":data?.[seg]?.[`${x}NoRepeatMedianUnique`]?.toFixed(2)}</td>
+    </tr>)
     }
     return normalArray
   })
   let compositeArray=[]
   let c=nf.compositeFields.map((x,index)=>{
     lastColor=lastColor=="white"/*&& index%2==0*/?"lightgray":"white"
-
+    compositeArray=[]
     compositeArray.push(<tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
       <td style={{borderRight:"1px solid black"}}>{x}</td>
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}total`]==undefined?"0.00":data[seg]?.[`${x}total`]?.toFixed(2)}</td>
@@ -9001,7 +9430,28 @@ const displayCategoryFields=(seg,data,cond)=>{
       <td>{isNaN(data[seg]?.[`${x}Median`])?"0.00":data?.[seg]?.[`${x}Median`]?.toFixed(2)}</td>
     </tr>
     )
+    
+
+    /*compositeArray.push(<tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
+      <td style={{borderRight:"1px solid black"}}>{`${x}NoRepeat`}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatTotal`]==undefined?"0.00":data[seg]?.[`${x}NoRepeatTotal`]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[0]==undefined?"0.00":data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[0]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArray`].length-1]==undefined?"0.00":(data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.length-1]?.toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}NoRepeatMedia`])?"0.00":data[seg]?.[`${x}NoRepeatMedia`]?.toFixed(2)}</td>
+      <td>{isNaN(data[seg]?.[`${x}NoRepeatMedian`])?"0.00":data?.[seg]?.[`${x}NoRepeatMedian`]?.toFixed(2)}</td>
+    </tr>
+    )*/
     if(cond){
+      lastColor=lastColor=="white"/*&& index%2==0*/?"lightgray":"white"
+      compositeArray.push(<tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
+      <td style={{borderRight:"1px solid black"}}>{`${x}NoRepeat`}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatTotal`]==undefined?"0.00":data[seg]?.[`${x}NoRepeatTotal`]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[0]==undefined?"0.00":data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[0]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArray`].length-1]==undefined?"0.00":(data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.length-1]?.toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}NoRepeatMedia`])?"0.00":data[seg]?.[`${x}NoRepeatMedia`]?.toFixed(2)}</td>
+      <td>{isNaN(data[seg]?.[`${x}NoRepeatMedian`])?"0.00":data?.[seg]?.[`${x}NoRepeatMedian`]?.toFixed(2)}</td>
+    </tr>
+    )
     lastColor=lastColor=="white"/*&& index%2==0*/?"lightgray":"white"
     compositeArray.push(<tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
       <td style={{borderRight:"1px solid black"}}>{`${x}Unique`}</td>
@@ -9010,6 +9460,16 @@ const displayCategoryFields=(seg,data,cond)=>{
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}AccumulatedArrayUnique`]?.[data[seg]?.[`${x}AccumulatedArrayUnique`].length-1]==undefined?"0.00":(data[seg]?.[`${x}AccumulatedArrayUnique`]?.[data[seg]?.[`${x}AccumulatedArrayUnique`]?.length-1]?.toFixed(2))}</td>
       <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}MediaUnique`])?"0.00":data[seg]?.[`${x}MediaUnique`]?.toFixed(2)}</td>
       <td>{isNaN(data[seg]?.[`${x}MedianUnique`])?"0.00":data?.[seg]?.[`${x}MedianUnique`]?.toFixed(2)}</td>
+    </tr>
+    )
+    lastColor=lastColor=="white"/*&& index%2==0*/?"lightgray":"white"
+    compositeArray.push(<tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
+      <td style={{borderRight:"1px solid black"}}>{`${x}NoRepeatUnique`}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatUniqueTotal`]==undefined?"0.00":data[seg]?.[`${x}NoRepeatUniqueTotal`]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[0]==undefined?"0.00":data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[0]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`].length-1]==undefined?"0.00":(data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.length-1]?.toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}NoRepeatMediaUnique`])?"0.00":data[seg]?.[`${x}NoRepeatMediaUnique`]?.toFixed(2)}</td>
+      <td>{isNaN(data[seg]?.[`${x}MedianUnique`])?"0.00":data?.[seg]?.[`${x}NoRepeatMedianUnique`]?.toFixed(2)}</td>
     </tr>
     )
     }

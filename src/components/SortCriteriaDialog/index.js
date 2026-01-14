@@ -155,7 +155,7 @@ export const SortCriteriaDialog = ({
   const [caseSensitive,setCaseSensitive]=useState("n")
   let type
   let displayAllCombo=""
-  
+  console.log("otmcsort",otmChoicesSort)
   useEffect(()=>{
     //setSortRules([])
     init(0)
