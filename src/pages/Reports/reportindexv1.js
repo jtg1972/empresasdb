@@ -1688,27 +1688,27 @@ const Reports=({
     
           <span style={{marginRight:"10px"}}>{c.name}Date</span>
         
-          {/*(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
-          isReadyToWhere(nameOtm,c.name,false)) &&*/ 
-          isReadyToWhereMtm(field,c.name,false) &&
+          {(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
+          isReadyToWhere(nameOtm,c.name,false)) &&
+           
           <a  
           style={{textDecoration:"underline"}} 
           onClick={(e)=>{
             e.preventDefault()
-            /*if(nameOtm==""){
+            if(nameOtm==""){
               toggleOpenWhereStatementDateDialog({
                 categoryName:`getData${currentCategory.name}`,
                 fieldName:c.name,
                 segment:`getData${currentCategory.name}`,
               })
         
-            }else{*/
+            }else{
               toggleOpenWhereStatementDateDialog({
                 categoryName:field,
                 fieldName:c.name,
                 segment:field
               })
-            //}
+            }
           }}>Add where condition
           </a>
           }
@@ -1727,9 +1727,10 @@ const Reports=({
     
         <span style={{marginRight:"10px"}}>{c.name}Number</span>
         
-        {/*(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
-        isReadyToWhere(nameOtm,c.name,false)) && */
-        isReadyToWhereMtm(field,c.name,false) && <a  
+        {(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
+        isReadyToWhere(nameOtm,c.name,false)) && 
+        
+          /*isReadyToWhereMtm(field,c.name,false)*/  <a  
       style={{textDecoration:"underline"}} onClick={
         (e)=>{
           e.preventDefault()
@@ -1764,7 +1765,8 @@ const Reports=({
           checkReview(e,c.name,false,cat.name,nameOtm,false,c.declaredType,c.relationship)          }}/>
     
         <span style={{marginRight:"10px"}}>{c.name}String</span>
-        {isReadyToWhereMtm(field,c.name,false) &&
+        {(nameOtm==""?isReadyToWhereFirst(`getData${currentCategory.name}`,c.name,false):
+        isReadyToWhere(nameOtm,c.name,false)) &&
         <a 
         style={{textDecoration:"underline",color:"white"}} onClick={
         (e)=>{
@@ -3786,13 +3788,41 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
     if(u["rule"]=="none" || u["rule"]=="")
       return true
     else{
+      let newArray={}
+      Object.keys(data).forEach(l=>{
+        if(newArray[l]==undefined)
+          newArray={...newArray,[l]:[]}
+      })
       Object.keys(data[category]).forEach(y=>{
-        if(!checkRule(getMainRule,data[u["segment"]][y],u["category"]==u["segment"],u["field"],type,u,y)){
+        /*if(!checkRule(getMainRule,data[u["segment"]][y],u["category"]==u["segment"],u["field"],type,u,y)){
           Object.keys(data).forEach(l=>{
             delete data[l][y]
           })
+        } */
+        if(checkRule(getMainRule,data[u["segment"]][y],u["category"]==u["segment"],u["field"],type,u,y)){
+          Object.keys(data).forEach(l=>{
+            if(newArray[l]==undefined)
+              newArray={...newArray,[l]:[]}
+            newArray[l].push(data[l][y])
+          })
         } 
+       
       })
+      /*let newArray={}
+      Object.keys(data[category]).forEach(y=>{
+        Object.keys(data).forEach(l=>{
+          if(newArray[l]==undefined)
+            newArray={...newArray,[l]:[]}
+          newArray[l].push({...data[l][y]})
+          
+        })
+
+        
+      })*/
+      finalObject={...finalObject,[category]:{...newArray}}
+      console.log("dataio11",finalObject)
+      
+      
     }
     
   }else if(u["category"]!==u["segment"] && u["segment"]!=="hybrid"){
@@ -3807,6 +3837,17 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
           })
         }
       })
+      let newArray={}
+      Object.keys(data[u["segment"]]).forEach(y=>{
+        Object.keys(data).forEach(l=>{
+          if(newArray[l]==undefined)
+            newArray={...newArray,[l]:[]}
+          newArray[l].push(data[l][y])
+        })
+        
+      })
+      data={...newArray}
+      
     }
   }else if(u["segment"]=="hybrid"){
     Object.keys(data[u["category"]]).forEach(y=>{
@@ -3816,9 +3857,21 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
         })
       }
     })
+    let newArray={}
+    Object.keys(data[u["category"]]).forEach(y=>{
+      Object.keys(data).forEach(l=>{
+        if(newArray[l]==undefined)
+          newArray={...newArray,[l]:[]}
+        newArray[l].push(data[l][y])
+      })
+      
+    })
+    data={...newArray}
   }
     
-}/*else{
+}
+
+/*else{
   Object.keys(data[category]).forEach(y=>{
       data[category][y][`${category}TotalCount`]=
       
@@ -3835,7 +3888,7 @@ const verifyMeetWithConditionsBySegmentBaseLeve1=(category,x)=>{
   let type=conditionsWhere[u["category"]][u["segment"]][u["field"]]["type"]
   let datafield=conditionsWhere[u["category"]][u["segment"]][u["field"]]
   let res
-  if(u=="none" || u==""){
+  if(u=="none" || u=="" || u==undefined){
     return true
   }else{
     if(u["category"]==u["segment"]){//en este caso involucra datos de la misma categoria de un solo campo
@@ -5208,25 +5261,25 @@ const updateNumericFields=(key,cat,nf,obj,terminal,first)=>{
   //if(!isLast(key)){
     let k=Object.keys(obj)
     for(let i=0;i<k.length;i++){
-      if(finalObject[key][cat][k[i]]==undefined){
+      if(finalObject[key][cat][parseInt(k[i])]==undefined){
         //if(verifyMeetWithConditionsBySegmentBaseLeve1(key,obj[k[i]].normalData)){
       
-          finalObject[key][cat]={...finalObject[key][cat],[k[i]]:{...finalObject[key][cat][k[i]],...obj[k[i]].normalData,keys:obj[k[i]].keys/*[`${cat}keys`]:obj[k[i]].keys*/}}
+          finalObject[key][cat]={...finalObject[key][cat],[parseInt(k[i])]:{...finalObject[key][cat][parseInt(k[i])],...obj[parseInt(k[i])].normalData,keys:obj[parseInt(k[i])].keys/*[`${cat}keys`]:obj[k[i]].keys*/}}
       
           if(nf.normal.length>0)
           for(let x=0;x<nf.normal.length;x++){
-            finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${nf.normal[x]}total`]:0}
+            finalObject[key][cat][parseInt(k[i])]={...finalObject[key][cat][parseInt(k[i])],[`${nf.normal[x]}total`]:0}
            }
            if(nf.compositeFields.length>0)
           for(let x=0;x<nf.compositeFields.length;x++){
-            finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${nf.compositeFields[x]}total`]:0}
+            finalObject[key][cat][parseInt(k[i])]={...finalObject[key][cat][parseInt(k[i])],[`${nf.compositeFields[x]}total`]:0}
           }
-          finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${cat}TotalCount`]:0}
+          finalObject[key][cat][parseInt(k[i])]={...finalObject[key][cat][parseInt(k[i])],[`${cat}TotalCount`]:0}
         //}
       }
     }
     for(let i=0;i<k.length;i++){
-      finalObject[key][cat]={...finalObject[key][cat],[k[i]]:{...finalObject[key][cat][k[i]],parentId:finalObject?.[key]?.[key]?.[k[i]].parentId,/*...obj[k[i]].normalData,*/keys:obj[k[i]].keys/*[`${cat}keys`]:obj[k[i]].keys*/}}
+      finalObject[key][cat]={...finalObject[key][cat],[parseInt(k[i])]:{...finalObject[key][cat][parseInt(k[i])],parentId:finalObject?.[key]?.[key]?.[parseInt(k[i])].parentId,/*...obj[k[i]].normalData,*/keys:obj[parseInt(k[i])].keys/*[`${cat}keys`]:obj[k[i]].keys*/}}
       console.log("remember",finalObject[key][cat][k[i]],finalObject[key][key])
     }
     //getTotalsOfNumericVariables(finalObject[cat],finalObject[key][cat],cat)
@@ -5263,23 +5316,23 @@ const initializeOtherFinalObjectVariables=(key,cat,obj,next,first)=>{
   console.log("entroposible")
   //if(!isLast(cat)){
     for(let i=0;i<k.length;i++){
-      if(finalObject[key][cat]?.[k[i]]==undefined){
+      if(finalObject[key][cat]?.[parseInt(k[i])]==undefined){
         //if(verifyMeetWithConditionsBySegmentBaseLeve1(key,obj[k[i]].normalData)){
-          finalObject[key][cat]={...finalObject[key][cat],[k[i]]:{...finalObject[key][cat][k[i]],...obj[k[i]].normalData,keys:obj[k[i]].keys,/*parentId:finalObject?.[key]?.[key]?.[k?.[i]]?.parentId/*,[`keys${cat}`]:obj[k[i]].keys}*/}}
+          finalObject[key][cat]={...finalObject[key][cat],[parseInt(k[i])]:{...finalObject[key][cat][parseInt(k[i])],...obj[parseInt(k[i])].normalData,keys:obj[parseInt(k[i])].keys,/*parentId:finalObject?.[key]?.[key]?.[k?.[i]]?.parentId/*,[`keys${cat}`]:obj[k[i]].keys}*/}}
           console.log("finalvar",finalObject[key][cat][k[i]],finalObject[key][key])
       }
         console.log("alyu",finalObject[key][cat])
             if(nf.normal.length>0)
             for(let x=0;x<nf.normal.length;x++){
           
-                finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${nf.normal[x]}total`]:0}
+                finalObject[key][cat][parseInt(k[i])]={...finalObject[key][cat][parseInt(k[i])],[`${nf.normal[x]}total`]:0}
             }
             if(nf.compositeFields.length>0)
             for(let x=0;x<nf.compositeFields.length;x++){
               
-              finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${nf.compositeFields[x]}total`]:0}
+              finalObject[key][cat][parseInt(k[i])]={...finalObject[key][cat][parseInt(k[i])],[`${nf.compositeFields[x]}total`]:0}
             }
-          finalObject[key][cat][k[i]]={...finalObject[key][cat][k[i]],[`${cat}TotalCount`]:0}
+          finalObject[key][cat][parseInt(k[i])]={...finalObject[key][cat][parseInt(k[i])],[`${cat}TotalCount`]:0}
 
         //}
       
@@ -5327,9 +5380,9 @@ const updateNumericFieldsRoot=(key,cat,obj,next,first)=>{
   
   let k=Object.keys(obj)
     for(let i=0;i<k.length;i++){
-      if(finalObject[key][key]?.[k[i]]==undefined){
+      if(finalObject[key][key]?.[parseInt(k[i])]==undefined){
         //if(verifyMeetWithConditionsBySegmentBaseLeve1(key,obj[k[i]].normalData)){
-          finalObject[key][key]={...finalObject[key][key],[k[i]]:{...finalObject[key][key][k[i]],...obj[k[i]].normalData,keys:obj[k[i]].keys}}
+          finalObject[key][key]={...finalObject[key][key],[k[i]]:{...obj[parseInt(k[i])].normalData,keys:obj[parseInt(k[i])].keys}}
           console.log("revisabien",finalObject[key][key][k[i]],obj[k[i]],key)
     
          /*for(let x=0;x<nf.normal.length;x++){
@@ -5415,7 +5468,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
           keyTransform=x[m1]
           //if(p.startsWith("otm") || (p.startsWith("mtm") && a1?.[p]?.[ind[m1]]?.parentId==undefined))
            // cond=a2[p][o].keys.includes(keyTransform)
-          console.log("paramscheck",a1[p][ind[m1]].parentId,a2[p][o].id)
+          console.log("paramscheck",a1[p],ind[m1],a1[p][ind[m1]].parentId,a2[p][o].id)
           //if(p.startsWith("mtm") && a1?.[p]?.[ind[m1]]?.parentId!=undefined)
           if(a1[p][ind[m1]].parentId>0)
             cond=a2[p][o].keys.includes(keyTransform) && a1[p][ind[m1]].parentId==a2[p][o].id
@@ -6201,6 +6254,7 @@ const updateFinalObject=(data,key,cat,terminal,next,first)=>{
 
 const updateTerminalFinalObject=(data,cat)=>{
   let res=[]
+  let ix=0
   //if(res[cat]==undefined)
     //res[cat]=[]
   console.log("alert1",data)
@@ -6208,14 +6262,15 @@ const updateTerminalFinalObject=(data,cat)=>{
     finalObject={...finalObject,[cat]:{[cat]:[]}}
   data.forEach(u=>{
     console.log("alert22"/*,verifyMeetWithConditionsBySegmentBaseLeve1(cat,u.normalData)*/,u)
-    //if(verifyMeetWithConditionsBySegmentBaseLeve1(cat,data[u].normalData)){
+    if(verifyMeetWithConditionsBySegmentBaseLeve1(cat,u.normalData)){
       //res={[cat]:[...res[cat],{...data[u].normalData}]}
       //res.push(u.normalData)
-      res=[...res,{...u.normalData}]
+      res={...res,[`${ix}`]:{...u.normalData}}
+      ix++
       console.log("res444",res)
-    //}
+    }
   })
-  finalObject={...finalObject,[cat]:{[cat]:res}}
+  finalObject={...finalObject,[cat]:{[cat]:{...res}}}
   console.log("fobjnew",finalObject)
   
 
@@ -7277,6 +7332,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
     console.log("truekey1",trueKey,cats)
     getSegmentsData(trueKey,cats,i)
   }
+  }
   console.log("parcial2222",finalObject)
 
   /*aqui tengo que encontrar la forma de descubrir si tiene bloques secundarios
@@ -7322,77 +7378,125 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
   
    getStatistics(finalObject[trueKey],trueKey,order)
     
-   //verifyMeetWithConditionsBySegmentBaseLevel2(trueKey,finalObject[trueKey])
+   verifyMeetWithConditionsBySegmentBaseLevel2(trueKey,finalObject[trueKey])
+   console.log("finaltru",finalObject,finalObject[trueKey])
 
   }
 
-/*  for(let i=order.length-1;i>=0;i--){
+  for(let i=order.length-1;i>=0;i--){
     trueKey=Object.keys(order[i])[0]
     cats=order[i][trueKey]
     for(let j=0;j<cats.length;j+=2){
+      let cat=cats[j]
+      console.log("orderexec",trueKey,cat,finalObject[trueKey][cat],finalObject[cat][cat])
+      console.log("truetrue",finalObject,trueKey,cats[j],finalObject[trueKey][cats[j]])
       Object.keys(finalObject[trueKey][cats[j]]).forEach(p=>{
         let keysEach=finalObject[trueKey][cats[j]][p].keys//finalObject[trueKey][cats[j]][p].keys
+        let keysId=finalObject[trueKey][cats[j]][p]["id"]//finalObject[trueKey][cats[j]][p].keys
         console.log("truekey catsj p keys",trueKey,cats[j],p,finalObject[trueKey][cats[j]])
-        for(let oo=0;oo<keysEach.length;oo++){
+        //for(let oo=0;oo<keysEach.length;oo++){
           //console.log("secondtruekey",finalObject[cats[j]][cats[j]][keysEach[oo]],finalObject[cats[j]][cats[j]],keysEach[oo])
           console.log("enttroyy")
-          if(finalObject?.[cats[j]]?.[cats[j]]?.[keysEach[oo]]!=undefined){
+          //bien if(finalObject?.[cats[j]]?.[cats[j]]?.[keysEach[oo]]!=undefined){
+            let res=-1
+            let kil=[]
+            //catscats es la hija truekeycats es el padre
+            //console.log("finalobjrev",finalObject[cats[j]][cats[j]],cats[j])
+            for(let pp=0;pp<Object.keys(finalObject[cats[j]][cats[j]]).length;pp++){
+              //console.log("resag",trueKey,cats[j],finalObject[cats[j]][cats[j]],finalObject?.[trueKey]?.[cats[j]],trueKey,cats[j],finalObject?.[cats[j]]?.[cats[j]]?.[pp]?.["id"],finalObject?.[trueKey]?.[cats[j]]?.[p]?.["parentId"])
+             // console.log("resag67",finalObject?.[cats[j]]?.[cats[j]]?.[pp]?.["id"],keysEach)
+              ///if(finalObject?.[cats[j]]?.[cats[j]]?.[pp]?.["parentId"]==keysId)
+                res=-1
+                let c=Object.keys(finalObject[cats[j]][cats[j]])
+                let cc=Object.keys(finalObject[trueKey][cats[j]])
+               // console.log("poruio11",trueKey,cats[j],finalObject[trueKey][cats[j]][cc[p]],finalObject[cats[j]][cats[j]][c[pp]])
+              if(finalObject[cats[j]][cats[j]][c[pp]]?.["final"]!=true && (finalObject[trueKey][trueKey][cc[p]]?.["final"]==true || trueKey.startsWith("getData")) && finalObject[trueKey][cats[j]][cc[p]]["id"]==finalObject[cats[j]][cats[j]][c[pp]]["parentId"]){
+                //if(cats[j]=="mtmsbcarrerassbmaterias")
+                  console.log("checaporpor",trueKey,cats[j],finalObject[trueKey][cats[j]][parseInt(p)]["id"],finalObject[cats[j]][cats[j]][parseInt(c[pp])]["parentId"],finalObject[trueKey][cats[j]][parseInt(p)]["id"]==finalObject[cats[j]][cats[j]][parseInt(c[pp])]["parentId"])
+                res=c[pp]
+              }
+            //if(finalObject?.[cats[j]]?.[cats[j]]?.[keysEach[oo]]!=undefined){
             //console.log("entroyy",keysEach[oo],finalObject[cats[j]][cats[j]][keysEach[oo]])
-            finalObject[cats[j]][cats[j]][keysEach[oo]]={
-              ...finalObject[cats[j]][cats[j]][keysEach[oo]],
-              final:true
+            if(res>-1){
+              let nk={}
+              /*Object.keys(finalObject[cats[j]][cats[j]]).forEach((mm,index)=>{
+                if(index==res)
+                  nk={...nk,[mm]:{...finalObject[cats[j]][cats[j]][mm],final:true}}    
+                else
+                  nk={...nk,[mm]:{...finalObject[cats[j]][cats[j]][mm]}}
+              })*/
+              //console.log("poruio",finalObject[cats[j]][cats[j]][parseInt(res)])
+              finalObject={
+                ...finalObject,[cats[j]]:{
+                  ...finalObject[cats[j]],
+                  [cats[j]]:{
+                    ...finalObject[cats[j]][cats[j]],[res]:{
+                      ...finalObject[cats[j]][cats[j]][res],
+                      final:true
+                    }
+                  }
+                }
+              }
+              console.log("poruio",trueKey,cats[j],finalObject[trueKey][cats[j]][cc[p]],finalObject[cats[j]][cats[j]][c[pp]])
+              
             }
 
-
           }
-        }
+        //}//getsbareas 1,21
+        //otmareascarreras 14,15,9
+        //mtmprofesoresareas 1,2,3,16
+        //mtmmateriascarreras
       })
-      if(finalObject?.[cats[j]]?.[cats[j]]!==undefined){
-      Object.keys(finalObject[cats[j]][cats[j]]).forEach(y=>{
-        if(finalObject[cats[j]][cats[j]][y]["final"]==undefined){
-          Object.keys(finalObject[cats[j]]).forEach(x=>{
-            delete finalObject[cats[j]][x][y]
-          })
-        }else{
-          
-        
-          delete finalObject[cats[j]][cats[j]][y]["final"]
-        }
-      })
-      }
+      console.log("conspar",finalObject[cats[j]][cats[j]],cats[j])
     }
-  }
-      
-      
-      
     
-  
-  console.log("finalobjectfinalui",finalObject)
-  /*for(let i=0;i<order.length;i++){
-    trueKey=Object.keys(order[i])[0]
-    cats=order[i][trueKey]
-    let cat
-    for(let j=0;j<cats.length;j+=2){
-      cat=cats[j]   
-      console.log("prob111",cat,finalObject[cat],finalObject)
-      Object.keys(finalObject[cat][cat]).forEach(y=>{
-        if(finalObject[cat][cat][y]["final"]==undefined){
-          Object.keys(finalObject[cat]).forEach(x=>{
-            delete finalObject[cat][x][y]
-          })
-        }else{
-          
-        
-          delete finalObject[cat][cat][y]["final"]
-        }
-      })
-    }
- 
-  }*/
-  
-   
+  }
 
-} 
+       Object.keys(finalObject).forEach(x=>{
+       //console.log("xuiuio",x,cat,finalObject[cat][x])
+          if(!x.startsWith("getData"))
+            
+            Object.keys(finalObject[x]).forEach(y=>{
+              if(x!=y)
+              Object.keys(finalObject[x][y]).forEach(oo=>{
+              //console.log("typeofi",typeof oo)
+                if(finalObject[x][x][parseInt(oo)]?.["final"]==true)
+                  finalObject={
+                    ...finalObject,
+                    [x]:{
+                      ...finalObject[x],
+                      [y]:{
+                        ...finalObject[x][y],
+                        [oo]:{
+                          ...finalObject[x][y][oo],
+                          final:true
+                        }
+                      }
+                    }
+                  }
+                   
+              })
+            })
+          
+        })
+        Object.keys(finalObject).forEach(x=>{
+          //console.log("xuiuio",x,cat,finalObject[cat][x])
+          if(!x.startsWith("getData"))
+            
+            Object.keys(finalObject[x]).forEach(y=>{
+              Object.keys(finalObject[x][y]).forEach(oo=>{
+              //console.log("typeofi",typeof oo)
+                if(finalObject[x][y][oo]?.["final"]==undefined)
+              
+                  delete finalObject[x][y][oo]
+                else
+                    delete finalObject[x][y][oo]["final"]
+              })
+            })
+          
+        })
+     //areasmatrias 12 16 17 19 20 6,1,2,21,4,5,8,22
+     //materiasgrupos 18,16,17
 tableTotalRecords={}
 Object.keys(finalObject).forEach(y=>{
   getCategoriesGrandTotals(y)
@@ -8372,7 +8476,8 @@ const getTableToSort=(data)=>{
         })
         ya=true
       }
-
+      if(newResult[index]==undefined)
+        newResult[index]={}
       if(newResult[index]?.[i]==undefined)
         newResult[index][i]=data[i][u]
 
@@ -9032,7 +9137,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
             disp=data[y][q.name1]
           let percNumberRow=""
           if(q.type=="number")
-           percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{(data[y][`%${q.name1}`]).toFixed(2)}</td>
+           percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{(data?.[y]?.[`%${q.name1}`])?.toFixed(2)}</td>
           if(percNumberRow=="")
             return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{disp}</td>
           else
@@ -9044,11 +9149,11 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
         result=[...result,...arr.compositeFields.map((q,index)=>{
           let percNumberRow=""
           if(q.type=="number")
-            percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{(data[y][`%${q.name1}`]).toFixed(2)}</td>
+            percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{(data?.[y]?.[`%${q.name1}`])?.toFixed(2)}</td>
           if(percNumberRow=="")
-            return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{data[y][`${q.name1}`]}</td>
+            return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}`]}</td>
           else
-           return [<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"1px solid black":"1px solid black"}}>{data[y][`${q.name1}`]}</td>,percNumberRow]
+           return [<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"1px solid black":"1px solid black"}}>{data?.[y]?.[`${q.name1}`]}</td>,percNumberRow]
 
         }
         )]
@@ -9329,9 +9434,9 @@ const displayCategoryFields=(seg,data,cond)=>{
       <td style={{borderRight:"1px solid black"}}>{`${seg}TotalCount`}</td>
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}TotalCount`]==undefined?"0.00":data?.[seg]?.[`${seg}TotalCount`]?.toFixed(2)}</td>
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}TotalCountArray`]?.[0]==undefined?"0.00":data[seg]?.[`${seg}TotalCountArray`]?.[0].toFixed(2)}</td>
-      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}TotalCountArray`]?.[data?.[seg]?.[`${seg}TotalCountArray`].length-1]==undefined?"0.00":(data[seg]?.[`${seg}TotalCountArray`]?.[data[seg]?.[`${seg}TotalCountArray`].length-1].toFixed(2))}</td>
-      <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${seg}TotalCount`]/data?.[seg]?.[`${seg}TotalCountArray`]?.length)?"0.00":(data[seg]?.[`${seg}TotalCount`]/data[seg]?.[`${seg}TotalCountArray`]?.length)?.toFixed(2)}</td>
-      <td>{isNaN(calMedian(data[seg]?.[`${seg}TotalCountArray`]))?"0.00":calMedian(data[seg]?.[`${seg}TotalCountArray`])?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}TotalCountArray`]?.[data?.[seg]?.[`${seg}TotalCountArray`].length-1]==undefined?"0.00":(data?.[seg]?.[`${seg}TotalCountArray`]?.[data?.[seg]?.[`${seg}TotalCountArray`].length-1].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${seg}TotalCount`]/data?.[seg]?.[`${seg}TotalCountArray`]?.length)?"0.00":(data?.[seg]?.[`${seg}TotalCount`]/data?.[seg]?.[`${seg}TotalCountArray`]?.length)?.toFixed(2)}</td>
+      <td>{isNaN(calMedian(data?.[seg]?.[`${seg}TotalCountArray`]))?"0.00":calMedian(data?.[seg]?.[`${seg}TotalCountArray`])?.toFixed(2)}</td>
     </tr>)
     lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
     countArray.push(<tr style={{background:"white",color:"black",margin:0,padding:0,background:lastColor}}>
@@ -9340,7 +9445,7 @@ const displayCategoryFields=(seg,data,cond)=>{
     <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}NoRepeatTotalCountArray`]?.[0]==undefined?"0.00":data[seg]?.[`${seg}NoRepeatTotalCountArray`]?.[0].toFixed(2)}</td>
     <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}NoRepeatTotalCountArray`]?.[data?.[seg]?.[`${seg}NoRepeatTotalCountArray`].length-1]==undefined?"0.00":(data[seg]?.[`${seg}NoRepeatTotalCountArray`]?.[data[seg]?.[`${seg}NoRepeatTotalCountArray`].length-1].toFixed(2))}</td>
     <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${seg}NoRepeatTotalCount`]/data?.[seg]?.[`${seg}NoRepeatTotalCountArray`]?.length)?"0.00":(data[seg]?.[`${seg}NoRepeatTotalCount`]/data[seg]?.[`${seg}NoRepeatTotalCountArray`]?.length)?.toFixed(2)}</td>
-    <td>{isNaN(calMedian(data[seg]?.[`${seg}NoRepeatTotalCountArray`]))?"0.00":calMedian(data[seg]?.[`${seg}NoRepeatTotalCountArray`])?.toFixed(2)}</td>
+    <td>{isNaN(calMedian(data?.[seg]?.[`${seg}NoRepeatTotalCountArray`]))?"0.00":calMedian(data?.[seg]?.[`${seg}NoRepeatTotalCountArray`])?.toFixed(2)}</td>
     </tr>)
     lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
     countArray.push(<tr style={{background:lastColor,color:"black",margin:0,padding:0,background:lastColor}}>
@@ -9349,7 +9454,7 @@ const displayCategoryFields=(seg,data,cond)=>{
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}TotalCountArrayUnique`]?.[0]==undefined?"0.00":data[seg]?.[`${seg}TotalCountArrayUnique`]?.[0].toFixed(2)}</td>
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}TotalCountArrayUnique`]?.[data?.[seg]?.[`${seg}TotalCountArrayUnique`].length-1]==undefined?"0.00":(data[seg]?.[`${seg}TotalCountArrayUnique`]?.[data[seg]?.[`${seg}TotalCountArrayUnique`].length-1].toFixed(2))}</td>
       <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${seg}TotalCountUnique`]/data?.[seg]?.[`${seg}TotalCountArrayUnique`]?.length)?"0.00":(data[seg]?.[`${seg}TotalCountUnique`]/data[seg]?.[`${seg}TotalCountArrayUnique`]?.length)?.toFixed(2)}</td>
-      <td>{isNaN(calMedian(data[seg]?.[`${seg}TotalCountArrayUnique`]))?"0.00":calMedian(data[seg]?.[`${seg}TotalCountArrayUnique`])?.toFixed(2)}</td>
+      <td>{isNaN(calMedian(data?.[seg]?.[`${seg}TotalCountArrayUnique`]))?"0.00":calMedian(data?.[seg]?.[`${seg}TotalCountArrayUnique`])?.toFixed(2)}</td>
     </tr>)
 
 lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
@@ -9359,7 +9464,7 @@ countArray.push(<tr style={{background:lastColor,color:"black",margin:0,padding:
   <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]?.[0]==undefined?"0.00":data[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]?.[0].toFixed(2)}</td>
   <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]?.[data?.[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`].length-1]==undefined?"0.00":(data[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]?.[data[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`].length-1].toFixed(2))}</td>
   <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${seg}NoRepeatTotalCountUnique`]/data?.[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]?.length)?"0.00":(data[seg]?.[`${seg}NoRepeatTotalCountUnique`]/data[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]?.length)?.toFixed(2)}</td>
-  <td>{isNaN(calMedian(data[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]))?"0.00":calMedian(data[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`])?.toFixed(2)}</td>
+  <td>{isNaN(calMedian(data?.[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`]))?"0.00":calMedian(data?.[seg]?.[`${seg}NoRepeatTotalCountArrayUnique`])?.toFixed(2)}</td>
 </tr>)
     
   }
@@ -9372,8 +9477,8 @@ countArray.push(<tr style={{background:lastColor,color:"black",margin:0,padding:
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}total`]==undefined?"0.00":data[seg]?.[`${x}total`]?.toFixed(2)}</td>
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}AccumulatedArray`]?.[0]==undefined?"0.00":data[seg]?.[`${x}AccumulatedArray`]?.[0]?.toFixed(2)}</td>
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`]?.length-1]==undefined?"0.00":(data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`]?.length-1]?.toFixed(2))}</td>
-      <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}Media`])?"0.00":data[seg]?.[`${x}Media`]?.toFixed(2)}</td>
-      <td>{isNaN(data[seg]?.[`${x}Median`])?"0.00":data?.[seg]?.[`${x}Median`]?.toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}Media`])?"0.00":data?.[seg]?.[`${x}Media`]?.toFixed(2)}</td>
+      <td>{isNaN(data?.[seg]?.[`${x}Median`])?"0.00":data?.[seg]?.[`${x}Median`]?.toFixed(2)}</td>
     </tr>)
 
 /*normalArray.push(<tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
@@ -9392,7 +9497,7 @@ countArray.push(<tr style={{background:lastColor,color:"black",margin:0,padding:
 <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[0]==undefined?"0.00":data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[0]?.toFixed(2)}</td>
 <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.length-1]==undefined?"0.00":(data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.length-1]?.toFixed(2))}</td>
 <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}NoRepeatMedia`])?"0.00":data[seg]?.[`${x}NoRepeatMedia`]?.toFixed(2)}</td>
-<td>{isNaN(data[seg]?.[`${x}NoRepeatMedian`])?"0.00":data?.[seg]?.[`${x}NoRepeatMedian`]?.toFixed(2)}</td>
+<td>{isNaN(data?.[seg]?.[`${x}NoRepeatMedian`])?"0.00":data?.[seg]?.[`${x}NoRepeatMedian`]?.toFixed(2)}</td>
 </tr>)
     lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
     
@@ -9402,7 +9507,7 @@ countArray.push(<tr style={{background:lastColor,color:"black",margin:0,padding:
     <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}AccumulatedArrayUnique`]?.[0]==undefined?"0.00":data[seg]?.[`${x}AccumulatedArrayUnique`]?.[0]?.toFixed(2)}</td>
     <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}AccumulatedArrayUnique`]?.[data[seg]?.[`${x}AccumulatedArrayUnique`]?.length-1]==undefined?"0.00":(data[seg]?.[`${x}AccumulatedArrayUnique`]?.[data[seg]?.[`${x}AccumulatedArrayUnique`]?.length-1]?.toFixed(2))}</td>
     <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}MediaUnique`])?"0.00":data[seg]?.[`${x}MediaUnique`]?.toFixed(2)}</td>
-    <td>{isNaN(data[seg]?.[`${x}MedianUnique`])?"0.00":data?.[seg]?.[`${x}MedianUnique`]?.toFixed(2)}</td>
+    <td>{isNaN(data?.[seg]?.[`${x}MedianUnique`])?"0.00":data?.[seg]?.[`${x}MedianUnique`]?.toFixed(2)}</td>
     </tr>)
     lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
     
@@ -9412,7 +9517,7 @@ countArray.push(<tr style={{background:lastColor,color:"black",margin:0,padding:
     <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[0]==undefined?"0.00":data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[0]?.toFixed(2)}</td>
     <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.length-1]==undefined?"0.00":(data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.length-1]?.toFixed(2))}</td>
     <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}NoRepeatMediaUnique`])?"0.00":data[seg]?.[`${x}NoRepeatMediaUnique`]?.toFixed(2)}</td>
-    <td>{isNaN(data[seg]?.[`${x}NoRepeatMedianUnique`])?"0.00":data?.[seg]?.[`${x}NoRepeatMedianUnique`]?.toFixed(2)}</td>
+    <td>{isNaN(data?.[seg]?.[`${x}NoRepeatMedianUnique`])?"0.00":data?.[seg]?.[`${x}NoRepeatMedianUnique`]?.toFixed(2)}</td>
     </tr>)
     }
     return normalArray
@@ -9427,7 +9532,7 @@ countArray.push(<tr style={{background:lastColor,color:"black",margin:0,padding:
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}AccumulatedArray`]?.[0]==undefined?"0.00":data[seg]?.[`${x}AccumulatedArray`]?.[0]?.toFixed(2)}</td>
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`].length-1]==undefined?"0.00":(data[seg]?.[`${x}AccumulatedArray`]?.[data[seg]?.[`${x}AccumulatedArray`]?.length-1]?.toFixed(2))}</td>
       <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}Media`])?"0.00":data[seg]?.[`${x}Media`]?.toFixed(2)}</td>
-      <td>{isNaN(data[seg]?.[`${x}Median`])?"0.00":data?.[seg]?.[`${x}Median`]?.toFixed(2)}</td>
+      <td>{isNaN(data?.[seg]?.[`${x}Median`])?"0.00":data?.[seg]?.[`${x}Median`]?.toFixed(2)}</td>
     </tr>
     )
     
@@ -9449,7 +9554,7 @@ countArray.push(<tr style={{background:lastColor,color:"black",margin:0,padding:
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[0]==undefined?"0.00":data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[0]?.toFixed(2)}</td>
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArray`].length-1]==undefined?"0.00":(data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArray`]?.length-1]?.toFixed(2))}</td>
       <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}NoRepeatMedia`])?"0.00":data[seg]?.[`${x}NoRepeatMedia`]?.toFixed(2)}</td>
-      <td>{isNaN(data[seg]?.[`${x}NoRepeatMedian`])?"0.00":data?.[seg]?.[`${x}NoRepeatMedian`]?.toFixed(2)}</td>
+      <td>{isNaN(data?.[seg]?.[`${x}NoRepeatMedian`])?"0.00":data?.[seg]?.[`${x}NoRepeatMedian`]?.toFixed(2)}</td>
     </tr>
     )
     lastColor=lastColor=="white"/*&& index%2==0*/?"lightgray":"white"
@@ -9459,7 +9564,7 @@ countArray.push(<tr style={{background:lastColor,color:"black",margin:0,padding:
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}AccumulatedArrayUnique`]?.[0]==undefined?"0.00":data[seg]?.[`${x}AccumulatedArrayUnique`]?.[0]?.toFixed(2)}</td>
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}AccumulatedArrayUnique`]?.[data[seg]?.[`${x}AccumulatedArrayUnique`].length-1]==undefined?"0.00":(data[seg]?.[`${x}AccumulatedArrayUnique`]?.[data[seg]?.[`${x}AccumulatedArrayUnique`]?.length-1]?.toFixed(2))}</td>
       <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}MediaUnique`])?"0.00":data[seg]?.[`${x}MediaUnique`]?.toFixed(2)}</td>
-      <td>{isNaN(data[seg]?.[`${x}MedianUnique`])?"0.00":data?.[seg]?.[`${x}MedianUnique`]?.toFixed(2)}</td>
+      <td>{isNaN(data?.[seg]?.[`${x}MedianUnique`])?"0.00":data?.[seg]?.[`${x}MedianUnique`]?.toFixed(2)}</td>
     </tr>
     )
     lastColor=lastColor=="white"/*&& index%2==0*/?"lightgray":"white"
@@ -9469,7 +9574,7 @@ countArray.push(<tr style={{background:lastColor,color:"black",margin:0,padding:
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[0]==undefined?"0.00":data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[0]?.toFixed(2)}</td>
       <td style={{borderRight:"1px solid black"}}>{data?.[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`].length-1]==undefined?"0.00":(data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.[data[seg]?.[`${x}NoRepeatAccumulatedArrayUnique`]?.length-1]?.toFixed(2))}</td>
       <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[seg]?.[`${x}NoRepeatMediaUnique`])?"0.00":data[seg]?.[`${x}NoRepeatMediaUnique`]?.toFixed(2)}</td>
-      <td>{isNaN(data[seg]?.[`${x}MedianUnique`])?"0.00":data?.[seg]?.[`${x}NoRepeatMedianUnique`]?.toFixed(2)}</td>
+      <td>{isNaN(data?.[seg]?.[`${x}MedianUnique`])?"0.00":data?.[seg]?.[`${x}NoRepeatMedianUnique`]?.toFixed(2)}</td>
     </tr>
     )
     }
