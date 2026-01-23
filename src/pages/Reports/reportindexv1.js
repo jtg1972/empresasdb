@@ -783,12 +783,14 @@ const Reports=({
           if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l])) && value1==true){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false))
             otmVar[trackCatPath[l]][ntm]["general"][`totalCount`]=true
             doWorkSort(true,`${ntm}TotalCount`,trackCatPath[l],ntm,"number")
+            doWorkSort(true,`${ntm}UniqueTotalCount`,trackCatPath[l],ntm,"number")
 
           }
             //onCheckStatisticGeneralVariable(part,`general`,"totalCount",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
           else if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l])) && value1==false){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false)
             otmVar[trackCatPath[l]][ntm]["general"][`totalCount`]=false
             doWorkSort(false,`${ntm}TotalCount`,trackCatPath[l],ntm,"number")
+            doWorkSort(false,`${ntm}UniqueTotalCount`,trackCatPath[l],ntm,"number")
 
           }
 
@@ -828,11 +830,19 @@ const Reports=({
               otmVar[trackCatPath[l]][ntm][x.name1][`minimum`]=true
               otmVar[trackCatPath[l]][ntm][x.name1][`maximum`]=true
               doWorkSort(true,`${x.name1}total`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}UniqueTotal`,trackCatPath[l],ntm,"number")
               doWorkSort(true,`%${x.name1}`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name1}NoRepeat`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name1}Unique`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name1}NoRepeatUnique`,trackCatPath[l],ntm,"number")
               doWorkSort(true,`${x.name1}Media`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}MediaUnique`,trackCatPath[l],ntm,"number")
               doWorkSort(true,`${x.name1}Median`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}MedianUnique`,trackCatPath[l],ntm,"number")
               doWorkSort(true,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}AcummulatedUniqueminimum`,trackCatPath[l],ntm,"number")
               doWorkSort(true,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}AcummulatedUniquemaximum`,trackCatPath[l],ntm,"number")
               console.log("entrotodotrue",trackCatPath[l],ntm,x.name1,otmVar)
 
             }else if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l]) || (catSegField=="field" && nameO==x.name1 && trackCatPath[l]==segVar)) && value1==false){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false))
@@ -844,11 +854,19 @@ const Reports=({
               otmVar[trackCatPath[l]][ntm][x.name1][`minimum`]=false
               otmVar[trackCatPath[l]][ntm][x.name1][`maximum`]=false
               doWorkSort(false,`${x.name1}total`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}UniqueTotal`,trackCatPath[l],ntm,"number")
               doWorkSort(false,`%${x.name1}`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name1}NoRepeat`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name1}Unique`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name1}NoRepeatUnique`,trackCatPath[l],ntm,"number")
               doWorkSort(false,`${x.name1}Media`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}MediaUnique`,trackCatPath[l],ntm,"number")
               doWorkSort(false,`${x.name1}Median`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}MedianUnique`,trackCatPath[l],ntm,"number")
               doWorkSort(false,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}AcummulatedUniqueminimum`,trackCatPath[l],ntm,"number")
               doWorkSort(false,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}AcummulatedUniquemaximum`,trackCatPath[l],ntm,"number")
               console.log("entrotodofalse",trackCatPath[l],ntm,x.name1,otmVar)
 
             }
@@ -885,11 +903,19 @@ const Reports=({
               otmVar[trackCatPath[l]][ntm][x.name1][`minimum`]=true
               otmVar[trackCatPath[l]][ntm][x.name1][`maximum`]=true
               doWorkSort(true,`${x.name1}total`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}UniqueTotal`,trackCatPath[l],ntm,"number")
               doWorkSort(true,`%${x.name1}`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name1}NoRepeat`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name1}Unique`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`%${x.name1}NoRepeatUnique`,trackCatPath[l],ntm,"number")
               doWorkSort(true,`${x.name1}Media`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}MediaUnique`,trackCatPath[l],ntm,"number")
               doWorkSort(true,`${x.name1}Median`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}MedianUnique`,trackCatPath[l],ntm,"number")
               doWorkSort(true,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}AcummulatedUniqueminimum`,trackCatPath[l],ntm,"number")
               doWorkSort(true,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
+              doWorkSort(true,`${x.name1}AcummulatedUniquemaximum`,trackCatPath[l],ntm,"number")
               console.log("entrotodotrue",trackCatPath[l],ntm,x.name1,otmVar)
 
             }else if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l]) || (catSegField=="field" && nameO==x.name1 && trackCatPath[l]==segVar)) && value1==false){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false))
@@ -901,11 +927,19 @@ const Reports=({
               otmVar[trackCatPath[l]][ntm][x.name1][`minimum`]=false
               otmVar[trackCatPath[l]][ntm][x.name1][`maximum`]=false
               doWorkSort(false,`${x.name1}total`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}UniqueTotal`,trackCatPath[l],ntm,"number")
               doWorkSort(false,`%${x.name1}`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name1}NoRepeat`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name1}Unique`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`%${x.name1}NoRepeatUnique`,trackCatPath[l],ntm,"number")
               doWorkSort(false,`${x.name1}Media`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}MediaUnique`,trackCatPath[l],ntm,"number")
               doWorkSort(false,`${x.name1}Median`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}MedianUnique`,trackCatPath[l],ntm,"number")
               doWorkSort(false,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}AcummulatedUniqueminimum`,trackCatPath[l],ntm,"number")
               doWorkSort(false,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
+              doWorkSort(false,`${x.name1}AcummulatedUniquemaximum`,trackCatPath[l],ntm,"number")
               console.log("entrotodofalse",trackCatPath[l],ntm,x.name1,otmVar)
 
             }
@@ -1078,6 +1112,7 @@ const Reports=({
                 
                 console.log("ever",ntm,selectAll,otmChoicesStatistics,otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.["general"]?.[`${ntm}TotalCount`],ntm,trackCatPath[l])
                 doWorkSort(e.target.checked,`${ntm}TotalCount`,trackCatPath[l],ntm,"number")
+                doWorkSort(e.target.checked,`${ntm}UniqueTotalCount`,trackCatPath[l],ntm,"number")
                 if(e.target.checked==true){// && selectAll[ntm]!=false){
                   console.log("entrocase1")
                   onCheckStatisticGeneralVariable(part,`general`,"totalCount",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
@@ -1103,7 +1138,21 @@ const Reports=({
                   })
                 }
               }>xAdd where condition</a>
-              {displayWhereClauses(trackCatPath[l],`${ntm}TotalCount`,ntm)}
+              <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${ntm}TotalCount`,ntm)}</div>
+
+              <span style={{marginLeft:"17px"}}>Unique Total Count</span> <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  console.log("bit1",trackCatPath[l],ntm,`${ntm}TotalCount`)
+                  toggleOpenWhereStatementNumberDialog({
+                    categoryName:trackCatPath[l],
+                    fieldName:`${ntm}UniqueTotalCount`,
+                    segment:ntm
+                  })
+                }
+              }>xAdd where condition</a>
+              <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${ntm}UniqueTotalCount`,ntm)}</div>
               
             
               
@@ -1128,7 +1177,8 @@ const Reports=({
               onChange={e=>{
                 console.log("ever",e,otmChoicesStatistics)
                 doWorkSort(e.target.checked,`${x.name1}total`,trackCatPath[l],ntm,"number")
-                /*if(e.target.checked==true){// && selectAll[ntm]!=false){
+                doWorkSort(e.target.checked,`${x.name1}UniqueTotal`,trackCatPath[l],ntm,"number")
+                if(e.target.checked==true){// && selectAll[ntm]!=false){
                   console.log("entrocase1")
                   onCheckStatisticVariable(part,x.name1,"total",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
                   
@@ -1140,7 +1190,7 @@ const Reports=({
                 setSelectAll({})
                 setSelectAllSegment({})
                 setSelectAllFields({})
-                console.log("everi",otmChoicesStatistics)*/
+                console.log("everi",otmChoicesStatistics)
 
               }}/> {x.name1}total <a  
               style={{textDecoration:"underline"}} onClick={
@@ -1154,13 +1204,29 @@ const Reports=({
                   })
                 }
               }>xAdd where condition</a> 
-            {displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}
-         
-              <br/><input type="checkbox" 
+            <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}</div>
+            <span style={{marginLeft:"17px"}}>{x.name1}UniqueTotal</span>
+            <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  //console.log("bit1",trackCatPath[l],ntm,`${x.name1}total`)
+                  toggleOpenWhereStatementNumberDialog({
+                    categoryName:trackCatPath[l],
+                    fieldName:`${x.name1}UniqueTotal`,
+                    segment:ntm
+                  })
+                }
+              }>xAdd where condition</a>
+              <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}UniqueTotal`,ntm)}</div>
+              <input type="checkbox" 
                 checked={otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`percentage`]}
               onChange={e=>{
                 console.log("ever",e)
                 doWorkSort(e.target.checked,`%${x.name1}`,trackCatPath[l],ntm)
+                doWorkSort(e.target.checked,`%${x.name1}NoRepeat`,trackCatPath[l],ntm)
+                doWorkSort(e.target.checked,`%${x.name1}Unique`,trackCatPath[l],ntm)
+                doWorkSort(e.target.checked,`%${x.name1}NoRepeatUnique`,trackCatPath[l],ntm)
                 if(e.target.checked==true)// && selectAll[ntm]!=false)
                   onCheckStatisticVariable(part,x.name1,"percentage",true,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
                 else if(e.target.checked==false)// && selectAll[ntm]!=true)
@@ -1168,16 +1234,13 @@ const Reports=({
                   setSelectAll({})
                   setSelectAllSegment({})
                   setSelectAllFields({})
-
-              }}/> Percentage 
-         
-
-
-              <br/><input type="checkbox"
+              }}/> Percentage<br/>
+              <input type="checkbox"
               checked={otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`media`]}
               onChange={e=>{
                 console.log("ever",e)
                 doWorkSort(e.target.checked,`${x.name1}Media`,trackCatPath[l],ntm,"number")
+                doWorkSort(e.target.checked,`${x.name1}MediaUnique`,trackCatPath[l],ntm,"number")
 
                 if(e.target.checked==true)// && selectAll[ntm]!=false)
                   onCheckStatisticVariable(part,x.name1,"media",true,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
@@ -1200,14 +1263,27 @@ const Reports=({
                     segment:ntm
                   })
                 }
+              }>xAdd where condition</a><br/>
+              <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}Media`,ntm,"number")}</div>
+              <span style={{marginLeft:"17px"}}>Media Unique</span><a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  console.log("bit1",trackCatPath[l],ntm,`${x.name1}Media`)
+                  toggleOpenWhereStatementNumberDialog({
+                    categoryName:trackCatPath[l],
+                    fieldName:`${x.name1}MediaUnique`,
+                    segment:ntm
+                  })
+                }
               }>xAdd where condition</a>
-              <br/>{displayWhereClauses(trackCatPath[l],`${x.name1}Media`,ntm,"number")}
-              
-              <input type="checkbox"
+              <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}MediaUnique`,ntm,"number")}</div>
+               <input type="checkbox"
               checked={otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`median`]}
               onChange={e=>{
                 console.log("ever",e)
                 doWorkSort(e.target.checked,`${x.name1}Median`,trackCatPath[l],ntm,"number")
+                doWorkSort(e.target.checked,`${x.name1}MedianUnique`,trackCatPath[l],ntm,"number")
 
                 if(e.target.checked==true)// && selectAll[ntm]!=false)
                   onCheckStatisticVariable(part,x.name1,"median",true,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
@@ -1230,12 +1306,26 @@ const Reports=({
                   })
                 }
               }>xAdd where condition</a>
-              <br/>{displayWhereClauses(trackCatPath[l],`${x.name1}Median`,ntm)}
+              <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}Median`,ntm)}</div>
+              <span style={{marginLeft:"17px"}}>Median Unique</span> <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  console.log("bit1",trackCatPath[l],ntm,`${x.name1}Median`,"number")
+                  toggleOpenWhereStatementNumberDialog({
+                    categoryName:trackCatPath[l],
+                    fieldName:`${x.name1}MedianUnique`,
+                    segment:ntm
+                  })
+                }
+              }>xAdd where condition</a>
+              <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}MedianUnique`,ntm)}</div>
               <input type="checkbox"
               checked={otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`minimum`]}
               onChange={e=>{
                 console.log("ever",e)
                 doWorkSort(e.target.checked,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm,"number")
+                doWorkSort(e.target.checked,`${x.name1}AcummulatedUniqueminimum`,trackCatPath[l],ntm,"number")
 
                 if(e.target.checked==true)// && selectAll[ntm]!=false)
                   onCheckStatisticVariable(part,x.name1,"minimum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1],"number")
@@ -1258,13 +1348,26 @@ const Reports=({
                   })
                 }
               }>xAdd where condition</a> 
-              {displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedminimum`,ntm)}
-              <br/><input type="checkbox"
+              <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedminimum`,ntm)}</div>
+              <span style={{marginLeft:"17px"}}>Minimum Unique</span> <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  console.log("bit1",trackCatPath[l],ntm,`${x.name1}Acummulatedminimum`)
+                  toggleOpenWhereStatementNumberDialog({
+                    categoryName:trackCatPath[l],
+                    fieldName:`${x.name1}AcummulatedUniqueminimum`,
+                    segment:ntm
+                  })
+                }
+              }>xAdd where condition</a> 
+              <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}AcummulatedUniqueminimum`,ntm)}</div>
+              <input type="checkbox"
               checked={otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`maximum`]}
               onChange={e=>{
                 console.log("ever",e)
                 doWorkSort(e.target.checked,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
-
+                doWorkSort(e.target.checked,`${x.name1}AcummulatedUniquemaximum`,trackCatPath[l],ntm,"number")
                 if(e.target.checked==true)// && selectAll[ntm]!=false)
                   onCheckStatisticVariable(part,x.name1,"maximum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
                 else if(e.target.checked==false)// && selectAll[ntm]!=true)
@@ -1285,8 +1388,21 @@ const Reports=({
                     segment:ntm
                   })
                 }
-              }>xAdd where condition</a><br/>
-              {displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedaximum`,ntm)}
+              }>xAdd where condition</a>
+              <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedaximum`,ntm)}</div>
+              <span style={{marginLeft:"17px"}}>Maximum Unique</span> <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  console.log("bit1",trackCatPath[l],ntm,`${x.name1}Maximum`)
+                  toggleOpenWhereStatementNumberDialog({
+                    categoryName:trackCatPath[l],
+                    fieldName:`${x.name1}AcummulatedUniquemaximum`,
+                    segment:ntm
+                  })
+                }
+              }>xAdd where condition</a>
+              <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}AcummulatedUniquemaximum`,ntm)}</div>
               
               
               </div>
@@ -1299,17 +1415,17 @@ const Reports=({
               
 
             return <div>
-              <span style={{marginRight:"10px"}}>{x.name1}total</span>
+              <span style={{marginRight:"10px"}}>{x.name1}total</span><br/>
              <a onClick={e=>{
                e.preventDefault()
                initializeStatisticsVariables(trackCatPath,ntm,"field",x.name1,true,trackCatPath[l])   
-             }}>Select All Field</a>
+             }}>Select All Field</a>&nbsp;-&nbsp;
              <a onClick={e=>{
                e.preventDefault()
                initializeStatisticsVariables(trackCatPath,ntm,"field",x.name1,false,trackCatPath[l])  
              }}>Unselect All Field</a>
              
-              <span style={{marginRight:"10px"}}>{x.name1}total</span>
+              {/*<span style={{marginRight:"10px"}}>{x.name1}total</span>*/}
               {/*<span style={{marginRight:"10px"}}>{x.name1}total</span>
             <br/><input type="checkbox" 
               onChange={e=>{
@@ -1339,7 +1455,9 @@ const Reports=({
               onChange={e=>{
                 console.log("ever",e)
                 doWorkSort(e.target.checked,`${x.name1}total`,trackCatPath[l],ntm,"number")
-                /*if(e.target.checked==true){// && selectAll[ntm]!=false){
+                doWorkSort(e.target.checked,`${x.name1}UniqueTotal`,trackCatPath[l],ntm,"number")
+
+                if(e.target.checked==true){// && selectAll[ntm]!=false){
                   console.log("entrocase1")
                   onCheckStatisticVariable(part,x.name1,"total",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
                   
@@ -1351,7 +1469,7 @@ const Reports=({
                 setSelectAll({})
                 setSelectAllSegment({})
                 setSelectAllFields({})
-                console.log("everi",otmChoicesStatistics)*/
+                console.log("everi",otmChoicesStatistics)
 
               }}/> {x.name1}total <a  
               style={{textDecoration:"underline"}} onClick={
@@ -1364,16 +1482,30 @@ const Reports=({
                   segment:ntm
                 })
               }}>xAdd where condition</a> 
-              {displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}
+              <div>{displayWhereClauses(trackCatPath[l],`${x.name1}total`,ntm)}</div>
+              <span style={{marginLeft:"17px"}}>{x.name1}UniqueTotal</span> <a  
+              style={{textDecoration:"underline"}} onClick={
+                (e)=>{
+                  e.preventDefault()
+                  //console.log("bit1",trackCatPath[l],ntm,`${x.name1}total`)
+                  toggleOpenWhereStatementNumberDialog({
+                  categoryName:trackCatPath[l],
+                  fieldName:`${x.name1}UniqueTotal`,
+                  segment:ntm
+                })
+              }}>xAdd where condition</a> 
+              <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}UniqueTotal`,ntm)}</div>
               
          
             <input type="checkbox"
-                        checked={newHook?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`percentage`]} 
+              checked={newHook?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`percentage`]} 
 
             onChange={e=>{
               console.log("ever",e)
               doWorkSort(e.target.checked,`%${x.name1}`,trackCatPath[l],ntm,"number")
-
+              doWorkSort(e.target.checked,`%${x.name1}NoRepeat`,trackCatPath[l],ntm,"number")
+              doWorkSort(e.target.checked,`%${x.name1}Unique`,trackCatPath[l],ntm,"number")
+              doWorkSort(e.target.checked,`%${x.name1}NoRepeatUnique`,trackCatPath[l],ntm,"number")
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"percentage",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
               else
@@ -1390,6 +1522,7 @@ const Reports=({
             onChange={e=>{
               console.log("ever",e)
               doWorkSort(e.target.checked,`${x.name1}Media`,trackCatPath[l],ntm,"number")
+              doWorkSort(e.target.checked,`${x.name1}MediaUnique`,trackCatPath[l],ntm,"number")
 
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"media",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
@@ -1410,14 +1543,28 @@ const Reports=({
                   segment:ntm
                 })
               }
-            }>xAdd where condition</a><br/>
-            {displayWhereClauses(trackCatPath[l],`${x.name1}Media`,ntm)}
+            }>xAdd where condition</a>
+            <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}Media`,ntm)}</div>
+            <span style={{marginLeft:"17px"}}>MediaUnique</span> <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                console.log("bit1",trackCatPath[l],ntm,`${x.name1}Media`)
+                toggleOpenWhereStatementNumberDialog({
+                  categoryName:trackCatPath[l],
+                  fieldName:`${x.name1}MediaUnique`,
+                  segment:ntm
+                })
+              }
+            }>xAdd where condition</a>
+            <div>{displayWhereClauses(trackCatPath[l],`${x.name1}MediaUnique`,ntm)}</div>
             <input type="checkbox"
               checked={newHook?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`median`]} 
 
             onChange={e=>{
               console.log("ever",e)
               doWorkSort(e.target.checked,`${x.name1}Median`,trackCatPath[l],ntm,"number")
+              doWorkSort(e.target.checked,`${x.name1}MedianUnique`,trackCatPath[l],ntm,"number")
 
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"median",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
@@ -1439,13 +1586,27 @@ const Reports=({
                 })
               }
             }>xAdd where condition</a>
-            {displayWhereClauses(trackCatPath[l],`${x.name1}Median`,ntm)}
-            <br/><input type="checkbox"
+            <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}Median`,ntm)}</div>
+            <span style={{marginLeft:"17px"}}>Median Unique</span> <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                console.log("bit1",trackCatPath[l],ntm,`${x.name1}MedianUnique`)
+                toggleOpenWhereStatementNumberDialog({
+                  categoryName:trackCatPath[l],
+                  fieldName:`${x.name1}MedianUnique`,
+                  segment:ntm
+                })
+              }
+            }>xAdd where condition</a>
+            <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}MedianUnique`,ntm)}</div>
+            <input type="checkbox"
                 checked={newHook?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`minimum`]} 
 
             onChange={e=>{
               console.log("ever",e)
               doWorkSort(e.target.checked,`${x.name1}Acummulatedminimum`,trackCatPath[l],ntm,"number")
+              doWorkSort(e.target.checked,`${x.name1}AcummulatedUniqueminimum`,trackCatPath[l],ntm,"number")
 
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"minimum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
@@ -1467,13 +1628,27 @@ const Reports=({
                 })
               }
             }>xAdd where condition</a>
-            {displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedminimum`,ntm)}
-            <br/><input type="checkbox"
+            <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedminimum`,ntm)}</div>
+            <span style={{marginLeft:"17px"}}>Minimum Unique</span> <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                console.log("bit1",trackCatPath[l],ntm,`${x.name1}Minimum`)
+                toggleOpenWhereStatementNumberDialog({
+                  categoryName:trackCatPath[l],
+                  fieldName:`${x.name1}AcummulatedUniqueminimum`,
+                  segment:ntm
+                })
+              }
+            }>xAdd where condition</a>
+            <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}AcummulatedUniqueminimum`,ntm)}</div>
+            <input type="checkbox"
               checked={newHook?.[trackCatPath?.[l]]?.[ntm]?.[x.name1]?.[`maximum`]} 
 
             onChange={e=>{
               console.log("ever",e)
               doWorkSort(e.target.checked,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
+              doWorkSort(e.target.checked,`${x.name1}AcummulatedUniquemaximum`,trackCatPath[l],ntm,"number")
 
               if(e.target.checked==true)
                 onCheckStatisticVariable(part,x.name1,"maximum",true,trackCatPath[l],trackCatPath[trackCatPath.length-1])
@@ -1496,8 +1671,21 @@ const Reports=({
                 })
               }
             }>xAdd where condition</a>
-            {displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedmaximum`,ntm)}            
-            <br/>{/*<a  
+            <div style={{marginLeft:"17px"}}>{displayWhereClauses(trackCatPath[l],`${x.name1}Acummulatedmaximum`,ntm)}</div>
+            <span style={{marginLeft:"17px"}}>Maximum Unique</span> <a  
+            style={{textDecoration:"underline"}} onClick={
+              (e)=>{
+                e.preventDefault()
+                console.log("bit1",trackCatPath[l],ntm,`${x.name1}Maximum`)
+                toggleOpenWhereStatementNumberDialog({
+                  categoryName:trackCatPath[l],
+                  fieldName:`${x.name1}AcummulatedUniquemaximum`,
+                  segment:ntm
+                })
+              }
+            }>xAdd where condition</a>
+            <div>{displayWhereClauses(trackCatPath[l],`${x.name1}AcummulatedUniquemaximum`,ntm)}</div>           
+            {/*<a  
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
                 e.preventDefault()
@@ -1874,7 +2062,7 @@ const Reports=({
             onClick={()=>{
               toggleOpenViewCompositeFieldDialog({specificOtmName:field,compositeFieldName:d.name1})
             }}>{d.name1}Number</a>
-            {isReadyToWhereMtm(field,d.name1,true) && <a  
+            {isReadyToWhere(field,d.name1,true) && <a  
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
                 e.preventDefault()
@@ -1909,7 +2097,7 @@ const Reports=({
             onClick={()=>{
               toggleOpenViewCompositeFieldDialog({specificOtmName:field,compositeFieldName:d.name1})
             }}>{d.name1}Number</a>
-            {isReadyToWhereMtm(field,d.name1,true) && <a  
+            {isReadyToWhere(field,d.name1,true) && <a  
             style={{textDecoration:"underline"}} onClick={
               (e)=>{
                 e.preventDefault()
@@ -1968,7 +2156,7 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
 {parentIdentifiers?.[parentCategories?.[name]]?.["fieldCompOrNormalType"]=="none" &&
 displayParentIdentifierNull(name,name,"parentIdentifier",
 parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
-    <br/>
+    
       <a style={{
         textAlign:"left",
         textDecoration:"underline",
@@ -2293,12 +2481,12 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
       }}>Add composite field</a>
       {compFieldsArray[name]?.map(d=>{
           return <>
-          {d.type=="date" && <p>
+          {d.type=="date" && <div>
               <input type="checkbox"/> {d.name1}
-            </p>
+            </div>
           }
 
-          {d.type=="number" && <p>
+          {d.type=="number" && <div>
 
           
           <input type="checkbox" 
@@ -2328,13 +2516,13 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
             }
             x
             {displayWhereClauses(name,d.name1)}
-            </p>
+            </div>
             
             
             
         }
         
-        {d.type=="string" && <p>
+        {d.type=="string" && <div>
 
           
         <input type="checkbox" 
@@ -2363,7 +2551,7 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
           }
           x
           {displayWhereClauses(name,d.name1)}
-        </p>}
+        </div>}
           
         
       </>})}
@@ -2374,7 +2562,7 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
 {parentIdentifiers?.[parentCategories?.[name]]?.["fieldCompOrNormalType"]=="none" &&
 displayParentIdentifierNull(name,name,"parentIdentifier",
 parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
-    <br/>
+    
       <a style={{
         textAlign:"left",
         textDecoration:"underline",
@@ -3779,16 +3967,17 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
   console.log("datadetail",data,category)
   let u=conditionsWhere[category]?.["main"]
   //console.log("veri222",category,x)
-  if(u!==undefined){
+  if(u!==undefined && u!="none"){
   let getMainRule=conditionsWhere[u["category"]][u["segment"]][u["field"]][u["rule"]]
   let type=conditionsWhere[u["category"]][u["segment"]][u["field"]]["type"]
   let datafield=conditionsWhere[u["category"]][u["segment"]][u["field"]]
   let res
+  let newArray={}
   if(u["category"]==u["segment"]){
     if(u["rule"]=="none" || u["rule"]=="")
       return true
     else{
-      let newArray={}
+      
       Object.keys(data).forEach(l=>{
         if(newArray[l]==undefined)
           newArray={...newArray,[l]:[]}
@@ -3831,13 +4020,16 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
     else{
     
       Object.keys(data[u["segment"]]).forEach(y=>{
-        if(!checkRule(getMainRule,data[u["segment"]][y],false,u["field"],type,u)){
+        if(checkRule(getMainRule,data[u["segment"]][y],false,u["field"],type,u)){
           Object.keys(data).forEach(l=>{
-            delete data[l][y]
+            if(newArray[l]==undefined)
+              newArray={...newArray,[l]:[]}
+            newArray[l].push(data[l][y])
           })
         }
       })
-      let newArray={}
+      finalObject={...finalObject,[category]:{...newArray}}
+      /*let newArray={}
       Object.keys(data[u["segment"]]).forEach(y=>{
         Object.keys(data).forEach(l=>{
           if(newArray[l]==undefined)
@@ -3846,17 +4038,21 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
         })
         
       })
-      data={...newArray}
+      data={...newArray}*/
       
     }
   }else if(u["segment"]=="hybrid"){
     Object.keys(data[u["category"]]).forEach(y=>{
-      if(!checkRuleHybrid(getMainRule,data,y)){
+      if(checkRuleHybrid(getMainRule,data,y)){
         Object.keys(data).forEach(l=>{
-          delete data[l][y]
+          if(newArray[l]==undefined)
+            newArray={...newArray,[l]:[]}
+          newArray[l].push(data[l][y])
         })
       }
     })
+    finalObject={...finalObject,[category]:{...newArray}}
+    /*
     let newArray={}
     Object.keys(data[u["category"]]).forEach(y=>{
       Object.keys(data).forEach(l=>{
@@ -3866,7 +4062,7 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
       })
       
     })
-    data={...newArray}
+    data={...newArray}*/
   }
     
 }
@@ -7320,9 +7516,9 @@ const calculatePercentageOverGrandTotal=(category)=>{
 const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,order)=>{
   let trueKey
   let cats
-  console.log("orderfinal",order)
+  console.log("orderfinal",order,totalRoutes)
   if(order.length==0){
-    let data=totalRoutes[`getData${currentCategory.name}`]["undefinedtotal"]
+    let data=totalRoutes[`getData${currentCategory.name}`]["undefinedtotal"]["data"]
     updateTerminalFinalObject(data,`getData${currentCategory.name}`)
   }else{
   for(let i=0;i<order.length;i++){
@@ -7410,7 +7606,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
                 let c=Object.keys(finalObject[cats[j]][cats[j]])
                 let cc=Object.keys(finalObject[trueKey][cats[j]])
                // console.log("poruio11",trueKey,cats[j],finalObject[trueKey][cats[j]][cc[p]],finalObject[cats[j]][cats[j]][c[pp]])
-              if(finalObject[cats[j]][cats[j]][c[pp]]?.["final"]!=true && (finalObject[trueKey][trueKey][cc[p]]?.["final"]==true || trueKey.startsWith("getData")) && finalObject[trueKey][cats[j]][cc[p]]["id"]==finalObject[cats[j]][cats[j]][c[pp]]["parentId"]){
+              if(finalObject[cats[j]][cats[j]][c[pp]]?.["final"]!=true && (finalObject[trueKey][trueKey][cc[p]]?.["final"]==true || trueKey.startsWith("getData")) && finalObject[trueKey][trueKey][cc[p]]["id"]==finalObject[cats[j]][cats[j]][c[pp]]["parentId"]){
                 //if(cats[j]=="mtmsbcarrerassbmaterias")
                   console.log("checaporpor",trueKey,cats[j],finalObject[trueKey][cats[j]][parseInt(p)]["id"],finalObject[cats[j]][cats[j]][parseInt(c[pp])]["parentId"],finalObject[trueKey][cats[j]][parseInt(p)]["id"]==finalObject[cats[j]][cats[j]][parseInt(c[pp])]["parentId"])
                 res=c[pp]
@@ -7445,7 +7641,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
         //}//getsbareas 1,21
         //otmareascarreras 14,15,9
         //mtmprofesoresareas 1,2,3,16
-        //mtmmateriascarreras
+        //mtmmateriascarreras 3
       })
       console.log("conspar",finalObject[cats[j]][cats[j]],cats[j])
     }
@@ -8010,12 +8206,16 @@ const getOrderToPrintTables=(order)=>{
   let key
   let tables=[]
   let segments={}
+  console.log("orderoiu",order)
+  if(order.length>0){
   //for(let j=order.length-1;j>=0;j-=1){
     key=Object.keys(order[order.length-1])[0]
     tables.push(key)
     getSubOrderTables(tables,key,order[order.length-1][key],segments,order)
     console.log("ResultadoOrder",tables,segments)
     return [tables,segments]
+  }else
+    return [[`getData${currentCategory.name}`],{[`getData${currentCategory.name}`]:[`getData${currentCategory.name}`]}]
   //}
 }
 
@@ -8527,17 +8727,22 @@ const getDataReportTest=(routes,finalRoutes)=>{
     let tts
     //let table
     let tablesToCont={}
+    let table={}
     //setFinalObjectToSubsets(finalObject)
     //empieza bloque para obtener datos de subsets
     
     //termina bloque para obtener datos de subsets
     order[0].forEach(y=>{
-      let table
+      
       tts=[]
-      tts=getTableToSort(finalObject[y])
+      table=finalObject
+      console.log("sortRulespo",sortRules[y])
+      if(sortRules?.[y]?.[0]!=undefined && sortRules?.[y]?.[0]!="nosort"){
+        tts=getTableToSort(finalObject[y])
       //sortToGetFinalTable(tts,sortRules[y])
       //if(y=="getDataclientes")
-      table=getTableToDisplay(sortToGetFinalTable(tts,sortRules[y],y),y)
+        table=getTableToDisplay(sortToGetFinalTable(tts,sortRules[y],y),y)
+      }
 
       tablesToCont[y]=table[y]
       printFinalTableNew(y,table[y],order[1][y])//,order[0])
@@ -9587,7 +9792,8 @@ countArray.push(<tr style={{background:lastColor,color:"black",margin:0,padding:
 const printGrandTotalsTrue=(category,data,segments)=>{
   console.log("resumen",category,data,segments)
   let trec=<p style={{background:"white",color:"black",marginBottom:"10px",display:"inline-block",paddingLeft:"5px",paddingRight:"5px"}}>Number of Records: {tableTotalRecords[category]}</p>
-  let res=segments.map(seg=>{
+  let res=[]
+  res=segments?.map(seg=>{
   if(seg==`getData${currentCategory.name}`){
     let dfcf=displayFirstCategoryFields(data)
     if(dfcf.length>0){
@@ -9660,9 +9866,9 @@ const printMainHeaders=(data,category,segments)=>{
 
   })*/
   
-  let realSegmentsLast=segments[segments.length-1]
+  let realSegmentsLast=segments?.[segments.length-1]
   console.log("getfieldssegment",realSegmentsCount,realSegmentsLast)
-  segments.forEach((a,index)=>{
+  segments?.forEach((a,index)=>{
     if(head==undefined)
       head=[]
     
