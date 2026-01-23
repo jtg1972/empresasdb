@@ -4152,7 +4152,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
   
   }
 
-  eachStopData.map((x,indice)=>{
+  eachStopData?.map((x,indice)=>{
     //console.log("xxxx",x)
     //if(verifyMeetWithConditionsBySegmentBaseLevel(r,eachIndex,x)==true || verifyMeetWithConditionsBySegmentBaseLevel(r,eachIndex,x)=="pending"){
       console.log("newData",eachStopData)
