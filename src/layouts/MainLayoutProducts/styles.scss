@@ -5,16 +5,19 @@
   overflow-y:hidden;
   .sidebarMenuAndContent{
     display:flex;
+    position:relative;
     flex-direction:row;
     flex:1;
     overflow-y:hidden;
     .content{
+      
       flex:1;
       background-color: brown;
       height:100%;
       overflow-y:auto;
       display:flex;
       flex-direction:column;
+      position:relative;
     }
   }
 }

@@ -656,9 +656,10 @@ const NewDetailProduct = () => {
 
       
     </div>
-    <div style={{display:showMakeStory?"block":"none"}}>
+    <div>
+    <div style={{display:showMakeStory?"block":"none",position:"relative"}}>
       <FormButton 
-      style={{background:"white",color:"black",width:"200px",marginLeft:"15px",marginTop:"15px",marginBottom:"15px"}}
+      style={{background:"white",color:"black",width:"200px",marginLeft:"15px",marginTop:"20px",marginBottom:"15px"}}
         onClick={()=>{
           setShowMakeStory(false)
         }}
@@ -668,7 +669,7 @@ const NewDetailProduct = () => {
       checkBoxDataFields={checkBoxDataFields}
       />
     </div>
-  
+    </div>
   
  
   </div>))

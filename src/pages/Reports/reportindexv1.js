@@ -1,6 +1,6 @@
 import { getVariableValues } from 'graphql'
 import gql from 'graphql-tag'
-import React,{useEffect, useState} from 'react'
+import React,{useEffect, useState,useRef} from 'react'
 import { useSelector } from 'react-redux'
 import AddOtmIdFields from '../../AddOtmIdFields'
 import { AddCompositeField } from '../../components/AddCompositeField'
@@ -32,7 +32,9 @@ import { GetSubsetsContribution } from '../../components/GetSubsetsContributions
 import { getSubsetsData } from '../../components/GetSubSetsAllTables/getSubsetsData'
 import { getSubsetsCont } from '../../components/GetSubsetsContributions/getSubsetsCont'
 import { SubsetContributionsTable } from '../../components/SubsetsContributionsTable'
+import TableShortcuts from '../../components/TableShortcuts'
 import { argsToArgsConfig } from 'graphql/type/definition'
+import DisplaySubcategoriesCombo from '../../components/SearchSubcategories/DisplaySubcategoriesCombo'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categories:categories.categories,
@@ -192,6 +194,20 @@ const Reports=({
   const [selectAll,setSelectAll]=useState({})
   const [selectAllSegment,setSelectAllSegment]=useState({})
   const [selectAllFields,setSelectAllFields]=useState({})
+  const [currentSelectedTable,setCurrentSelectedTable]=useState(`getData${currentCategory?.name}`)
+  const [currentSelectedSegments,setCurrentSelectedSegments]=useState([])
+  const [currentTotalShortCuts,setCurrentTotalShortCuts]=useState("")
+  const [orderTransfer,setOrderTransfer]=useState([])
+  const myRef1=useRef(null)
+  const myRef2=useRef(null)
+  const myRef3=useRef(null)
+  const myRef4=useRef(null)
+  const myRef5=useRef(null)
+  const myRef6=useRef(null)
+  const myRef7=useRef(null)
+  const myRef8=useRef(null)
+  const myRef9=useRef(null)
+  const myRef10=useRef(null)
   let parentCategories={}
   let displayedMtm=[]
   //const [parentCategories,setParentCategories]=useState({})
@@ -8704,6 +8720,89 @@ const getSubsetsBlock=(order,y)=>{
   otmChoicesStatistics={otmChoicesStatistics}
   />
 }
+const displaySegs=(curTable,segs1)=>{
+  let totalSegs=[]
+  console.log("parsseg",curTable,segs1)
+  for(let j=0;j<segs1.length;j++){
+
+    totalSegs.push(<a onClick={e=>e.preventDefault()}href={`#${curTable}_${segs1[j]}`} style={{color:"white",textDecoration:"none",borderBottom:"1px solid yellow",marginRight:"10px"}}>{segs1[j]}</a>)
+  }
+  return totalSegs
+}
+const printShortCutsSegments=(table,segments)=>{
+  let segs1=[]
+ console.log("tablesegs",table,segments)
+  for(let j=0;j<segments.length;j++)
+    segs1.push(<button 
+    onClick={(e)=>{
+      e.preventDefault()
+      goToCero(`${table}_${segments[j]}`)
+    }}
+    
+    
+    style={{color:"white",border:"none",background:"transparent",borderBottom:"1px solid yellow",textDecoration:"none",marginLeft:"0",marginRight:"10px"}}>{
+      segments[j]
+    }</button>)
+  setCurrentSelectedSegments(<div>{[...segs1]}</div>)
+}
+
+const printShortcuts=(order)=>{
+  let tabs=[]
+  let segs1=[]
+  let totalSegs=[]
+  
+  //let cc=`getData${currentCategory?.name}`
+  //console.log("shortcuts",tables,segs)
+  let s=[]
+  for(let i=0;i<order[0].length;i++){
+    //let h1=`#${tables[i]}`
+    let table=order[0][i]
+    
+    tabs.push(<button 
+    onClick={(e)=>{
+      e.preventDefault()
+      console.log("llamo")
+      
+     let cc=table
+      
+      /*this._toScroll.scrollIntoView()*/
+    //setCurrentSelectedTable(tables[i])
+  
+   //setprintShortCutsSegments(cc,order[1][cc])
+    goToCero(table)
+  
+  }}
+      style={{color:"white",border:"none",background:"transparent",borderBottom:"1px solid yellow",textDecoration:"none",marginLeft:"0",marginRight:"10px"}}>
+        {table}
+      </button>)
+      /*onClick={(e)=>{
+        cc=tables[i]
+        ///e.preventDefault()
+        //estTestsetCurrentSelectedTable(tables[i])
+        console.log("segs",tables,tables[i],segs)
+        
+        
+      }
+      }*/
+      
+  }
+  
+    
+  
+
+  setCurrentTotalShortCuts(<div style={{height:"100px",marginBottom:"20px",position:"fixed",left:"270px",top:"100px",background:"black"}}>
+    {tabs}<br/>
+    {currentSelectedSegments}
+  </div>)
+
+}
+
+const goToCero=(idName)=>{
+  let elem=document.getElementById(idName)
+  elem.scrollTo=0
+  elem.scrollIntoView()
+}
+let superOrderVariable=[]
 const getDataReportTest=(routes,finalRoutes)=>{
   console.log("routesfinalroutes",routes,finalRoutes)
   const root=`getData${currentCategory.name}`
@@ -8723,6 +8822,7 @@ const getDataReportTest=(routes,finalRoutes)=>{
     console.log("yfinal",totalRoutes,y)
     getInverseTraverseSonTotalsWithConditionsWhereRoutes1(routes,finalRoutes,y)
     let order=getOrderToPrintTables(y)
+    setOrderTransfer(order)
     console.log("ordertoprinttables",order,y)
     let tts
     //let table
@@ -8732,7 +8832,7 @@ const getDataReportTest=(routes,finalRoutes)=>{
     //empieza bloque para obtener datos de subsets
     
     //termina bloque para obtener datos de subsets
-    order[0].forEach(y=>{
+    order[0].forEach((y,ind)=>{
       
       tts=[]
       table=finalObject
@@ -8743,10 +8843,17 @@ const getDataReportTest=(routes,finalRoutes)=>{
       //if(y=="getDataclientes")
         table=getTableToDisplay(sortToGetFinalTable(tts,sortRules[y],y),y)
       }
-
       tablesToCont[y]=table[y]
-      printFinalTableNew(y,table[y],order[1][y])//,order[0])
+      let refsArray=[]
+      //refsArray.push(useRef(null))
+      let varpasa="varRef"+ind
+      printFinalTableNew(y,table[y],order[1][y],varpasa)//,order[0])
       printGrandTotalsTrue(y,realGrandTotals1[y],order[1][y])
+      if(ind==0){}
+      //printShortcuts(y,Object.keys(table),order[1],ind)
+      totalTables.push(currentTotalShortCuts)
+
+
     })
     setReportShow(totalTables)
     console.log("definitive",routes,y)
@@ -9850,7 +9957,7 @@ const printGrandTotalsTrue=(category,data,segments)=>{
   
 }
 
-const printMainHeaders=(data,category,segments)=>{
+const printMainHeaders=(data,category,segments,refIn)=>{
   let subtitles={}
   let head=[]
   let subsection={}
@@ -9883,14 +9990,14 @@ const printMainHeaders=(data,category,segments)=>{
     subsection[a]=getFieldsDataSegment(category,a,realSegmentsLast,data)
       
   })
-  console.log("subtitles",subtitles,head)
+  console.log("subtitles",subtitles,head,refIn)
   
-  return <table style={{width:"100%",background:"white",color:"black",padding:0,margin:0,marginBottom:"15px",marginRight:"10px"}}>
+  return <table id={`${category}`} style={{width:"100%",background:"white",color:"black",padding:0,margin:0,marginBottom:"15px",marginRight:"10px"}}>
     <thead>
       <tr style={{verticalAlign:"top"}}>
         {head.map((u,index)=>{
           return subtitles[u].length>0 && <th style={{verticalAlign:"top",padding:0,margin:0}}>
-              <span style={{display:"block",background:"black",textAlign:"center",
+              <span id={`${category}_${u}`}style={{display:"block",background:"black",textAlign:"center",
             color:"white",borderBottom:"1px solid white",borderRight:(index<head.length-1)?"1px solid white":"none",
             padding:0,margin:0}}>{u}</span>
               <table style={{background:"white",color:"black",padding:0,margin:0,width:"100%"}}>
@@ -9911,10 +10018,10 @@ const printMainHeaders=(data,category,segments)=>{
   </table>
 }
 
-const printFinalTableNew=(category,data,segments)=>{//,order)=>{
+const printFinalTableNew=(category,data,segments,refIn)=>{//,order)=>{
   console.log("iniciobegin",firstCatNormalFields,otmChoices)
   
-  totalTables.push(printMainHeaders(data,category,segments))
+  totalTables.push(printMainHeaders(data,category,segments,refIn))
  
 }
 
@@ -10447,23 +10554,30 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       subsets={subsets}
       setSubsets={setSubsets}
     />}
+    <TableShortcuts
+    order={orderTransfer}
+    />
     
 
     
-    {showFields 
+    <div>{showFields 
     && 
     displayCurCategory(currentCategory,true,true,"",true,[`getData${currentCategory?.name}`])
     }
-    <FormButton style={{width:"100px",marginTop:"15px",marginBottom:"15px",background:"white",color:"black"}}
+    <FormButton id="goBegin" style={{width:"100px",marginTop:"40px",marginBottom:"15px",background:"white",color:"black"}}
     onClick={()=>{
         
         beginReport(true,"")
-        
+        //printShortcuts(superOrderVariable)
         
     }}>Show Story</FormButton>
 
     {/*reportShow && beginReport(true,"")*/}
-    {reportShow}
+    <div style={{position:"relative"}}>
+      {/*currentTotalShortCuts*/}
+      {reportShow}
+    </div>
+    </div>
     
   </div>
 }

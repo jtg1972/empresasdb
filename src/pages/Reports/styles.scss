@@ -1,10 +1,13 @@
 p,div{
-  color:white
+  color:white;
+
 }
 .reports{ 
+  
   width:100%;
   overflow-y:scroll;
   overflow-x:scroll;
+  
   &::-webkit-scrollbar{
     width:0;
     height:0;
