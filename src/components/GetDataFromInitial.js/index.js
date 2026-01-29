@@ -164,7 +164,7 @@ const getQueryFromCategory=(p,categories,checkBoxDataFields)=>{
   //q2=q2.join(`\n`)
   query+=q
   query+=`}`
-  console.log("queryprod445",query)
+  //console.log("queryprod445",query)
   return gql`${query}`
 }
 const mapToState=({categories})=>({
@@ -208,7 +208,7 @@ const GetDataFromInital=({
   const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(categories.filter(x=>x.name==currentCategory.name)[0],categories,checkBoxDataFields)
   const [getProducts]=useMutation(GET_PRODUCTS_FROM_CATEGORY,{
     update:(cache,{data})=>{
-      console.log("datamtmboth:",data)
+      //console.log("datamtmboth:",data)
       dispatch(setCategoryProducts(data))
       
     }

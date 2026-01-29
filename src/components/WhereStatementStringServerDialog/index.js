@@ -442,7 +442,7 @@ export const WhereStatementStringServerDialog = ({
   },[categoryName,segment,fieldName,open,added])
 
   const checkRowAddOn=()=>{
-    console.log("valid",initialBetween.trim(),finalBetween.trim(),valueRule.trim())
+    //console.log("valid",initialBetween.trim(),finalBetween.trim(),valueRule.trim())
 
     if(stringOperator=="between"){
       if(initialBetween.trim()=="" || finalBetween.trim()==""){
@@ -455,7 +455,7 @@ export const WhereStatementStringServerDialog = ({
       }
     }else{
       if(valueRule.trim()==""){
-        console.log("valid false")
+        //console.log("valid false")
         return false
       }
         

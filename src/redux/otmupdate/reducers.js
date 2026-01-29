@@ -9,7 +9,7 @@ const INITIAL_STATE={
 ADD_INDEXES_TO_OTMRECORD*/
 
 export default (state=INITIAL_STATE,action)=>{
-  console.log("actionplmtm",action.payload)
+  //console.log("actionplmtm",action.payload)
   switch(action.type){
     case typesOtm.GET_ROUTES_OTM:
       return state

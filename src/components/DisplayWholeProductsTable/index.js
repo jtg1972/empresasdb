@@ -381,7 +381,7 @@ const DisplayWholeProductsTable = ({
   }
   let mtmVar1,mtmVar2
   const displayTableAndRelations=(name,prods,otmrelations,cc,partials,pi,isManyToMany=false,relCat,parRel,relCatInd,displayTable=true,segmentMtm,primero)=>{  
-      console.log("cp[cp]",currentCategory.name,name,prods,otmrelations,cc)
+      //console.log("cp[cp]",currentCategory.name,name,prods,otmrelations,cc)
       let segmentRoutes
       let parId
       let nameTableManyToMany
@@ -389,7 +389,7 @@ const DisplayWholeProductsTable = ({
       if(cc){
       //console.log("partials",partials)
       let indtable=tableIndexes[name]
-      console.log("pindtable",prods[indtable])
+      //console.log("pindtable",prods[indtable])
       //console.log("ti,name",tableIndexes,name,tableIndexes[name])
       
       if(indtable>=0){

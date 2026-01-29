@@ -45,7 +45,7 @@ const Reports=({
   checkBoxDataFields,
   checkBoxFields
 })=>{
-  console.log("checkbox",checkBoxDataFields,checkBoxFields)
+  //console.log("checkbox",checkBoxDataFields,checkBoxFields)
   const {
     currentCategory,
     categories,
@@ -387,38 +387,38 @@ const Reports=({
         }*/if(cf==true){
           setFirstCatNormalFields(o=>{
             o=({...o,[n]:{...o[n],compositeFields:[...o[n]["compositeFields"],dcf]}})
-            console.log("repite",o)
+          //  console.log("repite",o)
             return o
           })
           
         }else if(otm==true){
           setFirstCatNormalFields(o=>{
-            console.log("verstatefcnm",{...o,[n]:{...o[n],otm:[...o[n]["otm"],name1]}})
+        //  console.log("verstatefcnm",{...o,[n]:{...o[n],otm:[...o[n]["otm"],name1]}})
             o=({...o,[n]:{...o[n],otm:[...o[n]["otm"],name1]}})
-            console.log("repite",o)
+          //  console.log("repite",o)
             return o
 
           })
           setOtmChoices(e=>{
-            console.log("verestate",{...e,[name1]:{normal:[],compositeFields:[]}})
+           // console.log("verestate",{...e,[name1]:{normal:[],compositeFields:[]}})
             e=({...e,[name1]:{normal:[{type:"key",name1:`${name1}Id`}],compositeFields:[],otm:[],mtm:[],options:[],otmdestiny:[`${name1}Id`]}})
-            console.log("repite",e)
+            //console.log("repite",e)
             return e
           })
         }
         
         else if(isMtm==true){
           setFirstCatNormalFields(o=>{
-            console.log("verstatefcnm",{...o,[n]:{...o[n],mtm:[...o[n]["mtm"],name1]}})
+            //console.log("verstatefcnm",{...o,[n]:{...o[n],mtm:[...o[n]["mtm"],name1]}})
             o=({...o,[n]:{...o[n],mtm:[...o[n]["mtm"],name1]}})
-            console.log("repite",o)
+            //console.log("repite",o)
             return o
 
           })
           setOtmChoices(e=>{
-            console.log("verestate",{...e,[name1]:{normal:[{type:"number",name1:father},{type:"number",name1:son}],compositeFields:[],otm:[],mtm:[],options:[],otmdestiny:[],father,son}})
+            //console.log("verestate",{...e,[name1]:{normal:[{type:"number",name1:father},{type:"number",name1:son}],compositeFields:[],otm:[],mtm:[],options:[],otmdestiny:[],father,son}})
             e=({...e,[name1]:{normal:[{type:"key",name1:father},{type:"key",name1:son}],compositeFields:[],otm:[],mtm:[],options:[],otmdestiny:[],father,son}})
-            console.log("repite",e)
+            //console.log("repite",e)
             return e
           })
         }
@@ -426,12 +426,12 @@ const Reports=({
           //setFirstCatNormalFields(o=>({...o,[n]:{...o[n],normal:[...o[n]["normal"],name1]}}))
           setFirstCatNormalFields(o=>{
             o=({...o,[n]:{...o[n],normal:[...o[n]["normal"],{type:declaredType,name1}]}})
-            console.log("repite",o)
+            //console.log("repite",o)
             return o
 
           })
         }
-        console.log("")
+        //console.log("")
       }
       if(mainCat==false){
         setAllCompFieldsCluster(compFieldsArray[nameOtm])
@@ -441,13 +441,13 @@ const Reports=({
           setOtmChoices(o=>{
             //console.log("verstatefcnm",{...o,[n]:{...o[n],mtm:[...o[n]["mtm"],name1]}})
             o=({...o,[nameOtm]:{...o[nameOtm],mtm:[...o[nameOtm]["mtm"],name1]}})
-            console.log("repite12",o)
+            //console.log("repite12",o)
             return o
 
           })
             setOtmChoices(e=>{
               e={...e,[name1]:{normal:[{type:"key",name1:father},{type:"key",name1:son}],options:[],otmdestiny:[],compositeFields:[],mtm:[],otm:[],father,son}}
-              console.log("repite12",e)//{...e,[name1]:{...e[name1],normal:[...e[name1]["normal"],{type:"number",name1:father},{type:"number",name1:son}],options:[],otmdestiny:[],compositeFields:[],mtm:[],father,son}})
+              //console.log("repite12",e)//{...e,[name1]:{...e[name1],normal:[...e[name1]["normal"],{type:"number",name1:father},{type:"number",name1:son}],options:[],otmdestiny:[],compositeFields:[],mtm:[],father,son}})
               return e//({...e,[name1]:{normal:[{type:"number",name1:father},{type:"number",name1:son}],options:[],otmdestiny:[],compositeFields:[],mtm:[],father,son}})
             })
         }
@@ -457,13 +457,13 @@ const Reports=({
           setOtmChoices(o=>{
             //console.log("verstatefcnm",{...o,[n]:{...o[n],mtm:[...o[n]["mtm"],name1]}})
             o=({...o,[nameOtm]:{...o[nameOtm],otm:[...o[nameOtm]["otm"],name1]}})
-            console.log("repite12",o)
+            //console.log("repite12",o)
             return o
 
           })
             setOtmChoices(e=>{
               e={...e,[name1]:{...e[name1],normal:[{type:"key",name1:`${name1}Id`}],options:[],otmdestiny:[`${name1}Id`],compositeFields:[],mtm:[],otm:[]}}
-              console.log("repite12",e)//{...e,[name1]:{...e[name1],normal:[...e[name1]["normal"],{type:"number",name1:father},{type:"number",name1:son}],options:[],otmdestiny:[],compositeFields:[],mtm:[],father,son}})
+              //console.log("repite12",e)//{...e,[name1]:{...e[name1],normal:[...e[name1]["normal"],{type:"number",name1:father},{type:"number",name1:son}],options:[],otmdestiny:[],compositeFields:[],mtm:[],father,son}})
               return ({...e,[name1]:{...e[name1],normal:[{type:"key",name1:`${name1}Id`}],options:[],otmdestiny:[`${name1}Id`],compositeFields:[],mtm:[],otm:[]}})
             })
         
@@ -477,15 +477,15 @@ const Reports=({
       }else if(otmdestiny=="otmdestiny"){
           setOtmChoices(e=>{
             e=({...e,[nameOtm]:{...e[nameOtm],otmdestiny:[...e[nameOtm]["otmdestiny"],name1]}})
-            console.log("repite",e)
+            //console.log("repite",e)
             return e
 
           })
         }else if(cf==true){
-          console.log("cp7698",name1,nameOtm,otmChoices)
+          //console.log("cp7698",name1,nameOtm,otmChoices)
           setOtmChoices(o=>{
             o=({...o,[nameOtm]:{...o[nameOtm],compositeFields:[...o[nameOtm]["compositeFields"],dcf]}})
-            console.log("repite",o)
+           // console.log("repite",o)
             return o
 
           })
@@ -494,7 +494,7 @@ const Reports=({
           
           setOtmChoices(e=>{
             e=({...e,[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"],{name1,type:declaredType}]}})
-            console.log("repite",e)
+            //console.log("repite",e)
             return e
 
           })
@@ -510,28 +510,28 @@ const Reports=({
         if(otm){
           setFirstCatNormalFields(e=>{
             e={...e,[n]:{...e[n],otm:[...e[n]["otm"].filter(x=>x!==name1)]}}
-            console.log("repite",e)
+            //console.log("repite",e)
 
             return e
           })
         }else if(otmdestiny=="otmdestiny"){
           setFirstCatNormalFields(e=>{
             e={...e,[n]:{...e[n],otmdestiny:[...e[n]["otmdestiny"].filter(x=>x.name1!==name1)]}}
-            console.log("repite",e)
+           // console.log("repite",e)
 
             return e
           })
         }else if(cf==true){
           setFirstCatNormalFields(e=>{
             e={...e,[n]:{...e[n],compositeFields:[...e[n]["compositeFields"].filter(x=>x.name1!==name1)]}}
-            console.log("repite",e)
+           // console.log("repite",e)
 
             return e
           })
         }else if(isMtm){
           setFirstCatNormalFields(e=>{
             e={...e,[n]:{...e[n],mtm:[...e[n]["mtm"].filter(x=>x!==name1)]}}
-            console.log("repite",e)
+            //console.log("repite",e)
 
             return e
           })
@@ -539,7 +539,7 @@ const Reports=({
         else{
           setFirstCatNormalFields(e=>{
             e={...e,[n]:{...e[n],normal:[...e[n]["normal"].filter(x=>x.name1!==name1)]}}
-            console.log("repite",e)
+           // console.log("repite",e)
 
             return e
           })
@@ -555,13 +555,13 @@ const Reports=({
         }else if(otmdestiny=="otmdestiny"){
           setOtmChoices(e=>{
             e=({...e,[nameOtm]:{...e[nameOtm],otmdestiny:[...e[nameOtm]["otmdestiny"].filter(u=>u.name1!==name1)]}})
-            console.log("repite",e)
+            //console.log("repite",e)
             return e
           })
         }else if(cf==true){
           setOtmChoices(e=>{
             e={...e,[nameOtm]:{...e[nameOtm],compositeFields:[...e[nameOtm]["compositeFields"].filter(x=>x.name1!==name1)]}}
-            console.log("repite",e)
+           // console.log("repite",e)
 
             return e
           })
@@ -570,14 +570,14 @@ const Reports=({
           
           setOtmChoices(e=>{
             e=({...e,[name1]:{normal:[],otm:[],otmdestiny:[]},[nameOtm]:{...e[nameOtm],mtm:[...e[nameOtm]["mtm"].filter(u=>u!==name1)]}})
-            console.log("repite",e)
+           // console.log("repite",e)
             return e
           })
         
         }else{
           setOtmChoices(e=>{
             e=({...e,[nameOtm]:{...e[nameOtm],normal:[...e[nameOtm]["normal"].filter(u=>u.name1!==name1)]}})
-            console.log("repite",e)
+           // console.log("repite",e)
             return e
 
           })
@@ -591,10 +591,10 @@ const Reports=({
   }
   const isChecked=(name)=>{
     if(fieldsShown.filter(x=>x==name).length==1){ 
-      console.log("ischecked",true,name)
+      //console.log("ischecked",true,name)
       return true
     }
-    console.log("ischecked",false,name)
+    //console.log("ischecked",false,name)
     return false
   }
 
@@ -712,7 +712,7 @@ const Reports=({
       nOtmChoicesOrder[category]={}
     if(nOtmChoicesOrder?.[category]?.[segment]==undefined)
       nOtmChoicesOrder[category]={...nOtmChoicesOrder[category],[segment]:[]}
-    console.log("yuyu",val)
+    //console.log("yuyu",val)
     if(val==true){
       nOtmChoicesOrder[category][segment]=[
         ...nOtmChoicesOrder[category][segment],
@@ -723,7 +723,7 @@ const Reports=({
       nOtmChoicesOrder[category][segment]=nOtmChoicesOrder[category][segment].filter(x=>x.name==name1?false:true)
     }
       
-    console.log("choicesorder",nOtmChoicesOrder)
+    //console.log("choicesorder",nOtmChoicesOrder)
     setOtmChoicesOrder(nOtmChoicesOrder)
   }
   
@@ -795,7 +795,7 @@ const Reports=({
           otmVar[trackCatPath[l]][ntm]={...otmVar[trackCatPath[l]][ntm],general:{}}
           if(otmVar[trackCatPath[l]][ntm]["general"]?.[`totalCount`]==undefined)
           otmVar[trackCatPath[l]][ntm]["general"][`totalCount`]=false
-          console.log("selectAll",selectAll,catSegField,nameO,value1)
+          //console.log("selectAll",selectAll,catSegField,nameO,value1)
           if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l])) && value1==true){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false))
             otmVar[trackCatPath[l]][ntm]["general"][`totalCount`]=true
             doWorkSort(true,`${ntm}TotalCount`,trackCatPath[l],ntm,"number")
@@ -813,13 +813,13 @@ const Reports=({
           /*else{
             newHook[trackCatPath[l]][ntm]["general"][`totalCount`]=otmChoicesStatistics?.[trackCatPath?.[l]]?.[ntm]?.["general"]?.["totalCount"]//?otmChoicesStatistics[ntm][trackCatPath[l]]["general"]["totalCount"]:false
           }*/
-          console.log("selectall",selectAll,selectAllSegment,selectAllFields)
+          //console.log("selectall",selectAll,selectAllSegment,selectAllFields)
 
           correctOtmMtm?.normal?.map(x=>{
             if(x.type=="number"){
             if(otmVar[trackCatPath[l]][ntm]?.[x.name1]===undefined){
               if(x.name1=="calificacion" || x.name1=="incomingyear")
-                console.log("entroconsole",otmVar,trackCatPath[l],ntm,x.name1)
+                //console.log("entroconsole",otmVar,trackCatPath[l],ntm,x.name1)
                 otmVar[trackCatPath[l]][ntm]={...otmVar[trackCatPath[l]][ntm],[x.name1]:{}}
             }
             if(otmVar[trackCatPath[l]][ntm][x.name1]?.[`total`]===undefined)
@@ -837,7 +837,7 @@ const Reports=({
             otmVar[trackCatPath[l]][ntm][x.name1]={...otmVar[trackCatPath[l]][ntm][x.name1],[`minimum`]:false}
             if(otmVar[trackCatPath[l]][ntm][x.name1]?.[`maximum`]===undefined)
             otmVar[trackCatPath[l]][ntm][x.name1]={...otmVar[trackCatPath[l]][ntm][x.name1],[`maximum`]:false}
-              console.log("saf",selectAllFields,ntm,trackCatPath[l],selectAllFields?.[ntm]?.[trackCatPath[l]]?.[x.name1])
+              //console.log("saf",selectAllFields,ntm,trackCatPath[l],selectAllFields?.[ntm]?.[trackCatPath[l]]?.[x.name1])
             if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l]) || (catSegField=="field" && nameO==x.name1 && trackCatPath[l]==segVar)) && value1==true){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false))
               otmVar[trackCatPath[l]][ntm][x.name1][`total`]=true
               otmVar[trackCatPath[l]][ntm][x.name1][`percentage`]=true
@@ -859,7 +859,7 @@ const Reports=({
               doWorkSort(true,`${x.name1}AcummulatedUniqueminimum`,trackCatPath[l],ntm,"number")
               doWorkSort(true,`${x.name1}Acummulatedmaximum`,trackCatPath[l],ntm,"number")
               doWorkSort(true,`${x.name1}AcummulatedUniquemaximum`,trackCatPath[l],ntm,"number")
-              console.log("entrotodotrue",trackCatPath[l],ntm,x.name1,otmVar)
+              //console.log("entrotodotrue",trackCatPath[l],ntm,x.name1,otmVar)
 
             }else if(((catSegField=="cat" && nameO==ntm) || (catSegField=="seg" && nameO==trackCatPath[l]) || (catSegField=="field" && nameO==x.name1 && trackCatPath[l]==segVar)) && value1==false){//(selectAll[ntm]===false || selectAllSegment?.[ntm]?.[trackCatPath[l]]===false))
           
@@ -888,7 +888,7 @@ const Reports=({
             }
             
           }
-            console.log("newHook",otmVar)
+            //console.log("newHook",otmVar)
           })
           correctOtmMtm?.compositeFields?.map(x=>{
             if(x.type=="number"){
@@ -965,13 +965,13 @@ const Reports=({
           })
       }
     }
-    console.log("otmVar",otmVar)
+    //console.log("otmVar",otmVar)
     setOtmChoicesStatistics({...otmVar})
     
   }
   
   const displayAncestorsCats=(trackCatPath,ntm="")=>{
-    console.log("trackCatPath",ntm,trackCatPath)
+    //onsole.log("trackCatPath",ntm,trackCatPath)
     let output=[]
     let ns=otmChoicesOrder
     
@@ -981,7 +981,7 @@ const Reports=({
     //if(otmChoices[trackCatPath[trackCatPath.length-1]])
       //if(!ntm.startsWith("mtm"))
         correctOtmMtm=otmChoices[trackCatPath[trackCatPath.length-1]]
-        console.log("correctOtm",correctOtmMtm)
+        //console.log("correctOtm",correctOtmMtm)
       //else
         //correctOtmMtm=mtmChoices[trackCatPath[trackCatPath.length-1]]
 
@@ -1175,7 +1175,7 @@ const Reports=({
               
           {//otmChoices[trackCatPath[trackCatPath.length-1]]
           correctOtmMtm?.normal?.map(x=>{
-            console.log("corotm",correctOtmMtm)
+            //console.log("corotm",correctOtmMtm)
             if(x.type=="number"){
               
               return <div><span style={{marginRight:"10px"}}>{x.name1}total</span><br/>
@@ -1777,12 +1777,12 @@ const Reports=({
   }
   
   const displayMenuMtm=(field,cat,nameOtm,mainCat,trackCatPath)=>{
-    console.log("catprop",cat.fields,field,cat.fields.filter(x=>x.name==field)[0])
+    //console.log("catprop",cat.fields,field,cat.fields.filter(x=>x.name==field)[0])
     let res=cat.fields.filter(x=>x.name==field)[0]
     let catD=res.relationCategory
     
     let catDestiny=categories.filter(x=>x.id==catD)[0]
-    console.log("prompther",cat,field,catDestiny)
+    //console.log("prompther",cat,field,catDestiny)
     let otmSide=categories.filter(x=>x.id==res.relationCategory)[0]
     let tableName
     //console.log("field cat",field,cat,cat.name,cat.fields.filter(x=>x.name==field),fields)
@@ -1804,8 +1804,8 @@ const Reports=({
     let fields=[...otmSideFields]
     let mtmData=categories.filter(x=>x.name==tableName)[0].fields
     fields=[...fields,...mtmData]
-    console.log("field cat",field,cat,cat.name,cat.fields.filter(x=>x.name==field),fields)
-    console.log("tcp",trackCatPath)
+    //console.log("field cat",field,cat,cat.name,cat.fields.filter(x=>x.name==field),fields)
+    //console.log("tcp",trackCatPath)
     if(isChecked(nameOtm)){
     let oc=ordenaCampos(fields,field)
     let name=nameOtm
@@ -1813,12 +1813,12 @@ const Reports=({
       {oc.map(x=>{
         let c=fields.filter(i=>i.name==x)[0]
         
-        console.log("cnamerel",c.name,c.relationship)
+        //console.log("cnamerel",c.name,c.relationship)
         if(c.relationship=="onetomany"){
           if(checkBoxDataFields?.[field]?.["otm"].includes(c.name)){
             if(parentCategories[c.name]==undefined)
               parentCategories={...parentCategories,[`${c.name}`]:field}
-            console.log("pc22",parentCategories)
+            //console.log("pc22",parentCategories)
             return <>
               <input type="checkbox" 
               style={{marginRight:"5px", color:"white"}}
@@ -1836,7 +1836,7 @@ const Reports=({
             return ""
         }else if(c.relationship=="manytomany"){
           let nameTableMtm=""
-          console.log("vermtm",checkBoxDataFields[field],c.name)
+          //console.log("vermtm",checkBoxDataFields[field],c.name)
           if(checkBoxDataFields?.[field]?.["mtm"].includes(c.name)){
 
             if(parentCategories[c.name]==undefined)
@@ -1844,7 +1844,7 @@ const Reports=({
             
             //emp
             //let otmS=categories.filter(x=>x.id==c.relationCategory)[0]
-            console.log("pc22",parentCategories,c.name,otmSide.name,cat.name)
+            //console.log("pc22",parentCategories,c.name,otmSide.name,cat.name)
             let tableName
             let pad=categories.filter(x=>x.name==cat.name)[0]
             //console.log("field cat",field,cat,cat.name,cat.fields.filter(x=>x.name==field),fields)
@@ -1857,7 +1857,7 @@ const Reports=({
             let op1=categories.filter(x=>x.id==c.category)[0].name
             let son=`mtm${op}${op1}Id`
             let father=`mtm${op1}${op}Id`
-            console.log("sonfather",c.name,son,father)
+            //console.log("sonfather",c.name,son,father)
             //term
             return <>
               <input type="checkbox" 
@@ -2209,7 +2209,7 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
     let cat=categories.filter(c=>c.name==destCatName)[0]
 
     let catId=categories.filter(x=>x.name==padre)[0]
-    console.log("namepadre",nameOtm,padre,catId)//,cat.fields)
+   // console.log("namepadre",nameOtm,padre,catId)//,cat.fields)
     let f=catId.fields.filter(x=>x.name==nameOtm)[0].relationCategory
     cat=categories.filter(x=>x.id==f)[0]
   //cat=categories.filter(x=>x.id==catId)[0] 
@@ -2230,7 +2230,7 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
             if(checkBoxDataFields?.[name]?.["otm"].includes(c.name)){
               if(parentCategories[c.name]==undefined)
                 parentCategories={...parentCategories,[`${c.name}`]:padre}
-              console.log("pc22",parentCategories)
+              //console.log("pc22",parentCategories)
               return <>
                 <input type="checkbox" 
                 style={{marginRight:"5px", color:"white"}}
@@ -2260,13 +2260,13 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
                 let op1=categories.filter(x=>x.id==c.category)[0].name
                 let son=`mtm${op}${op1}Id`
                 let father=`mtm${op1}${op}Id`
-                console.log("sonfatherbien",c.name,son,father)
+                //console.log("sonfatherbien",c.name,son,father)
               
               
               //term
               if(parentCategories[c.name]==undefined)
                 parentCategories={...parentCategories,[`${c.name}`]:padre}
-              console.log("pc22i",parentCategories,c.name,son,father)
+              //console.log("pc22i",parentCategories,c.name,son,father)
               return <>
                 <input type="checkbox" 
                 style={{marginRight:"5px", color:"white"}}
@@ -2896,7 +2896,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
     pivote={...pivote,[`getData${currentCategory?.name}`]:[]}
   if(pivote[nameOtm]==undefined)
      pivote={...pivote,[nameOtm]:[]}
-  console.log("Catmessage",cat?.name,nameOtm,mainCat,parentCategories,parentCategories?.[nameOtm])
+  //console.log("Catmessage",cat?.name,nameOtm,mainCat,parentCategories,parentCategories?.[nameOtm])
   if(cat && showFields){ 
     let of
     //if(!isMtm) 
@@ -2911,7 +2911,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
           if(checkBoxDataFields?.[validate]?.["otm"].includes(c.name)){
             if(parentCategories[c.name]==undefined)
               parentCategories={...parentCategories,[`${c.name}`]:pc}
-            console.log("pc22",parentCategories)
+            //console.log("pc22",parentCategories)
             return <>
               <input type="checkbox" 
               style={{marginRight:"5px", color:"white"}}
@@ -2931,7 +2931,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
 
             if(parentCategories[c.name]==undefined)
               parentCategories={...parentCategories,[`${c.name}`]:pc}
-            console.log("pc22",parentCategories)
+            //console.log("pc22",parentCategories)
             //emp
             let otmSide=categories.filter(x=>x.id==c.relationCategory)[0]
             let tableName
@@ -2945,7 +2945,7 @@ const displayCurCategory=(cat,primero,space=true,nameOtm="",mainCat=false,trackC
             let op1=categories.filter(x=>x.id==c.category)[0].name
             let son=`mtm${op}${op1}Id`
             let father=`mtm${op1}${op}Id`
-            console.log("sonfather",c.name,son,father)
+            //console.log("sonfather",c.name,son,father)
           
             //term
 
@@ -3285,9 +3285,9 @@ const calculateGrandRoutes=(grandsRoute,nameCluster)=>{
     routes={...routes,...calculateGrandRoutes(routes[l],l)}
     
   })
-  console.log("otmcho11",otmChoices[nameCluster])
+  //console.log("otmcho11",otmChoices[nameCluster])
   otmChoices?.[nameCluster]?.["mtm"]?.map(l=>{
-    console.log("lll",l)
+    //console.log("lll",l)
     routes[l]=[...grandsRoute,l]
     routes={...routes,...calculateGrandRoutes(routes[l],l)}
    
@@ -3305,7 +3305,7 @@ const calculateRoutes=(parentsRoute)=>{
   let data=categoryProducts[parentNodeName]
   let routes={}
   let otmMtm=[]
-  console.log("fcnf",firstCatNormalFields[parentNodeName])
+  //console.log("fcnf",firstCatNormalFields[parentNodeName])
 
   if(firstCatNormalFields[parentNodeName]["otm"].length>0){
     let sons=firstCatNormalFields[parentNodeName]["otm"].map(l=>{
@@ -3336,7 +3336,7 @@ const calculateRoutes=(parentsRoute)=>{
   if(firstCatNormalFields[parentNodeName]["otm"].length==0 && firstCatNormalFields[parentNodeName]["mtm"].length==0)
    return {[parentNodeName]:[parentNodeName]}
     
-   console.log("huifinal",routes)
+   //console.log("huifinal",routes)
    return routes
 
 
@@ -3564,7 +3564,7 @@ const initializeVarsGld=(r,eachIndex)=>{
       }
     }
   }
-  console.log("gtlog",grandTotals)
+  //console.log("gtlog",grandTotals)
   if(!grandTotals[r[eachIndex]][`${r[eachIndex+1]}total`]){
     grandTotals={
       ...grandTotals,
@@ -3577,7 +3577,7 @@ const initializeVarsGld=(r,eachIndex)=>{
     }
   }
 
-  console.log("uiop",grandTotals)
+  //console.log("uiop",grandTotals)
 
   let current
   if(r && r[eachIndex+1]!==undefined){
@@ -3617,7 +3617,7 @@ if(r && totalRoutes[r[eachIndex]]==undefined)
 
 const getNumericVariablesSonCategories=(current,categoryfields)=>{
   let otherAccVars={}
-  console.log("pwww",current,categoryfields)
+  //console.log("pwww",current,categoryfields)
   if(current!=="undefinedtotal"){
     categoryfields?.normal.forEach(l=>{
       if(l.type=="number")
@@ -3634,10 +3634,10 @@ const getNumericVariablesSonCategories=(current,categoryfields)=>{
 const getTotalsOfSonNumericVariables=(oavTotals,data,routeStep,r,eachIndex)=>{
   let final=[]
   //if(Object.keys(oavTotals).length>0){
-    console.log("step441",oavTotals,data,routeStep,r,eachIndex,r,r[eachIndex],otmChoices)
+    //console.log("step441",oavTotals,data,routeStep,r,eachIndex,r,r[eachIndex],otmChoices)
     data?.forEach(y=>{
       //if(verifyMeetWithConditionsBySegmentBaseLevel(r,eachIndex,y)){
-        console.log("step44",r[eachIndex],oavTotals,y)  
+        //console.log("step44",r[eachIndex],oavTotals,y)  
       //if(r[eachIndex].startsWith("otm"))
           final=[...final,y.id]
        // else
@@ -3653,7 +3653,7 @@ const getTotalsOfSonNumericVariables=(oavTotals,data,routeStep,r,eachIndex)=>{
               oavTotals[p]=parseFloat(oavTotals[p].toFixed(2))
             }
           }else{
-            console.log("fijo y nn y[nn] oavtotals p oavtotalsp",y,nn,y[nn],oavTotals,p,oavTotals[p])
+            //console.log("fijo y nn y[nn] oavtotals p oavtotalsp",y,nn,y[nn],oavTotals,p,oavTotals[p])
             if(y[nn]!==null){
               oavTotals[p]+=parseFloat(y[nn].toFixed(2))
               oavTotals[p]=parseFloat(oavTotals[p].toFixed(2))
@@ -3665,13 +3665,13 @@ const getTotalsOfSonNumericVariables=(oavTotals,data,routeStep,r,eachIndex)=>{
       //}
     })
 //}
-  console.log("paroat",[oavTotals,final])
+  //console.log("paroat",[oavTotals,final])
   return [oavTotals,final]
 }
 
 const getNormalFieldsOfEachIndex=(object,step,x)=>{
   let normalFields={}
-  console.log("objectstep",object,step,x)
+  //console.log("objectstep",object,step,x)
   object?.normal?.forEach(oo=>{
     if(oo["name1"]!=="1" && oo["name1"]!=="2" && oo["name1"]!=="3"){
       normalFields={...normalFields,[oo["name1"]]:x[oo["name1"]]}
@@ -3746,15 +3746,15 @@ const getNormalFieldsOfEachIndex=(object,step,x)=>{
     //doneLd[r[eachIndex]].done=true
   let newId
   if(step.startsWith("otm") || step.startsWith("getData")){
-    console.log("checabien",step,x,otmChoices[step])
+    //console.log("checabien",step,x,otmChoices[step])
     normalFields={id:x["id"],parentId:x?.[otmChoices?.[step]?.["otmdestiny"]?.[0]],...normalFields}
   }else if(step.startsWith("mtm")){
-    console.log("checabienmtm",step,x,otmChoices[step],x[otmChoices[step]["father"]])
+    //console.log("checabienmtm",step,x,otmChoices[step],x[otmChoices[step]["father"]])
     normalFields={...normalFields,id:x["id"],parentId:x[otmChoices[step]["father"]]}
     //newId=`${x[otmChoices[step]["son"]]}-${x[otmChoices[step]["father"]]}`
     //normalFields={id:newId,...normalFields}
   }
-  console.log("stepio",step,newId)
+  //console.log("stepio",step,newId)
   
   return normalFields
 }
@@ -3980,7 +3980,7 @@ const checkRuleHybrid=(rulex,x,index)=>{
   return evaluateRule(arrAnswers,ops)
 }
 const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
-  console.log("datadetail",data,category)
+ // console.log("datadetail",data,category)
   let u=conditionsWhere[category]?.["main"]
   //console.log("veri222",category,x)
   if(u!==undefined && u!="none"){
@@ -4025,7 +4025,7 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
         
       })*/
       finalObject={...finalObject,[category]:{...newArray}}
-      console.log("dataio11",finalObject)
+     // console.log("dataio11",finalObject)
       
       
     }
@@ -4094,7 +4094,7 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(category,data)=>{
 
 const verifyMeetWithConditionsBySegmentBaseLeve1=(category,x)=>{
   let u=conditionsWhere?.[category]?.["main"]
-  console.log("veri222",category,x,u)
+  //console.log("veri222",category,x,u)
   if(u!==undefined){
   let getMainRule=conditionsWhere[u["category"]][u["segment"]][u["field"]][u["rule"]]
   let type=conditionsWhere[u["category"]][u["segment"]][u["field"]]["type"]
@@ -4152,12 +4152,12 @@ const verifyMeetWithConditionsBySegmentBaseLevel=(r,eachIndex,x)=>{
 }
 
 const getLevelData1=(eachStopData,r,eachIndex)=>{
-  console.log("r eachindexgl BIEN",r,eachIndex,conditionsWhere)
+  //console.log("r eachindexgl BIEN",r,eachIndex,conditionsWhere)
   let current=initializeVarsGld(r,eachIndex)
   let fieldId=""
   let newData=[]
   let parentIdField=parentIdentifiers?.[r[eachIndex-1]]?.["field"]
-  console.log("parentidfield",parentIdField,r[eachIndex])
+  //console.log("parentidfield",parentIdField,r[eachIndex])
   const parentIdNormalOrCompositeType=parentIdentifiers?.[r[eachIndex]]?.["fieldCompOrNormalType"]
   if(eachIndex>0){
     if(parentCategories[r[eachIndex]]==undefined){
@@ -4171,7 +4171,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
   eachStopData?.map((x,indice)=>{
     //console.log("xxxx",x)
     //if(verifyMeetWithConditionsBySegmentBaseLevel(r,eachIndex,x)==true || verifyMeetWithConditionsBySegmentBaseLevel(r,eachIndex,x)=="pending"){
-      console.log("newData",eachStopData)
+      //console.log("newData",eachStopData)
       let ui=[...doneLd[r[eachIndex]].nodeDone]
       
       if([...ui].includes(x["id"]))
@@ -4183,14 +4183,14 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
       
       newData=x[r[eachIndex+1]]
       let oavTotals=getNumericVariablesSonCategories(current,otmChoices[r[eachIndex+1]])    
-      console.log("ot55",oavTotals,x,newData)
+      //console.log("ot55",oavTotals,x,newData)
       let otherAccVars=[]
-      console.log("curr",current)
+      //console.log("curr",current)
       //if(current!=="undefinedtotal")
         otherAccVars=getTotalsOfSonNumericVariables(oavTotals,x[r[eachIndex+1]],r[eachIndex+1],r,eachIndex+1)
       /*else 
         otherAccVars=[{},[]]*/
-      console.log("ot,oav",otherAccVars)
+      //console.log("ot,oav",otherAccVars)
       let normalFields
       if(r[eachIndex]==`getData${currentCategory.name}`)
         normalFields=getNormalFieldsOfEachIndex(firstCatNormalFields[r[eachIndex]],r[eachIndex],x)
@@ -4328,7 +4328,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
         )
       }else{
         fieldId=normalFields[`${r[eachIndex]}Id`]
-        console.log("checkver",r[eachIndex-1],r[eachIndex],fieldId,parentIdField,totalRoutes)
+        //console.log("checkver",r[eachIndex-1],r[eachIndex],fieldId,parentIdField,totalRoutes)
         
      totalRoutes={
           ...totalRoutes,
@@ -4358,8 +4358,8 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
         if(totalRoutes[r[eachIndex]][current]["data"]==undefined)
           totalRoutes[r[eachIndex]][current]={...totalRoutes[r[eachIndex]][current],data:[]}
         if(r[eachIndex].startsWith("mtm")){
-          console.log("vertotalmtm",totalRoutes[r[eachIndex]][current]["data"],normalFields,r[eachIndex],current,otmChoices?.[r?.[eachIndex]])
-          console.log("verificatrad",current,totalRoutes[r[eachIndex]][current]["data"],r[eachIndex],otmChoices[r[eachIndex]],normalFields)
+          //console.log("vertotalmtm",totalRoutes[r[eachIndex]][current]["data"],normalFields,r[eachIndex],current,otmChoices?.[r?.[eachIndex]])
+          //console.log("verificatrad",current,totalRoutes[r[eachIndex]][current]["data"],r[eachIndex],otmChoices[r[eachIndex]],normalFields)
           for(let i=0;i<totalRoutes[r[eachIndex]][current]["data"].length;i++){
             
             let pp=totalRoutes?.[r?.[eachIndex]]?.[current]?.["data"]?.[i]
@@ -4370,21 +4370,21 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
             pp["normalData"][otmChoices[current]["son"]]==normalFields[otmChoices[current]["son"]],
             pp["normalData"][otmChoices[current]["son"]],
             normalFields[otmChoices[current]["son"]])*/
-            console.log("otmopt",otmChoices[r[eachIndex]],current,pp)
+            //console.log("otmopt",otmChoices[r[eachIndex]],current,pp)
             if(pp!=undefined){
               if(pp?.["normalData"]?.[otmChoices?.[r?.[eachIndex]]?.["father"]]==normalFields?.[otmChoices?.[r?.[eachIndex]]["father"]] &&
               pp?.["normalData"]?.[otmChoices?.[r?.[eachIndex]]?.["son"]]==normalFields?.[otmChoices?.[r?.[eachIndex]]?.["son"]]){
                 inserta=false
                 break
               }
-              console.log("poiuy",pp?.["normalData"]?.[otmChoices?.[r?.[eachIndex]]?.["father"]],r[eachIndex])
+              //console.log("poiuy",pp?.["normalData"]?.[otmChoices?.[r?.[eachIndex]]?.["father"]],r[eachIndex])
             }
           }
         }else if(r[eachIndex].startsWith("otm")){
-          console.log("vertotal",totalRoutes[r[eachIndex]][current]["data"],normalFields)
+          //console.log("vertotal",totalRoutes[r[eachIndex]][current]["data"],normalFields)
           for(let i=0;i<totalRoutes[r[eachIndex]][current]["data"].length;i++){
             let pp=totalRoutes?.[r?.[eachIndex]]?.[current]?.["data"]?.[i]
-            console.log("verificatrad",r[eachIndex],/*pp["normalData"]*/totalRoutes[r[eachIndex]][current]["data"])
+            //console.log("verificatrad",r[eachIndex],/*pp["normalData"]*/totalRoutes[r[eachIndex]][current]["data"])
 
             if(pp?.["normalData"]!=undefined)
               if(pp["normalData"]["id"]==normalFields["id"]){
@@ -4407,7 +4407,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
           })
         }
       }
-      console.log("xxx",totalRoutes)
+      //console.log("xxx",totalRoutes)
       if(eachIndex+1<r.length)
         getLevelData1(newData,r,eachIndex+1,true)
       
@@ -5096,7 +5096,7 @@ let resultado=[]
 const getCatPadre=routes=>{
   let max=0
   let numRoute=-1
-  console.log("routespadre",routes)
+  //console.log("routespadre",routes)
   for(let i=0;i<routes.length;i++){
     if(routes[i].length>=2 && routes[i].length>max){
       numRoute=i
@@ -5105,30 +5105,30 @@ const getCatPadre=routes=>{
 
   }
   if(numRoute!==-1){
-    console.log("rrr",routes[numRoute][routes[numRoute].length-2])
+    //console.log("rrr",routes[numRoute][routes[numRoute].length-2])
     return routes[numRoute][routes[numRoute].length-2]
   }
   else{  
-    console.log("rrr","-1")
+    //console.log("rrr","-1")
     return -1
   }
 }
 
 const findFather=(catPadre,route,legRoutes,j)=>{
-  console.log("legroutes99",...legRoutes)
+  //console.log("legroutes99",...legRoutes)
   for(let i=0;i<route.length;i++){
     //console.log("findfather",catPadre,route[i],route[i]==catPadre)
     if(route[i]==catPadre){
       let res=originalRoutes[j][i+1]
-      console.log("findfather4",catPadre,legRoutes,res,legRoutes[j][i+1],legRoutes[j][i+2])
+      //console.log("findfather4",catPadre,legRoutes,res,legRoutes[j][i+1],legRoutes[j][i+2])
       let u=`${originalRoutes[j][i+2]}total`
-      console.log("ufinal",u)
+      //console.log("ufinal",u)
       let res1
       if(res!=undefined){
          res1=[res,u]
-         if(catPadre.startsWith("get")){
+         /*if(catPadre.startsWith("get")){
            console.log("catpadre88",catPadre,legRoutes[j],res)
-         }
+         }*/
          route.splice(route.length-1,1)
          return res1
       }else
@@ -5152,7 +5152,7 @@ const calculateSons=(routes,catPadre,legRoutes)=>{
       //console.log("catPadrepor",catPadre,[...routes[i]],res)
     }
   }
-  console.log("params1",catPadre,res)
+  //console.log("params1",catPadre,res)
   return res
 }
 let goodRoutes=[]
@@ -5170,12 +5170,12 @@ const deleteEqualRoutes=(/*routes,lr*/)=>{
     let cur=i
       if(!borrar.includes(i)){
       for(let j=0;j<routes.length;j++){
-        console.log("borrar1",borrar,routes[j],borrar.includes(j))
-        console.log("keycode",cur,j,j==cur,borrar,j,borrar.includes(j))
+        //console.log("borrar1",borrar,routes[j],borrar.includes(j))
+        //console.log("keycode",cur,j,j==cur,borrar,j,borrar.includes(j))
         //if(borrar.includes(j)==false){
           
           if(j==cur){
-            console.log("keycode111")
+            //console.log("keycode111")
             continue
           }else{
             for(let o=0;o<routes[cur].length;o++){
@@ -5183,12 +5183,12 @@ const deleteEqualRoutes=(/*routes,lr*/)=>{
             
               if(routes[cur][o]==routes?.[j]?.[o] && o==routes[cur].length-1){
               
-                console.log("deleteclave",...routes[j])
+               // console.log("deleteclave",...routes[j])
                 borrar.push(j)
 
               }else{
                 if(routes[cur][o]!=routes?.[j]?.[o]){
-                  console.log("routesespec",routes[j])
+                  //console.log("routesespec",routes[j])
                   
               
                   
@@ -5213,7 +5213,7 @@ const deleteEqualRoutes=(/*routes,lr*/)=>{
   let newLR=[]
   //if(borrar.length>0){
   for(let nai=0;nai<routes.length;nai++){
-    console.log("borrarespec",borrar,nai,borrar.includes(nai),routes[nai])
+  //  console.log("borrarespec",borrar,nai,borrar.includes(nai),routes[nai])
     if(borrar.includes(nai)==false){
       newRoutes.push(routes[nai])
       
@@ -5234,20 +5234,20 @@ const deleteEqualRoutes=(/*routes,lr*/)=>{
 }
 
 const findTheLowerLevelCategory1=(routes,res=[],legRoutes)=>{
-  console.log("deroutes1",...routes)
+  //console.log("deroutes1",...routes)
   goodRoutes=routes
   originalRoutes=legRoutes
   routes=deleteEqualRoutes(routes,legRoutes)
-  console.log("deroutes",...routes)
+  //console.log("deroutes",...routes)
   let catPadre=getCatPadre(goodRoutes)
-  console.log("ftllc",...routes,catPadre,res)
+  //console.log("ftllc",...routes,catPadre,res)
   if(catPadre!=-1){
     let sons={}
     if(sons[catPadre]==undefined)
       sons[catPadre]=[]
     //sons[catPadre]=calculateSons(routes,catPadre)
     if(!catPadre.startsWith("getData")){
-      console.log("calcsons")
+     // console.log("calcsons")
       
     res=[...res,{[catPadre]:calculateSons(goodRoutes,catPadre,originalRoutes)},...findTheLowerLevelCategory1(goodRoutes,res,originalRoutes)]
     }else{
@@ -5437,12 +5437,12 @@ const getNumericFields=(cat)=>{
 
   }else if(cat.startsWith("mtm")){
     otmChoices?.[cat]?.["normal"].forEach(x=>{
-      console.log("veryu",x.dataType,x.type)
+     //console.log("veryu",x.dataType,x.type)
       if(x.type=="number" && x.dataType!="queryCategory")
         res["normal"].push(x.name1)
 
     })
-    console.log("resnormal",res["normal"])
+    //console.log("resnormal",res["normal"])
     otmChoices?.[cat]?.["compositeFields"].forEach(x=>{
       if(x.type=="number")
         res["compositeFields"].push(x.name1)
@@ -5462,12 +5462,12 @@ const getNumericFields=(cat)=>{
     })
     
   }
-  console.log("numericvalues",cat,res)
+ // console.log("numericvalues",cat,res)
   return res
 }
 
 const updateNumericFields=(key,cat,nf,obj,terminal,first)=>{
-  console.log("unf",key,cat,nf,obj,terminal,finalObject)
+  //console.log("unf",key,cat,nf,obj,terminal,finalObject)
 
   nf=getNumericFields(cat)
   //if(!isLast(key)){
@@ -5492,7 +5492,7 @@ const updateNumericFields=(key,cat,nf,obj,terminal,first)=>{
     }
     for(let i=0;i<k.length;i++){
       finalObject[key][cat]={...finalObject[key][cat],[parseInt(k[i])]:{...finalObject[key][cat][parseInt(k[i])],parentId:finalObject?.[key]?.[key]?.[parseInt(k[i])].parentId,/*...obj[k[i]].normalData,*/keys:obj[parseInt(k[i])].keys/*[`${cat}keys`]:obj[k[i]].keys*/}}
-      console.log("remember",finalObject[key][cat][k[i]],finalObject[key][key])
+    //  console.log("remember",finalObject[key][cat][k[i]],finalObject[key][key])
     }
     //getTotalsOfNumericVariables(finalObject[cat],finalObject[key][cat],cat)
 
@@ -5517,7 +5517,7 @@ const updateNumericFields=(key,cat,nf,obj,terminal,first)=>{
 }
 
 const initializeOtherFinalObjectVariables=(key,cat,obj,next,first)=>{
-  console.log("iofobv",obj)
+ // console.log("iofobv",obj)
   if(finalObject[key]==undefined)
     finalObject={...finalObject,[key]:{}}
   if(finalObject[key][cat]==undefined)
@@ -5525,15 +5525,15 @@ const initializeOtherFinalObjectVariables=(key,cat,obj,next,first)=>{
   let k=Object.keys(obj)
   let nf=getNumericFields(cat)  
   let temp=totalRoutes[cat][next]
-  console.log("entroposible")
+  //console.log("entroposible")
   //if(!isLast(cat)){
     for(let i=0;i<k.length;i++){
       if(finalObject[key][cat]?.[parseInt(k[i])]==undefined){
         //if(verifyMeetWithConditionsBySegmentBaseLeve1(key,obj[k[i]].normalData)){
           finalObject[key][cat]={...finalObject[key][cat],[parseInt(k[i])]:{...finalObject[key][cat][parseInt(k[i])],...obj[parseInt(k[i])].normalData,keys:obj[parseInt(k[i])].keys,/*parentId:finalObject?.[key]?.[key]?.[k?.[i]]?.parentId/*,[`keys${cat}`]:obj[k[i]].keys}*/}}
-          console.log("finalvar",finalObject[key][cat][k[i]],finalObject[key][key])
+         // console.log("finalvar",finalObject[key][cat][k[i]],finalObject[key][key])
       }
-        console.log("alyu",finalObject[key][cat])
+       // console.log("alyu",finalObject[key][cat])
             if(nf.normal.length>0)
             for(let x=0;x<nf.normal.length;x++){
           
@@ -5572,7 +5572,7 @@ const initializeOtherFinalObjectVariables=(key,cat,obj,next,first)=>{
       }
     }
   }*/  
-  console.log("objobser34",obj,key,cat,isLast(cat),finalObject)
+ // console.log("objobser34",obj,key,cat,isLast(cat),finalObject)
 
 }
 
@@ -5595,7 +5595,7 @@ const updateNumericFieldsRoot=(key,cat,obj,next,first)=>{
       if(finalObject[key][key]?.[parseInt(k[i])]==undefined){
         //if(verifyMeetWithConditionsBySegmentBaseLeve1(key,obj[k[i]].normalData)){
           finalObject[key][key]={...finalObject[key][key],[k[i]]:{...obj[parseInt(k[i])].normalData,keys:obj[parseInt(k[i])].keys}}
-          console.log("revisabien",finalObject[key][key][k[i]],obj[k[i]],key)
+         // console.log("revisabien",finalObject[key][key][k[i]],obj[k[i]],key)
     
          /*for(let x=0;x<nf.normal.length;x++){
             finalObject[key][key][k[i]]={...finalObject[key][key][k[i]],[`${nf.normal[x]}tota}
@@ -5608,7 +5608,7 @@ const updateNumericFieldsRoot=(key,cat,obj,next,first)=>{
     //getTotalsOfNumericVariables(finalObject[first][cat],finalObject[key][cat],cat,nf)
 
   }
-    console.log("objobser",obj,key,finalObject)
+   //console.log("objobser",obj,key,finalObject)
 }
 
 let accumulatedValues={}
@@ -5621,7 +5621,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
     realGrandTotals[mainKey]={}
   if(realGrandTotals[mainKey][cat]==undefined)
     realGrandTotals[mainKey][cat]={}
-  console.log("a1 a2",a1,a2,cat,mainKey)
+ //console.log("a1 a2",a1,a2,cat,mainKey)
   /*if(accumulatedValues[trueKey]==undefined)
     accumulatedValues[cat]={}*/
 
@@ -5632,7 +5632,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
   Object.keys(a1).forEach(p=>{
     //let pnuev=a1[p]["id"]
     
-    console.log("a1a2primero",a1,p,a2,a1[p])
+   //console.log("a1a2primero",a1,p,a2,a1[p])
     //p son las claves de la categoria inferior
     // si let x=Object.keys(a1[p])
     let x1=Object.keys(a1[p]).map(y=>a1[p][y]["id"])
@@ -5645,11 +5645,11 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
         ind.push(index)
       //}
     })
-    console.log("indexx",a1[p],x,ind)
+   // console.log("indexx",a1[p],x,ind)
     //x=Object.keys(a1[p])
     //console.log("setarr",x1,sete)
       //let xnuev=x.map(i=>i.id)
-    console.log("a1ver",a1,p,a1[p],a1[p]["id"],x)
+  //console.log("a1ver",a1,p,a1[p],a1[p]["id"],x)
     /*if(accumulatedValues[p]==undefined)
       accumulatedValues[p]={}*/
     //x son los ids de la categoria inferior
@@ -5666,7 +5666,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
         if(arrCheckDoneKeys[p][o]==undefined)
           arrCheckDoneKeys[p]={...arrCheckDoneKeys[p],[p]:[]}
         ////console.log("m1",a2[o].keys,x[m1],a2[o].keys.includes(parseInt(x[m1])))
-        console.log("a1a2ver",a1,p,a2)
+        //console.log("a1a2ver",a1,p,a2)
         let cond
         let keyTransform=x[m1]
         /*if(!Number.isInteger(x[m1])){
@@ -5680,20 +5680,20 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
           keyTransform=x[m1]
           //if(p.startsWith("otm") || (p.startsWith("mtm") && a1?.[p]?.[ind[m1]]?.parentId==undefined))
            // cond=a2[p][o].keys.includes(keyTransform)
-          console.log("paramscheck",a1[p],ind[m1],a1[p][ind[m1]].parentId,a2[p][o].id)
+         // console.log("paramscheck",a1[p],ind[m1],a1[p][ind[m1]].parentId,a2[p][o].id)
           //if(p.startsWith("mtm") && a1?.[p]?.[ind[m1]]?.parentId!=undefined)
           if(a1[p][ind[m1]].parentId>0)
             cond=a2[p][o].keys.includes(keyTransform) && a1[p][ind[m1]].parentId==a2[p][o].id
           else{
             cond=a2[p][o].keys.includes(keyTransform) //&& a1[p][ind[m1]].id==a2[p][o].id
-            console.log("a2checa",a2[p][o].keys,keyTransform,cond)
+            //console.log("a2checa",a2[p][o].keys,keyTransform,cond)
           }
           //if(p=="mtmsbcarrerassbmaterias" && mainKey=="getDatasbarea"){
-            console.log("uiiui",keyTransform,a2[p][o].keys,cond,a2[p][o].keys.includes(keyTransform),a1[p][ind[m1]].parentId==a2[p][o].id,a1[p][ind[m1]].parentId,a2[p][o].id)
-            console.log("awp09",a2[p][o],p,a1[p][ind[m1]])
+            //console.log("uiiui",keyTransform,a2[p][o].keys,cond,a2[p][o].keys.includes(keyTransform),a1[p][ind[m1]].parentId==a2[p][o].id,a1[p][ind[m1]].parentId,a2[p][o].id)
+            //console.log("awp09",a2[p][o],p,a1[p][ind[m1]])
           //}
         //}
-        console.log("a2orig",a2[p][o]["id"],a2[p][o].keys,x[m1],p,cond,a1[p][ind[m1]].parentId)
+        //console.log("a2orig",a2[p][o]["id"],a2[p][o].keys,x[m1],p,cond,a1[p][ind[m1]].parentId)
         if(cond==true){//a2[p][o].keys.includes(x[m1])){//parseInt(x[m1]))){
           /*if(accumulatedValues[p][o]==undefined)
             accumulatedValues[p][o]={}*/
@@ -5773,8 +5773,8 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 
                 if(a1[p][varp1][nf["normal"][j1]]!=null && a1[p][varp1][nf["normal"][j1]]!=undefined){
                   st=a1[p][varp1][nf["normal"][j1]]
-                  if(p=="mtmsbmateriassbcarreras")
-                    console.log("fijofijo1",p,varp1,st)
+                  //if(p=="mtmsbmateriassbcarreras")
+                    //console.log("fijofijo1",p,varp1,st)
                 
                 }
                 if(a2[p][o]?.[`${nf["normal"][j1]}UniqueTotalArray`]==undefined)
@@ -5795,7 +5795,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 }*/
                 a2[p][o][`${nf["normal"][j1]}total`]+=st
                 if(o==8){
-                  console.log("pivpiv",a2[p][o][`${nf["normal"][j1]}total`],st,ind[m1])
+                 // console.log("pivpiv",a2[p][o][`${nf["normal"][j1]}total`],st,ind[m1])
                 }
 
                 /*nuevo
@@ -5817,7 +5817,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 
                 
                 a2[p][o][`${nf["normal"][j1]}Acummulated`].push(st)
-                console.log("idadone",p,varp1,a1[p][varp1],idsAlreadyDone,a1[p][varp1]["id"],a2,p,o)
+                //console.log("idadone",p,varp1,a1[p][varp1],idsAlreadyDone,a1[p][varp1]["id"],a2,p,o)
                 
                 /*if(!idsAlreadyDone.includes(a1[p][varp1]["id"] && o==a2[p].length-1)){
                   a2[p][o][`${nf["normal"][j1]}NoRepeatAcummulated`].push(st)
@@ -5984,7 +5984,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
 
             }
             }
-            console.log("nfcomp",nf.compositeFields)
+           // console.log("nfcomp",nf.compositeFields)
             if(nf.compositeFields.length>0){ 
             for(let j1=0;j1<nf.compositeFields.length;j1++){
               
@@ -6015,8 +6015,8 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                   a2[p][o]={...a2[p][o],[`${nf["compositeFields"][j1]}UniqueTotalArray`]:[]}                  
                   
                 a2[p][o][`${nf["compositeFields"][j1]}total`]+=st
-                console.log("paramsioio",p,o,keyTransform,a2[p][o][`${nf["compositeFields"][j1]}total`])
-                console.log("suma",a2[p][o][`${nf["compositeFields"][j1]}total`])
+               // console.log("paramsioio",p,o,keyTransform,a2[p][o][`${nf["compositeFields"][j1]}total`])
+                //console.log("suma",a2[p][o][`${nf["compositeFields"][j1]}total`])
                 if(a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]==undefined || a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]==null)
                   a2[p][o][`${nf["compositeFields"][j1]}Acummulated`]=[]
                 a2[p][o][`${nf["compositeFields"][j1]}Acummulated`].push(st)
@@ -6036,7 +6036,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 realGrandTotals[p][p]={...realGrandTotals[p][p],[`${nf["compositeFields"][j1]}total`]:realGrandTotals[p][p][`${nf["compositeFields"][j1]}total`]+st}*/
 
               }else{
-                console.log("jorgejorgetoro")
+               // console.log("jorgejorgetoro")
                 let st=0
                // console.log("prob",a1[p][varp2][`${nf["compositeFields"][j1]}total`],nf["compositeFields"][j1])
                 
@@ -6055,12 +6055,12 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 if(a2[p][o]?.[`${nf["compositeFields"][j1]}UniqueTotalArray`]==undefined)
                   a2[p][o]={...a2[p][o],[`${nf["compositeFields"][j1]}UniqueTotalArray`]:[]}
 
-                console.log("paramsioio",p,o,x[keyTransform],a2[p][o][`${nf["compositeFields"][j1]}total`])
+               // console.log("paramsioio",p,o,x[keyTransform],a2[p][o][`${nf["compositeFields"][j1]}total`])
                 let varp3=ind[m1]
                 st=a1[p][varp3][`${nf["compositeFields"][j1]}total`]
-                console.log("entroaqui88",a1)
+               // console.log("entroaqui88",a1)
                 a2[p][o][`${nf["compositeFields"][j1]}total`]+=st
-                console.log("suma",a2[p][o][`${nf["compositeFields"][j1]}total`])
+               // console.log("suma",a2[p][o][`${nf["compositeFields"][j1]}total`])
                 /*if(realGrandTotals[mainKey][p]==undefined)
                 realGrandTotals[mainKey][p]={}
              
@@ -6092,12 +6092,12 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
             }
             
             if(isLast(cat) || p==cat){
-              console.log("a2pp5",a2[p][o])
+              //console.log("a2pp5",a2[p][o])
               if(a2?.[p]?.[o]?.[`${p}TotalCount`]==undefined)
                 a2[p][o][`${p}TotalCount`]=0  
               a2[p][o][`${p}TotalCount`]++
             }else{
-              console.log("a2pp5",a2[p][o])
+             // console.log("a2pp5",a2[p][o])
               let varp3=Object.keys(a1[p]).filter(o=>a1[p][o]["id"]==keyTransform)[0]
 
               if(a2?.[p]?.[o]?.[`${p}TotalCount`]==undefined)
@@ -6144,7 +6144,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
   Object.keys(a1).forEach(p=>{
     Object.keys(a2[p]).forEach(o=>{
       let nf=getNumericFields(p)
-      console.log("numfields",nf)
+     // console.log("numfields",nf)
       if(a2?.[p]?.[o]?.[`${p}UniqueTotalCount`]==undefined)
         a2[p][o][`${p}UniqueTotalCount`]=0  
       if(a2[p][o]?.["realUniqueIndexes"]!=undefined)
@@ -6158,12 +6158,12 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 let toSearch=a2[p][o]["realUniqueIndexes"][pp]
                 for(let pq=0;pq<a2[p][o]["uniqueIndexes"].length;pq++){
                   let lookFine=a2[p][o]["uniqueIndexes"][pq]
-                  console.log("tosearch",p,toSearch,lookFine)
+                 // console.log("tosearch",p,toSearch,lookFine)
                   if(toSearch==lookFine){
                     if(a2[p][o]?.[`${nf["normal"][j1]}UniqueTotal`]==undefined)
                       a2[p][o][`${nf["normal"][j1]}UniqueTotal`]=0 
                     let valRight=a2[p][o][`${nf["normal"][j1]}Acummulated`][pq]
-                    console.log("valRight",valRight)
+                  //  console.log("valRight",valRight)
                     a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`]=[...a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`],valRight]
                     a2[p][o][`${nf["normal"][j1]}UniqueTotal`]=a2[p][o][`${nf["normal"][j1]}UniqueTotal`]+valRight
                     break;
@@ -6177,12 +6177,12 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 let toSearch=a2[p][o]["realUniqueIndexes"][pp]
                 for(let pq=0;pq<a2[p][o]["uniqueIndexes"].length;pq++){
                   let lookFine=a2[p][o]["uniqueIndexes"][pq]
-                  console.log("tosearch",p,toSearch,lookFine)
+                  //console.log("tosearch",p,toSearch,lookFine)
                   if(toSearch==lookFine){
                     if(a2[p][o]?.[`${nf["normal"][j1]}UniqueTotal`]==undefined)
                       a2[p][o][`${nf["normal"][j1]}UniqueTotal`]=0 
                     let valRight=a2[p][o][`${nf["normal"][j1]}Acummulated`][pq]
-                    console.log("valright",valRight)
+                   // console.log("valright",valRight)
                     a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`]=[...a2[p][o][`${nf["normal"][j1]}UniqueTotalArray`],valRight]
                     a2[p][o][`${nf["normal"][j1]}UniqueTotal`]=a2[p][o][`${nf["normal"][j1]}UniqueTotal`]+valRight
                     break
@@ -6205,12 +6205,12 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 let toSearch=a2[p][o]["realUniqueIndexes"][pp]
                 for(let pq=0;pq<a2[p][o]["uniqueIndexes"].length;pq++){
                   let lookFine=a2[p][o]["uniqueIndexes"][pq]
-                  console.log("tosearch",p,toSearch,lookFine)
+                  //console.log("tosearch",p,toSearch,lookFine)
                   if(toSearch==lookFine){
                     if(a2[p][o]?.[`${nf["compositeFields"][j1]}UniqueTotal`]==undefined)
                       a2[p][o][`${nf["compositeFields"][j1]}UniqueTotal`]=0 
                     let valRight=a2[p][o][`${nf["compositeFields"][j1]}Acummulated`][pq]
-                    console.log("valRight",valRight)
+                    //console.log("valRight",valRight)
                     a2[p][o][`${nf["compositeFields"][j1]}UniqueTotalArray`]=[...a2[p][o][`${nf["compositeFields"][j1]}UniqueTotalArray`],valRight]
                     a2[p][o][`${nf["compositeFields"][j1]}UniqueTotal`]=a2[p][o][`${nf["compositeFields"][j1]}UniqueTotal`]+valRight
                     break;
@@ -6225,12 +6225,12 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 let toSearch=a2[p][o]["realUniqueIndexes"][pp]
                 for(let pq=0;pq<a2[p][o]["uniqueIndexes"].length;pq++){
                   let lookFine=a2[p][o]["uniqueIndexes"][pq]
-                  console.log("tosearch",p,toSearch,lookFine)
+                  //console.log("tosearch",p,toSearch,lookFine)
                   if(toSearch==lookFine){
                     if(a2[p][o]?.[`${nf["compositeFields"][j1]}UniqueTotal`]==undefined)
                       a2[p][o][`${nf["compositeFields"][j1]}UniqueTotal`]=0 
                     let valRight=a2[p][o][`${nf["compositeFields"][j1]}Acummulated`][pq]
-                    console.log("valright",valRight)
+                   // console.log("valright",valRight)
                     a2[p][o][`${nf["compositeFields"][j1]}UniqueTotalArray`]=[...a2[p][o][`${nf["compositeFields"][j1]}UniqueTotalArray`],valRight]
                     a2[p][o][`${nf["compositeFields"][j1]}UniqueTotal`]=a2[p][o][`${nf["compositeFields"][j1]}UniqueTotal`]+valRight
                     break
@@ -6409,7 +6409,7 @@ const getCategoriesGrandTotals=(category)=>{
     realGrandTotals1?.[category]?.[y]?.[`${y}TotalCountArrayUnique`]?.sort((a,b)=>a-b)
     realGrandTotals1?.[category]?.[y]?.[`${y}NoRepeatTotalCountArrayUnique`]?.sort((a,b)=>a-b)
   })
-  console.log("realgt",realGrandTotals1)
+  //onsole.log("realgt",realGrandTotals1)
 }
 
 const initializeFinalObjectVariables=(key,cat,next,first)=>{
@@ -6423,7 +6423,7 @@ const initializeFinalObjectVariables=(key,cat,next,first)=>{
   
   
     let others=Object.keys(finalObject?.[cat]).forEach(l=>{
-      console.log("comprob",totalRoutes,l,totalRoutes[cat][l],totalRoutes[key][`${cat}total`])
+     //console.log("comprob",totalRoutes,l,totalRoutes[cat][l],totalRoutes[key][`${cat}total`])
       initializeOtherFinalObjectVariables(key,l,totalRoutes[key][`${cat}total`]["data"],cat,first)
       /*Object.keys(totalRoutes[cat].[l]).forEach(i=>{
       for(let u=0;u<i.length;u++){
@@ -6456,7 +6456,7 @@ const updateFinalObject=(data,key,cat,terminal,next,first)=>{
   if(!isLast(key)){
     //k=Object.keys(totalRoutes[key])[0]
     data1=totalRoutes[key][`${cat}total`]["data"]
-    console.log("keynotterminal",cat,next,data1,key,next,first)
+    //console.log("keynotterminal",cat,next,data1,key,next,first)
     updateNumericFieldsRoot(key,cat,data1,next,first)
     updateNumericFields(key,cat,nf,data1,terminal,first)
 
@@ -6469,21 +6469,21 @@ const updateTerminalFinalObject=(data,cat)=>{
   let ix=0
   //if(res[cat]==undefined)
     //res[cat]=[]
-  console.log("alert1",data)
+  //console.log("alert1",data)
   if(finalObject[cat]==undefined)
     finalObject={...finalObject,[cat]:{[cat]:[]}}
   data.forEach(u=>{
-    console.log("alert22"/*,verifyMeetWithConditionsBySegmentBaseLeve1(cat,u.normalData)*/,u)
+    //console.log("alert22"/*,verifyMeetWithConditionsBySegmentBaseLeve1(cat,u.normalData)*/,u)
     if(verifyMeetWithConditionsBySegmentBaseLeve1(cat,u.normalData)){
       //res={[cat]:[...res[cat],{...data[u].normalData}]}
       //res.push(u.normalData)
       res={...res,[`${ix}`]:{...u.normalData}}
       ix++
-      console.log("res444",res)
+      //console.log("res444",res)
     }
   })
   finalObject={...finalObject,[cat]:{[cat]:{...res}}}
-  console.log("fobjnew",finalObject)
+  //console.log("fobjnew",finalObject)
   
 
 }
@@ -6495,7 +6495,7 @@ const getSegmentData=(key,cat,ultimo,next,first)=>{
  
     if(isLast(cat)){
       data=totalRoutes[cat]["undefinedtotal"]
-      console.log("dataend",data["data"])
+      //console.log("dataend",data["data"])
       updateTerminalFinalObject(data["data"],cat)
 
     }else{
@@ -6527,7 +6527,7 @@ const getSegmentsData=(key,cats,j)=>{
 
 const calculateMedia=(data,field,arrayName,variableName,arrayNameUnique,variableNameUnique)=>{
   let cero=0
-  console.log("datamedia",data)
+ // console.log("datamedia",data)
   Object.keys(data).forEach(y=>{
     if(data[y]?.[variableName]==undefined)
       data[y][variableName]=cero
@@ -6540,7 +6540,7 @@ const calculateMedia=(data,field,arrayName,variableName,arrayNameUnique,variable
   Object.keys(data).forEach(y=>{
     let values=data[y]?.[arrayName]
     let valuesUnique=data[y]?.[arrayNameUnique]
-    console.log("arraynamemedia",arrayName,values)
+ //   console.log("arraynamemedia",arrayName,values)
     let media=0
     let mediaUnique=0
     if(values!=undefined && values?.length>0){
@@ -6576,7 +6576,7 @@ const problem=(data,field,arrayName,variableName,arrayNameUnique,variableNameUni
 
   })
   Object.keys(data).forEach(y=>{
-    console.log("arrprops",arrayName,arrayNameUnique,data[y])
+  //  console.log("arrprops",arrayName,arrayNameUnique,data[y])
     sortedValues=data[y]?.[arrayName]
     let sortOrig=[]
     let sortOrigUniq=[]
@@ -6589,13 +6589,13 @@ const problem=(data,field,arrayName,variableName,arrayNameUnique,variableNameUni
     
     sortedValuesUnique=data[y]?.[arrayNameUnique]
 
-    console.log("arraynamemedia",arrayName,sortedValues)
+  //console.log("arraynamemedia",arrayName,sortedValues)
 
     median=0
     medianUnique=0
     if(sortOrig!=undefined && sortOrig?.length>0){
       sortOrig.sort((a,b)=>a-b)
-      console.log("sortedValues",sortedValues)
+  //    console.log("sortedValues",sortedValues)
       let length=sortOrig.length
       if(length%2==1){
         median=sortOrig[Math.floor(length/2)]
@@ -6614,7 +6614,7 @@ const problem=(data,field,arrayName,variableName,arrayNameUnique,variableNameUni
 
     if(sortOrigUniq!=undefined && sortOrigUniq?.length>0){
       sortOrigUniq.sort((a,b)=>a-b)
-      console.log("sortedValues",sortedValues)
+      //console.log("sortedValues",sortedValues)
       let length=sortOrigUniq.length
       if(length%2==1){
         medianUnique=sortOrigUniq[Math.floor(length/2)]
@@ -6709,7 +6709,7 @@ const getStatistics=(data,cat,order)=>{
         arr=otmChoices[y]
         arr.normal.forEach(x=>{
           if(x.type=="number"){
-            console.log("tttt",data[y],x.name1)
+          //  console.log("tttt",data[y],x.name1)
             calculateMedia(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Media`,`${x.name1}UniqueTotalArray`,`${x.name1}MediaUnique`)
             problem(data[y],x.name1,`${x.name1}Acummulated`,`${x.name1}Median`,`${x.name1}UniqueTotalArray`,`${x.name1}MedianUnique`)
           }
@@ -6725,7 +6725,7 @@ const getStatistics=(data,cat,order)=>{
     }
   })
         let k=findInOrderObject(cat,order)
-        console.log("kk",k,order)
+        //console.log("kk",k,order)
         if(k!==-1){
           
           /*
@@ -6745,7 +6745,7 @@ const getStatistics=(data,cat,order)=>{
             if(ind%2==0){
               let i=findInOrderObject(u,order)
               if(i!==-1){
-                console.log("kki",i,cat,u)
+                //console.log("kki",i,cat,u)
                 catInInf=u
                 order[i]?.[catInInf].forEach((g,index)=>{
                   if(index%2==0){
@@ -6755,18 +6755,18 @@ const getStatistics=(data,cat,order)=>{
                       }else if(g.startsWith("mtm"))
                         arr=otmChoices[g]
                       
-                      console.log("ggg",g)
+                     // console.log("ggg",g)
                       arr.normal.forEach(x=>{
-                        console.log("tttt",catInInf,data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
+                        //console.log("tttt",catInInf,data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
         
                         if(x.type=="number"){
-                          console.log("tttt",catInInf,data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
+                         // console.log("tttt",catInInf,data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
                           calculateMedia(data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`)
                           problem(data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
                         }
                       })
                       arr.compositeFields.forEach(x=>{
-                        console.log("tttt",catInInf,data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
+                       // console.log("tttt",catInInf,data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
         
                         if(x.type=="number"){
                           console.log("tttt",catInInf,data[g],x.name1,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Media`,`${x.name1}AcummulatedSonBy${catInInf}`,`${x.name1}By${catInInf}Median`)
@@ -7532,7 +7532,7 @@ const calculatePercentageOverGrandTotal=(category)=>{
 const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,order)=>{
   let trueKey
   let cats
-  console.log("orderfinal",order,totalRoutes)
+  //console.log("orderfinal",order,totalRoutes)
   if(order.length==0){
     let data=totalRoutes[`getData${currentCategory.name}`]["undefinedtotal"]["data"]
     updateTerminalFinalObject(data,`getData${currentCategory.name}`)
@@ -7541,11 +7541,11 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
     trueKey=Object.keys(order[i])[0]
     
     cats=order[i][trueKey]
-    console.log("truekey1",trueKey,cats)
+    //console.log("truekey1",trueKey,cats)
     getSegmentsData(trueKey,cats,i)
   }
   }
-  console.log("parcial2222",finalObject)
+  //console.log("parcial2222",finalObject)
 
   /*aqui tengo que encontrar la forma de descubrir si tiene bloques secundarios
   que no sea categorias finalesç
@@ -7570,7 +7570,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
   */
  realGrandTotals={}
  realGrandTotals1={}
- console.log("orderver",order)
+ //console.log("orderver",order)
   for(let i=0;i<order.length;i++){
     trueKey=Object.keys(order[i])[0]
     cats=order[i][trueKey]
@@ -7578,7 +7578,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
     let cat
     for(let j=0;j<cats.length;j+=2){
       cat=cats[j]   
-      console.log("prob111",cat,trueKey,finalObject[cat],finalObject[trueKey])
+     // console.log("prob111",cat,trueKey,finalObject[cat],finalObject[trueKey])
       //if(isLast(cat))
         getTotalsOfNumericVariables(finalObject[cat],finalObject[trueKey],cat,trueKey)
         //if(isLast(cat))
@@ -7586,12 +7586,12 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
         
   
     }
-    console.log("finalobject88",finalObject)
+  //console.log("finalobject88",finalObject)
   
    getStatistics(finalObject[trueKey],trueKey,order)
     
    verifyMeetWithConditionsBySegmentBaseLevel2(trueKey,finalObject[trueKey])
-   console.log("finaltru",finalObject,finalObject[trueKey])
+  // console.log("finaltru",finalObject,finalObject[trueKey])
 
   }
 
@@ -7600,15 +7600,15 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
     cats=order[i][trueKey]
     for(let j=0;j<cats.length;j+=2){
       let cat=cats[j]
-      console.log("orderexec",trueKey,cat,finalObject[trueKey][cat],finalObject[cat][cat])
-      console.log("truetrue",finalObject,trueKey,cats[j],finalObject[trueKey][cats[j]])
+     // console.log("orderexec",trueKey,cat,finalObject[trueKey][cat],finalObject[cat][cat])
+      //console.log("truetrue",finalObject,trueKey,cats[j],finalObject[trueKey][cats[j]])
       Object.keys(finalObject[trueKey][cats[j]]).forEach(p=>{
         let keysEach=finalObject[trueKey][cats[j]][p].keys//finalObject[trueKey][cats[j]][p].keys
         let keysId=finalObject[trueKey][cats[j]][p]["id"]//finalObject[trueKey][cats[j]][p].keys
-        console.log("truekey catsj p keys",trueKey,cats[j],p,finalObject[trueKey][cats[j]])
+        //console.log("truekey catsj p keys",trueKey,cats[j],p,finalObject[trueKey][cats[j]])
         //for(let oo=0;oo<keysEach.length;oo++){
           //console.log("secondtruekey",finalObject[cats[j]][cats[j]][keysEach[oo]],finalObject[cats[j]][cats[j]],keysEach[oo])
-          console.log("enttroyy")
+         // console.log("enttroyy")
           //bien if(finalObject?.[cats[j]]?.[cats[j]]?.[keysEach[oo]]!=undefined){
             let res=-1
             let kil=[]
@@ -7624,7 +7624,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
                // console.log("poruio11",trueKey,cats[j],finalObject[trueKey][cats[j]][cc[p]],finalObject[cats[j]][cats[j]][c[pp]])
               if(finalObject[cats[j]][cats[j]][c[pp]]?.["final"]!=true && (finalObject[trueKey][trueKey][cc[p]]?.["final"]==true || trueKey.startsWith("getData")) && finalObject[trueKey][trueKey][cc[p]]["id"]==finalObject[cats[j]][cats[j]][c[pp]]["parentId"]){
                 //if(cats[j]=="mtmsbcarrerassbmaterias")
-                  console.log("checaporpor",trueKey,cats[j],finalObject[trueKey][cats[j]][parseInt(p)]["id"],finalObject[cats[j]][cats[j]][parseInt(c[pp])]["parentId"],finalObject[trueKey][cats[j]][parseInt(p)]["id"]==finalObject[cats[j]][cats[j]][parseInt(c[pp])]["parentId"])
+                 // console.log("checaporpor",trueKey,cats[j],finalObject[trueKey][cats[j]][parseInt(p)]["id"],finalObject[cats[j]][cats[j]][parseInt(c[pp])]["parentId"],finalObject[trueKey][cats[j]][parseInt(p)]["id"]==finalObject[cats[j]][cats[j]][parseInt(c[pp])]["parentId"])
                 res=c[pp]
               }
             //if(finalObject?.[cats[j]]?.[cats[j]]?.[keysEach[oo]]!=undefined){
@@ -7649,7 +7649,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
                   }
                 }
               }
-              console.log("poruio",trueKey,cats[j],finalObject[trueKey][cats[j]][cc[p]],finalObject[cats[j]][cats[j]][c[pp]])
+             // console.log("poruio",trueKey,cats[j],finalObject[trueKey][cats[j]][cc[p]],finalObject[cats[j]][cats[j]][c[pp]])
               
             }
 
@@ -7659,7 +7659,7 @@ const getInverseTraverseSonTotalsWithConditionsWhereRoutes1=(routes,routeIndex,o
         //mtmprofesoresareas 1,2,3,16
         //mtmmateriascarreras 3
       })
-      console.log("conspar",finalObject[cats[j]][cats[j]],cats[j])
+     //console.log("conspar",finalObject[cats[j]][cats[j]],cats[j])
     }
     
   }
@@ -7715,7 +7715,7 @@ Object.keys(finalObject).forEach(y=>{
   calculatePercentageOverGrandTotal(y)
   calculateMediaAndMediansOfRecords(y)
 })
-  console.log("fobj44",finalObject,realGrandTotals1)
+  //console.log("fobj44",finalObject,realGrandTotals1)
 
 
     
@@ -8222,13 +8222,13 @@ const getOrderToPrintTables=(order)=>{
   let key
   let tables=[]
   let segments={}
-  console.log("orderoiu",order)
+ // console.log("orderoiu",order)
   if(order.length>0){
   //for(let j=order.length-1;j>=0;j-=1){
     key=Object.keys(order[order.length-1])[0]
     tables.push(key)
     getSubOrderTables(tables,key,order[order.length-1][key],segments,order)
-    console.log("ResultadoOrder",tables,segments)
+    //console.log("ResultadoOrder",tables,segments)
     return [tables,segments]
   }else
     return [[`getData${currentCategory.name}`],{[`getData${currentCategory.name}`]:[`getData${currentCategory.name}`]}]
@@ -8804,7 +8804,7 @@ const goToCero=(idName)=>{
 }
 let superOrderVariable=[]
 const getDataReportTest=(routes,finalRoutes)=>{
-  console.log("routesfinalroutes",routes,finalRoutes)
+  //console.log("routesfinalroutes",routes,finalRoutes)
   const root=`getData${currentCategory.name}`
   totalRoutes={}
   //for(let i=0;i<finalRoutes.length;i++){
@@ -8812,18 +8812,18 @@ const getDataReportTest=(routes,finalRoutes)=>{
     totalRoutes={}
   
     
-    console.log("calcroutes",finalRoutes,calculateRoutes([`getData${currentCategory.name}`]),getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])))
+    //console.log("calcroutes",finalRoutes,calculateRoutes([`getData${currentCategory.name}`]),getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])))
     
     for(let i=0;i<finalRoutes.length;i++){
       getLevelData1(categoryProducts[root],routes[finalRoutes[i]],0,true)  
     }
     let y=findTheLowerLevelCategory1(getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])),[],getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])))
 
-    console.log("yfinal",totalRoutes,y)
+    //console.log("yfinal",totalRoutes,y)
     getInverseTraverseSonTotalsWithConditionsWhereRoutes1(routes,finalRoutes,y)
     let order=getOrderToPrintTables(y)
     setOrderTransfer(order)
-    console.log("ordertoprinttables",order,y)
+    //console.log("ordertoprinttables",order,y)
     let tts
     //let table
     let tablesToCont={}
@@ -8836,7 +8836,7 @@ const getDataReportTest=(routes,finalRoutes)=>{
       
       tts=[]
       table=finalObject
-      console.log("sortRulespo",sortRules[y])
+      //console.log("sortRulespo",sortRules[y])
       if(sortRules?.[y]?.[0]!=undefined && sortRules?.[y]?.[0]!="nosort"){
         tts=getTableToSort(finalObject[y])
       //sortToGetFinalTable(tts,sortRules[y])
@@ -8856,8 +8856,8 @@ const getDataReportTest=(routes,finalRoutes)=>{
 
     })
     setReportShow(totalTables)
-    console.log("definitive",routes,y)
-  console.log("totalRoutes55",totalRoutes,finalObject)
+  // console.log("definitive",routes,y)
+  //console.log("totalRoutes55",totalRoutes,finalObject)
 }
 
 
@@ -9055,7 +9055,7 @@ let z=getSubsetsCont({
 const getFieldsSegment=(category,segment,realSegmentLast)=>{
   let result=[]
   let len=0
-  console.log("realsegmentlast111",realSegmentLast)
+ // console.log("realsegmentlast111",realSegmentLast)
   //let busca=realSegmentCount
   let theresNormal
   let theresComposite
@@ -9098,7 +9098,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
 
       
     }else{
-      console.log("otmchoices22",otmChoices[segment])
+      //console.log("otmchoices22",otmChoices[segment])
       let arr
     if(category.startsWith("mtm"))
       arr=otmChoices[category]
@@ -9175,21 +9175,21 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
         lastIndexNumberComposite=index
     })
     
-    console.log("theresnormal",segment,realSegmentLast,lastIndexNumber,lastIndexNumberComposite,realSegmentLast==segment && lastIndexNumber==-1 && lastIndexNumberComposite==-1)
+    //console.log("theresnormal",segment,realSegmentLast,lastIndexNumber,lastIndexNumberComposite,realSegmentLast==segment && lastIndexNumber==-1 && lastIndexNumberComposite==-1)
     if(theresNormal)
       arr.normal.forEach((q,index)=>{
         
       if(q.type=="number" && q.dataType!="queryCategory"){
-        console.log("uiiii",otmChoicesStatistics?.[category]?.[segment],q.name1)
+       // console.log("uiiii",otmChoicesStatistics?.[category]?.[segment],q.name1)
         let otmStatisticsArray=[]
         for(let x in otmChoicesStatistics?.[category]?.[segment]?.[q.name1]){
-          console.log("o1111",otmChoicesStatistics?.[category]?.[segment]?.[q.name1]?.[x],x)
+          //console.log("o1111",otmChoicesStatistics?.[category]?.[segment]?.[q.name1]?.[x],x)
           if(otmChoicesStatistics?.[category]?.[segment]?.[q.name1]?.[x]==true){
             otmStatisticsArray.push(x)
           }
         }
-        console.log("otmstatisticsarray",otmStatisticsArray)
-        console.log("qqq",q.name1,realSegmentLast,segment,normal-1,index)
+       // console.log("otmstatisticsarray",otmStatisticsArray)
+        //console.log("qqq",q.name1,realSegmentLast,segment,normal-1,index)
         temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumber==index && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0)?"none":"1px solid white"}}>{q.name1}</th>)
         temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumber==index && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0)?"none":"1px solid white"}}>{q.name1}Unique</th>)
         //Object.keys(otmChoicesStatistics[category][segment]?.[q.name1])
@@ -9226,13 +9226,13 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
 
         let otmStatisticsArray=[]
         for(let x in otmChoicesStatistics?.[category]?.[segment]?.[q.name1]){
-          console.log("o2222",otmChoicesStatistics?.[category]?.[segment],category,segment,q.name1,x)
+         // console.log("o2222",otmChoicesStatistics?.[category]?.[segment],category,segment,q.name1,x)
 
           if(otmChoicesStatistics?.[category]?.[segment]?.[q.name1]?.[x]==true){
             otmStatisticsArray.push(x)
           }
         }
-        console.log("otmsa",otmStatisticsArray)
+    // console.log("otmsa",otmStatisticsArray)
         temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && otmStatisticsArray.length==0)?"none":"1px solid white"}}>{q.name1}</th>)
         temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && otmStatisticsArray.length==0)?"none":"1px solid white"}}>{q.name1}Unique</th>)
         //Object.keys(otmChoicesStatistics[category][segment]?.[q.name1]).
@@ -9357,9 +9357,9 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
   let total=[]
   //let data=finalObject[category][a]
   let data=data2[a]
-  console.log("dataverif",data)
+ // console.log("dataverif",data)
   let lastColor="lightgray"
-  console.log("data56",data)
+ // console.log("data56",data)
   if(data!=null){
   Object.keys(data)?.forEach((y,index)=>{
     result=[]
@@ -9441,7 +9441,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
           let disp=""
           
           if(q.type=="date"){
-            console.log("datadate",data[y][q.name1])
+           // console.log("datadate",data[y][q.name1])
             disp=displayDate(data[y][q.name1])
             
           
@@ -9514,7 +9514,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
         if(q.type=="number" && q.dataType!="queryCategory"){
           let otmStatisticsArray=[]
           for(let x in otmChoicesStatistics?.[category]?.[a]?.[q.name1]){
-            console.log("o1111",otmChoicesStatistics?.[category]?.[a]?.[q.name1]?.[x],x)
+            //console.log("o1111",otmChoicesStatistics?.[category]?.[a]?.[q.name1]?.[x],x)
             if(otmChoicesStatistics?.[category]?.[a]?.[q.name1]?.[x]==true){
               otmStatisticsArray.push(x)
             }
@@ -9523,7 +9523,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
           temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}UniqueTotal`]==undefined?"0.00":data[y][`${q.name1}UniqueTotal`].toFixed(2)}</td>)
           //Object.keys(otmChoicesStatistics[category][a][q.name1]).
           otmStatisticsArray.forEach((ji,i44)=>{
-            console.log("www88",finalObject[category][a][y],data[y]?.[`${q.name1}Acummulated`])
+           // console.log("www88",finalObject[category][a][y],data[y]?.[`${q.name1}Acummulated`])
 
             
               let pmay=ji[0].toUpperCase()+ji.substring(1)
@@ -9560,7 +9560,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
         if(q.type=="number"){
           let otmStatisticsArray=[]
           for(let x in otmChoicesStatistics?.[category]?.[a]?.[q.name1]){
-            console.log("o1111",otmChoicesStatistics?.[category]?.[a]?.[q.name1]?.[x],x)
+           // console.log("o1111",otmChoicesStatistics?.[category]?.[a]?.[q.name1]?.[x],x)
             if(otmChoicesStatistics[category][a]?.[q.name1]?.[x]==true){
               otmStatisticsArray.push(x)
             }
@@ -9705,7 +9705,7 @@ const displayFirstCategoryFields=(data)=>{
 const calMedian=(arr)=>{
   let median=0
   let length=arr?.length
-  console.log("arrdesp",arr,length)
+//console.log("arrdesp",arr,length)
   if(length==undefined || length==0 || isNaN(length))
     return 0
   else{
@@ -9897,7 +9897,7 @@ countArray.push(<tr style={{background:lastColor,color:"black",margin:0,padding:
 }
 
 const printGrandTotalsTrue=(category,data,segments)=>{
-  console.log("resumen",category,data,segments)
+  //console.log("resumen",category,data,segments)
   let trec=<p style={{background:"white",color:"black",marginBottom:"10px",display:"inline-block",paddingLeft:"5px",paddingRight:"5px"}}>Number of Records: {tableTotalRecords[category]}</p>
   let res=[]
   res=segments?.map(seg=>{
@@ -9974,14 +9974,14 @@ const printMainHeaders=(data,category,segments,refIn)=>{
   })*/
   
   let realSegmentsLast=segments?.[segments.length-1]
-  console.log("getfieldssegment",realSegmentsCount,realSegmentsLast)
+ // console.log("getfieldssegment",realSegmentsCount,realSegmentsLast)
   segments?.forEach((a,index)=>{
     if(head==undefined)
       head=[]
     
     head.push(a)
     let isLast=false
-    console.log("yyy",realSegmentsCount,category,a,segments,index,segments.length-1,index==segments.length-1)
+   // console.log("yyy",realSegmentsCount,category,a,segments,index,segments.length-1,index==segments.length-1)
     
     if(index==realSegmentsCount.length-1)
       isLast=true
@@ -9990,7 +9990,7 @@ const printMainHeaders=(data,category,segments,refIn)=>{
     subsection[a]=getFieldsDataSegment(category,a,realSegmentsLast,data)
       
   })
-  console.log("subtitles",subtitles,head,refIn)
+ // console.log("subtitles",subtitles,head,refIn)
   
   return <table id={`${category}`} style={{width:"100%",background:"white",color:"black",padding:0,margin:0,marginBottom:"15px",marginRight:"10px"}}>
     <thead>
@@ -10019,7 +10019,7 @@ const printMainHeaders=(data,category,segments,refIn)=>{
 }
 
 const printFinalTableNew=(category,data,segments,refIn)=>{//,order)=>{
-  console.log("iniciobegin",firstCatNormalFields,otmChoices)
+ // console.log("iniciobegin",firstCatNormalFields,otmChoices)
   
   totalTables.push(printMainHeaders(data,category,segments,refIn))
  
@@ -10310,12 +10310,12 @@ const beginReport=(primero=false,name1,d1)=>{
   
   const routes=calculateRoutes([`getData${currentCategory.name}`])
   let fict=Object.keys(routes).map(x=>x)
-  console.log("routesfine",routes,fict)
+  //console.log("routesfine",routes,fict)
   ////console.log("routes111",routes)
   //routesfinal encuentra la ultima parada de cada una de las rutas
   ////console.log("routesfinal",routesFinal(routes))
   const finalRoutes=routesFinal(routes)
-  console.log("finalRoutes1",routes,finalRoutes)
+  //console.log("finalRoutes1",routes,finalRoutes)
   grandTotals={}
   doneLd={}
   //console.log("importante routes finalRoutes",routes,finalRoutes)

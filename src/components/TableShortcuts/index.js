@@ -38,7 +38,7 @@ const PrintShortCutsSegments=({table,segments})=>{
 }
 
 const TableShortcuts=({order})=>{
-  console.log("orderlili",order)
+  //console.log("orderlili",order)
   const [table,setTable]=useState("")
   
   /*const printShortCutsSegments=(table,segments)=>{
@@ -74,7 +74,7 @@ const TableShortcuts=({order})=>{
       tabs.push(<button 
       onClick={(e)=>{
         e.preventDefault()
-        console.log("llamo")
+        //console.log("llamo")
         let t=order[0][i]
        setTable(order[0][i])
         
@@ -123,10 +123,10 @@ const TableShortcuts=({order})=>{
     elem.scrollTo=0
     elem.scrollIntoView()
   }
-  return <div style={{width:"400px",padding:"10px",zIndex:100,height:"auto",marginBottom:"20px",position:"fixed",left:"270px",top:"100px",background:"black"}}>
+  return order?.[0]?.length>0?<div style={{width:"400px",padding:"10px",zIndex:100,height:"auto",marginBottom:"20px",position:"fixed",left:"270px",top:"100px",background:"black"}}>
     <p style={{color:"yellow"}}>Table Shortcuts</p>
     {printShortcuts()}
     
-  </div>
+  </div>:""
 }
 export default TableShortcuts

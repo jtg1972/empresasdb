@@ -9,7 +9,7 @@ const INITIAL_STATE={
 ADD_INDEXES_TO_OTMRECORD*/
 
 export default (state=INITIAL_STATE,action)=>{
-  console.log("actionplmtm",action.payload)
+  //console.log("actionplmtm",action.payload)
   switch(action.type){
     case types.ADD_SEGMENT_TO_ROUTE:
       return {...state,routes:{...state.routes,[action.payload.segment]:action.payload.route}}

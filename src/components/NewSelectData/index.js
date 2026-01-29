@@ -238,7 +238,7 @@ const NewSelectData=({
   //const [updateCategories,setUpdateCategories]=useState({[currentCategory.name]:[currentCategory.name]})
   let categoryAlreadyDisplayed=[]
   let counter=0
-  console.log("ccat",currentCategory)
+  //console.log("ccat",currentCategory)
   let otmCSOrder={}
   //const GET_PRODUCTS_FROM_CATEGORY=getQueryFromCategory(categories.filter(x=>x.name==currentCategory.name)[0],categories,checkBoxDataFields)
   /*const [getProducts]=useMutation(GET_PRODUCTS_FROM_CATEGORY,{
@@ -248,7 +248,7 @@ const NewSelectData=({
       
     }
   })*/
-  console.log("otmcsorder",otmChoicesServerOrder)
+  //console.log("otmcsorder",otmChoicesServerOrder)
 
   const displaySubcategory=(catId,field,routec,prName,relationshipType)=>{
     //console.log("routecoo",prName,relationshipType,field)
@@ -602,7 +602,7 @@ const NewSelectData=({
     
     let res=false
     let ke=Object.keys(gcbf)
-    console.log("existegood",name,campo,gcbf)
+    //console.log("existegood",name,campo,gcbf)
     let camplimp=limpiaCategoria(name,campo["real"],campo["routec"])
     //console.log("camplimp",camplimp,name)
         
@@ -726,7 +726,7 @@ const NewSelectData=({
     })
   }
   const checkIsTrue=(arr,f)=>{
-    console.log("cist",arr,f,gcbf)
+    //console.log("cist",arr,f,gcbf)
     let ver=true
     for(let x=0;x<arr.length;x++){
       

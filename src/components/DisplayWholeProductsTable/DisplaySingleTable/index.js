@@ -95,8 +95,8 @@ const DisplaySingleTable = ({
     //console.log("productsmain",products)
     //console.log("parentcatid Singletable",parentCatId)
   
-  console.log("segmentRoutes",segmentRoutes)
-  console.log("parrecst",parentRecord)
+  //console.log("segmentRoutes",segmentRoutes)
+  //console.log("parrecst",parentRecord)
   const dispatch=useDispatch()
 
   

@@ -114,7 +114,7 @@ export const WhereStatementNumberServerDialog = ({
   compFieldsArray,
   setCompFieldsArray
 }) => {
-  console.log("rtsubvar",relationshipType,subVar)
+  //console.log("rtsubvar",relationshipType,subVar)
 
 
   //console.log("parametros",otmChoices,setOtmChoices,specificOtmName)

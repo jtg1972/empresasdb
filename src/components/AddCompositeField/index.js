@@ -146,8 +146,8 @@ export const AddCompositeField = ({
   const fieldsOperatorSubstring=["from","chars","field"]
   const fieldsOperatorNone=["field"]
 
-  console.log("sfadd",stringFields,compositeField)
-  console.log("compfieldsarray",compFieldsArray)
+  //console.log("sfadd",stringFields,compositeField)
+  //console.log("compfieldsarray",compFieldsArray)
   let pr=true
   useEffect(()=>{
 
