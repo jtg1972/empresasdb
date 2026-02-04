@@ -90,7 +90,7 @@ const mapToState=({categories})=>({
   tablesStateStatus:categories.tablesStateStatus
 })
 
-const NewDetailProduct = () => {
+const NewDetailProduct = ({isThereReport,setIsThereReport}) => {
   const dispatch=useDispatch()
   const {
     categories,
@@ -290,13 +290,18 @@ const NewDetailProduct = () => {
   const [updateCategoriesIds,setUpdateCategoriesIds]=useState({})
   const [showMakeStory,setShowMakeStory]=useState(false)
   const [showQuery,setShowQuery]=useState(false)
-
+  const [isDialog,setIsDialog]=useState(false)
   const {loading,data,error}=useQuery(
     CATEGORIES1
   )
   const {loading:loading1,data:data1,error:error1}=useQuery(
     GET_TABLES_STATE
   )
+  useEffect(()=>{
+    window.location.hash="no-back-button"
+    window.location.hash="Again-No-back-button"
+    window.onhashchange=function(){window.location.hash="Again-No-back-button"}
+  },[])
 
     useEffect(()=>{
       //dispatch(setCurrentCategoryId(0))
@@ -371,7 +376,7 @@ const NewDetailProduct = () => {
   return (loading?"Loading":
   error?"Error: "+error:(
     //!showMakeStory?(
-    <div>
+    <div id="princ"/*style={{maxHeight:"100%",overflow:"hidden"}}*/>
     <div className="detailedProduct"
     style={{display:showMakeStory?"none":"block"}}>
       <BreadCrumb 
@@ -656,20 +661,23 @@ const NewDetailProduct = () => {
 
       
     </div>
-    <div>
-    <div style={{display:showMakeStory?"block":"none",position:"relative"}}>
+    {/*<div>*/}
+    <div className="detailedProduct" style={{zIndex:1002,display:showMakeStory?"block":"none"}}>
       <FormButton 
       style={{background:"white",color:"black",width:"200px",marginLeft:"15px",marginTop:"20px",marginBottom:"15px"}}
         onClick={()=>{
           setShowMakeStory(false)
+          setIsThereReport(false)
         }}
       >Select or Manipulate Data</FormButton>
       <Reports
       checkBoxFields={checkBoxFields}
       checkBoxDataFields={checkBoxDataFields}
+      isThereReport={isThereReport}
+      setIsThereReport={setIsThereReport}
       />
     </div>
-    </div>
+    {/*</div>*/}
   
  
   </div>))

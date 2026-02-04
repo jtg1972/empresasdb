@@ -2,11 +2,19 @@ p,div{
   color:white;
 
 }
+sub{
+  font-size:9px;
+  padding:2px;
+  color:black;
+  //background:black;
+}
 .reports{ 
   
   width:100%;
-  overflow-y:scroll;
-  overflow-x:scroll;
+  overflow-y:hidden;//scroll;
+  overflow-x:hidden;//scroll;
+  margin:0;
+  padding:0;
   
   &::-webkit-scrollbar{
     width:0;
@@ -14,6 +22,14 @@ p,div{
   }
   color:white;
   margin:10px;
+  /*table.tabledef{
+    width:100%;
+    max-width:100%;
+    height:40px;
+    max-height:40px;
+    background:red;
+    overflow:hidden;
+  }*/
   //width:100%;
   .addFirstButton{
     width:auto;
@@ -164,3 +180,4 @@ div{
     }
   }
 }
+

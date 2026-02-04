@@ -12,9 +12,12 @@ import MainLayoutProducts from "./layouts/MainLayoutProducts";
 import store from './redux/store'
 import "react-datetime/css/react-datetime.css"
 import NewDetailProduct from "./pages/NewDetailProduct";
+import {useState} from 'react'
 
-const App=()=>(
-  <Provider store={store}>
+const App=()=>{
+
+  const [isThereReport,setIsThereReport]=useState([false,false])
+  return <Provider store={store}>
     <ApolloProvider client={client}>
       <BrowserRouter>
         <Routes>
@@ -27,9 +30,15 @@ const App=()=>(
               
             <Route exact path="/categories/"
             element={
-              <MainLayoutProducts>
+              <MainLayoutProducts
+                isThereReport={isThereReport}
+                setIsThereReport={setIsThereReport}
+              >
                 {/*<DetailedProduct/>*/}
-                <NewDetailProduct/>
+                <NewDetailProduct
+                  isThereReport={isThereReport}
+                  setIsThereReport={setIsThereReport}
+                />
               </MainLayoutProducts>
             }/>
             <Route exact path="/reports/"
@@ -50,5 +59,5 @@ const App=()=>(
     </ApolloProvider>
   </Provider>
   
-)
+}
 export default App

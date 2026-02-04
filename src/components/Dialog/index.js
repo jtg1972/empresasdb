@@ -12,7 +12,7 @@ const Dialog = ({
     open
     ?
     <div>
-      <Shadow opacity={0.3}/>
+      <Shadow opacity={0.3} open={open}/>
       <div className="dialog">
         <div className="header">
           <h1 className="headline">{headline}</h1>

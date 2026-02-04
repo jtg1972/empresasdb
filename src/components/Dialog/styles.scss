@@ -1,14 +1,17 @@
 .dialog{
-  position:relative;
+  //overflow:hidden;
+  //position:relative;
+  
   width:370px;
-  height:auto;
+  
   position:absolute;
   background-color:white;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
+  left:calc((100% / 2));//calc(vw/2);//50%;
+  top:calc((100% / 2));//50%
+  transform:translate(-50%,-50%);//(-50%,-50%);
   color:black;
-  z-index:100;
+  height:auto;
+  z-index:2001;
   .header{
     display:flex;
     padding:10px;

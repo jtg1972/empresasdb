@@ -1,22 +1,24 @@
 import {useState,useEffect} from 'react'
-
+import './styles.scss'
 const PrintShortCutsSegments=({table,segments})=>{
   const [currentSegment,setCurrentSegment]=useState("")
   useEffect(()=>{
     setCurrentSegment("")
   },[table])
   const resetScroll=tableName=>{
-    let elem=document.getElementById("goBegin")
+    console.log("tablepor",table)
+    let elem=document.getElementById(tableName)
     elem.scrollTo=0
     elem.scrollIntoView()
   }
   const goToCero=(idName)=>{
-    resetScroll(table)
+    resetScroll(`${table}Id`)
     let elem=document.getElementById(idName)
     if(elem!=undefined){
       elem.scrollTo=0
     
       elem.scrollIntoView()
+      elem.classList.add("movezero")
     }
   }
   return <div>
@@ -113,15 +115,22 @@ const TableShortcuts=({order})=>{
   
   }
   const resetScroll=tableName=>{
-    let elem=document.getElementById("goBegin")
-    elem.scrollTo=0
-    elem.scrollIntoView()
+    let elem=document.getElementById(tableName)
+    if(elem!=undefined){
+      elem.scrollTo=0
+      elem.scrollIntoView()
+    }
   }
   const goToCero=(idName)=>{
-    resetScroll()
+    
+    resetScroll(`${table}Id`)
     let elem=document.getElementById(idName)
-    elem.scrollTo=0
-    elem.scrollIntoView()
+    if(elem!=undefined){
+      elem.scrollTo=0
+      elem.scrollIntoView()
+      elem.classList.add("movezero")
+    }
+
   }
   return order?.[0]?.length>0?<div style={{width:"400px",padding:"10px",zIndex:100,height:"auto",marginBottom:"20px",position:"fixed",left:"270px",top:"100px",background:"black"}}>
     <p style={{color:"yellow"}}>Table Shortcuts</p>
