@@ -16,7 +16,7 @@ import {useState} from 'react'
 
 const App=()=>{
 
-  const [isThereReport,setIsThereReport]=useState([false,false])
+  const [isThereReport,setIsThereReport]=useState([false,false,-1])
   return <Provider store={store}>
     <ApolloProvider client={client}>
       <BrowserRouter>

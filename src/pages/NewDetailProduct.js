@@ -551,6 +551,9 @@ const NewDetailProduct = ({isThereReport,setIsThereReport}) => {
       setShowMakeStory={setShowMakeStory}
       showQuery={showQuery}
       setShowQuery={setShowQuery}
+
+      isThereReport={isThereReport}
+      setIsThereReport={setIsThereReport}
       />}
 
       {currentCategoryId!=0 &&
@@ -667,7 +670,7 @@ const NewDetailProduct = ({isThereReport,setIsThereReport}) => {
       style={{background:"white",color:"black",width:"200px",marginLeft:"15px",marginTop:"20px",marginBottom:"15px"}}
         onClick={()=>{
           setShowMakeStory(false)
-          setIsThereReport(false)
+          setIsThereReport(e=>[e[0],e[1],-1])
         }}
       >Select or Manipulate Data</FormButton>
       <Reports

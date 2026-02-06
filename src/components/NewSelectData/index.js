@@ -217,7 +217,9 @@ const NewSelectData=({
       setChildFields,
       setShowMakeStory,
       showQuery,
-      setShowQuery
+      setShowQuery,
+      isThereReport,
+      setIsThereReport
 })=>{
 
   useEffect(()=>{
@@ -1573,6 +1575,7 @@ return <div>
   <FormButton style={{background:"white",color:"black",width:"auto",marginTop:"15px",marginBottom:"15px"}}
   onClick={()=>{
     setShowMakeStory(true)
+    setIsThereReport(e=>[e[0],e[1],true])
   }}
   >Make your story</FormButton> }
 

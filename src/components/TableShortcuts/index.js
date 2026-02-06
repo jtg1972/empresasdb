@@ -1,12 +1,134 @@
 import {useState,useEffect} from 'react'
 import './styles.scss'
-const PrintShortCutsSegments=({table,segments})=>{
-  const [currentSegment,setCurrentSegment]=useState("")
+
+const PrintShortCutsStatistics=({table,fields,
+  currentField,setCurrentField,currentSegment,setCurrentSegment,
+otmChoicesStatistics,currentStatistic,setCurrentStatistic})=>{
+    const [statisticsList,setStatisticsList]=useState([])
+    useEffect(()=>{
+      console.log("alert99",otmChoicesStatistics)
+      let otcs=[]
+      if(otmChoicesStatistics?.[table]?.[currentSegment]?.[currentField]!=undefined){
+        otcs=Object.keys(otmChoicesStatistics?.[table]?.[currentSegment]?.[currentField]).filter(x=>{
+          if(otmChoicesStatistics?.[table]?.[currentSegment]?.[currentField]?.[x]==true)
+            return true
+          return false
+        })
+      }
+
+
+      if(otcs!=undefined)
+        setStatisticsList(otcs)
+    },[currentField])
+
+  
+    const resetScroll=tableName=>{
+      //console.log("tablepor",table)
+      let elem=document.getElementById(tableName)
+      elem.scrollTo=0
+      elem.scrollIntoView()
+    }
+    const goToCero=(idName)=>{
+      resetScroll(`goBegin`)
+      let elem=document.getElementById(idName)
+      if(elem!=undefined){
+        elem.scrollTo=0
+      
+        elem.scrollIntoView()
+        elem.classList.add("movezero")
+      }
+    }
+    return <div>
+      {statisticsList?.length>0 && <p style={{color:"yellow"}}>Statistics shortcuts</p>}
+      {statisticsList?.map(x=>{
+      return <button 
+      onClick={(e)=>{
+        e.preventDefault()
+        setCurrentStatistic(x)
+        if(x=="total")
+          goToCero(`${table}_${currentSegment}_${currentField}`)
+        else
+         goToCero(`${table}_${currentSegment}_${currentField}_${x}`)
+      }}
+      
+      
+      style={{color:"white",border:"none",background:"transparent",borderBottom:currentStatistic==x?"1px solid yellow":"none",textDecoration:"none",marginLeft:"0",marginRight:"10px"}}>{
+        x
+      }</button>})}
+   
+   </div>
+    
+  }
+
+const PrintShortCutsFields=({table,fields,
+  currentField,setCurrentField,currentSegment,setCurrentSegment,
+otmChoicesStatistics,otmChoices,currentStatistic,setCurrentStatistic})=>{
+    
+    /*useEffect(()=>{
+      fields.unshift("totalCount")
+    },[currentSegment])*/
+    const resetScroll=tableName=>{
+      //console.log("tablepor",table)
+      let elem=document.getElementById(tableName)
+      elem.scrollRight=0
+      elem.scrollIntoView()
+    }
+    const goToCero=(idName)=>{
+      //resetScroll(`goBegin`)
+      let elem=document.getElementById(idName)
+      if(elem!=undefined){
+        elem.scrollLeft=0
+      
+        elem.scrollIntoView()
+        //elem.classList.add("movezero")
+      }
+    }
+    return <div>
+      {fields?.length>0 && <p style={{color:"yellow"}}>Fields shortcuts</p>}
+      {fields?.map(x=>{
+      return <button 
+      onClick={(e)=>{
+        e.preventDefault()
+        setCurrentField(x)
+        setCurrentStatistic("")
+        goToCero(`${table}_${currentSegment}_${x}`)
+      }}
+      
+      
+      style={{color:"white",border:"none",background:"transparent",borderBottom:currentField==x?"1px solid yellow":"none",textDecoration:"none",marginLeft:"0",marginRight:"10px"}}>{
+        x
+      }</button>})}
+      {currentField!="" && <PrintShortCutsStatistics
+    currentSegment={currentSegment}
+    setCurrentSegment={setCurrentSegment}
+    currentField={currentField}
+    setCurrentField={setCurrentField}
+    fields={otmChoices?.[currentSegment]?.normal?.filter(x=>x.type=="number")?.map(y=>y.name1)}
+    table={table}
+    otmChoicesStatistics={otmChoicesStatistics}
+    currentStatistic={currentStatistic}
+    setCurrentStatistic={setCurrentStatistic}
+    />}
+    </div>
+    
+  }
+
+const PrintShortCutsSegments=({table,segments,
+currentSegment,setCurrentSegment,currentField,setCurrentField,
+otmChoices,otmChoicesStatistics,currentStatistic,setCurrentStatistic})=>{
+  console.log("otmchoicesporpor",otmChoices,currentSegment)
+  //let fields=[]
+  const [fieldList,setFieldList]=useState([])
   useEffect(()=>{
-    setCurrentSegment("")
-  },[table])
+    let fields=[]
+    fields=otmChoices?.[currentSegment]?.normal?.filter(x=>x.type=="number")?.map(y=>y.name1)
+    if(fields?.length!=undefined)
+      if(otmChoicesStatistics?.[table]?.[currentSegment]?.["general"]?.["totalCount"]==true)
+        fields.unshift("totalCount")
+    setFieldList(fields)
+  },[currentSegment])
   const resetScroll=tableName=>{
-    console.log("tablepor",table)
+    //console.log("tablepor",table)
     let elem=document.getElementById(tableName)
     elem.scrollTo=0
     elem.scrollIntoView()
@@ -22,12 +144,14 @@ const PrintShortCutsSegments=({table,segments})=>{
     }
   }
   return <div>
-    <p style={{color:"yellow"}}>Segment shortcuts</p>
+    {segments?.length>0 && <p style={{color:"yellow"}}>Segment shortcuts</p>}
     {segments?.map(x=>{
     return <button 
     onClick={(e)=>{
       e.preventDefault()
       setCurrentSegment(x)
+      setCurrentField("")
+      setCurrentStatistic("")
       goToCero(`${table}_${x}`)
     }}
     
@@ -35,14 +159,35 @@ const PrintShortCutsSegments=({table,segments})=>{
     style={{color:"white",border:"none",background:"transparent",borderBottom:currentSegment==x?"1px solid yellow":"none",textDecoration:"none",marginLeft:"0",marginRight:"10px"}}>{
       x
     }</button>})}
+    {(currentSegment!="" && currentSegment!=table )&&
+    <PrintShortCutsFields
+    currentSegment={currentSegment}
+    setCurrentSegment={setCurrentSegment}
+    currentField={currentField}
+    setCurrentField={setCurrentField}
+    fields={fieldList}
+    table={table}
+    otmChoicesStatistics={otmChoicesStatistics}
+    currentStatistic={currentStatistic}
+    setCurrentStatistic={setCurrentStatistic}
+    />}
+
   </div>
   
 }
 
-const TableShortcuts=({order})=>{
+const TableShortcuts=({order,isThereReport,setIsThereReport,
+otmChoices,otmChoicesStatistics})=>{
   //console.log("orderlili",order)
   const [table,setTable]=useState("")
-  
+  const [currentSegment,setCurrentSegment]=useState("")
+  const [currentField,setCurrentField]=useState("")
+  const [currentStatistic,setCurrentStatistic]=useState("")
+  useEffect(()=>{
+    setCurrentSegment("")
+    setCurrentField("")
+    setCurrentStatistic("")
+  },[table])
   /*const printShortCutsSegments=(table,segments)=>{
     let segs1=[]
    console.log("tablesegs",table,segments)
@@ -105,11 +250,19 @@ const TableShortcuts=({order})=>{
       
     
   
-    return (order?.[0]?.length>0 && <div>
+    return ((order?.[0]?.length>0) && <div>
       {[...tabs]}<br/>
       {order.length==2 && <PrintShortCutsSegments
         table={table}
         segments={order[1][table]}
+        setCurrentSegment={setCurrentSegment}
+        currentSegment={currentSegment}
+        currentField={currentField}
+        setCurrentField={setCurrentField}
+        otmChoices={otmChoices}
+        otmChoicesStatistics={otmChoicesStatistics}
+        currentStatistic={currentStatistic}
+        setCurrentStatistic={setCurrentStatistic}
       ></PrintShortCutsSegments>}  
     </div>)
   
@@ -132,7 +285,7 @@ const TableShortcuts=({order})=>{
     }
 
   }
-  return order?.[0]?.length>0?<div style={{width:"400px",padding:"10px",zIndex:100,height:"auto",marginBottom:"20px",position:"fixed",left:"270px",top:"100px",background:"black"}}>
+  return (order?.[0]?.length>0 && isThereReport[1])?<div style={{width:"400px",padding:"10px",zIndex:100,height:"auto",marginBottom:"20px",position:"fixed",left:"270px",top:"100px",background:"black"}}>
     <p style={{color:"yellow"}}>Table Shortcuts</p>
     {printShortcuts()}
     

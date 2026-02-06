@@ -5,7 +5,7 @@ import './styles.scss'
 const Navbar = ({isThereReport,setIsThereReport}) => {
   const [isActive,setIsActive]=useState(true)
   const toggleMenu=()=>setIsActive(!isActive)
-  console.log("itreport",isThereReport)
+  //console.log("itreport",isThereReport)
   return (
     <div className="nav-container">
       <nav className="navbar">
@@ -21,10 +21,10 @@ const Navbar = ({isThereReport,setIsThereReport}) => {
         {isActive 
         &&
         <ul className="nav-menu active">
-          {isThereReport[0] && <li><a className="nav-links"
+          {(isThereReport[0] && isThereReport?.[2]!=-1) && <li><a className="nav-links"
           onClick={(e)=>{
             e.preventDefault()
-            setIsThereReport(e=>[true,!e[1]])
+            setIsThereReport(e=>[true,!e[1],1])
           }}
           ><MdOutlineShortcut/></a></li>}
           <li>

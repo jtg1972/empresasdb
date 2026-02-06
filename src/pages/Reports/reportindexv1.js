@@ -9192,7 +9192,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
         }
        // console.log("otmstatisticsarray",otmStatisticsArray)
         //console.log("qqq",q.name1,realSegmentLast,segment,normal-1,index)
-        temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumber==index && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0)?"none":"1px solid white"}}>{q.name1}</th>)
+        temp.push(<th id={`${category}_${segment}_${q.name1}`} style={{borderRight:(realSegmentLast==segment && lastIndexNumber==index && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0)?"none":"1px solid white"}}>{q.name1}</th>)
         temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumber==index && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0)?"none":"1px solid white"}}>{q.name1}Unique</th>)
         //Object.keys(otmChoicesStatistics[category][segment]?.[q.name1])
         otmStatisticsArray.forEach((ji,i44)=>{
@@ -9200,7 +9200,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
           //if(otmChoicesStatistics[category][segment][q.name1][ji]==true){
             if(ji!=="total"){
             
-            temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}</th>)
+            temp.push(<th id={`${category}_${segment}_${q.name1}_${ji}`}style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}</th>)
             if(ji=="percentage")
               temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}NoRepeat</th>)
             temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}Unique</th>)
@@ -9235,14 +9235,14 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
           }
         }
     // console.log("otmsa",otmStatisticsArray)
-        temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && otmStatisticsArray.length==0)?"none":"1px solid white"}}>{q.name1}</th>)
+        temp.push(<th id={`${category}_${segment}_${q.name1}`}style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && otmStatisticsArray.length==0)?"none":"1px solid white"}}>{q.name1}</th>)
         temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumberComposite==index && otmStatisticsArray.length==0)?"none":"1px solid white"}}>{q.name1}Unique</th>)
         //Object.keys(otmChoicesStatistics[category][segment]?.[q.name1]).
         otmStatisticsArray.forEach((ji,i44)=>{
           //if(otmChoicesStatistics[category][segment][q.name1][ji]==true){
             //if(ji=="media")
             if(ji!="total"){
-              temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}</th>)
+              temp.push(<th id={`${category}_${segment}_${q.name1}_${ji}`}style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}</th>)
               if(ji=="percentage")
                 temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}NoRepeat</th>)
               temp.push(<th style={{borderRight:lastIndexNumber==index && realSegmentLast==segment && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"1px solid white":"1px solid white"}}>{ji}Unique</th>)
@@ -9264,7 +9264,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
       if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`totalCount`]==true){
 
-        result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>,
+        result=[<th id={`${category}_${segment}_totalCount`} style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>,
         <th style={{borderRight:"1px solid white"}}>{`%${segment}TotalCount`}</th>,
         <th style={{borderRight:"1px solid white"}}>{`%${segment}NoRepeatTotalCount`}</th>,
         <th style={{borderRight:"1px solid white"}}>{`${segment}UniqueTotalCount`}</th>,
@@ -9278,7 +9278,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     else{
       if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`totalCount`]==true){
 
-        result=[<th style={{borderRight:"none"}}>{`${segment}TotalCount`}</th>,
+        result=[<th id={`${category}_${segment}_totalCount`} style={{borderRight:"none"}}>{`${segment}TotalCount`}</th>,
         <th style={{borderRight:"none"}}>{`%${segment}TotalCount`}</th>,
         <th style={{borderRight:"none"}}>{`%${segment}NoRepeatTotalCount`}</th>,
         <th style={{borderRight:"none"}}>{`${segment}UniqueTotalCount`}</th>,
@@ -9290,7 +9290,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
       if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`totalCount`]==true){
 
-        result=[<th style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>,
+        result=[<th id={`${category}_${segment}_totalCount`} style={{borderRight:"1px solid white"}}>{`${segment}TotalCount`}</th>,
         <th style={{borderRight:"1px solid white"}}>{`%${segment}TotalCount`}</th>,
         <th style={{borderRight:"1px solid white"}}>{`%${segment}NoRepeatTotalCount`}</th>,
         <th style={{borderRight:"1px solid white"}}>{`${segment}UniqueTotalCount`}</th>,
@@ -9302,7 +9302,7 @@ const getFieldsSegment=(category,segment,realSegmentLast)=>{
     }
     else if(otmChoicesStatistics?.[category]?.[segment]?.["general"]?.[`totalCount`]==true){
     
-      result=[<th style={{/*borderRight:"none"*/borderRight:"none"}}>{`${segment}TotalCount`}</th>,
+      result=[<th id={`${category}_${segment}_totalCount`} style={{/*borderRight:"none"*/borderRight:"none"}}>{`${segment}TotalCount`}</th>,
       <th style={{/*borderRight:"none"*/borderRight:"none"}}>{`%${segment}TotalCount`}</th>,
       <th style={{/*borderRight:"none"*/borderRight:"none"}}>{`%${segment}NoRepeatTotalCount`}</th>,
       <th style={{/*borderRight:"none"*/borderRight:"none"}}>{`${segment}UniqueTotalCount`}</th>,
@@ -9398,7 +9398,7 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
             disp=data[y][q.name1]
           let percDataRow=""
           if(q.type=="number")
-            percDataRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "1px solid black":"1px solid black"}}>{(data[y][`%${q.name1}`]).toFixed(2)} <sub>{data[y].id}</sub></td>
+            percDataRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "1px solid black":"1px solid black"}}>{(data[y][`%${q.name1}`]).toFixed(2)} <sub>{data[y].id},{data[y].parentId}</sub></td>
           if(percDataRow=="")
             return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && index==normal-1 && !theresComposite? "1px solid black":"1px solid black"}}>{disp} <sub>{data[y].id}</sub></td>
           else
@@ -9409,11 +9409,11 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
         result=[...result,...firstCatNormalFields[`getData${currentCategory.name}`].compositeFields.map((q,index)=>{
           let percNumberRow=""
           if(q.type=="number")
-            percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"1px solid black":"1px solid black"}}>{(data[y][`%${q.name1}`]).toFixed(2)}<sub>{data[y].id}</sub></td>
+            percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"1px solid black":"1px solid black"}}>{(data[y][`%${q.name1}`]).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>
           if(percNumberRow=="")
-            return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",overflow:"normal",borderRight:realSegmentLast==category && index==composite-1?"1px solid black":"1px solid black"}}>{data?.[y]?.[`${q.name1}`]}<sub>{data[y].id}</sub></td>
+            return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",overflow:"normal",borderRight:realSegmentLast==category && index==composite-1?"1px solid black":"1px solid black"}}>{data?.[y]?.[`${q.name1}`]}<sub>{data[y].id},{data[y].parentId}</sub></td>
           else 
-            return [<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",overflow:"normal",borderRight:realSegmentLast==category && index==composite-1?"1px solid black":"1px solid black"}}>{data?.[y]?.[`${q.name1}`]}<sub>{data[y].id}</sub></td>,percNumberRow]
+            return [<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",overflow:"normal",borderRight:realSegmentLast==category && index==composite-1?"1px solid black":"1px solid black"}}>{data?.[y]?.[`${q.name1}`]}<sub>{data[y].id},{data[y].parentId}</sub></td>,percNumberRow]
 
         })]
         /*if(theresOtmDestiny)
@@ -9451,11 +9451,11 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
             disp=data[y][q.name1]
           let percNumberRow=""
           if(q.type=="number")
-           percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{(data?.[y]?.[`%${q.name1}`])?.toFixed(2)}<sub>{data[y].id}</sub></td>
+           percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{(data?.[y]?.[`%${q.name1}`])?.toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>
           if(percNumberRow=="")
-            return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{disp}<sub>{data[y].id}</sub></td>
+            return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{disp}<sub>{data[y].id},{data[y].parentId}</sub></td>
           else
-            return [<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"1px solid black":"1px solid black"}}>{disp}<sub>{data[y].id}</sub></td>,percNumberRow]
+            return [<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"1px solid black":"1px solid black"}}>{disp}<sub>{data[y].id},{data[y].parentId}</sub></td>,percNumberRow]
 
         }
         )]
@@ -9463,11 +9463,11 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
         result=[...result,...arr.compositeFields.map((q,index)=>{
           let percNumberRow=""
           if(q.type=="number")
-            percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{(data?.[y]?.[`%${q.name1}`])?.toFixed(2)}<sub>{data[y].id}</sub></td>
+            percNumberRow=<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && normal-1==index && !(theresComposite || theresOtmDestiny)?"none":"1px solid black"}}>{(data?.[y]?.[`%${q.name1}`])?.toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>
           if(percNumberRow=="")
-            return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}`]}<sub>{data[y].id}</sub></td>
+            return <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}`]}<sub>{data[y].id},{data[y].parentId}</sub></td>
           else
-           return [<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"1px solid black":"1px solid black"}}>{data?.[y]?.[`${q.name1}`]}<sub>{data[y].id}</sub></td>,percNumberRow]
+           return [<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && composite-1==index && !theresOtmDestiny?"1px solid black":"1px solid black"}}>{data?.[y]?.[`${q.name1}`]}<sub>{data[y].id},{data[y].parentId}</sub></td>,percNumberRow]
 
         }
         )]
@@ -9475,17 +9475,17 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
       
       if(theresOtmDestiny)
       result=[...result,...arr?.otmdestiny?.map((q,index)=>
-          <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && otmdestiny-1==index?"none":"1px solid black"}}>{data[y][q]}<sub>{data[y].id}</sub></td>
+          <td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && otmdestiny-1==index?"none":"1px solid black"}}>{data[y][q]}<sub>{data[y].id},{data[y].parentId}</sub></td>
         )]
       let parentCat=parentCategories[category]
       if(parentIdentifiers?.[parentCat]?.["fieldCompOrNormalType"]=="normal" || 
       parentIdentifiers?.[parentCat]?.["fieldCompOrNormalType"]=="composite")
       
-        result.unshift(<td style={{whiteSpace:"nowrap",borderRight:realSegmentLast==category && !(theresNormal || theresComposite || !theresOtmDestiny)?"none":"1px solid black"}}>{data[y]["parentIdentifier"]}<sub>{data[y].id}</sub></td>)  
+        result.unshift(<td style={{whiteSpace:"nowrap",borderRight:realSegmentLast==category && !(theresNormal || theresComposite || !theresOtmDestiny)?"none":"1px solid black"}}>{data[y]["parentIdentifier"]}<sub>{data[y].id},{data[y].parentId}</sub></td>)  
       
       
     }
-    result.unshift(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{data[y]["id"]}</td>)
+    result.unshift(<td id={`${category}recorreId`} style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:realSegmentLast==category && !(theresNormal || theresComposite ||theresOtmDestiny)?"none":"1px solid black"}}>{data[y]["id"]}</td>)
   
   }else{
     let arr
@@ -9521,8 +9521,8 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
               otmStatisticsArray.push(x)
             }
           }
-          temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}total`]==undefined?"0.00":data[y][`${q.name1}total`].toFixed(2)}<sub>{data[y].id}</sub></td>)
-          temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}UniqueTotal`]==undefined?"0.00":data[y][`${q.name1}UniqueTotal`].toFixed(2)}<sub>{data[y].id}</sub></td>)
+          temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}total`]==undefined?"0.00":data[y][`${q.name1}total`].toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)
+          temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}UniqueTotal`]==undefined?"0.00":data[y][`${q.name1}UniqueTotal`].toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)
           //Object.keys(otmChoicesStatistics[category][a][q.name1]).
           otmStatisticsArray.forEach((ji,i44)=>{
            // console.log("www88",finalObject[category][a][y],data[y]?.[`${q.name1}Acummulated`])
@@ -9532,20 +9532,20 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
               if(ji!=="total"){
               //console.log("verif67",finalObject[category][a][y][`${q.name1}${pmay}`],`${q.name1}${pmay}`)
               if(ji=="percentage"){
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}`])?"0.00":data[y][`%${q.name1}`].toFixed(2)}<sub>{data[y].id}</sub></td>)  
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}NoRepeat`])?"0.00":data[y][`%${q.name1}NoRepeat`].toFixed(2)}<sub>{data[y].id}</sub></td>)  
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}Unique`])?"0.00":data[y][`%${q.name1}Unique`].toFixed(2)}<sub>{data[y].id}</sub></td>)  
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}NoRepeatUnique`])?"0.00":data[y][`%${q.name1}NoRepeatUnique`].toFixed(2)}<sub>{data[y].id}</sub></td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}`])?"0.00":data[y][`%${q.name1}`].toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}NoRepeat`])?"0.00":data[y][`%${q.name1}NoRepeat`].toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}Unique`])?"0.00":data[y][`%${q.name1}Unique`].toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}NoRepeatUnique`])?"0.00":data[y][`%${q.name1}NoRepeatUnique`].toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)  
               }else if(ji=="minimum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}Acummulatedminimum`]==undefined?"0.00":data?.[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}<sub>{data[y].id}</sub></td>)  
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}AcummulatedUniqueminimum`]==undefined?"0.00":data?.[y]?.[`${q.name1}AcummulatedUniqueminimum`].toFixed(2)}<sub>{data[y].id}</sub></td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}Acummulatedminimum`]==undefined?"0.00":data?.[y]?.[`${q.name1}Acummulatedminimum`].toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}AcummulatedUniqueminimum`]==undefined?"0.00":data?.[y]?.[`${q.name1}AcummulatedUniqueminimum`].toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)  
               }else if(ji=="maximum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}Acummulatedmaximum`]==undefined?"0.00":data?.[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}<sub>{data[y].id}</sub></td>) 
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}AcummulatedUniquemaximum`]==undefined?"0.00":data?.[y]?.[`${q.name1}AcummulatedUniquemaximum`].toFixed(2)}<sub>{data[y].id}</sub></td>)   
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}Acummulatedmaximum`]==undefined?"0.00":data?.[y]?.[`${q.name1}Acummulatedmaximum`].toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>) 
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}AcummulatedUniquemaximum`]==undefined?"0.00":data?.[y]?.[`${q.name1}AcummulatedUniquemaximum`].toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)   
               
               }else{
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}${pmay}`]==undefined?"0.00":data[y][`${q.name1}${pmay}`].toFixed(2)}<sub>{data[y].id}</sub></td>)
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}${pmay}Unique`]==undefined?"0.00":data[y][`${q.name1}${pmay}Unique`].toFixed(2)}<sub>{data[y].id}</sub></td>)
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}${pmay}`]==undefined?"0.00":data[y][`${q.name1}${pmay}`].toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}${pmay}Unique`]==undefined?"0.00":data[y][`${q.name1}${pmay}Unique`].toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)
               }
             }
             
@@ -9567,8 +9567,8 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
               otmStatisticsArray.push(x)
             }
           }
-          temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumberComposite==index && realSegmentLast==a && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data[y][`${q.name1}total`].toFixed(2)}<sub>{data[y].id}</sub></td>)
-          temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumberComposite==index && realSegmentLast==a && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data[y][`${q.name1}UniqueTotal`]!=undefined?data[y][`${q.name1}UniqueTotal`].toFixed(2):"0.00"}<sub>{data[y].id}</sub></td>)
+          temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumberComposite==index && realSegmentLast==a && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data[y][`${q.name1}total`].toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)
+          temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumberComposite==index && realSegmentLast==a && otmStatisticsArray.length==0?"none":"1px solid black"}}>{data[y][`${q.name1}UniqueTotal`]!=undefined?data[y][`${q.name1}UniqueTotal`].toFixed(2):"0.00"}<sub>{data[y].id},{data[y].parentId}</sub></td>)
           //Object.keys(otmChoicesStatistics[category][a][q.name1])
           otmStatisticsArray.forEach((ji,i44)=>{
             //if(otmChoicesStatistics[category][a][q.name1][ji]==true){
@@ -9578,19 +9578,19 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
               //temp.push(<td style={{color:"black",background:"white",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1?"none":"1px solid black"}}>{finalObject[category][a][y][`${q.name1}${pmay}`]}</td>)
               if(ji=="percentage"){
                 temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}`])?"0.00":data?.[y]?.[`%${q.name1}`]?.toFixed(2)}<sub>{data[y].id}</sub></td>)  
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}NoRepeat`])?"0.00":data?.[y]?.[`%${q.name1}NoRepeat`]?.toFixed(2)}<sub>{data[y].id}</sub></td>)  
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}Unique`])?"0.00":data?.[y]?.[`%${q.name1}Unique`]?.toFixed(2)}<sub>{data[y].id}</sub></td>)  
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}NoRepeatUnique`])?"0.00":data?.[y]?.[`%${q.name1}NoRepeatUnique`]?.toFixed(2)}<sub>{data[y].id}</sub></td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}NoRepeat`])?"0.00":data?.[y]?.[`%${q.name1}NoRepeat`]?.toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}Unique`])?"0.00":data?.[y]?.[`%${q.name1}Unique`]?.toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{isNaN(data?.[y]?.[`%${q.name1}NoRepeatUnique`])?"0.00":data?.[y]?.[`%${q.name1}NoRepeatUnique`]?.toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)  
 
               }else if(ji=="minimum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}Acummulatedminimum`]==undefined?"0.00":data?.[y]?.[`${q.name1}Acummulatedminimum`]?.toFixed(2)}<sub>{data[y].id}</sub></td>) 
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}AcummulatedUniqueminimum`]==undefined?"0.00":data?.[y]?.[`${q.name1}AcummulatedUniqueminimum`]?.toFixed(2)}<sub>{data[y].id}</sub></td>)   
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}Acummulatedminimum`]==undefined?"0.00":data?.[y]?.[`${q.name1}Acummulatedminimum`]?.toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>) 
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y]?.[`${q.name1}AcummulatedUniqueminimum`]==undefined?"0.00":data?.[y]?.[`${q.name1}AcummulatedUniqueminimum`]?.toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)   
               }else if(ji=="maximum"){
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`]==undefined?"0.00":data?.[y]?.[`${q.name1}Acummulatedmaximum`]?.toFixed(2)}<sub>{data[y].id}</sub></td>)  
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}AcummulatedUniquemaximum`]==undefined?"0.00":data?.[y]?.[`${q.name1}AcummulatedUniquemaximum`]?.toFixed(2)}<sub>{data[y].id}</sub></td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}Acummulatedmaximum`]==undefined?"0.00":data?.[y]?.[`${q.name1}Acummulatedmaximum`]?.toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)  
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data[y]?.[`${q.name1}AcummulatedUniquemaximum`]==undefined?"0.00":data?.[y]?.[`${q.name1}AcummulatedUniquemaximum`]?.toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)  
               }else{
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y][`${q.name1}${pmay}`]==undefined?"0.00":data?.[y][`${q.name1}${pmay}`]?.toFixed(2)}<sub>{data[y].id}</sub></td>)
-                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y][`${q.name1}${pmay}Unique`]==undefined?"0.00":data?.[y][`${q.name1}${pmay}Unique`]?.toFixed(2)}<sub>{data[y].id}</sub></td>)
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y][`${q.name1}${pmay}`]==undefined?"0.00":data?.[y][`${q.name1}${pmay}`]?.toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)
+                temp.push(<td style={{/*color:"black",background:"white",*/whiteSpace:"nowrap",borderRight:lastIndexNumber==index && realSegmentLast==a && lastIndexNumberComposite==-1 && i44==otmStatisticsArray.length-1?"none":"1px solid black"}}>{data?.[y][`${q.name1}${pmay}Unique`]==undefined?"0.00":data?.[y][`${q.name1}${pmay}Unique`]?.toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>)
               }
             //}
               }
@@ -9606,11 +9606,11 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`totalCount`]==true){
 
             result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCount`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCount`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}UniqueTotalCount`]==undefined?"0.00":data[y][`${a}UniqueTotalCount`]}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}TotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCountUnique`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCount`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCount`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}UniqueTotalCount`]==undefined?"0.00":data[y][`${a}UniqueTotalCount`]}<sub>{data[y].id},{data[y].parentId},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}TotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCountUnique`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>,
             ...result,...temp]
           }else{
             result=[...result,...temp]
@@ -9619,24 +9619,24 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
         else{
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`totalCount`]==true){
 
-            result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCount`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCount`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}UniqueTotalCount`]==undefined?"0.00":data[y][`${a}UniqueTotalCount`]}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}TotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCountUnique`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>]
+            result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCount`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCount`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}UniqueTotalCount`]==undefined?"0.00":data[y][`${a}UniqueTotalCount`]}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}TotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCountUnique`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>]
           }
         }
       }else{
         if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`totalCount`]==true){
 
-            result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCount`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCount`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}UniqueTotalCount`]==undefined?"0.00":data[y][`${a}UniqueTotalCount`]}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}TotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCountUnique`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>,
+            result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCount`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCount`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}UniqueTotalCount`]==undefined?"0.00":data[y][`${a}UniqueTotalCount`]}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}TotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"1px solid black"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCountUnique`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>,
             ...result,...temp]
           }else
             result=[...result,temp]
@@ -9644,12 +9644,12 @@ const getFieldsDataSegment=(category,a,realSegmentLast,data2)=>{
         else
           if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`totalCount`]==true){
 
-            result=[<td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>,
-            <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCount`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCount`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>,
-             <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}UniqueTotalCount`]==undefined?"0.00":data[y][`${a}UniqueTotalCount`]}<sub>{data[y].id}</sub></td>,
-             <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}TotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>,
-             <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id}</sub></td>]
+            result=[<td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}TotalCount`]==undefined?"0.00":data[y][`${a}TotalCount`]}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCount`]==undefined?"0.00":(data[y][`%${a}TotalCount`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+            <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}NoRepeatTotalCount`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCount`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+             <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`${a}UniqueTotalCount`]==undefined?"0.00":data[y][`${a}UniqueTotalCount`]}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+             <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}TotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>,
+             <td style={{whiteSpace:"nowrap",borderRight:"none"/*,background:"white",color:"black"*/}}>{data?.[y]?.[`%${a}TotalCountUnique`]==undefined?"0.00":(data[y][`%${a}NoRepeatTotalCountUnique`]*100).toFixed(2)}<sub>{data[y].id},{data[y].parentId}</sub></td>]
       }
     }
       
@@ -10559,8 +10559,12 @@ const displayReport1=(parentNode,parentNodeName,singleFields,otmFields,data)=>{
       subsets={subsets}
       setSubsets={setSubsets}
     />}
-    {isThereReport[1] && <TableShortcuts
+    {/*isThereReport[1] &&*/ <TableShortcuts
     order={orderTransfer}
+    isThereReport={isThereReport}
+    setIsThereReport={setIsThereReport}
+    otmChoices={otmChoices}
+    otmChoicesStatistics={otmChoicesStatistics}
     />}
     
 
