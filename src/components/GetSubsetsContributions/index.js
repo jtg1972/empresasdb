@@ -10,9 +10,9 @@ export const GetSubsetsContribution=({subsetsData,order,subsets,otmChoices,first
     Object.keys(order[1]).forEach(category=>{
       let nextSons=[]
       if(category.startsWith("getData"))
-        nextSons=firstCatNormalFields[category].otm
+        nextSons=[...firstCatNormalFields[category].otm,firstCatNormalFields[category].mtm]
       else
-        nextSons=otmChoices[category].otm
+        nextSons=[...otmChoices[category].otm,...otmChoices[category].mtm]
       console.log("nextsons",nextSons,subsets)
       nextSons.forEach(x=>{
         if(subsets[x]!=undefined){

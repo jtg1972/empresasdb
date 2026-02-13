@@ -1,6 +1,7 @@
 import { NoUnusedVariablesRule } from 'graphql'
 import { isLeafType } from 'graphql'
 import {useEffect,useState} from 'react'
+import { TableHints } from 'sequelize'
 import './styles.scss'
 export const SubsetContributionsTable=({
   data,
@@ -16,14 +17,15 @@ export const SubsetContributionsTable=({
     initializeTablesLoop()
   },[subsets,data])
 
+  console.log("subsetsjo",subsets,grandTotals)
   const printDataSubset=(table,seg,field,subset,type)=>{
       console.log("table seg subset data",table,seg,field,subset,data)
       let dataRes=[]
       if(type=="secondary"){
-        dataRes=Object.keys(data[table][seg]).map((d,index)=>{
+        dataRes=Object.keys(data[table][seg]["data"]).map((d,index)=>{
           
             
-              let rec=data[table][seg][parseInt(d)][`${field}total`][subset]
+              let rec=data[table][seg]["data"][parseInt(d)][`${field}total`][subset]
               console.log("typeofff",rec)
               return <tr>
                 <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{(rec?.[`%of${field}Grandtotal`]==undefined || isNaN(rec[`%of${field}Grandtotal`]))?"0.00":(rec[`%of${field}Grandtotal`]*100).toFixed(2)}</td>
@@ -53,10 +55,10 @@ export const SubsetContributionsTable=({
       }
         else if(type=="superset"){
           if(data?.[table]?.[seg]!=undefined){
-          dataRes=Object.keys(data[table][seg]).map((d,index)=>{
+          dataRes=Object.keys(data[table][seg]["data"]).map((d,index)=>{
           
             
-            let rec=data[table][seg][d][`${field}total`]
+            let rec=data[table][seg]["data"][d][`${field}total`]
             //console.log("red888",rec)
             return <tr>
               <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{(rec?.[`%${field}`]==undefined || isNaN(rec?.[`%${field}`]))?"0.00":(rec[`%${field}`]).toFixed(2)}</td>
@@ -75,10 +77,10 @@ export const SubsetContributionsTable=({
       })
     }
     }else if(type=="subsetsStats"){
-      dataRes=Object.keys(data[table][seg]).map((d,index)=>{
+      dataRes=Object.keys(data[table][seg]["data"]).map((d,index)=>{
           
             
-        let rec=data[table][seg][d][`${field}total`]
+        let rec=data[table][seg]["data"][d][`${field}total`]
         return <tr>
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalCount"]?.toFixed(2)}</td>
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalRow"]?.toFixed(2)}</td>
@@ -143,7 +145,7 @@ export const SubsetContributionsTable=({
       Object.keys(subsets?.[ssName]).forEach(x=>
         res.push(<th>
           <tr>
-            <th className="bord">{x}</th>
+            <th className="bord">{subsets[ssName][x]["ruleName"]}</th>
             
           </tr>
           <tr>
@@ -217,6 +219,8 @@ export const SubsetContributionsTable=({
             return <td style={{whiteSpace:"nowrap",backgroundColor:index%2==0?"white":"lightgray"}}>{data[table][seg][d][x.name1].toFixed(2)}</td>
           else if(x.type=="date")
           return <td style={{whiteSpace:"nowrap",backgroundColor:index%2==0?"white":"lightgray"}}>{displayDate(data[table][seg][d][x.name1])}</td>
+          else
+          return <td style={{whiteSpace:"nowrap",backgroundColor:index%2==0?"white":"lightgray"}}>{data[table][seg][d][x.name1]}</td>
         })
         c=firstCatNormalFields?.[seg]?.compositeFields?.map(x=>{
           if(x.type=="string")
@@ -225,6 +229,8 @@ export const SubsetContributionsTable=({
             return <td style={{whiteSpace:"nowrap",backgroundColor:index%2==0?"white":"lightgray"}}>{data[table][seg][d][x.name1].toFixed(2)}</td>
           else if(x.type=="date")
           return <td style={{whiteSpace:"nowrap",backgroundColor:index%2==0?"white":"lightgray"}}>{displayDate(data[table][seg][d][x.name1])}</td>
+          else
+          return <td style={{whiteSpace:"nowrap",backgroundColor:index%2==0?"white":"lightgray"}}>{data[table][seg][d][x.name1]}</td>
         })
         let t=[]
          if(n!=undefined && n.length>0)
@@ -237,10 +243,10 @@ export const SubsetContributionsTable=({
       </tr> 
       })
     }else{
-      dataRes=Object.keys(data[table][seg]).map((d,index)=>{
+      dataRes=Object.keys(data[table][seg]["data"]).map((d,index)=>{
           
             
-        let rec=data[table][seg][d]
+        let rec=data[table][seg]["data"][d]
         let n=[]
         let c=[]
         n=otmChoices?.[seg]?.normal?.map(x=>{
@@ -255,6 +261,8 @@ export const SubsetContributionsTable=({
           }
           else if(x.type=="date")
           return <td style={{whiteSpace:"nowrap",backgroundColor:index%2==0?"white":"lightgray"}}>{displayDate(data[table][seg][d][x.name1])}</td>
+          else
+          return <td style={{whiteSpace:"nowrap",backgroundColor:index%2==0?"white":"lightgray"}}>{data[table][seg][d][x.name1]}</td>
         })
         c=otmChoices?.[seg]?.compositeFields?.map(x=>{
           if(x.type=="string")
@@ -263,6 +271,8 @@ export const SubsetContributionsTable=({
             return <td style={{whiteSpace:"nowrap",backgroundColor:index%2==0?"white":"lightgray"}}>{data[table][seg][d][x.name1].toFixed(2)}</td>
           else if(x.type=="date")
           return <td style={{whiteSpace:"nowrap",backgroundColor:index%2==0?"white":"lightgray"}}>{displayDate(data[table][seg][d][x.name1])}</td>
+          else
+          return <td style={{whiteSpace:"nowrap",backgroundColor:index%2==0?"white":"lightgray"}}>{data[table][seg][d][x.name1]}</td>
         })
         let t=[]
         if(n!=undefined && n.length>0)
@@ -464,9 +474,11 @@ const displayTotalOrCount=(seg,piv,table,field,type,x)=>{
 const displaySets=(seg,field,tablePiv,table)=>{
   let t=[]
   let s=[]
+  console.log("entroaquisets")
   if(subsets?.[tablePiv]!=undefined){
+    
     Object.keys(subsets[tablePiv]).forEach(x=>{
-      t.push(<th className="bord">{x}</th>)
+      t.push(<th className="bord">{subsets[tablePiv][x]["ruleName"]}</th>)
       s.push(<th>{displayTotalOrCount(seg,tablePiv,table,field,"subset",x)}</th>)
     })
     t.unshift(<th className="bord">superset</th>)
@@ -627,9 +639,9 @@ const grandTotalsDisplay=(table)=>{
     let dummyst=[]
     if(data[table][table]!=undefined && Object.keys(data[table][table]).length>0){
     if(table.startsWith("getData"))
-      firstTables=firstCatNormalFields[table].otm
+      firstTables=[...firstCatNormalFields[table].otm,...firstCatNormalFields[table].mtm]
     else
-      firstTables=otmChoices[table].otm
+      firstTables=[...otmChoices[table].otm,...otmChoices[table].mtm]
     if(table!==order[1][table][order[1][table].length-1]){
         
       piv2=order[1][table].forEach((seg,ind2)=>{
@@ -706,21 +718,22 @@ const grandTotalsDisplay=(table)=>{
   const initializeTablesLoop=()=>{
     let piv2=[]
     let pivote=""
+    
    
     
      pivote=order[0].map((table,index)=>{
-       console.log("datatable",data[table][table])
+       console.log("datatable",data,data[table][table],table)
       if(data?.[table]?.[table]!=undefined){
     
        piv2=[]
       let firstTables=[]
       let tablePiv
       if(table.startsWith("getData"))
-        firstTables=firstCatNormalFields[table].otm
+        firstTables=[...firstCatNormalFields?.[table]?.otm,...firstCatNormalFields?.[table]?.mtm]
       else
-        firstTables=otmChoices[table].otm
+        firstTables=[...otmChoices?.[table]?.otm,...otmChoices?.[table]?.mtm]
       
-      
+      console.log("firsttables",firstTables)
       if(table!==order[1][table][order[1][table].length-1]){
         
         piv2=order[1][table].map((seg,ind2)=>{
@@ -745,7 +758,7 @@ const grandTotalsDisplay=(table)=>{
                <tr><th className="bord" style={{height:"31px"}}>{seg}</th></tr></thead>
              <tbody className="tbh"><tr><th>{printSecondLevelHeaders([...firstCatNormalFields?.[seg]?.normal,...firstCatNormalFields?.[seg]?.compositeFields],true,table,seg,tablePiv/*order[1][table][1]*/)}</th></tr></tbody></table></th>
              
-            else if(Object.keys(data[table]).length>1 && table==seg && !table.startsWith('getData'))
+            else if(data?.[table]!=undefined && Object.keys(data[table]).length>1 && table==seg && !table.startsWith('getData')){
              return <th style={{verticalAlign:"top",heigth:"auto"}}><table><thead>
                
                <tr><th className="bord">&nbsp;</th></tr>
@@ -757,14 +770,15 @@ const grandTotalsDisplay=(table)=>{
              </tbody></table></th>
             
             //if(data?.[tablePiv]?.[tablePiv]!=undefined && Object.keys(data[tablePiv][tablePiv]).length>0){
-            else if(data?.[tablePiv]?.[tablePiv]!=undefined && Object.keys(data[tablePiv][tablePiv]).length>0 && data[table][seg]!==undefined && table!==seg && checkHasFieldToDisplay(seg))
+            }else if(data?.[tablePiv]?.[tablePiv]!=undefined && Object.keys(data[tablePiv][tablePiv]).length>0 && data[table][seg]!=undefined && table!==seg && checkHasFieldToDisplay(seg)){
+              console.log("entroseg1")
               return  <th style={{verticalAlign:"top",height:"auto"}}><table><thead>
                 
                 <tr><th className="bord">{seg}</th></tr></thead>
               <tbody className="tbh"><tr><th>{printSecondLevelHeaders([...otmChoices?.[seg]?.normal.filter(x=>x.type=="number"),
             ...otmChoices?.[seg]?.compositeFields.filter(x=>x.type=="number")],false,table,seg,tablePiv/*order[1][table][1]*/)}</th></tr></tbody></table></th>
             
-            else
+            }else
             return ""
           
           //return ""
@@ -814,6 +828,7 @@ const grandTotalsDisplay=(table)=>{
 }
 
   return <div className="cont">
+    <p>JORGETOROGUTZ</p>
     {table}
     
   </div>

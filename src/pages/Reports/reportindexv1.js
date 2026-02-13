@@ -2581,7 +2581,7 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
 displayParentIdentifierNull(name,name,"parentIdentifier",
 parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
     
-      <button style={{
+      <p style={{
         textAlign:"left",
         textDecoration:"underline",
         marginLeft:0,
@@ -2592,7 +2592,7 @@ parentIdentifiers?.[parentCategories?.[name]]?.["type"])}
         setOtmCategoryFields(pivote[name])
 
         toggleOtmIdFieldsDialog(name)
-      }}>Add field to identify parent in child relationships</button>
+      }}>Add field to identify parent in child relationships</p>
     </div>
     )
     }else{
@@ -8851,12 +8851,65 @@ const getDataReportTest=(routes,finalRoutes)=>{
       let varpasa="varRef"+ind
       printFinalTableNew(y,table[y],order[1][y],varpasa)//,order[0])
       printGrandTotalsTrue(y,realGrandTotals1[y],order[1][y])
-      if(ind==0){}
+      //if(ind==0){}
       //printShortcuts(y,Object.keys(table),order[1],ind)
-      totalTables.push(currentTotalShortCuts)
+      //totalTables.push(currentTotalShortCuts)
 
 
     })
+    y=getSubsetsData({
+      
+      data:tablesToCont,
+      subsets:subsets,
+      conditionsWhere:conditionsWhere,
+      order:order,
+      firstCatNormalFields:firstCatNormalFields,
+      otmChoices:otmChoices,
+      parentCategories:parentCategories,
+      parentIdentifiers:parentIdentifiers,
+      otmChoicesStatistics:otmChoicesStatistics,
+  })
+  let z=getSubsetsCont({
+    
+    data:tablesToCont,
+    subsets:subsets,
+    subsetsData:y,
+   
+    
+    conditionsWhere:conditionsWhere,
+    order:order,
+    firstCatNormalFields:firstCatNormalFields,
+    otmChoices:otmChoices,
+    parentCategories:parentCategories,
+    parentIdentifiers:parentIdentifiers,
+    otmChoicesStatistics:otmChoicesStatistics,
+})
+    totalTables.push(getSubsetsBlock(order,y))
+    
+ /*totalTables.push(<GetSubsetsContribution
+      finalObject={tablesToCont}
+      subsets={subsets}
+      conditionsWhere={conditionsWhere}
+      subsetsData={y}
+      setSubsetsData={setSubsetsData}
+      order={order}
+      firstCatNormalFields={firstCatNormalFields}
+      otmChoices={otmChoices}
+      parentCategories={parentCategories}
+      parentIdentifiers={parentIdentifiers}
+      otmChoicesStatistics={otmChoicesStatistics}
+    ></GetSubsetsContribution>)*/
+
+ totalTables.push(<SubsetContributionsTable
+      order={order}
+      data={z[0]}
+      displayRaw={z[1]}
+      grandTotals={z[2]}
+      firstCatNormalFields={firstCatNormalFields}
+      otmChoices={otmChoices}
+      subsets={subsets}
+    />)
+
     setReportShow(totalTables)
   // console.log("definitive",routes,y)
   //console.log("totalRoutes55",totalRoutes,finalObject)

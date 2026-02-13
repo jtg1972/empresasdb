@@ -297,10 +297,31 @@ const NewDetailProduct = ({isThereReport,setIsThereReport}) => {
   const {loading:loading1,data:data1,error:error1}=useQuery(
     GET_TABLES_STATE
   )
+  const beforeUnloadListener = (event) => {
+    event=event || window.event
+    event.preventDefault()
+    
+  }
+  
   useEffect(()=>{
-    window.location.hash="no-back-button"
+    window.addEventListener("onbeforeunload", (e)=>{
+      e.cancelable=true
+      //e.preventDefault()
+      
+      alert("jorge")
+      console.log("jorgeio")
+      e.returnValue=''
+      return ''
+     
+    })
+    /*window.location.hash="no-back-button"
     window.location.hash="Again-No-back-button"
-    window.onhashchange=function(){window.location.hash="Again-No-back-button"}
+    window.onhashchange=function(){window.location.href="localhost:3001/categories"}
+    return ()=>{
+      window.location.hash="no-back-button"
+      window.location.hash="Again-No-back-button"
+      window.onhashchange=function(){window.location.href="localhost:3001/categories"}
+    }*/
   },[])
 
     useEffect(()=>{

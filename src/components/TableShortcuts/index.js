@@ -122,6 +122,14 @@ otmChoices,otmChoicesStatistics,currentStatistic,setCurrentStatistic})=>{
   useEffect(()=>{
     let fields=[]
     fields=otmChoices?.[currentSegment]?.normal?.filter(x=>x.type=="number")?.map(y=>y.name1)
+    let fieldsComp=[]
+    
+    fieldsComp=otmChoices?.[currentSegment]?.compositeFields?.filter(x=>x.type=="number")?.map(y=>y.name1)
+    console.log("fieldsio",fields,fieldsComp)
+    if(fields!=undefined && fieldsComp!=undefined)
+      fields=[...fields,...fieldsComp]
+    else if(fields==undefined && fieldsComp!=undefined)
+      fields=[...fieldsComp]
     if(fields?.length!=undefined)
       if(otmChoicesStatistics?.[table]?.[currentSegment]?.["general"]?.["totalCount"]==true)
         fields.unshift("totalCount")
