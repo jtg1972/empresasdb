@@ -82,7 +82,7 @@ export const SubsetContributionsTable=({
             
         let rec=data[table][seg]["data"][d][`${field}total`]
         return <tr>
-          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalCount"]?.toFixed(2)}</td>
+          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalRowCount"]?.toFixed(2)}</td>
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalRow"]?.toFixed(2)}</td>
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`min`]?.toFixed(2)}</td>
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`media`]?.toFixed(2)}</td>
@@ -243,10 +243,10 @@ export const SubsetContributionsTable=({
       </tr> 
       })
     }else{
-      dataRes=Object.keys(data[table][seg]["data"]).map((d,index)=>{
+      dataRes=Object.keys(data[table][seg]).map((d,index)=>{
           
             
-        let rec=data[table][seg]["data"][d]
+        let rec=data[table][seg][d]
         let n=[]
         let c=[]
         n=otmChoices?.[seg]?.normal?.map(x=>{

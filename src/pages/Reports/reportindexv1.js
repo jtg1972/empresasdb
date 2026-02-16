@@ -35,6 +35,7 @@ import { SubsetContributionsTable } from '../../components/SubsetsContributionsT
 import TableShortcuts from '../../components/TableShortcuts'
 import { argsToArgsConfig } from 'graphql/type/definition'
 import DisplaySubcategoriesCombo from '../../components/SearchSubcategories/DisplaySubcategoriesCombo'
+import GetSubsetsContributionsForAllSets from '../../components/GetSubsetsContributionsForAllSets'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categories:categories.categories,
@@ -8899,6 +8900,16 @@ const getDataReportTest=(routes,finalRoutes)=>{
       parentIdentifiers={parentIdentifiers}
       otmChoicesStatistics={otmChoicesStatistics}
     ></GetSubsetsContribution>)*/
+    let subsetsForAll=GetSubsetsContributionsForAllSets({
+      order:order,
+      data:z[0],
+      displayRaw:z[1],
+      grandTotals:z[2],
+      firstCatNormalFields:firstCatNormalFields,
+      otmChoices:otmChoices,
+      subsets:subsets
+    
+    })
 
  totalTables.push(<SubsetContributionsTable
       order={order}
@@ -9008,6 +9019,7 @@ let z=getSubsetsCont({
     parentIdentifiers:parentIdentifiers,
     otmChoicesStatistics:otmChoicesStatistics,
 })
+
     totalTables.push(getSubsetsBlock(order,y))
     
     totalTables.push(<GetSubsetsContribution
