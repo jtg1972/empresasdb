@@ -291,6 +291,7 @@ const NewDetailProduct = ({isThereReport,setIsThereReport}) => {
   const [showMakeStory,setShowMakeStory]=useState(false)
   const [showQuery,setShowQuery]=useState(false)
   const [isDialog,setIsDialog]=useState(false)
+  const [dummyState,setDummyState]=useState("")
   const {loading,data,error}=useQuery(
     CATEGORIES1
   )
@@ -699,6 +700,7 @@ const NewDetailProduct = ({isThereReport,setIsThereReport}) => {
       checkBoxDataFields={checkBoxDataFields}
       isThereReport={isThereReport}
       setIsThereReport={setIsThereReport}
+      setDummyState={setDummyState}
       />
     </div>
     {/*</div>*/}

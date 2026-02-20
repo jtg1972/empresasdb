@@ -35,7 +35,7 @@ import { SubsetContributionsTable } from '../../components/SubsetsContributionsT
 import TableShortcuts from '../../components/TableShortcuts'
 import { argsToArgsConfig } from 'graphql/type/definition'
 import DisplaySubcategoriesCombo from '../../components/SearchSubcategories/DisplaySubcategoriesCombo'
-import GetSubsetsContributionsForAllSets from '../../components/GetSubsetsContributionsForAllSets'
+import {GetSubsetsContributionsForAllSets} from '../../components/GetSubsetsContributionsForAllSets'
 const mapToState=({categories})=>({
   currentCategory:categories.currentCategory,
   categories:categories.categories,
@@ -46,7 +46,8 @@ const Reports=({
   checkBoxDataFields,
   checkBoxFields,
   isThereReport,
-  setIsThereReport
+  setIsThereReport,
+  setDummyState,
 })=>{
   //console.log("checkbox",checkBoxDataFields,checkBoxFields)
   const {
@@ -201,6 +202,7 @@ const Reports=({
   const [currentSelectedSegments,setCurrentSelectedSegments]=useState([])
   const [currentTotalShortCuts,setCurrentTotalShortCuts]=useState("")
   const [orderTransfer,setOrderTransfer]=useState([])
+  
   const myRef1=useRef(null)
   const myRef2=useRef(null)
   const myRef3=useRef(null)
@@ -4266,7 +4268,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
       else if(r[eachIndex].startsWith("mtm"))
         nId=normalFields["id"]*/
 
-      if(eachIndex==0){
+      if(eachIndex==0 && totalRoutes[r[eachIndex]][current]!=undefined){
         totalRoutes={
           ...totalRoutes,
           [r[eachIndex]]:{
@@ -4320,6 +4322,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
           inserta=true
         }
         if(inserta)*/
+        if(totalRoutes[r[eachIndex]][current]["data"].length<eachStopData.length)
         totalRoutes[r[eachIndex]][current]["data"].push({
           normalData:{...normalFields},
           total:otherAccVars[1].length,
@@ -4329,7 +4332,8 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
           ...otherAccVars[0]
         }
         )
-      }else{
+      
+      }else
         fieldId=normalFields[`${r[eachIndex]}Id`]
         //console.log("checkver",r[eachIndex-1],r[eachIndex],fieldId,parentIdField,totalRoutes)
         
@@ -4357,6 +4361,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
               
           }
         }
+      
         let inserta=true
         if(totalRoutes[r[eachIndex]][current]["data"]==undefined)
           totalRoutes[r[eachIndex]][current]={...totalRoutes[r[eachIndex]][current],data:[]}
@@ -4396,7 +4401,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
               }
           }
         }
-        if(inserta){
+        if(inserta && totalRoutes?.[r[eachIndex-1]]!=undefined){
           totalRoutes[r[eachIndex]][current]["data"].push({
             normalData:{...normalFields,
               parentIdentifier:totalRoutes[r[eachIndex-1]][`${r[eachIndex]}total`]?.[fieldId]?.["normalData"]?.[parentIdField],
@@ -4409,7 +4414,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
             ...otherAccVars[0]
           })
         }
-      }
+      
       //console.log("xxx",totalRoutes)
       if(eachIndex+1<r.length)
         getLevelData1(newData,r,eachIndex+1,true)
@@ -8820,10 +8825,12 @@ const getDataReportTest=(routes,finalRoutes)=>{
     for(let i=0;i<finalRoutes.length;i++){
       getLevelData1(categoryProducts[root],routes[finalRoutes[i]],0,true)  
     }
+    
     let y=findTheLowerLevelCategory1(getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])),[],getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])))
 
-    //console.log("yfinal",totalRoutes,y)
+    console.log("yfinal",totalRoutes,y,finalRoutes,totalRoutes)
     getInverseTraverseSonTotalsWithConditionsWhereRoutes1(routes,finalRoutes,y)
+    console.log("finalObj66",totalRoutes,finalObject)
     let order=getOrderToPrintTables(y)
     setOrderTransfer(order)
     //console.log("ordertoprinttables",order,y)
@@ -8900,16 +8907,21 @@ const getDataReportTest=(routes,finalRoutes)=>{
       parentIdentifiers={parentIdentifiers}
       otmChoicesStatistics={otmChoicesStatistics}
     ></GetSubsetsContribution>)*/
-    let subsetsForAll=GetSubsetsContributionsForAllSets({
-      order:order,
-      data:z[0],
-      displayRaw:z[1],
-      grandTotals:z[2],
-      firstCatNormalFields:firstCatNormalFields,
-      otmChoices:otmChoices,
-      subsets:subsets
-    
-    })
+   totalTables.push(<GetSubsetsContributionsForAllSets
+      vars={{
+        order:order,
+        data:z[0],
+        displayRaw:z[1],
+        grandTotals:z[2],
+        firstCatNormalFields:firstCatNormalFields,
+        otmChoices:otmChoices,
+        subsets:subsets,
+        setDummyState,
+        finalRoutes:finalRoutes,
+        routes:routes,
+        immediateSons:findTheLowerLevelCategory1(getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])),[],getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])))
+    }}
+    />)
 
  totalTables.push(<SubsetContributionsTable
       order={order}
@@ -8919,6 +8931,8 @@ const getDataReportTest=(routes,finalRoutes)=>{
       firstCatNormalFields={firstCatNormalFields}
       otmChoices={otmChoices}
       subsets={subsets}
+      
+     //subsetsForAll={subsetsForAll}
     />)
 
     setReportShow(totalTables)

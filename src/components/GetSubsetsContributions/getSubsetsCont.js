@@ -61,8 +61,8 @@ const calculateContributions=(vars)=>{
 
 const calculateContributionsNull=(vars)=>{
   let {cat,ssData,seg,data,otmChoices,gi,giData,rs,field,x,ss}=vars
-  if(dataResult?.[cat]?.[seg]?.[gi]?.[`${field}total`]?.[ss]?.[`${field}RawArray`]==undefined)
-      dataResult[cat][seg][gi][`${field}total`][ss][`${field}RawArray`]=[]
+  if(dataResult?.[cat]?.[seg]?.["data"]?.[gi]?.[`${field}total`]?.[ss]?.[`${field}RawArray`]==undefined)
+      dataResult[cat][seg]["data"][gi][`${field}total`][ss][`${field}RawArray`]=[]
        
       
   console.log("alarma",data,cat,seg,gi,ssData,x,rs)
@@ -88,14 +88,17 @@ const calculateContributionsNull=(vars)=>{
         ...dataResult[cat],
         [seg]:{
           ...dataResult[cat][seg],
-          [gi]:{
-            ...dataResult[cat][seg][gi],
-            [`${field}total`]:{
-              ...dataResult[cat][seg][gi][`${field}total`],
-              [ss]:{
-                value:0,
-                arr:[],
-                [`${field}RawArray`]:[]
+          data:{
+            ...dataResult[cat][seg]["data"],
+            [gi]:{
+              ...dataResult[cat][seg]["data"][gi],
+              [`${field}total`]:{
+                ...dataResult[cat][seg]["data"][gi][`${field}total`],
+                [ss]:{
+                  value:0,
+                  arr:[],
+                  [`${field}RawArray`]:[]
+                }
               }
 
             }
