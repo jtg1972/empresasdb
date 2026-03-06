@@ -403,7 +403,7 @@ export const WhereStatementHybridDialog = ({
 
 
     let comboData=comboDataSt
-    console.log("initial",comboData)
+   // console.log("initial",comboData)
 
     
     if(typeof conditionsWhere=="object"){
@@ -469,7 +469,7 @@ export const WhereStatementHybridDialog = ({
         }
       })
     }
-    console.log("comboData",comboData) 
+    //console.log("comboData",comboData) 
     //displayAllCombo=displayCombo(comboData)
  
     setComboDataSt(comboData)
@@ -673,7 +673,7 @@ export const WhereStatementHybridDialog = ({
   const displayFieldsCombo=(ss)=>{
     let res=[]
     //res.push("Select Field")
-    console.log("rastreo",ss)
+   //console.log("rastreo",ss)
     if(conditionsWhere?.[categoryName]?.[ss]!==undefined){
     
       console.log("rastreo",Object.keys(conditionsWhere?.[categoryName]?.[ss]))

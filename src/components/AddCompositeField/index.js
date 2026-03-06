@@ -188,7 +188,7 @@ export const AddCompositeField = ({
   },[stringFields,primero])
 
   useEffect(()=>{
-    console.log("uju")
+   // console.log("uju")
     setAddText("")
     setStart("")
     setChars("")

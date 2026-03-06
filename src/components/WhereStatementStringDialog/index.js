@@ -458,7 +458,7 @@ export const WhereStatementStringDialog = ({
       }
         
       else  {
-        console.log("valid true")
+       // console.log("valid true")
         return true
       }
     }
@@ -569,7 +569,7 @@ export const WhereStatementStringDialog = ({
         acwa=[...acwa,logicalOperator,"wherePrevious",fieldConditionWhere]
     }
         
-    console.log("acwa",acwa)
+   // console.log("acwa",acwa)
     setAddConditionWhereArray(acwa)
   }
   const addCondition=()=>{
@@ -604,7 +604,7 @@ export const WhereStatementStringDialog = ({
         }
       }}}
     
-    console.log("mapeo",mapeo)
+   //console.log("mapeo",mapeo)
     setConditionsWhere(mapeo)
     setAdded(true)
     

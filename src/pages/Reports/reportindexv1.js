@@ -724,7 +724,7 @@ const Reports=({
         {name:name1,type:type}
       ]
     }else if(val==false){
-      console.log("yaya",val,name1,nOtmChoicesOrder[category][segment],nOtmChoicesOrder[category][segment].filter(x=>x.name==name1?false:true))
+     // console.log("yaya",val,name1,nOtmChoicesOrder[category][segment],nOtmChoicesOrder[category][segment].filter(x=>x.name==name1?false:true))
       nOtmChoicesOrder[category][segment]=nOtmChoicesOrder[category][segment].filter(x=>x.name==name1?false:true)
     }
       
@@ -4166,7 +4166,7 @@ const getLevelData1=(eachStopData,r,eachIndex)=>{
   const parentIdNormalOrCompositeType=parentIdentifiers?.[r[eachIndex]]?.["fieldCompOrNormalType"]
   if(eachIndex>0){
     if(parentCategories[r[eachIndex]]==undefined){
-      console.log("parentCategories",{...parentCategories,[r[eachIndex]]:r[eachIndex-1]})
+     // console.log("parentCategories",{...parentCategories,[r[eachIndex]]:r[eachIndex-1]})
 
       parentCategories={...parentCategories,[r[eachIndex]]:r[eachIndex-1]}
     }
@@ -8828,9 +8828,9 @@ const getDataReportTest=(routes,finalRoutes)=>{
     
     let y=findTheLowerLevelCategory1(getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])),[],getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])))
 
-    console.log("yfinal",totalRoutes,y,finalRoutes,totalRoutes)
+    //console.log("yfinal",totalRoutes,y,finalRoutes,totalRoutes)
     getInverseTraverseSonTotalsWithConditionsWhereRoutes1(routes,finalRoutes,y)
-    console.log("finalObj66",totalRoutes,finalObject)
+  //  console.log("finalObj66",totalRoutes,finalObject)
     let order=getOrderToPrintTables(y)
     setOrderTransfer(order)
     //console.log("ordertoprinttables",order,y)
@@ -8909,6 +8909,8 @@ const getDataReportTest=(routes,finalRoutes)=>{
     ></GetSubsetsContribution>)*/
    totalTables.push(<GetSubsetsContributionsForAllSets
       vars={{
+        tablesToCont:tablesToCont,
+        subsetsData:y,
         order:order,
         data:z[0],
         displayRaw:z[1],

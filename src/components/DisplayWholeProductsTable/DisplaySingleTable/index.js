@@ -181,7 +181,7 @@ const DisplaySingleTable = ({
         cur=indexesOtm
       
        // console.log("entrouuuu",cur,mtmRoutes,indexes,indexesOtm)//?.[titulo]?.[parentId])
-       console.log("curtitulo",cur?.[titulo])
+       //console.log("curtitulo",cur?.[titulo])
       if(cur?.[titulo]?.[parentId]?.length>0){
       if(cur?.[titulo]!=undefined){
         if(cur?.[titulo]?.[parentId]!=undefined){

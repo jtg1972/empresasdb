@@ -23,16 +23,16 @@ parentIdentifiers,otmChoicesStatistics})=>{
   let twoTables=[]
   let ssd1
   useEffect(()=>{
-    console.log("subset9090",subset,subsetsData)
-    console.log("conditionswhere1",conditionsWhere,data)
+    //console.log("subset9090",subset,subsetsData)
+    //console.log("conditionswhere1",conditionsWhere,data)
     if(subsetsData!=undefined){
       //verifyMeetWithConditionsBySegmentBaseLevel2(category,data,ssd1)
       getCategoriesGrandTotals(category,subsetsData)
       calculatePercentageOverGrandTotal(subsetsData[category][subset])
-      console.log("ssdata77",subsetsData,data)
+      //console.log("ssdata77",subsetsData,data)
       calculateMediaAndMediansOfRecords(category,subsetsData[category][subset])
       /*bloque que obtiene la participacion de los subsets a la tabla category*/
-      console.log("orderanswers",category,order,data,otmChoices,firstCatNormalFields,subsets[category])
+     // console.log("orderanswers",category,order,data,otmChoices,firstCatNormalFields,subsets[category])
       //calculateSubsetContributions(ssd)
       //termina bloque
   
@@ -50,7 +50,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
   
   
   const printFinalTableNew=(category,data2,segments)=>{//,order)=>{
-    console.log("iniciobegin",firstCatNormalFields,otmChoices)
+  //  console.log("iniciobegin",firstCatNormalFields,otmChoices)
     
   twoTables.push(printMainHeaders(subsetsData[category][subset],category,segments))
   //setSubsetsData(data2)  
@@ -64,14 +64,14 @@ parentIdentifiers,otmChoicesStatistics})=>{
   
     
     let realSegmentsLast=segments[segments.length-1]
-    console.log("getfieldssegment",data,realSegmentsCount,realSegmentsLast)
+    //console.log("getfieldssegment",data,realSegmentsCount,realSegmentsLast)
     segments.forEach((a,index)=>{
       if(head==undefined)
         head=[]
       
       head.push(a)
       let isLast=false
-      console.log("yyy",realSegmentsCount,category,a,segments,index,segments.length-1,index==segments.length-1)
+    // console.log("yyy",realSegmentsCount,category,a,segments,index,segments.length-1,index==segments.length-1)
       
       if(index==realSegmentsCount.length-1)
         isLast=true
@@ -80,7 +80,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
       subsection[a]=getFieldsDataSegment(category,a,realSegmentsLast,data)
         
     })
-    console.log("subtitles",subtitles,head)
+    //console.log("subtitles",subtitles,head)
     
     return <div>
       <div style={{borderBottom:`5px solid ${subsets[category][subset]["color"]}`,marginBottom:"5px",background:"white"}}>
@@ -116,7 +116,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
   const getFieldsSegment=(category,segment,realSegmentLast)=>{
     let result=[]
     let len=0
-    console.log("realsegmentlast111",realSegmentLast)
+    //console.log("realsegmentlast111",realSegmentLast)
     //let busca=realSegmentCount
     let theresNormal
     let theresComposite
@@ -140,7 +140,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
       
         
       }else{
-        console.log("otmchoices22",otmChoices[segment])
+        //console.log("otmchoices22",otmChoices[segment])
   
         let normal=otmChoices[category].normal.length
         let composite=otmChoices[category].compositeFields.length
@@ -189,21 +189,21 @@ parentIdentifiers,otmChoicesStatistics})=>{
           lastIndexNumberComposite=index
       })
       
-      console.log("theresnormal",segment,realSegmentLast,lastIndexNumber,lastIndexNumberComposite,realSegmentLast==segment && lastIndexNumber==-1 && lastIndexNumberComposite==-1)
+    // console.log("theresnormal",segment,realSegmentLast,lastIndexNumber,lastIndexNumberComposite,realSegmentLast==segment && lastIndexNumber==-1 && lastIndexNumberComposite==-1)
       if(theresNormal)
       otmChoices[segment].normal.forEach((q,index)=>{
           
         if(q.type=="number"){
-          console.log("uiiii",otmChoicesStatistics?.[category]?.[segment],q.name1)
+         // console.log("uiiii",otmChoicesStatistics?.[category]?.[segment],q.name1)
           let otmStatisticsArray=[]
           for(let x in otmChoicesStatistics?.[category]?.[segment]?.[q.name1]){
-            console.log("o1111",otmChoicesStatistics?.[category]?.[segment]?.[q.name1]?.[x],x)
+          //  console.log("o1111",otmChoicesStatistics?.[category]?.[segment]?.[q.name1]?.[x],x)
             if(otmChoicesStatistics?.[category]?.[segment]?.[q.name1]?.[x]==true){
               otmStatisticsArray.push(x)
             }
           }
-          console.log("otmstatisticsarray",otmStatisticsArray)
-          console.log("qqq",q.name1,realSegmentLast,segment,normal-1,index)
+          //console.log("otmstatisticsarray",otmStatisticsArray)
+          //console.log("qqq",q.name1,realSegmentLast,segment,normal-1,index)
           temp.push(<th style={{borderRight:(realSegmentLast==segment && lastIndexNumber==index && lastIndexNumberComposite==-1 && otmStatisticsArray.length==0)?"none":"1px solid white"}}>{q.name1}</th>)
           //Object.keys(otmChoicesStatistics[category][segment]?.[q.name1])
           otmStatisticsArray.forEach((ji,i44)=>{
@@ -311,12 +311,12 @@ parentIdentifiers,otmChoicesStatistics})=>{
       })
       
     }
-    console.log("numericvalues",cat,res)
+  //  console.log("numericvalues",cat,res)
     return res
   }
 
   const getCategoriesGrandTotals=(category,ssd)=>{
-    console.log("ssd879",ssd)
+   // console.log("ssd879",ssd)
     if(realGrandTotals1[category]==undefined)
       realGrandTotals1[category]={}
     if(realGrandTotals1[category][subset]==undefined)
@@ -369,14 +369,14 @@ parentIdentifiers,otmChoicesStatistics})=>{
       realGrandTotals1?.[category]?.[subset]?.[y]?.[`${y}TotalCountArray`]?.sort((a,b)=>a-b)
   
     })
-    console.log("realGrandtotals",realGrandTotals1)
+   //console.log("realGrandtotals",realGrandTotals1)
   }
 
  const calculatePercentageOverGrandTotal=(ssd)=>{
     if(tableTotalRecords[category]==undefined)
       tableTotalRecords[category]=0
     Object.keys(realGrandTotals1[category][subset]).forEach((y,p)=>{
-      console.log("verifverif",ssd,realGrandTotals1)
+    //  console.log("verifverif",ssd,realGrandTotals1)
       if(p==0)
         tableTotalRecords[category]=Object.keys(ssd[y]).length
       Object.keys(ssd[y]).forEach(u=>{
@@ -423,7 +423,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
           if(category==y){
             otmChoices[y].normal.forEach(i=>{
               if(i.type=="number"){
-                console.log("supervision",realGrandTotals1[category][subset],y,`${i.name1}total`,realGrandTotals1[category][subset][y][`${i.name1}total`])
+               // console.log("supervision",realGrandTotals1[category][subset],y,`${i.name1}total`,realGrandTotals1[category][subset][y][`${i.name1}total`])
                 ssd[y][u][`%${i.name1}Subset`]=(ssd?.[y]?.[u]?.[`${i.name1}total`]!=undefined && realGrandTotals1[category][subset][y][`${i.name1}total`]>0)?(ssd[y][u][`${i.name1}total`]/realGrandTotals1[category][subset][y][`${i.name1}total`])*100:0
                 //((finalObject[category][y][u][`${i.name1}`]/realGrandTotals1[category][y][`${i.name1}total`])*100)
                 if(realGrandTotals1[category][subset][y][`${i.name1}AccumulatedArray`]==undefined)
@@ -470,7 +470,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
   }
 
   const printGrandTotalsTrue=(category,data,segments)=>{
-    console.log("resumen",category,data,segments)
+    //console.log("resumen",category,data,segments)
     let trec=<p style={{background:"white",color:"black",marginBottom:"10px",display:"inline-block",paddingLeft:"5px",paddingRight:"5px"}}>Number of Records: {tableTotalRecords[category]}</p>
     let res=segments.map(seg=>{
     if(seg==`getData${currentCategory.name}`){
@@ -567,9 +567,9 @@ parentIdentifiers,otmChoicesStatistics})=>{
     let total=[]
     //let data=finalObject[category][a]
     let data=data2[a]
-    console.log("dataverif",data)
+    //console.log("dataverif",data)
     let lastColor="lightgray"
-    console.log("data56",data)
+    //console.log("data56",data)
     if(data!=null){
     Object.keys(data)?.forEach((y,index)=>{
       result=[]
@@ -682,7 +682,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
           if(q.type=="number"){
             let otmStatisticsArray=[]
             for(let x in otmChoicesStatistics?.[category]?.[a]?.[q.name1]){
-              console.log("o1111",otmChoicesStatistics?.[category]?.[a]?.[q.name1]?.[x],x)
+            //  console.log("o1111",otmChoicesStatistics?.[category]?.[a]?.[q.name1]?.[x],x)
               if(otmChoicesStatistics?.[category]?.[a]?.[q.name1]?.[x]==true){
                 otmStatisticsArray.push(x)
               }
@@ -770,7 +770,7 @@ parentIdentifiers,otmChoicesStatistics})=>{
           if(lastIndexNumberComposite!==-1 || lastIndexNumber!==-1){
             let val=0
             if(otmChoicesStatistics?.[category]?.[a]?.["general"]?.[`${a}TotalCount`]==true){
-              console.log("track1",data[y][`${a}TotalCount`]/realGrandTotals1[category][subset][a][`${a}TotalCount`])
+              //console.log("track1",data[y][`${a}TotalCount`]/realGrandTotals1[category][subset][a][`${a}TotalCount`])
               val=data[y][`${a}TotalCount`]/realGrandTotals1[category][subset][a][`${a}TotalCount`]
               result=[<td style={{whiteSpace:"nowrap",borderRight:"1px solid black"}}>{data[y][`${a}TotalCount`]} ({isNaN(val)?"0.00":(val*100).toFixed(2)}%)</td>,...result,...temp]
             }else
@@ -1036,7 +1036,7 @@ const displayCategoryFields=(seg,data,cond)=>{
   let tcr=[]
   let lastColor="lightgray"
   //data=data[category][subset]
-  console.log("datauiu",data,seg,cond)
+ // console.log("datauiu",data,seg,cond)
   if(cond){
     lastColor="white"
     tcr=[<tr style={{background:"white",color:"black",margin:0,padding:0,background:lastColor}}>
@@ -1049,7 +1049,7 @@ const displayCategoryFields=(seg,data,cond)=>{
     </tr>]
   }
   let n=nf.normal.map((x,index)=>{
-    console.log("dataseg11",data[seg])
+    //console.log("dataseg11",data[seg])
     lastColor=lastColor=="white" /*&& index%2==0*/?"lightgray":"white"
     return <tr style={{margin:0,padding:0,color:"black",background:lastColor}}>
       <td style={{borderRight:"1px solid black"}}>{x}</td>
@@ -1110,7 +1110,7 @@ const calMedian=(arr)=>{
 const calculateMediaAndMediansOfRecords=(category,ssd)=>{
  
   Object.keys(realGrandTotals1[category][subset]).forEach(y=>{
-    console.log("aplic",ssd,y,realGrandTotals1)
+   //console.log("aplic",ssd,y,realGrandTotals1)
     if(Object.keys(ssd[y]).length>0){
   
     Object.keys(ssd[y]).forEach(u=>{

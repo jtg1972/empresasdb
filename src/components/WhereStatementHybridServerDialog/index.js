@@ -712,7 +712,7 @@ export const WhereStatementHybridServerDialog = ({
   const displayFieldsCombo=(ss)=>{
     let res=[]
     //res.push("Select Field")
-    console.log("rastreo",categoryName)
+    //console.log("rastreo",categoryName)
     if(relationshipType!="manytomany"){
       if(conditionsWhere?.[categoryName]!=undefined){
       
@@ -743,7 +743,7 @@ export const WhereStatementHybridServerDialog = ({
           })
         }
       }
-      console.log("resui",res)
+      //console.log("resui",res)
       setListFields(res)
     
   }

@@ -497,7 +497,7 @@ export const WhereStatementNumberDialog = ({
         acwa=[...acwa,logicalOperator,"wherePrevious",fieldConditionWhere]
     }
         
-    console.log("acwa",acwa)
+    //console.log("acwa",acwa)
     setAddConditionWhereArray(acwa)
     
   }
@@ -533,7 +533,7 @@ export const WhereStatementNumberDialog = ({
         }
       }}}
     
-    console.log("mapeo",mapeo)
+    //console.log("mapeo",mapeo)
     setConditionsWhere(mapeo)
     setNameWhereClause("")
     setAdded(true)

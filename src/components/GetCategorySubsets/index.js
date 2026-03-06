@@ -7,7 +7,7 @@ subsetsData,setSubsetsData,conditionsWhere,
 order,firstCatNormalFields,otmChoices,
 parentCategories,parentIdentifiers,otmChoicesStatistics})=>{
   const [subsets1,setSubsets1]=useState(subsets)
-  console.log("problema",subsets)
+  //console.log("problema",subsets)
   let tableTotalRecords
  /*useEffect(()=>{
 

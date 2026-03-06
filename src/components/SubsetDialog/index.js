@@ -13,7 +13,7 @@ setSubsets})=>{
     const [type,setType]=useState("input")
     const[value,setValue]=useState("")
     useEffect(()=>{
-      console.log("propsuu",whereHeader,conditions)
+      //console.log("propsuu",whereHeader,conditions)
       ssvar=subsets
       let inputType="input"
       let value
@@ -86,7 +86,7 @@ setSubsets})=>{
         colors=[]
       else
         colors=Object.keys(ssvar?.[whereHeader?.["categoryName"]])
-       console.log("checkedcolor",ssvar,colors,color,pretendColor) 
+     //  console.log("checkedcolor",ssvar,colors,color,pretendColor) 
       if((colors.includes(pretendColor) && color!==pretendColor) || pretendColor==null){
         
         //setColorExists(true)
@@ -104,7 +104,7 @@ setSubsets})=>{
           <input className="phcolor" 
           type={type=="input"?"text":"color"}
           onClick={()=>{
-            console.log("vars",type)
+          //  console.log("vars",type)
             if(type=="input")
               setType("color")
           }}
@@ -122,11 +122,11 @@ setSubsets})=>{
             onClick={(e)=>{
               
               ssvar=subsets
-              console.log("a borrar",ssvar?.[whereHeader?.["categoryName"]]?.[color])
+             // console.log("a borrar",ssvar?.[whereHeader?.["categoryName"]]?.[color])
               
               let colors=getCurrentColors()
               //colorExistsf()
-              console.log("colorexists",color,colorExistsf(color))
+              //console.log("colorexists",color,colorExistsf(color))
               delete ssvar?.[whereHeader?.["categoryName"]]?.[color]
               colorExistsf(color)
               if(!colorExistsf()){
@@ -144,7 +144,7 @@ setSubsets})=>{
                     }
                   }
                 }
-                console.log("pretenduu",ssvar)
+                //console.log("pretenduu",ssvar)
                 setColor(pretendColor)
                 setSubsets(ssvar)
               }}}>Add Color</button>

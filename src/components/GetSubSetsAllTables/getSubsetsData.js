@@ -15,7 +15,7 @@ let subsetsData={}
 export const getSubsetsData=(vars)=>{
 
   
-   console.log("vars88",vars) 
+ //  console.log("vars88",vars) 
     if(vars.subsets!=undefined){
   
       Object.keys(vars.subsets).forEach(cat=>{
@@ -33,12 +33,12 @@ export const getSubsetsData=(vars)=>{
       })
     }
   
-  console.log("return subsetsData",subsetsData)
+  //console.log("return subsetsData",subsetsData)
   return subsetsData
 }
 
 const verifyMeetWithConditionsBySegmentBaseLevel2=(vars,category,data1,ssd,ss)=>{
-  console.log("datadetail",data1,category)
+  //console.log("datadetail",data1,category)
   let segment=vars.subsets[category][ss]["segment"]
   let fieldName=vars.subsets[category][ss]["fieldName"]
   let rule=vars.subsets[category][ss]["rule"]
@@ -52,7 +52,7 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(vars,category,data1,ssd,ss)=>
   let res
   
   //console.log("ssd22",ssd1,data1,"entro aqui")
-  console.log("pero ", data1[segment],segment,datafield,getMainRule)
+ // console.log("pero ", data1[segment],segment,datafield,getMainRule)
   if(data1[category]!=undefined){
   if(category==segment){
     
@@ -62,7 +62,7 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(vars,category,data1,ssd,ss)=>
         Object.keys(data1).forEach(k=>{
           //if(ssd?.[category]?.[subset]?.[k]==undefined)
           subsetsData={...subsetsData,[category]:{...subsetsData[category],[ss]:{...subsetsData[category][ss],[k]:{...subsetsData[category][ss][k],[y]:data1[k][y]}}}}
-            console.log("ssd99",ssd)
+            //console.log("ssd99",ssd)
         })
       }else{
         Object.keys(data1).forEach(k=>{
@@ -140,7 +140,7 @@ const checkRule=(rulex,x,sameCategorySegment,field,type,conditionsWhere)=>{
   let rule=rulex["rule"]
   let arrAnswers=[]
   let ops=[]
-  console.log("paramsxx",rule,x,sameCategorySegment,field,type)
+  //console.log("paramsxx",rule,x,sameCategorySegment,field,type)
   if(true){
 
     if(rule.length>1){
@@ -157,7 +157,7 @@ const checkRule=(rulex,x,sameCategorySegment,field,type,conditionsWhere)=>{
           if(i%3==0){
             let nk=parseInt(i)
             ops=[...ops,rule[nk]]
-            console.log("entro aqui76",rule,rule[nk+1],nk+1,rule.length,i,x[field],x?.[field]?.toString()?.startsWith(rule[nk+2])) 
+           // console.log("entro aqui76",rule,rule[nk+1],nk+1,rule.length,i,x[field],x?.[field]?.toString()?.startsWith(rule[nk+2])) 
 
             if(rule[nk+1]=="starts with"){
               
@@ -165,7 +165,7 @@ const checkRule=(rulex,x,sameCategorySegment,field,type,conditionsWhere)=>{
                 arrAnswers=[...arrAnswers,true]
               else
                 arrAnswers=[...arrAnswers,false]
-              console.log("entrostart",field,x?.[field],arrAnswers)
+             // console.log("entrostart",field,x?.[field],arrAnswers)
             }else if(rule[nk]=="contains"){
               if(x[field].toString().includes(rule[nk+2]))
                 arrAnswers=[...arrAnswers,true]
@@ -278,7 +278,7 @@ const checkRule=(rulex,x,sameCategorySegment,field,type,conditionsWhere)=>{
   }else if(field!=="hybrid"){
     console.log("res segmentotherthatmain")
   }
-  console.log("evrule",evaluateRule(arrAnswers,ops),x,field)
+ //console.log("evrule",evaluateRule(arrAnswers,ops),x,field)
     return evaluateRule(arrAnswers,ops)
 }
 
@@ -308,7 +308,7 @@ const checkRuleHybrid=(rulex,x,index,conditionsWhere)=>{
 }
 const evaluateRule=(answers,operators)=>{
   let wholeAnswer=false
-  console.log("evalrule",answers,operators)
+ // console.log("evalrule",answers,operators)
   if(answers.length==operators.length){
     for(let x in operators){
       x=parseInt(x)
