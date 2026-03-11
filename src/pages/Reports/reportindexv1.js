@@ -8907,7 +8907,7 @@ const getDataReportTest=(routes,finalRoutes)=>{
       parentIdentifiers={parentIdentifiers}
       otmChoicesStatistics={otmChoicesStatistics}
     ></GetSubsetsContribution>)*/
-   totalTables.push(<GetSubsetsContributionsForAllSets
+totalTables.push(<GetSubsetsContributionsForAllSets
       vars={{
         tablesToCont:tablesToCont,
         subsetsData:y,
@@ -8921,11 +8921,13 @@ const getDataReportTest=(routes,finalRoutes)=>{
         setDummyState,
         finalRoutes:finalRoutes,
         routes:routes,
-        immediateSons:findTheLowerLevelCategory1(getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])),[],getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])))
+        immediateSons:findTheLowerLevelCategory1(getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`])),[],getFinalRoutesArray(finalRoutes,calculateRoutes([`getData${currentCategory.name}`]))),
+        dataz:z
+
     }}
     />)
 
- totalTables.push(<SubsetContributionsTable
+ /*totalTables.push(<SubsetContributionsTable
       order={order}
       data={z[0]}
       displayRaw={z[1]}
@@ -8935,7 +8937,7 @@ const getDataReportTest=(routes,finalRoutes)=>{
       subsets={subsets}
       
      //subsetsForAll={subsetsForAll}
-    />)
+    />)*/
 
     setReportShow(totalTables)
   // console.log("definitive",routes,y)

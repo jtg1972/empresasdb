@@ -15,6 +15,9 @@ export const SubsetsContDeriveTable=({
   cat,
   pivoteTable,
   tableToAnalize,
+  end,
+  algo,
+  setAlgo
 })=>{
   console.log("dr1dr1",data)
   const [table,setTable]=useState("")
@@ -677,7 +680,8 @@ const grandTotalsDisplay=(table)=>{
         &nbsp;</th>)
      subTitles.unshift(<th>{displayFieldsGrandTotals(null,null,true)}</th>)
       //}
-      return Object.keys(subsets[tablePiv]).length>0 && <table>
+      console.log("subsetstable",tablePiv,subsets)
+      return subsets[tablePiv]!=undefined && Object.keys(subsets[tablePiv]).length>0 && <table>
               <thead>
                 <tr>
                   {mainTitles}
@@ -734,20 +738,28 @@ let total=""
        piv2=[]
       let firstTables=[]
       let tablePiv
-     //if(table.startsWith("getData"))
-       // firstTables=[...firstCatNormalFields?.[table]?.otm,...firstCatNormalFields?.[table]?.mtm]
-      //else
-        firstTables=[...otmChoices?.[pivoteTable]?.otm,...otmChoices?.[pivoteTable]?.mtm]
+     if(pivoteTable.startsWith("getData"))
+       firstTables=[...firstCatNormalFields[pivoteTable].otm,...firstCatNormalFields[pivoteTable].mtm]
+      else
+        firstTables=[...otmChoices[pivoteTable].otm,...otmChoices[pivoteTable].mtm]
       
       console.log("firsttables",pivoteTable,firstTables)
       //if(pivoteTable!==order[1][pivoteTable][order[1][pivoteTable].length-1]){
         
-        piv2=Object.keys(data[mainTable]).map((seg,ind2)=>{
+        //piv2=Object.keys(data[mainTable]).map((seg,ind2)=>{
+        console.log("ortable",pivoteTable)
+        let norder=order[1][pivoteTable] 
+        if(!norder.includes(cat))
+          norder.unshift(cat)
+        console.log("norder",norder,firstTables,order[1])
+        piv2=norder.map((seg,ind2)=>{  
           firstTables.forEach(tab=>{
             if(order[1][tab].includes(seg))
               tablePiv=tab
           
           })
+          
+          //piv2.unshift(cat)
          // */console.log("tablereg",order,table,seg,data?.[tablePiv]?.[tablePiv])
 
           
@@ -773,17 +785,22 @@ let total=""
                 <tr><th className="bord" style={{height:"31px"}}>&nbsp;</th></tr>
                   <tr><th className="bord" style={{height:"31px"}}>{seg}</th></tr></thead> 
 
-             <tbody className="tbh"><tr><th>{printSecondLevelHeaders([...otmChoices?.[seg]?.normal,...otmChoices?.[seg]?.compositeFields],true,mainTable,seg,tablePiv/*order[1][table][1]*/)}</th></tr>
+             <tbody className="tbh"><tr><th>{printSecondLevelHeaders([...otmChoices[seg].normal,...otmChoices[seg].compositeFields],true,mainTable,seg,tablePiv/*order[1][table][1]*/)}</th></tr>
              </tbody></table></th>
             
             //if(data?.[tablePiv]?.[tablePiv]!=undefined && Object.keys(data[tablePiv][tablePiv]).length>0){
             }else if(/*data?.[mainTable]?.[tablePiv]!=undefined && Object.keys(data[mainTable][tablePiv]).length>0 && */data[mainTable][seg]!=undefined && table!==seg && checkHasFieldToDisplay(seg)){
               //console.log("entroseg1")
+              let camps=[]
+              if(otmChoices?.[seg]?.normal!=undefined)
+                camps=[...camps,...otmChoices[seg].normal.filter(x=>x.type=="number")]
+              if(otmChoices?.[seg]?.compositeFields!=undefined)  
+                camps=[...camps,...otmChoices[seg].compositeFields.filter(x=>x.type=="number")]
               return  <th style={{verticalAlign:"top",height:"auto"}}><table><thead>
                 
                 <tr><th className="bord">{seg}</th></tr></thead>
-              <tbody className="tbh"><tr><th>{printSecondLevelHeaders([...otmChoices?.[seg]?.normal.filter(x=>x.type=="number"),
-            ...otmChoices?.[seg]?.compositeFields.filter(x=>x.type=="number")],false,mainTable,seg,tablePiv/*order[1][table][1]*/)}</th></tr></tbody></table></th>
+              <tbody className="tbh"><tr><th>{printSecondLevelHeaders([...camps/*...otmChoices[seg].normal.filter(x=>x.type=="number"),
+            ...otmChoices[seg].compositeFields.filter(x=>x.type=="number")*/],false,mainTable,seg,tablePiv/*order[1][table][1]*/)}</th></tr></tbody></table></th>
             
             }else
             return ""
@@ -806,8 +823,11 @@ let total=""
       //}
      //console.log("piv2ver",piv2,piv2.filter(x=>x!="").length,piv2=="",piv2==null,"hola")
      // if(piv2.filter(x=>x!="").length>0 && checkHasSegmentsToDisplay(cat)){
-      total=<div className="cont">
-        <p>Esquema</p>
+       console.log("piv2",piv2,end)
+       if(piv2.filter(x=>x!="").length>1)
+        setAlgo(true)
+      total=piv2.filter(x=>x!="").length>1 && <div className="cont">
+      <p>{`${cat}_${tableToAnalize}`}</p> 
       <table className="main">
         <tbody>
           <tr>
@@ -824,6 +844,7 @@ let total=""
         </tbody>
         
       </table>
+      {end==true?<div style={{height:"3px",marginTop:"25px",marginBottom:"15px",color:"yellow",backgroundColor:"yellow"}}/>:""}
       
       
       </div>}
@@ -835,10 +856,10 @@ let total=""
   setTable(total)
 }
 
-  return <div className="cont">
-    <p>JORGETOROGUTZderive</p>
+  return table!=""?<div className="cont">
+    
     {table}
     
-  </div>
+  </div>:""
   
 }

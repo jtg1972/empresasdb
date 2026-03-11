@@ -19,13 +19,14 @@ const GetSubsetsContributionsForAllSets=({
     immediateSons,
     setDummyState,
     subsetsData,
-    tablesToCont
+    tablesToCont,
+    dataz
   }=vars
   const alreadyDone={}
   
   useEffect(()=>{
     startProcess()
-  },[subsets,data])
+  },[subsets,data,dataz])
   /*console.log("varsfijo",order,
   data,
   displayRaw,
@@ -35,6 +36,7 @@ const GetSubsetsContributionsForAllSets=({
   subsets,finalRoutes,routes,
   immediateSons)*/
   const [muestra,setMuestra]=useState("")
+  const [algo,setAlgo]=useState(false)
   let dataAgainstAll={}
   let dataResult1={}
   let printRaw={}
@@ -1502,22 +1504,29 @@ const GetSubsetsContributionsForAllSets=({
     let mainTable=""
     let orderPrint=[]
     let startIndex=0
+    setAlgo(false)
     for(let i=0;i<finalRoutes.length;i++){
       let route=routes[finalRoutes[i]]
-      for(let j=0;j<=route.length;j++){
+      for(let j=0;j<route.length;j++){
         mainTable=route[j]
-        
-        startIndex=j+2
+        startIndex=j+1
         let val=false
+        let partial=[]
         for(let i=startIndex;i<route.length;i++){
+          partial=[]
           pivoteTable=route[i-1]
           tableToAnalize=route[i]
-          // console.log("tablarespectiva80",tables[i],tables[j])
-          let otmmtm=[...otmChoices[pivoteTable].otm,...otmChoices[pivoteTable].mtm]
-          for(let i=0;i<otmmtm.length;i++){
-            if(subsets[otmmtm[i]]!=undefined){
-              //orderPrint.push(`${mainTable}_${tableToAnalize}`)
+          let otmmtm
+          if(pivoteTable.startsWith("getData")){
+            otmmtm=[...firstCatNormalFields[pivoteTable].otm,...firstCatNormalFields[pivoteTable].mtm]
+          }else{
+            otmmtm=[...otmChoices[pivoteTable].otm,...otmChoices[pivoteTable].mtm]
+          }
+          for(let z=0;z<otmmtm.length;z++){
+            if(subsets[otmmtm[z]]!=undefined){
               orderPrint.push(<SubsetsContDeriveTable
+                setAlgo={setAlgo}
+                algo={algo}
                 order={order}
                 data={dataResult1}
                 displayRaw={printRaw}
@@ -1529,29 +1538,62 @@ const GetSubsetsContributionsForAllSets=({
                 cat={mainTable}
                 pivoteTable={pivoteTable}
                 tableToAnalize={tableToAnalize}
-               //subsetsForAll={subsetsForAll}
+                end={false}
+              
               />)
               val=true
+              if(val==true){
+                for(let o=j+1;o<i;o++){
+                  orderPrint.push(<SubsetsContDeriveTable
+                    setAlgo={setAlgo}
+                    algo={algo}
+                    order={order}
+                    data={dataResult1}
+                    displayRaw={printRaw}
+                    grandTotals={grandTotals}
+                    firstCatNormalFields={firstCatNormalFields}
+                    otmChoices={otmChoices}
+                    subsets={subsets}
+                    mainTable={`${route[o]}_${tableToAnalize}`}
+                    cat={route[o]}
+                    pivoteTable={pivoteTable}
+                    tableToAnalize={tableToAnalize}
+                    end={false}
+                  
+                    />)
+                }
+              }
+              orderPrint.push(<SubsetsContDeriveTable
+                setAlgo={setAlgo}
+                algo={algo}
+                order={order}
+                data={dataz[0]}
+                displayRaw={dataz[1]}
+                grandTotals={dataz[2]}
+                firstCatNormalFields={firstCatNormalFields}
+                otmChoices={otmChoices}
+                subsets={subsets}
+                mainTable={pivoteTable}
+                cat={pivoteTable}
+                pivoteTable={pivoteTable}
+                tableToAnalize={tableToAnalize}
+                end={true}
+              />)
+            
             }
           }
-          if(val==true){
-            for(let o=j+1;o<i-1;o++){
-              orderPrint.push(`${route[o]}_${tableToAnalize}`)
-            }
-            //orderPrint.push(pivoteTable)
-          }
-          orderPrint.push(pivoteTable)
-         
         }
       }
     }
-    console.log("ordertoprint",orderPrint)
     return orderPrint
   }
 
   return <>
-  <p>Jorge</p>
   {muestra}
+  {!algo && <div>
+    <p style={{margin:"0px", padding:"5px",color:"yellow",background:"black"}}>There is no sets with numeric variables to analize</p>
+    <div style={{height:"3px",marginTop:"0px",marginBottom:"15px",color:"yellow",backgroundColor:"yellow"}}></div>
+  </div>}
   {/*<SubsetsContDeriveTable
       order={order}
       data={dataResult1["getDa"]}
