@@ -1524,26 +1524,31 @@ const GetSubsetsContributionsForAllSets=({
           }
           for(let z=0;z<otmmtm.length;z++){
             if(subsets[otmmtm[z]]!=undefined){
-              orderPrint.push(<SubsetsContDeriveTable
-                setAlgo={setAlgo}
-                algo={algo}
-                order={order}
-                data={dataResult1}
-                displayRaw={printRaw}
-                grandTotals={grandTotals}
-                firstCatNormalFields={firstCatNormalFields}
-                otmChoices={otmChoices}
-                subsets={subsets}
-                mainTable={`${mainTable}_${tableToAnalize}`}
-                cat={mainTable}
-                pivoteTable={pivoteTable}
-                tableToAnalize={tableToAnalize}
-                end={false}
               
-              />)
+              if(j!=i-1){
+                orderPrint.push("main",j,i-1)
+                orderPrint.push(<SubsetsContDeriveTable
+                  setAlgo={setAlgo}
+                  algo={algo}
+                  order={order}
+                  data={dataResult1}
+                  displayRaw={printRaw}
+                  grandTotals={grandTotals}
+                  firstCatNormalFields={firstCatNormalFields}
+                  otmChoices={otmChoices}
+                  subsets={subsets}
+                  mainTable={`${mainTable}_${tableToAnalize}`}
+                  cat={mainTable}
+                  pivoteTable={pivoteTable}
+                  tableToAnalize={tableToAnalize}
+                  end={false}
+                
+                />)
               val=true
+              }
               if(val==true){
-                for(let o=j+1;o<i;o++){
+                for(let o=j+1;o<i-1;o++){
+                 orderPrint.push("intermediate")
                   orderPrint.push(<SubsetsContDeriveTable
                     setAlgo={setAlgo}
                     algo={algo}
@@ -1563,6 +1568,7 @@ const GetSubsetsContributionsForAllSets=({
                     />)
                 }
               }
+              orderPrint.push("final")
               orderPrint.push(<SubsetsContDeriveTable
                 setAlgo={setAlgo}
                 algo={algo}
