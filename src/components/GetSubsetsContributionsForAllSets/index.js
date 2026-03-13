@@ -1504,7 +1504,9 @@ const GetSubsetsContributionsForAllSets=({
     let mainTable=""
     let orderPrint=[]
     let startIndex=0
+    let mainRelationsShips=[]
     setAlgo(false)
+    let entro=false
     for(let i=0;i<finalRoutes.length;i++){
       let route=routes[finalRoutes[i]]
       for(let j=0;j<route.length;j++){
@@ -1522,33 +1524,14 @@ const GetSubsetsContributionsForAllSets=({
           }else{
             otmmtm=[...otmChoices[pivoteTable].otm,...otmChoices[pivoteTable].mtm]
           }
-          for(let z=0;z<otmmtm.length;z++){
-            if(subsets[otmmtm[z]]!=undefined){
+            //for(let z=0;z<otmmtm.length;z++){
               
-              if(j!=i-1){
-                orderPrint.push("main",j,i-1)
-                orderPrint.push(<SubsetsContDeriveTable
-                  setAlgo={setAlgo}
-                  algo={algo}
-                  order={order}
-                  data={dataResult1}
-                  displayRaw={printRaw}
-                  grandTotals={grandTotals}
-                  firstCatNormalFields={firstCatNormalFields}
-                  otmChoices={otmChoices}
-                  subsets={subsets}
-                  mainTable={`${mainTable}_${tableToAnalize}`}
-                  cat={mainTable}
-                  pivoteTable={pivoteTable}
-                  tableToAnalize={tableToAnalize}
-                  end={false}
+              //if(subsets[otmmtm[z]]!=undefined){
+              if(Object.keys(dataz[0][pivoteTable]).length>1){
                 
-                />)
-              val=true
-              }
-              if(val==true){
-                for(let o=j+1;o<i-1;o++){
-                 orderPrint.push("intermediate")
+                if(j!=i-1){
+                  entro=true
+                  
                   orderPrint.push(<SubsetsContDeriveTable
                     setAlgo={setAlgo}
                     algo={algo}
@@ -1559,36 +1542,63 @@ const GetSubsetsContributionsForAllSets=({
                     firstCatNormalFields={firstCatNormalFields}
                     otmChoices={otmChoices}
                     subsets={subsets}
-                    mainTable={`${route[o]}_${tableToAnalize}`}
-                    cat={route[o]}
+                    mainTable={`${mainTable}_${tableToAnalize}`}
+                    cat={mainTable}
                     pivoteTable={pivoteTable}
                     tableToAnalize={tableToAnalize}
                     end={false}
                   
-                    />)
+                  />)
+                
+                
                 }
+                val=true
+                if(val==true){
+                  for(let o=j+1;o<i-1;o++){
+                  //orderPrint.push("intermediate")
+                    orderPrint.push(<SubsetsContDeriveTable
+                      setAlgo={setAlgo}
+                      algo={algo}
+                      order={order}
+                      data={dataResult1}
+                      displayRaw={printRaw}
+                      grandTotals={grandTotals}
+                      firstCatNormalFields={firstCatNormalFields}
+                      otmChoices={otmChoices}
+                      subsets={subsets}
+                      mainTable={`${route[o]}_${tableToAnalize}`}
+                      cat={route[o]}
+                      pivoteTable={pivoteTable}
+                      tableToAnalize={tableToAnalize}
+                      end={false}
+                    
+                      />)
+                  }
+                }
+                //orderPrint.push("final")
+                
+                orderPrint.push(<SubsetsContDeriveTable
+                  setAlgo={setAlgo}
+                  algo={algo}
+                  order={order}
+                  data={dataz[0]}
+                  displayRaw={dataz[1]}
+                  grandTotals={dataz[2]}
+                  firstCatNormalFields={firstCatNormalFields}
+                  otmChoices={otmChoices}
+                  subsets={subsets}
+                  mainTable={pivoteTable}
+                  cat={pivoteTable}
+                  pivoteTable={pivoteTable}
+                  tableToAnalize={tableToAnalize}
+                  end={true}
+                />)
+                 
               }
-              orderPrint.push("final")
-              orderPrint.push(<SubsetsContDeriveTable
-                setAlgo={setAlgo}
-                algo={algo}
-                order={order}
-                data={dataz[0]}
-                displayRaw={dataz[1]}
-                grandTotals={dataz[2]}
-                firstCatNormalFields={firstCatNormalFields}
-                otmChoices={otmChoices}
-                subsets={subsets}
-                mainTable={pivoteTable}
-                cat={pivoteTable}
-                pivoteTable={pivoteTable}
-                tableToAnalize={tableToAnalize}
-                end={true}
-              />)
-            
             }
-          }
-        }
+            //}
+          
+        //}
       }
     }
     return orderPrint
