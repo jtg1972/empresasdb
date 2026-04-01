@@ -6364,6 +6364,23 @@ const getCategoriesGrandTotals=(category)=>{
           [`${nf["compositeFields"][j1]}total`]:realGrandTotals1[category][y][`${nf["compositeFields"][j1]}total`]+st,
           [`${nf["compositeFields"][j1]}UniqueTotal`]:realGrandTotals1[category][y][`${nf["compositeFields"][j1]}UniqueTotal`]+st1
         }
+        if(category!=y){
+          if(realGrandTotals1[category][y][`${nf["compositeFields"][j1]}NoRepeatTotal`]==undefined)
+            realGrandTotals1[category][y]={...realGrandTotals1[category][y],[`${nf["compositeFields"][j1]}NoRepeatTotal`]:0}
+          if(realGrandTotals1[category][y][`${nf["compositeFields"][j1]}NoRepeatUniqueTotal`]==undefined)
+            realGrandTotals1[category][y]={...realGrandTotals1[category][y],[`${nf["compositeFields"][j1]}NoRepeatUniqueTotal`]:0}
+  
+        //empieza fragmento donde los ids no son los mismos
+          if(!idAlreadyDone.includes(finalObject[category][y][u]?.["id"])){
+            realGrandTotals1[category][y]={...realGrandTotals1[category][y],
+              [`${nf["compositeFields"][j1]}NoRepeatTotal`]:realGrandTotals1[category][y][`${nf["compositeFields"][j1]}NoRepeatTotal`]+st,
+              [`${nf["compositeFields"][j1]}NoRepeatUniqueTotal`]:realGrandTotals1[category][y]?.[`${nf["compositeFields"][j1]}NoRepeatUniqueTotal`]+st1
+            }
+        
+            //idAlreadyDone.push(finalObject[category][y][u]?.["id"])
+        
+          }
+        }
       }
       if(!idAlreadyDone.includes(finalObject[category][y][u]?.["id"]))
        idAlreadyDone.push(finalObject[category][y][u]?.["id"])
@@ -6417,7 +6434,7 @@ const getCategoriesGrandTotals=(category)=>{
     realGrandTotals1?.[category]?.[y]?.[`${y}TotalCountArrayUnique`]?.sort((a,b)=>a-b)
     realGrandTotals1?.[category]?.[y]?.[`${y}NoRepeatTotalCountArrayUnique`]?.sort((a,b)=>a-b)
   })
-  //onsole.log("realgt",realGrandTotals1)
+  console.log("realgt",realGrandTotals1)
 }
 
 const initializeFinalObjectVariables=(key,cat,next,first)=>{

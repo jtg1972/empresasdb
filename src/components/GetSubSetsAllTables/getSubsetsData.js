@@ -135,6 +135,32 @@ const verifyMeetWithConditionsBySegmentBaseLevel2=(vars,category,data1,ssd,ss)=>
   setSubsetsData(ssd1)*/
   
 }
+/*const displayFirstCategoryFields=(data)=>{
+  const nf=getNumericFields(`getData${currentCategory.name}`)
+  let n=nf.normal.map((x,index)=>{
+    return <tr style={{background:"white",color:"black",margin:0,padding:0}}>
+      <td style={{borderRight:"1px solid black"}}>{x}</td>       
+      <td style={{borderRight:"1px solid black"}}>{data?.[`getData${currentCategory.name}`]?.[subset]?.[`${x}total`]==undefined?"0.00":data[`getData${currentCategory.name}`][subset][`${x}total`].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[`getData${currentCategory.name}`]?.[subset]?.[`${x}AccumulatedArray`]?.[0]==undefined?"0.00":(data[`getData${currentCategory.name}`]?.[subset]?.[`${x}AccumulatedArray`]?.[0].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[`getData${currentCategory.name}`]?.[subset]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[subset]?.[`${x}AccumulatedArray`].length-1]==undefined?"0.00":(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[`getData${currentCategory.name}`]?.[subset]?.[`${x}Media`])?"0.00":data[`getData${currentCategory.name}`][subset][`${x}Media`].toFixed(2)}</td>
+      <td>{isNaN(data?.[`getData${currentCategory.name}`]?.[subset]?.[`${x}Median`])?"0.00":data[`getData${currentCategory.name}`][subset][`${x}Median`].toFixed(2)}</td>
+    </tr>
+  })
+  let c=nf.compositeFields.map(x=>{
+    return <tr style={{background:"white",color:"black",margin:0,padding:0}}>
+      <td style={{borderRight:"1px solid black"}}>{x}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[`getData${currentCategory.name}`]?.[subset]?.[`${x}total`]==undefined?"0.00":data[`getData${currentCategory.name}`][`${x}total`].toFixed(2)}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[`getData${currentCategory.name}`]?.[subset]?.[`${x}AccumulatedArray`]?.[0]==undefined?"0.00":(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[0].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{data?.[`getData${currentCategory.name}`]?.[subset]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1]==undefined?"0.00":(data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`]?.[data[`getData${currentCategory.name}`]?.[`${x}AccumulatedArray`].length-1].toFixed(2))}</td>
+      <td style={{borderRight:"1px solid black"}}>{isNaN(data?.[`getData${currentCategory.name}`]?.[subset]?.[`${x}Media`])?"0.00":data[`getData${currentCategory.name}`][`${x}Media`].toFixed(2)}</td>
+      <td>{isNaN(data?.[`getData${currentCategory.name}`]?.[`${x}Median`])?"0.00":data[`getData${currentCategory.name}`][subset][`${x}Median`].toFixed(2)}</td>
+    </tr>
+  })
+  return [...n,...c]
+
+  
+}*/
 
 const checkRule=(rulex,x,sameCategorySegment,field,type,conditionsWhere)=>{
   let rule=rulex["rule"]
