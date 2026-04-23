@@ -10,6 +10,7 @@ export const SubsetsContDeriveTable=({
   otmChoices,
   subsets,
   displayRaw,
+  displayRawUnique,
   grandTotals,
   mainTable,
   cat,
@@ -42,18 +43,32 @@ export const SubsetsContDeriveTable=({
 
 
                 <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalCount"]==undefined?"0.00":rec["totalCount"].toFixed(2)}</td>
-                <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["value"]?.toFixed(2)}</td>
+                <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["total"]?.toFixed(2)}</td>
                 <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["min"]?.toFixed(2)}</td>
                 <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["media"]?.toFixed(2)}</td>
                 <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["median"]?.toFixed(2)}</td>
                 <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["max"]?.toFixed(2)}</td>
 
-                {(type=="secondary" && displayRaw[mainTable][seg]) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalCountRaw"]==undefined?"0.00":rec["totalCountRaw"].toFixed(2)}</td>}
-                {(type=="secondary" && displayRaw[mainTable][seg]) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["value"]?.toFixed(2)}</td>}
-                {(type=="secondary" && displayRaw[mainTable][seg]) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["minRaw"]?.toFixed(2)}</td>}
-                {(type=="secondary" && displayRaw[mainTable][seg]) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["mediaRaw"]?.toFixed(2)}</td>}
-                {(type=="secondary" && displayRaw[mainTable][seg]) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["medianRaw"]?.toFixed(2)}</td>}
-                {(type=="secondary" && displayRaw[mainTable][seg]) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["maxRaw"]?.toFixed(2)}</td>}
+                {(type=="secondary" /*&& displayRaw[mainTable][seg]*/) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalCountRaw"]==undefined?"0.00":rec["totalCountRaw"].toFixed(2)}</td>}
+                {(type=="secondary" /*&& displayRaw[mainTable][seg]*/) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalRaw"]?.toFixed(2)}</td>}
+                {(type=="secondary" /*&& displayRaw[mainTable][seg]*/) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["minRaw"]?.toFixed(2)}</td>}
+                {(type=="secondary" /*&& displayRaw[mainTable][seg]*/) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["mediaRaw"]?.toFixed(2)}</td>}
+                {(type=="secondary" /*&& displayRaw[mainTable][seg]*/) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["medianRaw"]?.toFixed(2)}</td>}
+                {(type=="secondary" /*&& displayRaw[mainTable][seg]*/) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["maxRaw"]?.toFixed(2)}</td>}
+
+                <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalCountUnique"]==undefined?"0.00":rec["totalCountUnique"].toFixed(2)}</td>
+                <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalUnique"]/*"valueUnique"]*/?.toFixed(2)}</td>
+                <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["minUnique"]?.toFixed(2)}</td>
+                <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["mediaUnique"]?.toFixed(2)}</td>
+                <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["medianUnique"]?.toFixed(2)}</td>
+                <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["maxUnique"]?.toFixed(2)}</td>
+
+                {(type=="secondary" /* && displayRawUnique[mainTable][seg]*/) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalCountRawUnique"]==undefined?"0.00":rec["totalCountRawUnique"].toFixed(2)}</td>}
+                {(type=="secondary" /*&& displayRawUnique[mainTable][seg]*/) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalRawUnique"]?.toFixed(2)}</td>}
+                {(type=="secondary" /*&& displayRawUnique[mainTable][seg]*/) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["minRawUnique"]?.toFixed(2)}</td>}
+                {(type=="secondary" /*&& displayRawUnique[mainTable][seg]*/) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["mediaRawUnique"]?.toFixed(2)}</td>}
+                {(type=="secondary" /*&& displayRawUnique[mainTable][seg]*/) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["medianRawUnique"]?.toFixed(2)}</td>}
+                {(type=="secondary" /*&& displayRawUnique[mainTable][seg]*/) && <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["maxRawUnique"]?.toFixed(2)}</td>}
               </tr> 
             
           
@@ -77,6 +92,13 @@ export const SubsetsContDeriveTable=({
               <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`${field}Media`]?.toFixed(2)}</td>
               <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`${field}Median`]?.toFixed(2)}</td>
               <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`${field}Maximum`]?.toFixed(2)}</td>
+
+              <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`${field}UniqueCount`]==undefined?"0.00":rec[`${field}UniqueCount`].toFixed(2)}</td>
+              <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`${field}UniqueTotal`]?.toFixed(2)!=undefined?rec?.[`${field}UniqueTotal`]?.toFixed(2):"0.00"}</td>
+              <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`${field}UniqueMinimum`]?.toFixed(2)}</td>
+              <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`${field}UniqueMedia`]?.toFixed(2)}</td>
+              <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`${field}UniqueMedian`]?.toFixed(2)}</td>
+              <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`${field}UniqueMaximum`]?.toFixed(2)}</td>
             </tr> 
           
         
@@ -96,6 +118,14 @@ export const SubsetsContDeriveTable=({
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`media`]?.toFixed(2)}</td>
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`median`]?.toFixed(2)}</td>
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`max`]?.toFixed(2)}</td>
+          
+
+          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalRowCountUnique"]?.toFixed(2)}</td>
+          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalRowUnique"]?.toFixed(2)}</td>
+          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`minUnique`]?.toFixed(2)}</td>
+          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`mediaUnique`]?.toFixed(2)}</td>
+          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`medianUnique`]?.toFixed(2)}</td>
+          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`maxUnique`]?.toFixed(2)}</td>
         </tr> 
       
     
@@ -121,12 +151,25 @@ export const SubsetsContDeriveTable=({
                 <th className="bord">media</th>
                 <th className="bord">median</th>
                 <th className="bord">maximum</th>
-                {(type=="secondary" && displayRaw[mainTable][seg]) && <th className="bord">countRaw</th>}
-                {(type=="secondary" && displayRaw[mainTable][seg]) && <th className="bord">valueRaw</th>}
-                {(type=="secondary" && displayRaw[mainTable][seg]) && <th className="bord">minimumRaw</th>}
-                {(type=="secondary" && displayRaw[mainTable][seg]) && <th className="bord">mediaRaw</th>}
-                {(type=="secondary" && displayRaw[mainTable][seg]) && <th className="bord">medianRaw</th>}
-                {(type=="secondary" && displayRaw[mainTable][seg]) && <th className="bord">maximumRaw</th>}
+                {(type=="secondary"/*&& displayRaw[mainTable][seg]*/) && <th className="bord">countRaw</th>}
+                {(type=="secondary"/*&& displayRaw[mainTable][seg]*/) && <th className="bord">valueRaw</th>}
+                {(type=="secondary"/*&& displayRaw[mainTable][seg]*/) && <th className="bord">minimumRaw</th>}
+                {(type=="secondary"/*&& displayRaw[mainTable][seg]*/) && <th className="bord">mediaRaw</th>}
+                {(type=="secondary"/*&& displayRaw[mainTable][seg]*/) && <th className="bord">medianRaw</th>}
+                {(type=="secondary"/*&& displayRaw[mainTable][seg]*/) && <th className="bord">maximumRaw</th>}
+
+                <th className="bord">countUnique</th>
+                <th className="bord">valueUnique</th>
+                <th className="bord">minimumUnique</th>
+                <th className="bord">mediaUnique</th>
+                <th className="bord">medianUnique</th>
+                <th className="bord">maximumUnique</th>
+                {(type=="secondary"/* && displayRawUnique[mainTable][seg]*/) && <th className="bord">countRawUnique</th>}
+                {(type=="secondary"/* && displayRawUnique[mainTable][seg]*/) && <th className="bord">valueRawUnique</th>}
+                {(type=="secondary"/* && displayRawUnique[mainTable][seg]*/) && <th className="bord">minimumRawUnique</th>}
+                {(type=="secondary"/* && displayRawUnique[mainTable][seg]*/) && <th className="bord">mediaRawUnique</th>}
+                {(type=="secondary"/* && displayRawUnique[mainTable][seg]*/) && <th className="bord">medianRawUnique</th>}
+                {(type=="secondary"/* && displayRawUnique[mainTable][seg]*/) && <th className="bord">maximumRawUnique</th>}
               </tr>
             </thead>
             <tbody className="tbh">

@@ -5,31 +5,148 @@ import { findAllByTestId } from "@testing-library/dom"
 let dataResult={}
 let grandTotals={}
 let printRaw={}
+
+const getUniqueKeys=(keys,values)=>{
+  let alreadyDone=[]
+  let newKeys=[]
+  let newValues=[]
+  for(let i=0;i<keys.length;i++){
+    
+    for(let j=0;j<keys.length;j++){
+      if(keys[j]==keys[i] && !alreadyDone.includes(keys[i])){
+        alreadyDone.push(keys[j])
+        newKeys.push(keys[j])
+        newValues.push(values[j])
+      }
+    }
+  }
+  console.log("newkeys",keys,newKeys,values,newValues)
+  return [newKeys,newValues]
+}
+
+/*const resolveUnique=(keys,values)=>{
+  let each
+  let newKeys=[]
+  let newValues=[]
+  let done=[]
+  for(let i=0;i<keys.length;i++){
+    if(!done.includes(keys[i])){
+      newKeys.push(keys[i])
+      newValues.push(values[i])
+      done.push(values[i])
+    }
+  }
+  return [newKeys,newValues]
+}*/
+
+const calculateArrUnique=(arrayFiltered,keys,values,keysSubset,valuesSubset)=>{
+  let res=[]
+  for(let i=0;i<arrayFiltered.length;i++){
+    res={...res,[i]:[]}
+  }
+  let enc=false
+  console.log("keysubset",keysSubset)
+  if(arrayFiltered.length>0){
+    for(let i=0;i<keysSubset.length;i++){
+      enc=false
+      for(let j=0;j<arrayFiltered.length;j++){
+        for(let k=0;k<arrayFiltered[j].length;k++){
+          if(arrayFiltered[j][k]==keysSubset[i]){
+            res={...res,[j]:[...res[j],valuesSubset[i]]}
+           // res[j].push(valuesSubset[i])
+            enc=true
+            
+          }
+        }
+        /*if(enc=true)
+          break*/
+      }
+    }
+  }
+  let res1=[]
+  for(let i=0;i<Object.keys(res).length;i++){
+    let suma=0
+    let keyp=Object.keys(res)[i]
+    for(let j=0;j<res[keyp].length;j++){
+      suma+=res[i][j]
+    }
+    res1.push(suma)
+  }
+  console.log("jorget",arrayFiltered,res,res1,keysSubset,valuesSubset)
+  return res1
+}
+const resolveUnique=(keys,values)=>{
+  let each
+  let newKeys=[]
+  let newValues=[]
+  let done=[]
+  console.log("keysvalues44",keys,values)
+  for(let i=0;i<keys.length;i++){
+    if(!done.includes(keys[i])){
+      newKeys.push(keys[i])
+      newValues.push(values[i])
+      done.push(keys[i])
+    }
+  }
+  console.log("keysver",newKeys,newValues)
+  return {keys:[...newKeys],values:[...newValues]}
+}
 const calculateContributions=(vars)=>{
   let {cat,ssData,seg,data,otmChoices,gi,giData,rs,field,x,ss}=vars
 // console.log("datares99",dataResult,cat,seg,gi,`${field}total`,ssData[x][rs])
   if(dataResult?.[cat]?.[seg]?.["data"]?.[gi]?.[`${field}total`]?.[ss]?.[`${field}RawArray`]==undefined)
       dataResult[cat][seg]["data"][gi][`${field}total`][ss][`${field}RawArray`]=[]
+  if(dataResult?.[cat]?.[seg]?.["data"]?.[gi]?.[`${field}total`]?.[ss]?.[`${field}UniqueRawArray`]==undefined)
+      dataResult[cat][seg]["data"][gi][`${field}total`][ss][`${field}UniqueRawArray`]=[]
        
       
  //console.log("alarma",data,cat,seg,gi,ssData,x,rs)
   if(data[cat][seg][giData]["id"]==ssData[x][rs]["parentId"]){
     let contTotal=0
     let rep=[]
+    let contTotalUnique=0
+    let repUnique=[]
+    let repUniqueKeys=[]
+    let arrUniqueKeys=[]
+    let arrPrevKeys=[]
     if(x==seg){
 
       rep=[...rep,ssData[seg][rs][field]]
       contTotal=ssData[seg][rs][field]
-    
+      repUnique=rep
+      contTotalUnique=contTotal
+      arrUniqueKeys=[...arrUniqueKeys,`${ssData[seg][rs]["id"]}/${ssData[seg][rs]["parentId"]}`]
+      //dataResult[cat][seg]["data"][gi][`${field}total`][ss]["arrUniqueKeys"]=[...dataResult[cat][seg]["data"][gi][`${field}total`][ss]["arrUniqueKeys"],`${ssData[seg][rs]["id"]}/${ssData[seg][rs]["parentId"]}`]//`${ssData[seg][rs]["id"]}/${ssData[seg][rs]["parentId"]}`
+      console.log("portotal",dataResult[cat][seg]["data"][gi][`${field}total`][ss]["arrUniqueKeys"])
+      /*if(!dataResult[cat][seg]["data"][gi][`${field}total`]["arrPrevKeys"].includes(`${ssData[seg][rs]["id"]}/${ssData[seg][rs]["parentId"]}`)){
+        arrPrevKeys=[...dataResult[cat][seg]["data"][gi][`${field}total`]["arrPrevKeys"],`${ssData[seg][rs]["id"]}/${ssData[seg][rs]["parentId"]}`]
+        contTotalUnique=ssData[seg][rs][`${field}UniqueTotal`]
+      }*/
+      console.log("ssdatareg",ssData[seg][rs],ssData[seg][rs][`${field}UniqueTotal`])
     }else{
+      console.log("ssdatareg",ssData[seg][rs],ssData[seg][rs][`${field}UniqueTotal`])
       contTotal=ssData[seg][rs][`${field}total`]
+      //contTotalUnique=ssData[seg][rs][`${field}UniqueTotal`]
       rep=[...rep,...ssData[seg][rs][`${field}Acummulated`]]
+      repUnique=[...repUnique,...ssData[seg][rs][`${field}UniqueTotalArray`]]
+      arrUniqueKeys=[...arrUniqueKeys,...ssData[seg][rs]["realUniqueIndexes"]]//`${ssData[seg][rs]["id"]}/${ssData[seg][rs]["parentId"]}`]
+      console.log("portotal",ssData[seg][rs]["realUniqueIndexes"])
+      //arrUniqueKeys=[]
+      //arrUniqueKeys=[...dataPivote[rs][`${field}total`][ss]["arrUniqueKeys"]]//`${dataPivote[rs]["id"]}/${dataPivote[rs]["parentId"]}`]
+
+        if(!dataResult[cat][seg]["data"][gi][`${field}total`][ss]["arrPrevKeys"].includes(`${ssData[seg][rs]["id"]}/${ssData[seg][rs]["parentId"]}`)){
+          arrPrevKeys=[...dataResult[cat][seg]["data"][gi][`${field}total`][ss]["arrPrevKeys"],`${ssData[seg][rs]["id"]}/${ssData[seg][rs]["parentId"]}`]
+          contTotalUnique=ssData[seg][rs][`${field}UniqueTotal`]
+        }
     }
    // console.log("perios",ssData[seg][rs])
 
       //console.log("checarque",cat,seg,gi,`${n.name1}total`,ssData[seg][rs][`${n.name1}`])                              
-
+      console.log("drpivote",dataResult,dataResult[cat][seg]["data"][gi][`${field}total`][ss][`${field}UniqueTotalArrayGlobal`],dataResult[cat][seg]["data"][gi]?.[`${field}UniqueTotalArray`],ssData[seg][gi]?.[`${field.name1}UniqueTotalArray`])
       //console.log("uiruir",cat,seg,gi,data[cat][seg][gi]["keys"],`${n.name1}total`,ssData[seg][rs][`${n.name1}`])
+    let ru=resolveUnique([...dataResult[cat][seg]["data"][gi][`${field}total`][ss][`arrUniqueKeys`],...arrUniqueKeys],[...dataResult[cat][seg]["data"][gi][`${field}total`][ss][`${field}UniqueRawArray`],...repUnique])
+    console.log("rufinal",ru)
+    let uniq=calculateArrUnique(data[cat][seg][gi]?.[`realUniqueIndexesInArrayFiltered`],data[cat][seg][gi]?.[`realUniqueIndexes`],data[cat][seg][gi]?.[`${field}UniqueTotalArray`],ru.keys,ru.values)
     dataResult={...dataResult,
       [cat]:{
         ...dataResult[cat],
@@ -42,9 +159,19 @@ const calculateContributions=(vars)=>{
               [`${field}total`]:{
                 ...dataResult[cat][seg]["data"][gi][`${field}total`],
                 [ss]:{
+                  ...dataResult[cat][seg]["data"][gi][`${field}total`][ss],
                   value:dataResult[cat][seg]["data"][gi][`${field}total`][ss]["value"]+contTotal,
                   arr:[...dataResult[cat][seg]["data"][gi][`${field}total`][ss]["arr"],contTotal],
-                  [`${field}RawArray`]:[...dataResult[cat][seg]["data"][gi][`${field}total`][ss][`${field}RawArray`],...rep]
+                  [`${field}RawArray`]:[...dataResult[cat][seg]["data"][gi][`${field}total`][ss][`${field}RawArray`],...rep],
+
+                  valueUnique:dataResult[cat][seg]["data"][gi][`${field}total`][ss]["valueUnique"]+contTotalUnique,
+                  arrUnique:[...uniq],//[...dataResult[cat][seg]["data"][gi][`${field}total`][ss]["arrUnique"],contTotalUnique],
+                  arrUniqueWithArrays:[...dataResult[cat][seg]["data"][gi][`${field}total`][ss]["arrUniqueWithArrays"],repUnique],//contTotalUnique],
+                  [`${field}UniqueRawArray`]:[...ru.values],//[...dataResult[cat][seg]["data"][gi][`${field}total`][ss][`${field}UniqueRawArray`],...repUnique],
+                  arrUniqueKeys:[...ru.keys],//[...dataResult[cat][seg]["data"][gi][`${field}total`][ss][`arrUniqueKeys`],...arrUniqueKeys],//...arrUniqueKeys],
+                  arrPrevKeys:[...arrPrevKeys],
+                  [`${field}UniqueTotalArrayGlobal`]:[...dataResult[cat][seg]["data"][gi][`${field}total`][ss][`${field}UniqueTotalArrayGlobal`],ssData[seg][gi]?.[`${field}UniqueTotalArray`]],
+                  realUniqueIndexesGlobal:[...dataResult[cat][seg]["data"][gi][`${field}total`][ss][`realUniqueIndexesGlobal`],ssData[seg][gi]?.[`realUniqueIndexes`]]
                 }
 
               }
@@ -64,6 +191,8 @@ const calculateContributionsNull=(vars)=>{
   if(dataResult?.[cat]?.[seg]?.["data"]?.[gi]?.[`${field}total`]?.[ss]?.[`${field}RawArray`]==undefined)
       dataResult[cat][seg]["data"][gi][`${field}total`][ss][`${field}RawArray`]=[]
        
+    if(dataResult?.[cat]?.[seg]?.["data"]?.[gi]?.[`${field}total`]?.[ss]?.[`${field}UniqueRawArray`]==undefined)
+      dataResult[cat][seg]["data"][gi][`${field}total`][ss][`${field}UniqueRawArray`]=[]
       
   console.log("alarma",data,cat,seg,gi,ssData,x,rs)
   
@@ -97,7 +226,17 @@ const calculateContributionsNull=(vars)=>{
                 [ss]:{
                   value:0,
                   arr:[],
-                  [`${field}RawArray`]:[]
+                  [`${field}RawArray`]:[],
+
+                  valueUnique:0,
+                  arrUnique:[],
+                  [`${field}UniqueRawArray`]:[],
+                  arrUniqueKeys:[],
+
+                  [`${field.name1}UniqueTotalArrayGlobal`]:[],
+                  realUniqueIndexesGlobal:[],
+
+                  ["arrUniqueWithArrays"]:[]
                 }
               }
 
@@ -197,6 +336,15 @@ const createVars=(vars1)=>{
               [`${n.name1}Median`]:data[cat][seg][gi][`${n.name1}Median`],
               [`%${n.name1}`]:data[cat][seg][gi][`%${n.name1}`],
               [`${n.name1}Count`]:data[cat][seg][gi]?.[`${n.name1}Acummulated`]?.length,
+
+              [`${n.name1}UniqueTotal`]:data[cat][seg][gi][`${n.name1}UniqueTotal`],
+              [`${n.name1}UniqueMaximum`]:data[cat][seg][gi][`${n.name1}AcummulatedUniquemaximum`],
+              [`${n.name1}UniqueMinimum`]:data[cat][seg][gi][`${n.name1}AcummulatedUniqueminimum`],
+              [`${n.name1}UniqueMedia`]:data[cat][seg][gi][`${n.name1}MediaUnique`],
+              [`${n.name1}UniqueMedian`]:data[cat][seg][gi][`${n.name1}MedianUnique`],
+              [`%${n.name1}Unique`]:data[cat][seg][gi][`%${n.name1}Unique`],
+              [`${n.name1}UniqueCount`]:data[cat][seg][gi]?.[`${n.name1}UniqueTotalArray`]?.length,
+              
             }
           }
         }
@@ -217,7 +365,9 @@ const createVars=(vars1)=>{
                   ...dataResult[cat][seg]["data"][posi],
                   [`${n.name1}total`]:{
                     ...dataResult[cat][seg]["data"][posi][`${n.name1}total`],
-                    [ss]:{value:0,arr:[]}
+                    [ss]:{value:0,arr:[],valueUnique:0,arrUnique:[],arrUniqueKeys:[],arrPrevKeys:[],
+                      [`${n.name1}UniqueTotalArrayGlobal`]:[],realUniqueIndexesGlobal:[],
+                      ["arrUniqueWithArrays"]:[]}
                   }
 
                 }
@@ -368,6 +518,15 @@ const createVarsNull=(vars1)=>{
             [`${n.name1}Median`]:data[cat][seg][gi][`${n.name1}Median`],
             [`%${n.name1}`]:data[cat][seg][gi][`%${n.name1}`],
             [`${n.name1}Count`]:data[cat][seg][gi]?.[`${n.name1}Acummulated`]?.length,
+            
+            [`${n.name1}UniqueTotal`]:data[cat][seg][gi][`${n.name1}UniqueTotal`],
+              [`${n.name1}UniqueMaximum`]:data[cat][seg][gi][`${n.name1}AcummulatedUniquemaximum`],
+              [`${n.name1}UniqueMinimum`]:data[cat][seg][gi][`${n.name1}AcummulatedUniqueminimum`],
+              [`${n.name1}UniqueMedia`]:data[cat][seg][gi][`${n.name1}MediaUnique`],
+              [`${n.name1}UniqueMedian`]:data[cat][seg][gi][`${n.name1}MedianUnique`],
+              [`%${n.name1}Unique`]:data[cat][seg][gi][`%${n.name1}Unique`],
+              [`${n.name1}CountUnique`]:data[cat][seg][gi]?.[`${n.name1}UniqueToTalArray`]?.length,
+            
             //[`${n.name1}RawArray`]:[...dataResult[cat][seg][gi][`${n.name1}total`][`${n.name1}RawArray`],...data?.[cat]?.[seg]?.[gi]?.[`${n.name1}Acummulated`]]
           }}}
           posi=lent
@@ -385,6 +544,14 @@ const createVarsNull=(vars1)=>{
               [`${n.name1}Median`]:data[cat][seg][gi][`${n.name1}Median`],
               [`%${n.name1}`]:data[cat][seg][gi][`%${n.name1}`],
               [`${n.name1}Count`]:data[cat][seg][gi]?.[`${n.name1}Acummulated`]?.length,
+
+              [`${n.name1}UniqueTotal`]:data[cat][seg][gi][`${n.name1}UniqueTotal`],
+              [`${n.name1}UniqueMaximum`]:data[cat][seg][gi][`${n.name1}AcummulatedUniquemaximum`],
+              [`${n.name1}UniqueMinimum`]:data[cat][seg][gi][`${n.name1}AcummulatedUniqueminimum`],
+              [`${n.name1}UniqueMedia`]:data[cat][seg][gi][`${n.name1}MediaUnique`],
+              [`${n.name1}UniqueMedian`]:data[cat][seg][gi][`${n.name1}MedianUnique`],
+              [`%${n.name1}Unique`]:data[cat][seg][gi][`%${n.name1}Unique`],
+              [`${n.name1}CountUnique`]:data[cat][seg][gi]?.[`${n.name1}UniqueToTalArray`]?.length,
             }
           }
         }
@@ -405,7 +572,9 @@ const createVarsNull=(vars1)=>{
                   ...dataResult[cat][seg]["data"][posi],
                   [`${n.name1}total`]:{
                     ...dataResult[cat][seg]["data"][posi][`${n.name1}total`],
-                    [ss]:{value:0,arr:[]}
+                    [ss]:{value:0,arr:[],valueUnique:0,arrUnique:[],arrUniqueKeys:[],arrPrevKeys:[],
+                      [`${n.name1}UniqueTotalArrayGlobal`]:[],realUniqueIndexesGlobal:[],
+                      ["arrUniqueWithArrays"]:[]}
                   }
 
                 }
@@ -596,7 +765,7 @@ export const getSubsetsCont=({
     calculateGrandTotalsStatistics(otmChoices,order,subsets,firstCatNormalFields)
     calculatePercentageByGrandTotalsAndInRow(otmChoices,data)
   }
-  //console.log("dataResult",dataResult,printRaw,grandTotals)/*,subsetsData,data)*/
+  console.log("dataResult",dataResult,printRaw,grandTotals)/*,subsetsData,data)*/
   return [dataResult,printRaw,grandTotals]
 
 }
@@ -1162,13 +1331,22 @@ const initiateStatistics=(otmChoices)=>{
                     && sg!==`${field.name1}Maximum`
                     && sg!==`${field.name1}Minimum`
                     && sg!==`%${field.name1}`
-                    && sg!==`${field.name1}Count`){
+                    && sg!==`${field.name1}Count`
+                    && sg!==`${field.name1}UniqueTotal`  
+                    && sg!==`${field.name1}UniqueMedia`
+                    && sg!==`${field.name1}UniqueMedian`
+                    && sg!==`${field.name1}UniqueMaximum`
+                    && sg!==`${field.name1}UniqueMinimum`
+                    && sg!==`%${field.name1}Unique`
+                    && sg!==`${field.name1}UniqueCount`){
                       dataResult[cat][seg]["data"][ind][`${field.name1}total`][sg]={
                         ...dataResult[cat][seg]["data"][ind][`${field.name1}total`][sg],
                         
                         ...calculateStatistics(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]?.["arr"],dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.[sg]),
-                        ...calculateStatisticsRaw(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]?.[`${field.name1}RawArray`])
+                        ...calculateStatisticsRaw(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]?.[`${field.name1}RawArray`]),
 
+                        ...calculateStatisticsUnique(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]?.["arrUnique"],dataResult?.[cat]?.[seg]?.[ind]?.[`${field.name1}total`]?.[sg]),
+                        ...calculateStatisticsRawUnique(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]?.[`${field.name1}UniqueRawArray`])
                       }
                       
                       if(dataResult[cat][seg]["data"][ind][`${field.name1}total`]?.["totalRow"]==undefined)
@@ -1177,13 +1355,27 @@ const initiateStatistics=(otmChoices)=>{
                         dataResult[cat][seg]["data"][ind][`${field.name1}total`]["arrRow"]=[]
                       if(dataResult[cat][seg]["data"][ind][`${field.name1}total`]?.["totalRowCount"]==undefined)
                         dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRowCount"]=0
+
+                      if(dataResult[cat][seg]["data"][ind][`${field.name1}total`]?.["totalRowUnique"]==undefined)
+                        dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRowUnique"]=0
+                      if(dataResult[cat][seg]["data"][ind][`${field.name1}total`]?.["arrRowUnique"]==undefined)
+                        dataResult[cat][seg]["data"][ind][`${field.name1}total`]["arrRowUnique"]=[]
+                      if(dataResult[cat][seg]["data"][ind][`${field.name1}total`]?.["totalRowCountUnique"]==undefined)
+                        dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRowCountUnique"]=0
                       
                       let val
+                      let val1
                       if(dataResult[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]?.["value"]!=undefined){  
                         val=dataResult[cat][seg]?.["data"]?.[ind][`${field.name1}total`][sg]["value"]
                         dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRow"]+=val
                         dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRowCount"]+=dataResult[cat][seg]?.["data"]?.[ind][`${field.name1}total`][sg][`${field.name1}RawArray`].length
                         dataResult[cat][seg]["data"][ind][`${field.name1}total`]["arrRow"]=[...dataResult[cat][seg]["data"][ind][`${field.name1}total`]["arrRow"],val]
+                      }
+                      if(dataResult[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]?.["valueUnique"]!=undefined){  
+                        val1=dataResult[cat][seg]?.["data"]?.[ind][`${field.name1}total`][sg]["valueUnique"]
+                        dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRowUnique"]+=val1
+                        dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRowCountUnique"]+=dataResult[cat][seg]?.["data"]?.[ind][`${field.name1}total`][sg][`${field.name1}UniqueRawArray`].length
+                        dataResult[cat][seg]["data"][ind][`${field.name1}total`]["arrRowUnique"]=[...dataResult[cat][seg]["data"][ind][`${field.name1}total`]["arrRowUnique"],val1]
                       }
                     }
                   })
@@ -1199,7 +1391,9 @@ const initiateStatistics=(otmChoices)=>{
                 dataResult[cat][seg]["data"][ind][`${field.name1}total`]={
                   ...dataResult[cat][seg]["data"][ind][`${field.name1}total`],
                   
-                  ...calculateStatistics(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.["arrRow"]),//,dataResult[cat][seg][ind][`${field.name1}total`][sg])
+                  ...calculateStatistics(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.["arrRow"]),
+
+                  ...calculateStatisticsUnique(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.["arrRowUnique"]),
                   
                 }
               }
@@ -1214,25 +1408,50 @@ const initiateStatistics=(otmChoices)=>{
                     && sg!==`${field.name1}Maximum`
                     && sg!==`${field.name1}Minimum`
                     && sg!==`%${field.name1}`
-                    && sg!==`${field.name1}Count`){
+                    && sg!==`${field.name1}Count`
+                    
+                    && sg!==`${field.name1}UniqueTotal`  
+                    && sg!==`${field.name1}UniqueMedia`
+                    && sg!==`${field.name1}UniqueMedian`
+                    && sg!==`${field.name1}UniqueMaximum`
+                    && sg!==`${field.name1}UniqueMinimum`
+                    && sg!==`%${field.name1}Unique`
+                    && sg!==`${field.name1}UniqueCount`){
                       dataResult[cat][seg]["data"][ind][`${field.name1}total`][sg]={
                         ...dataResult[cat][seg]["data"][ind][`${field.name1}total`][sg],
                         
                         ...calculateStatistics(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]?.["arr"],dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]),
-                        ...calculateStatisticsRaw(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]?.[`${field.name1}RawArray`])
+                        ...calculateStatisticsRaw(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]?.[`${field.name1}RawArray`]),
+
+                        ...calculateStatisticsUnique(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]?.["arrUnique"],dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]),
+                        ...calculateStatisticsRawUnique(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]?.[`${field.name1}RawArrayUnique`])
                       }
                       if(dataResult[cat][seg]["data"][ind][`${field.name1}total`]?.["totalRow"]==undefined)
                         dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRow"]=0
                       if(dataResult[cat][seg]["data"][ind][`${field.name1}total`]?.["arrRow"]==undefined)
                         dataResult[cat][seg]["data"][ind][`${field.name1}total`]["arrRow"]=[]
-                        if(dataResult[cat][seg]["data"][ind][`${field.name1}total`]?.["totalRowCount"]==undefined)
+                      if(dataResult[cat][seg]["data"][ind][`${field.name1}total`]?.["totalRowCount"]==undefined)
                         dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRowCount"]=0
+
+                        if(dataResult[cat][seg]["data"][ind][`${field.name1}total`]?.["totalRowUnique"]==undefined)
+                        dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRowUnique"]=0
+                      if(dataResult[cat][seg]["data"][ind][`${field.name1}total`]?.["arrRowUnique"]==undefined)
+                        dataResult[cat][seg]["data"][ind][`${field.name1}total`]["arrRowUnique"]=[]
+                      if(dataResult[cat][seg]["data"][ind][`${field.name1}total`]?.["totalRowCountUnique"]==undefined)
+                        dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRowCountUnique"]=0
                       let val=0
+                      let val1=0
                       if(dataResult[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]?.["value"]!=undefined){  
                         val=dataResult[cat][seg]["data"][ind][`${field.name1}total`][sg]["value"]
                         dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRow"]+=val
                         dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRowCount"]+=dataResult[cat][seg]?.["data"]?.[ind][`${field.name1}total`][sg][`${field.name1}RawArray`].length
                         dataResult[cat][seg]["data"][ind][`${field.name1}total`]["arrRow"]=[...dataResult[cat][seg]["data"][ind][`${field.name1}total`]["arrRow"],val]
+                      }
+                      if(dataResult[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.[sg]?.["valueUnique"]!=undefined){  
+                        val1=dataResult[cat][seg]["data"][ind][`${field.name1}total`][sg]["valueUnique"]
+                        dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRowUnique"]+=val1
+                        dataResult[cat][seg]["data"][ind][`${field.name1}total`]["totalRowCountUnique"]+=dataResult[cat][seg]?.["data"]?.[ind][`${field.name1}total`][sg][`${field.name1}UniqueRawArray`].length
+                        dataResult[cat][seg]["data"][ind][`${field.name1}total`]["arrRowUnique"]=[...dataResult[cat][seg]["data"][ind][`${field.name1}total`]["arrRowUnique"],val1]
                       }
                     }
                   })
@@ -1248,6 +1467,8 @@ const initiateStatistics=(otmChoices)=>{
                   ...dataResult[cat][seg]["data"][ind][`${field.name1}total`],
                   
                   ...calculateStatistics(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.["arrRow"]),
+
+                  ...calculateStatisticsUnique(dataResult?.[cat]?.[seg]?.["data"]?.[ind]?.[`${field.name1}total`]?.["arrRowUnique"]),
                 }
               }
             })
@@ -1515,10 +1736,10 @@ const calculateGrandTotals=(otmChoices)=>{
                     }
                   }
                 }
-                     
+                console.log("epic",dataResult[mainCat][seg]["data"][reg])
               Object.keys(dataResult[mainCat][seg]["data"][reg][`${field.name1}total`]).forEach(sg=>{
                 if(typeof dataResult[mainCat][seg]["data"][reg][`${field.name1}total`][sg]=="object" &&
-                sg!=="arrRow"){
+                sg!=="arrRow" && sg!=="arrRowUnique"){
                   if(grandTotals[mainCat][seg][`${field.name1}total`][sg]==undefined)
                     grandTotals={
                       ...grandTotals,
@@ -1540,6 +1761,7 @@ const calculateGrandTotals=(otmChoices)=>{
                     }
                     let sumTotalRaw=0
                     let sumCountRaw=0
+                    console.log("piv1",dataResult[mainCat][seg]["data"][reg][`${field.name1}total`],sg,`${field.name1}RawArray`)
                     dataResult[mainCat][seg]["data"][reg][`${field.name1}total`][sg][`${field.name1}RawArray`].forEach(p=>{
                       sumTotalRaw+=p
                       sumCountRaw=dataResult[mainCat][seg]["data"][reg][`${field.name1}total`][sg][`${field.name1}RawArray`].length
@@ -1603,7 +1825,7 @@ const calculateGrandTotals=(otmChoices)=>{
                      
               Object.keys(dataResult[mainCat][seg]["data"][reg][`${field.name1}total`]).forEach(sg=>{
                 if(typeof dataResult[mainCat][seg]["data"][reg][`${field.name1}total`][sg]=="object" &&
-                sg!=="arrRow"){
+                sg!=="arrRow" && sg!="arrRowUnique"){
                   if(grandTotals[mainCat][seg][`${field.name1}total`][sg]==undefined)
                     grandTotals={
                       ...grandTotals,
@@ -1782,6 +2004,56 @@ const calculateStatistics=(arr,ivar)=>{
   }
   return res
 }
+const calculateStatisticsUnique=(arr,ivar)=>{
+  let res={}
+  res["minUnique"]=0
+  res["maxUnique"]=0
+  res["mediaUnique"]=0
+  res["medianUnique"]=0
+  res["totalCountUnique"]=0
+  res["totalUnique"]=0
+  if(arr?.length>0){
+    arr=arr.map(x=>{
+      if(x==undefined || x==null)
+        return 0
+      return x
+    })
+    arr=arr.sort((x,y)=>x>y?1:-1)
+    res["minUnique"]=arr[0]==null?0:arr[0]
+    res["maxUnique"]=arr[arr.length-1]==null?0:arr[arr.length-1]
+    let suma=0
+    arr.forEach(y=>{
+      if(y!=undefined)
+        suma+=y
+    })
+    res["mediaUnique"]=suma/arr.length
+    let length=arr.length
+    let median=0
+    if(length%2==1){
+      median=arr[Math.floor(length/2)]
+      if(median==undefined || median==null)
+        median=0
+    }else{
+      let op1,op2
+      if(arr[(length/2)-1]==undefined)
+        op1=0
+      else
+        op1=arr[(length/2)-1]
+      if(arr[(length/2)]==undefined)
+        op2=0
+      else
+        op2=arr[(length/2)]
+      median=(op1+op2)/2
+      if(isNaN(median))
+        median=0
+    }
+    res["medianUnique"]=median
+    res["totalCountUnique"]=arr.length
+    res["totalUnique"]=suma
+    return res
+  }
+  return res
+}
 const calculateStatisticsRaw=(arr,ivar)=>{
   let res={}
   res["minRaw"]=0
@@ -1789,6 +2061,7 @@ const calculateStatisticsRaw=(arr,ivar)=>{
   res["mediaRaw"]=0
   res["medianRaw"]=0
   res["totalCountRaw"]=0
+  res["totalRaw"]=0
   if(arr?.length>0){
     arr=arr.sort((x,y)=>x>y?1:-1)
     arr=arr.map(x=>(x==undefined || x==null)?0:x)
@@ -1820,6 +2093,52 @@ const calculateStatisticsRaw=(arr,ivar)=>{
     }
     res["medianRaw"]=median
     res["totalCountRaw"]=arr.length
+    res["totalRaw"]=suma
+    return res
+  }
+  return res
+}
+
+const calculateStatisticsRawUnique=(arr,ivar)=>{
+  let res={}
+  res["minRawUnique"]=0
+  res["maxRawUnique"]=0
+  res["mediaRawUnique"]=0
+  res["medianRawUnique"]=0
+  res["totalCountRawUnique"]=0
+  res["totalRawUnique"]=0
+  if(arr?.length>0){
+    arr=arr.sort((x,y)=>x>y?1:-1)
+    arr=arr.map(x=>(x==undefined || x==null)?0:x)
+    res["minRawUnique"]=arr[0]==null?0:arr[0]
+    res["maxRawUnique"]=arr[arr.length-1]==null?0:arr[arr.length-1]
+    let suma=0
+    arr.forEach(y=>suma+=y)
+    res["mediaRawUnique"]=suma/arr.length
+    let length=arr.length
+    let median=0
+    if(length%2==1){
+      if(arr[Math.floor(length/2)]==undefined ||
+        arr[Math.floor(length/2)]==null)
+        median=0
+      else{
+        median=arr[Math.floor(length/2)]
+      }
+    }else{
+      if(arr[Math.floor(length/2)-1]==undefined ||
+        arr[Math.floor(length/2)-1]==null)
+        arr[Math.floor(length/2)-1]=0
+      if(arr[Math.floor(length/2)]==undefined ||
+        arr[Math.floor(length/2)]==null)
+        arr[Math.floor(length/2)]=0
+      
+      median=(arr[(length/2)-1]+arr[(length/2)])/2
+      if(isNaN(median))
+        median=0
+    }
+    res["medianRawUnique"]=median
+    res["totalCountRawUnique"]=arr.length
+    res["totalRawUnique"]=suma
     return res
   }
   return res

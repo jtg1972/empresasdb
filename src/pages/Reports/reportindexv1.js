@@ -5622,6 +5622,49 @@ const updateNumericFieldsRoot=(key,cat,obj,next,first)=>{
 let accumulatedValues={}
 let realGrandTotals={}
 
+const simpleFilter=(arr)=>{
+  let done=[]
+  let res=[]
+  for(let i=0;i<arr.length;i++){
+    let each=arr[i]
+    if(!done.includes(each)){
+      done.push(each)
+      res.push(each)
+      
+    }
+  }
+ // console.log("resarr",arr,res)
+  return res
+}
+const cleanArrays=(rUIIA,rUIIAF)=>{
+  console.log("realunFiltered",rUIIA,rUIIAF)
+  let arrToCreate=[]
+  if(rUIIA!=undefined){
+    let parent=Object.keys(rUIIA)[0]
+    let keys=rUIIA[parent].keys
+    let arrToWork=keys
+    let each
+    arrToCreate=[]
+    let alreadyDone=[]
+    for(let i=0;i<keys.length;i++){
+      arrToCreate=[...arrToCreate,new Array()]
+    }
+    for(let i=0;i<keys.length;i++){
+      let curArrPos=keys[i]
+      for(let j=0;j<curArrPos.length;j++){
+        let each=curArrPos[j]
+        if(!alreadyDone.includes(each)){
+          alreadyDone.push(each)
+          arrToCreate[i].push(each)
+        }
+
+      }
+    }
+    //console.log("arrToWork",arrToWork,arrToCreate)
+  }
+  return arrToCreate
+}
+
 //getTotalsOfNumericVariables(finalObject[cat],finalObject[trueKey],cat)
 const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
   //console.log("catmainkey",cat,mainKey)
@@ -5637,6 +5680,8 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
   let doneMain=[]
   let arrCheckDoneKeys={}
   let idsAlreadyDone=[]
+  let oldO=-1
+  let indOld=0
   Object.keys(a1).forEach(p=>{
     //let pnuev=a1[p]["id"]
     
@@ -5664,13 +5709,16 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
     
     if(arrCheckDoneKeys[p]==undefined)
       arrCheckDoneKeys={...arrCheckDoneKeys,[p]:{}}
+    let varTemp=[]
     
+        
     for(let m1=0;m1<x.length;m1++){
       
       if(m1==0)
-        idsAlreadyDone=[]  
+        idsAlreadyDone=[] 
+        
       Object.keys(a2[p]).forEach(o=>{
-         
+         //let oldo=-1
         if(arrCheckDoneKeys[p][o]==undefined)
           arrCheckDoneKeys[p]={...arrCheckDoneKeys[p],[p]:[]}
         ////console.log("m1",a2[o].keys,x[m1],a2[o].keys.includes(parseInt(x[m1])))
@@ -5741,22 +5789,117 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
               a2[p][o]={...a2[p][o],uniqueIndexes:[]}
             if(a2[p][o]?.["realUniqueIndexes"]==undefined)
               a2[p][o]={...a2[p][o],realUniqueIndexes:[]}
+            if(a2[p][o]?.["realUniqueIndexesInArray"]==undefined)
+              a2[p][o]={...a2[p][o],realUniqueIndexesInArray:{}}
             
             if(a1?.[p]?.[ind?.[m1]]?.["uniqueIndexes"]==undefined)
               a1[p][ind[m1]]["uniqueIndexes"]=[]
             if(a1[p][ind[m1]]?.["realUniqueIndexes"]==undefined)
-            a1[p][ind[m1]]["realUniqueIndexes"]=[]
+              a1[p][ind[m1]]["realUniqueIndexes"]=[]
+            
+            if(a1[p][ind[m1]]?.["realUniqueIndexesInArray"]==undefined)
+              a1[p][ind[m1]]["realUniqueIndexesInArray"]={}
+
+            
             
             if(isLast(cat) || p==cat){
               a2[p][o]["uniqueIndexes"]=[...a2[p][o]["uniqueIndexes"],`${x[m1]}/${a1[p][ind[m1]].parentId}`]
               a2[p][o]["realUniqueIndexes"]=[...a2[p][o]["realUniqueIndexes"],`${x[m1]}/${a1[p][ind[m1]].parentId}`]
-            }
+              /*if(a2[p][o]["realUniqueIndexesInArray"].length==0)
+                a2[p][o]["realUniqueIndexesInArray"].push([])*/
+              //a2[p][o]["realUniqueIndexesInArray"]=[[...a2[p][o]["realUniqueIndexesInArray"][0],`${x[m1]}/${a1[p][ind[m1]].parentId}`]]//`${x[m1]}/${a1[p][ind[m1]].parentId}`]
+              
+              if(a2[p][o]["realUniqueIndexesInArray"]?.[a2[p][o].parentId]==undefined)
+                a2[p][o]["realUniqueIndexesInArray"]={...a2[p][o]["realUniqueIndexesInArray"],[a2[p][o].parentId]:{}}
+              
+                /*
+              let oldo=Object.keys(a2[p])[0]
+        let indOld=0
+                */
+              //if(a2[p][o]["realUniqueIndexesInArray"][a1[p][ind[m1]].parentId].length==0 || oldO!=o){
+                //if(a2[p][o]["realUniqueIndexesInArray"][a1[p][ind[m1]].parentId].length==indOld){
+                console.log("oldO",oldO,o)
+                /*if(oldO!=o){
+                  if(a2[p][o]["realUniqueIndexesInArray"][a1[p][ind[m1]].parentId][indOld]==undefined)
+                   a2[p][o]["realUniqueIndexesInArray"][a1[p][ind[m1]].parentId]={...a2[p][o]["realUniqueIndexesInArray"][a1[p][ind[m1]].parentId],[indOld]:[]}
+                  console.log("lili",a2[p][o]["realUniqueIndexesInArray"][a1[p][ind[m1]].parentId],indOld+1)
+                  indOld++
+                  oldO=o
+                }*/
+                if(a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId]?.keys==undefined)//[0]==undefined)
+                a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId]={...a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId],keys:[]}
+                //a2[p][o]["realUniqueIndexesInArray"][a1[p][ind[m1]].parentId].push([])
+                //console.log("huhuto",a2[p][o]["realUniqueIndexesInArray"][a2[p][o].][indOld-1],indOld,oldO)
+              //}
+              if(a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId].keys.length==0)
+              a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId].keys.push([])
+              a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId].keys[0].push(`${x[m1]}/${a1[p][ind[m1]].parentId}`)//`${x[m1]}/${a1[p][ind[m1]].parentId}`]//[0].push(`${x[m1]}/${a1[p][ind[m1]].parentId}`)//`${x[m1]}/${a1[p][ind[m1]].parentId}`]
+             // console.log("checa",a2[p][o]["realUniqueIndexesInArray"]?.[a1[p][ind[m1]].parentId],[a1[p][ind[m1]].parentId])
+             if(a2[p][o]["realUniqueIndexesInArrayFiltered"]==undefined)
+              a2[p][o]={...a2[p][o],realUniqueIndexesInArrayFiltered:[]}
+            } 
             else{
               a2[p][o]["uniqueIndexes"]=[...a2[p][o]["uniqueIndexes"],...a1[p][ind[m1]]["uniqueIndexes"]]
               for(let u=0;u<a1[p][ind[m1]]["realUniqueIndexes"].length;u++){
-                if(!a2[p][o]["realUniqueIndexes"].includes(`${a1[p][ind[m1]]["realUniqueIndexes"][u]}`))
+                if(!a2[p][o]["realUniqueIndexes"].includes(`${a1[p][ind[m1]]["realUniqueIndexes"][u]}`)){
                   a2[p][o]["realUniqueIndexes"]=[...a2[p][o]["realUniqueIndexes"],`${a1[p][ind[m1]]["realUniqueIndexes"][u]}`]
+                  
+                }
               }
+             /*for(let u=0;u<a1[p][ind[m1]]["realUniqueIndexesInArray"].length;u++){
+                //if(!a2[p][o]["realUniqueIndexesInArray"].includes(a1[p][ind[m1]]["realUniqueIndexesInArray"][u])){
+                  a2[p][o]["realUniqueIndexesInArray"]=[...a2[p][o]["realUniqueIndexesInArray"],a1[p][ind[m1]]["realUniqueIndexesInArray"][u]]
+                  varTemp.push(a1[p][ind[m1]]["realUniqueIndexesInArray"][u])
+                //}
+              }*/
+              console.log("argsparam",a2[p][o]["realUniqueIndexesInArray"],a1[p][ind[m1]]["realUniqueIndexesInArray"])
+              //for(let y=0;y<Object.keys(a2[p][o]["realUniqueIndexesInArray"]).length;y++){
+                console.log("checrevisa",a1[p][ind[m1]]["realUniqueIndexesInArray"],a1[p][ind[m1]].parentId)
+                if(oldO!=o){
+                  if(a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId]?.keys==undefined)//[indOld]==undefined)
+                   a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId]={...a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId],keys:[]}//[indOld]:[]}
+                 // console.log("lili",a2[p][o]["realUniqueIndexesInArray"][a1[p][ind[m1]].parentId],indOld+1)
+                  indOld++
+                  oldO=o
+                }
+                if(a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId]?.keys==undefined)//[indOld-1]==undefined)
+                 a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId]={...a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId],keys:[]}//[indOld-1]:[]}
+                 console.log("frutosrojos",a1[p][ind[m1]]["realUniqueIndexesInArray"][a2[p][o]?.["id"]],a2[p][o]?.["id"])
+                 
+                if(a1[p][ind[m1]]["realUniqueIndexesInArray"]?.[a2[p][o]?.["id"]]?.keys!=undefined){//[ind[m1]]["realUniqueIndexesInArray"]?.[a2[p][o]?.["id"]]!=undefined){
+                  let total=[]
+                  let k1=Object.keys(a1[p][ind[m1]]["realUniqueIndexesInArray"][a2[p][o]["id"]])[0]
+                  console.log("verifgu",a1[p][ind[m1]]["realUniqueIndexesInArray"][a2[p][o]["id"]].keys)
+                  //Object.keys(a1[p][ind[m1]]["realUniqueIndexesInArray"][a2[p][o]["id"]].keys).forEach(x=>{
+                    //total=[...total,...a1[p][ind[m1]]["realUniqueIndexesInArray"][a2[p][o]["id"]][x]]
+                    //a1[p][ind[m1]]["realUniqueIndexesInArray"][a2[p][o]["id"]][k1][x]=
+                    Object.keys(a1[p][ind[m1]]["realUniqueIndexesInArray"][a2[p][o]["id"]].keys).forEach(y=>{
+                      total=[...total,...a1[p][ind[m1]]["realUniqueIndexesInArray"][a2[p][o]["id"]].keys[y]]
+                    })
+                    total=simpleFilter(total)
+                  //})
+                  //if(total.length!=0)
+                    a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId].keys=[...a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId].keys,total]
+                    if(a2[p][o]["realUniqueIndexesInArrayFiltered"]!=undefined)
+                      a2[p][o]={...a2[p][o],realUniqueIndexesInArrayFiltered:[]}
+                    
+                    //a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId][indOld-1]=[...a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId][indOld-1],...total]
+                  //else
+                    //a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId][indOld-1]=[...a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId][indOld-1],[]]
+                }else{
+                  a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId].keys=[...a2[p][o]["realUniqueIndexesInArray"][a2[p][o].parentId].keys,[]]
+                }
+                /*si if(a1[p][ind[m1]]["realUniqueIndexesInArray"][a1[p][ind[m1]]?.["parentId"]]!=undefined){
+                for(let u=0;u<Object.keys(a1[p][ind[m1]]["realUniqueIndexesInArray"][a1[p][ind[m1]]["parentId"]]).length;u++){
+                  //if(!a2[p][o]["realUniqueIndexesInArray"].includes(a1[p][ind[m1]]["realUniqueIndexesInArray"][u])){
+                    a2[p][o]["realUniqueIndexesInArray"][a2[p][o]["parentId"]]={...a2[p][o]["realUniqueIndexesInArray"][a2[p][o]["parentId"]],[u]:{...a2[p][o]["realUniqueIndexesInArray"][a2[p][o]["parentId"]][u],...a1[p][ind[m1]]["realUniqueIndexesInArray"][a2[p][o]["parentId"][u]]}}
+                    //varTemp.push(a1[p][ind[m1]]["realUniqueIndexesInArray"][u])
+                }
+                }*/
+              //}
+                //}
+
+              //a2[p][o]["realUniqueIndexesInArray"]=[...a2[p][o]["realUniqueIndexesInArray"],varTemp]
             }
             //}
             /*if(!a1?.[p]?.[ind?.[m1]]?.["realUniqueIndexes"].includes(x[m1])){
@@ -6251,6 +6394,9 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
           }
         }
       }
+    })
+    Object.keys(a2[p]).forEach(o=>{
+      a2[p][o]["realUniqueIndexesInArrayFiltered"]=cleanArrays(a2[p][o]["realUniqueIndexesInArray"],[])
     })
     
   })
@@ -8859,10 +9005,12 @@ const getDataReportTest=(routes,finalRoutes)=>{
     //empieza bloque para obtener datos de subsets
     
     //termina bloque para obtener datos de subsets
+    console.log("finalobject",finalObject)
     order[0].forEach((y,ind)=>{
       
       tts=[]
       table=finalObject
+      
       //console.log("sortRulespo",sortRules[y])
       if(sortRules?.[y]?.[0]!=undefined && sortRules?.[y]?.[0]!="nosort"){
         tts=getTableToSort(finalObject[y])

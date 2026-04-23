@@ -32,6 +32,7 @@ export const getSubsetsData=(vars)=>{
 
       })
     }
+    //console.log("subsetsData",subsetsData)
   
   //console.log("return subsetsData",subsetsData)
   return subsetsData
