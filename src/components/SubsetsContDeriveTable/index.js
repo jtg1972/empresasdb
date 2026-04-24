@@ -112,16 +112,16 @@ export const SubsetsContDeriveTable=({
             
         let rec=data[mainTable][seg]["data"][d][`${field}total`]
         return <tr>
-          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalRowCount"]?.toFixed(2)}</td>
-          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalRow"]?.toFixed(2)}</td>
+          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalCount"]?.toFixed(2)}</td>
+          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["total"]?.toFixed(2)}</td>
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`min`]?.toFixed(2)}</td>
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`media`]?.toFixed(2)}</td>
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`median`]?.toFixed(2)}</td>
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`max`]?.toFixed(2)}</td>
           
 
-          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalRowCountUnique"]?.toFixed(2)}</td>
-          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalRowUnique"]?.toFixed(2)}</td>
+          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalCountUnique"]?.toFixed(2)}</td>
+          <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.["totalUnique"]?.toFixed(2)}</td>
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`minUnique`]?.toFixed(2)}</td>
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`mediaUnique`]?.toFixed(2)}</td>
           <td style={{backgroundColor:index%2==0?"white":"lightgray"}}>{rec?.[`medianUnique`]?.toFixed(2)}</td>

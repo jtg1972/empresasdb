@@ -723,6 +723,7 @@ export const getSubsetsCont=({
 
   //console.log("datamain",data,subsets,subsetsData)
   dataResult={}
+  console.log("subsetsdata",subsetsData)
   if(data!=undefined){
     
     Object.keys(data)?.forEach(cat=>{
@@ -1954,7 +1955,7 @@ const calculateGrandTotalsStatistics=(otmChoices,order,subsets,firstCatNormalFie
   
  
 
-const calculateStatistics=(arr,ivar)=>{
+const calculateStatistics=(sup,ivar)=>{
   let res={}
   res["min"]=0
   res["max"]=0
@@ -1962,6 +1963,9 @@ const calculateStatistics=(arr,ivar)=>{
   res["median"]=0
   res["totalCount"]=0
   res["total"]=0
+  let arr=[]
+  for(let i=0;i<sup?.length;i++)
+    arr.push(sup[i])
   if(arr?.length>0){
     arr=arr.map(x=>{
       if(x==undefined || x==null)
@@ -2004,7 +2008,7 @@ const calculateStatistics=(arr,ivar)=>{
   }
   return res
 }
-const calculateStatisticsUnique=(arr,ivar)=>{
+const calculateStatisticsUnique=(sup,ivar)=>{
   let res={}
   res["minUnique"]=0
   res["maxUnique"]=0
@@ -2012,6 +2016,9 @@ const calculateStatisticsUnique=(arr,ivar)=>{
   res["medianUnique"]=0
   res["totalCountUnique"]=0
   res["totalUnique"]=0
+  let arr=[]
+  for(let i=0;i<sup?.length;i++)
+    arr.push(sup[i])
   if(arr?.length>0){
     arr=arr.map(x=>{
       if(x==undefined || x==null)
@@ -2054,7 +2061,7 @@ const calculateStatisticsUnique=(arr,ivar)=>{
   }
   return res
 }
-const calculateStatisticsRaw=(arr,ivar)=>{
+const calculateStatisticsRaw=(sup,ivar)=>{
   let res={}
   res["minRaw"]=0
   res["maxRaw"]=0
@@ -2062,6 +2069,9 @@ const calculateStatisticsRaw=(arr,ivar)=>{
   res["medianRaw"]=0
   res["totalCountRaw"]=0
   res["totalRaw"]=0
+  let arr=[]
+  for(let i=0;i<sup?.length;i++)
+    arr.push(sup[i])
   if(arr?.length>0){
     arr=arr.sort((x,y)=>x>y?1:-1)
     arr=arr.map(x=>(x==undefined || x==null)?0:x)
@@ -2099,7 +2109,7 @@ const calculateStatisticsRaw=(arr,ivar)=>{
   return res
 }
 
-const calculateStatisticsRawUnique=(arr,ivar)=>{
+const calculateStatisticsRawUnique=(sup,ivar)=>{
   let res={}
   res["minRawUnique"]=0
   res["maxRawUnique"]=0
@@ -2107,6 +2117,9 @@ const calculateStatisticsRawUnique=(arr,ivar)=>{
   res["medianRawUnique"]=0
   res["totalCountRawUnique"]=0
   res["totalRawUnique"]=0
+  let arr=[]
+  for(let i=0;i<sup?.length;i++)
+    arr.push(sup[i])
   if(arr?.length>0){
     arr=arr.sort((x,y)=>x>y?1:-1)
     arr=arr.map(x=>(x==undefined || x==null)?0:x)

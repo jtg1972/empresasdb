@@ -6321,6 +6321,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                   }
                 }
               }
+              console.log("ruikeysvalues",a2[p][o]["realUniqueIndexes"],a2[p][o][`calificacionUniqueTotalArray`])
             }
           }else{
             if(a2[p][o]["realUniqueIndexes"]!=undefined){
@@ -6342,6 +6343,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 }
               //}
               }
+              console.log("ruikeysvalues",a2[p][o]["realUniqueIndexes"],a2[p][o][`calificacionUniqueTotalArray`])
             }
           }
         }
@@ -6368,6 +6370,7 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                   }
                 }
               }
+              
             }
           }else{
             if(a2[p][o]["realUniqueIndexes"]!=undefined){
@@ -6390,11 +6393,14 @@ const getTotalsOfNumericVariables=(a1,a2,cat,mainKey)=>{
                 }
               //}
               }
+
             }
           }
         }
       }
     })
+
+    
     Object.keys(a2[p]).forEach(o=>{
       a2[p][o]["realUniqueIndexesInArrayFiltered"]=cleanArrays(a2[p][o]["realUniqueIndexesInArray"],[])
     })

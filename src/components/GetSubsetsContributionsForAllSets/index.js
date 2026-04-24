@@ -1006,7 +1006,7 @@ const GetSubsetsContributionsForAllSets=({
     
   }
 
-  const calculateStatistics=(arr,ivar)=>{
+  const calculateStatistics=(x,ivar)=>{
     let res={}
     res["min"]=0
     res["max"]=0
@@ -1014,6 +1014,9 @@ const GetSubsetsContributionsForAllSets=({
     res["median"]=0
     res["totalCount"]=0
     res["total"]=0
+    let arr=[]
+    for(let j=0;j<x.length;j++)
+      arr.push(x[j])
     if(arr?.length>0){
       arr=arr.map(x=>{
         if(x==undefined || x==null)
@@ -1108,7 +1111,7 @@ const GetSubsetsContributionsForAllSets=({
     return res
   }*/
 
-  const calculateStatisticsUnique=(arr,ivar)=>{
+  const calculateStatisticsUnique=(x,ivar)=>{
     let res={}
     res["minUnique"]=0
     res["maxUnique"]=0
@@ -1116,6 +1119,9 @@ const GetSubsetsContributionsForAllSets=({
     res["medianUnique"]=0
     res["totalCountUnique"]=0
     res["totalUnique"]=0
+    let arr=[]
+    for(let j=0;j<x.length;j++)
+      arr.push(x[j])
     if(arr?.length>0){
       arr=arr.map(x=>{
         if(x==undefined || x==null)
@@ -1159,7 +1165,7 @@ const GetSubsetsContributionsForAllSets=({
     return res
   }
 
-  const calculateStatisticsRawUnique=(arr,ivar)=>{
+  const calculateStatisticsRawUnique=(x,ivar)=>{
     let res={}
     res["minRawUnique"]=0
     res["maxRawUnique"]=0
@@ -1167,6 +1173,9 @@ const GetSubsetsContributionsForAllSets=({
     res["medianRawUnique"]=0
     res["totalCountRawUnique"]=0
     res["totalRawUnique"]=0
+    let arr=[]
+    for(let j=0;j<x.length;j++)
+      arr.push(x[j])
     if(arr?.length>0){
       arr=arr.map(x=>{
         if(x==undefined || x==null)
@@ -1209,7 +1218,7 @@ const GetSubsetsContributionsForAllSets=({
     }
     return res
   }
-  const calculateStatisticsRaw=(arr,ivar)=>{
+  const calculateStatisticsRaw=(x,ivar)=>{
     let res={}
     res["minRaw"]=0
     res["maxRaw"]=0
@@ -1217,6 +1226,9 @@ const GetSubsetsContributionsForAllSets=({
     res["medianRaw"]=0
     res["totalCountRaw"]=0
     res["totalRaw"]=0
+    let arr=[]
+    for(let j=0;j<x.length;j++)
+      arr.push(x[j])
     if(arr?.length>0){
       arr=arr.sort((x,y)=>x>y?1:-1)
       arr=arr.map(x=>(x==undefined || x==null)?0:x)
